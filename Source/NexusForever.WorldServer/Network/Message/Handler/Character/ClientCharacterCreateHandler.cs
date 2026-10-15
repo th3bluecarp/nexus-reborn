@@ -11,6 +11,8 @@ using NexusForever.Game.Entity;
 using NexusForever.Game.Static;
 using NexusForever.Game.Static.Account;
 using NexusForever.Game.Static.Entity;
+using NexusForever.Game.Static.Quest;
+using NexusForever.Game.Static.Reputation;
 using NexusForever.Game.Static.Spell;
 using NexusForever.GameTable;
 using NexusForever.GameTable.Model;
@@ -174,6 +176,19 @@ namespace NexusForever.WorldServer.Network.Message.Handler.Character
                 character.LocationY = startingLocation.Position.Y;
                 character.LocationZ = startingLocation.Position.Z;
                 character.WorldId = (ushort)startingLocation.World.Id;
+
+                // Veteran characters skip the Nexus Virtuality tutorial, but the first quest of every starting
+                // zone (Welcome to Northern Wilds, Everstar Grove, Levian Bay, Crimson Isle) requires the
+                // tutorial's final quest, Bon Voyage, to be complete.
+                if (creationEntry.CharacterCreationStartEnum == CharacterCreationStart.Nexus)
+                {
+                    character.Quest.Add(new CharacterQuestModel
+                    {
+                        Id      = character.Id,
+                        QuestId = (Faction)creationEntry.FactionId == Faction.Exile ? (ushort)10528 : (ushort)10530,
+                        State   = (byte)QuestState.Completed
+                    });
+                }
 
                 character.ActiveSpec = 0;
 
