@@ -73,6 +73,14 @@ namespace NexusForever.Game.PublicEvent
         /// <summary>
         /// Send <see cref="IWritable"/> to <see cref="IPublicEventTeamMember"/>.
         /// </summary>
+        /// <summary>
+        /// Return the online <see cref="IPlayer"/> for this member, null when offline.
+        /// </summary>
+        public IPlayer GetPlayer()
+        {
+            return playerManager.GetPlayer(CharacterId);
+        }
+
         public void Send(IWritable message)
         {
             IPlayer player = playerManager.GetPlayer(CharacterId);

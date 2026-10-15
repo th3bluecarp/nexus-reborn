@@ -4,6 +4,7 @@ using NexusForever.Game.Abstract.PublicEvent;
 using NexusForever.Game.Abstract.Map;
 using NexusForever.Game.Abstract.Matching.Match;
 using NexusForever.Game.Static.PublicEvent;
+using NexusForever.Game.Static.Quest;
 using NexusForever.Game.Static.Matching;
 using NexusForever.GameTable.Model;
 using NexusForever.Network.Message;
@@ -494,6 +495,10 @@ namespace NexusForever.Game.PublicEvent
 
                     publicEventTeamMember.Send(message);
                     toRemove.Add(publicEventTeamMember.CharacterId);
+
+                    // quests such as defending the memorial service in Thayd (4023) want the event won
+                    if (publicEventTeam.Team == winnerTeam)
+                        publicEventTeamMember.GetPlayer()?.QuestManager.ObjectiveUpdate(QuestObjectiveType.CompleteEvent, Id, 1u);
                 }
             }
 

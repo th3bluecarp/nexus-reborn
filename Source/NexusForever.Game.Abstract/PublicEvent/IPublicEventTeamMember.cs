@@ -30,6 +30,11 @@ namespace NexusForever.Game.Abstract.PublicEvent
         void Send(IWritable message);
 
         /// <summary>
+        /// Return the online <see cref="IPlayer"/> for this member, null when offline.
+        /// </summary>
+        IPlayer GetPlayer();
+
+        /// <summary>
         /// Build <see cref="PublicEventStats"/> for <see cref="IPublicEventTeamMember"/>.
         /// </summary>
         PublicEventStats BuildStats();

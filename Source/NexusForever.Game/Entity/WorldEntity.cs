@@ -1,4 +1,4 @@
-using System.Numerics;
+﻿using System.Numerics;
 using Newtonsoft.Json.Linq;
 using NexusForever.Database.World.Model;
 using NexusForever.Game.Abstract.Chat;
@@ -608,6 +608,8 @@ namespace NexusForever.Game.Entity
                 foreach (uint targetGroupId in AssetManager.Instance.GetTargetGroupsForCreatureId(CreatureInfo.Entry.Id))
                 {
                     activator.QuestManager.ObjectiveUpdate(QuestObjectiveType.ActivateTargetGroup, targetGroupId, 1u); // Updates the objective, but seems to disable all the other targets. TODO: Investigate
+                    // Unknown10 objectives name a target group of creatures to use, such as the Dominion cannons in Shellshock! (3487)
+                    activator.QuestManager.ObjectiveUpdate(QuestObjectiveType.Unknown10, targetGroupId, 1u);
                     activator.QuestManager.RewardPaneObjectiveUpdate(QuestObjectiveType.VirtualCollect, targetGroupId, 1u);
 
                     Map.PublicEventManager.UpdateObjective(activator, PublicEventObjectiveType.ActivateTargetGroup, targetGroupId, 1);
