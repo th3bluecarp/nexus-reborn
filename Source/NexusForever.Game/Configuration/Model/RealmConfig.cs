@@ -7,6 +7,7 @@ namespace NexusForever.Game.Configuration.Model
     public class RealmConfig
     {
         public MapConfig Map { get; set; }
+        public KillXpConfig KillXp { get; set; } = new();
         public ushort RealmId { get; set; }
         public string MessageOfTheDay { get; set; }
         public uint LengthOfInGameDay { get; set; }

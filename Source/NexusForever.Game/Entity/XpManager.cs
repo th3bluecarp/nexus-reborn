@@ -129,10 +129,13 @@ namespace NexusForever.Game.Entity
             if (player.SignatureEnabled)
                 signatureXp = (uint)(earnedXp * 0.25f); // TODO: Make rate configurable.
 
-            // Calculate Rest XP Bonus
+            // Calculate Rest XP Bonus, paid from and limited by the rested pool
             uint restXp = 0u;
             if (reason == ExpReason.KillCreature)
-                restXp = (uint)(earnedXp * 0.5f);
+            {
+                restXp = Math.Min((uint)(earnedXp * 0.5f), RestBonusXp);
+                RestBonusXp -= restXp;
+            }
 
             player.Session.EnqueueMessageEncrypted(new ServerExperienceGained
             {

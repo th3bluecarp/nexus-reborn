@@ -589,7 +589,10 @@ namespace NexusForever.Game.Entity
                 player.QuestManager.RewardPaneObjectiveUpdate(QuestObjectiveType.VirtualCollect, targetGroupId, 1u);
             }
 
-            // TODO: Reward XP
+            uint experience = KillExperience.Calculate(this, player);
+            if (experience > 0u)
+                player.XpManager.GrantXp(experience, ExpReason.KillCreature);
+
             // TODO: Reward Loot
             // TODO: Handle Achievements
         }
