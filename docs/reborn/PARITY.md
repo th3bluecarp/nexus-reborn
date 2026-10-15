@@ -14,11 +14,11 @@ Columns in parity.csv:
 
 | | Ours | Upstream |
 |---|---|---|
-| Implemented | 62 | 50 |
-| Partial | 46 | 44 |
+| Implemented | 63 | 50 |
+| Partial | 45 | 44 |
 | Missing | 42 | 53 |
 | Only on a side branch | 0 | 3 |
-| Features where we are ahead | 21 | |
+| Features where we are ahead | 22 | |
 
 ## Coverage counts
 
@@ -26,14 +26,14 @@ Columns in parity.csv:
 |---|---|---|---|
 | Spell effect types with a handler | 32 | 16 | 136 |
 | Prerequisite types checked | 41 | 17 | 273 |
-| Quest objective types that progress | 21 | 9 | 40 |
+| Quest objective types that progress | 22 | 9 | 40 |
 
 ## What we have that upstream does not
 
 - Kill XP, open world respawn, creature visibility prerequisites, VirtualCollect quest objectives.
 - The maintainers' loot rework (only on their side branch upstream), with the inverted drop roll fixed.
 - Spell effects: Heal, HealShields, Absorption (absorb shields), SummonCreature, QuestAdvanceObjective, DespawnUnit, Scale.
-- Quest objectives: CollectItem (from bag counts), SpellSuccess 1 to 4 (use item or ability, target group aware), CompleteQuest, CompleteEvent, Unknown10 target group activations. Reputation and account currency quest rewards.
+- Quest objectives: CollectItem (from bag counts), SpellSuccess 1 to 4 (use item or ability, target group aware), CompleteQuest, CompleteEvent, Unknown10 target group activations, EnterArea from map marker locations. Reputation and account currency quest rewards.
 - 18 more prerequisite types, led by IsObjectiveActive and QuestObjective (5,763 uses between them), plus objective progress, health, faction, reputation, item, zone and target checks.
 - Combat fixes: both creature auto attacks used, physical mitigation offset, corpses no longer heal and slide home.
 - Veteran start fix (Bon Voyage completed for Nexus start characters).
