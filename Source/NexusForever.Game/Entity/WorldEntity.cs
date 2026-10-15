@@ -58,6 +58,11 @@ namespace NexusForever.Game.Entity
 
         private ICreatureInfo creatureInfo;
 
+        /// <summary>
+        /// World database model this entity was spawned from, null for entities created at runtime (summons, scripts).
+        /// </summary>
+        protected EntityModel SpawnModel { get; private set; }
+
         public uint CreatureId => CreatureInfo?.Entry.Id ?? 0u;
 
         public Creature2DisplayInfoEntry CreatureDisplayEntry
@@ -359,6 +364,7 @@ namespace NexusForever.Game.Entity
         public virtual void Initialise(ICreatureInfo creatureInfo, EntityModel model)
         {
             CreatureInfo         = creatureInfo;
+            SpawnModel           = model;
             EntityId             = model.Id;
             Rotation             = new Vector3(model.Rx, model.Ry, model.Rz);
             CreatureDisplayEntry = GameTableManager.Instance.Creature2DisplayInfo.GetEntry(model.DisplayInfo);

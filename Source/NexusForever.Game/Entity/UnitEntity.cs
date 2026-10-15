@@ -1,4 +1,10 @@
+using System.Numerics;
 using Microsoft.Extensions.DependencyInjection;
+using NexusForever.Game.Abstract.Map;
+using NexusForever.Game.Abstract.Map.Instance;
+using NexusForever.Game.Configuration.Model;
+using NexusForever.Shared.Configuration;
+using NexusForever.Shared.Game;
 using NexusForever.Game.Abstract.Combat;
 using NexusForever.Game.Abstract.Entity;
 using NexusForever.Game.Abstract.Entity.Movement;
@@ -156,6 +162,16 @@ namespace NexusForever.Game.Entity
             }
 
             statUpdateManager.Update(lastTick);
+
+            if (respawnTimer != null)
+            {
+                respawnTimer.Update(lastTick);
+                if (respawnTimer.HasElapsed)
+                {
+                    respawnTimer = null;
+                    Respawn();
+                }
+            }
 
             ProcManager.Update(lastTick);
         }
@@ -550,7 +566,7 @@ namespace NexusForever.Game.Entity
             }
 
             GenerateRewards(killer);
-            // TODO: schedule respawn
+            ScheduleRespawn();
 
             ThreatManager.ClearThreatList();
             MovementManager.Finalise();
@@ -558,6 +574,36 @@ namespace NexusForever.Game.Entity
             scriptCollection?.Invoke<IUnitScript>(s => s.OnDeath());
 
             deathState = EntityDeathState.Dead;
+        }
+
+        private UpdateTimer respawnTimer;
+
+        /// <summary>
+        /// Schedule a fresh copy of this creature to replace it at its spawn position, open world database spawns only.
+        /// </summary>
+        private void ScheduleRespawn()
+        {
+            if (this is IPlayer || SpawnModel == null || Map is IMapInstance)
+                return;
+
+            RespawnConfig config = SharedConfiguration.Instance.Get<RealmConfig>()?.Respawn ?? new RespawnConfig();
+            if (!config.Enable)
+                return;
+
+            respawnTimer = new UpdateTimer(TimeSpan.FromSeconds(config.DelaySeconds));
+        }
+
+        private void Respawn()
+        {
+            IBaseMap map = Map;
+            if (map == null)
+                return;
+
+            IWorldEntity entity = LegacyServiceProvider.Provider.GetService<IEntityFactory>().CreateWorldEntity((EntityType)SpawnModel.Type);
+            entity.Initialise(CreatureInfo, SpawnModel);
+
+            RemoveFromMap();
+            map.EnqueueAdd(entity, new Vector3(SpawnModel.X, SpawnModel.Y, SpawnModel.Z));
         }
 
         private void GenerateRewards(IUnitEntity killer)
