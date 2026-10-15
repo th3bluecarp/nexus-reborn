@@ -49,7 +49,7 @@ Spells,Innate abilities and passives,Class innates and passive spells cast on lo
 Spells,"Class pets (Engineer bots, Esper)",Summon combat pets,Missing,Missing,,,high,"SummonPet, SummonCreature, PetCastSpell effects unhandled; ClientPetSetStance unhandled",Engineer bot abilities do nothing
 Spells,Stealth (Stalker),Stealth and break on damage,Missing,Missing,,,high,"Stealth, RemoveStealth effects unhandled",
 Spells,Despawn and scale effects,"Quest objects vanish when used, units grow or shrink",Implemented (not deployed),Missing,yes,6d95305e 15256f1b,,"SpellEffectDespawnUnitHandler, SpellEffectScaleHandler",Despawned world spawns return after the respawn delay; scale applies to server controlled units
-Spells,Dispels and cleanses,Remove debuffs,Missing,Missing,,,,SpellDispel unhandled,
+Spells,Dispels and cleanses,Remove debuffs,Implemented (not deployed),Missing,yes,c14b1967,,SpellEffectSpellDispelHandler,Removes spells of the dispellable class in DataBits03; finishing an area aura removes it from everyone it hit
 Spells,Ability Book activate,Learn abilities from ability book,Missing,Missing,,,,ClientAbilityBookActivateSpell unhandled,Spells granted automatically at level via SpellLevel table
 Creature AI,Generic combat AI,"Mobs use their own ability rotations, telegraphs",Partial,Partial,,3bc1325a c4b27514,high,Script.Main/AI/CombatAI.cs,"Creatures now alternate both auto attacks; corpses no longer heal and slide home on reset. All non-NoAI creatures use 2 generic auto-attack spells (5649, 5652); no per-creature abilities or telegraph moves"
 Creature AI,Aggro,"Proximity aggro by faction, social pull",Partial,Partial,,,high,CombatAI.AggroEntity (15m range),"Fixed 15m radius, no level-based aggro range, no social/assist aggro"

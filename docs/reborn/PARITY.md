@@ -14,17 +14,17 @@ Columns in parity.csv:
 
 | | Ours | Upstream |
 |---|---|---|
-| Implemented | 63 | 50 |
+| Implemented | 64 | 50 |
 | Partial | 46 | 44 |
-| Missing | 41 | 53 |
+| Missing | 40 | 53 |
 | Only on a side branch | 0 | 3 |
-| Features where we are ahead | 23 | |
+| Features where we are ahead | 24 | |
 
 ## Coverage counts
 
 | | Ours | Upstream | Total in client data |
 |---|---|---|---|
-| Spell effect types with a handler | 32 | 16 | 136 |
+| Spell effect types with a handler | 33 | 16 | 136 |
 | Prerequisite types checked | 41 | 17 | 273 |
 | Quest objective types that progress | 22 | 9 | 40 |
 
@@ -32,7 +32,7 @@ Columns in parity.csv:
 
 - Kill XP, open world respawn, creature visibility prerequisites, VirtualCollect quest objectives.
 - The maintainers' loot rework (only on their side branch upstream), with the inverted drop roll fixed.
-- Spell effects: Heal, HealShields, Absorption (absorb shields), SummonCreature, QuestAdvanceObjective, DespawnUnit, Scale.
+- Spell effects: Heal, HealShields, Absorption (absorb shields), SummonCreature, QuestAdvanceObjective, DespawnUnit, Scale, SpellDispel.
 - Quest objectives: CollectItem (from bag counts), SpellSuccess 1 to 4 (use item or ability, target group aware), CompleteQuest, CompleteEvent, Unknown10 target group activations, EnterArea from map marker locations. Reputation and account currency quest rewards.
 - 18 more prerequisite types, led by IsObjectiveActive and QuestObjective (5,763 uses between them), plus objective progress, health, faction, reputation, item, zone and target checks.
 - Class innate passives (Warrior and Engineer stances, Stalker Nano Skin) applied on login and on change.
