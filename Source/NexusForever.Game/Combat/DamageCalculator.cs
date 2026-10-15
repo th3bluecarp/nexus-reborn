@@ -103,6 +103,38 @@ namespace NexusForever.Game.Combat
         }
 
         /// <summary>
+        /// Returns the calculated heal amount for a Heal or HealShields effect.
+        /// </summary>
+        /// <remarks>
+        /// Uses the same base formula as damage (spell parameters, support power, target or caster max health, per level),
+        /// scaled by the caster outgoing and target incoming healing multipliers. Heals can crit, armor and deflect do not apply.
+        /// </remarks>
+        public uint CalculateHeal(ISpellExecutionContext executionContext, IUnitEntity target, ISpellTargetEffectInfo info)
+        {
+            IUnitEntity caster = executionContext.Spell.Caster;
+
+            float basePropertyDamage = CalculateBasePropertyDamage(caster, info.Entry);
+            float baseEntityDamage   = CalculateBaseEntityDamage(caster, target, info.Entry);
+            float typeMultiplier     = BitConverter.UInt32BitsToSingle(info.Entry.DataBits00);
+            float typeBaseDamage     = info.Entry.DataBits01;
+
+            float heal = basePropertyDamage + ((typeBaseDamage + baseEntityDamage) * typeMultiplier);
+            heal *= caster.GetPropertyValue(Property.HealingMultiplierOutgoing);
+            heal *= target.GetPropertyValue(Property.HealingMultiplierIncoming);
+
+            uint amount = CalculateBaseDamageVariance((uint)Math.Max(0f, heal));
+
+            damageDescription.DamageType      = info.Entry.EffectType == SpellEffectType.HealShields ? DamageType.HealShields : DamageType.Heal;
+            damageDescription.CombatResult    = CalculateCrit(ref amount, caster, target) ? CombatResult.Critical : CombatResult.Hit;
+            damageDescription.RawDamage       = amount;
+            damageDescription.RawScaledDamage = amount;
+            damageDescription.AdjustedDamage  = amount;
+
+            info.AddDamage(damageDescription);
+            return amount;
+        }
+
+        /// <summary>
         /// Get base damage value for the given <see cref="IUnitEntity"/> with the provided parameter data from the <see cref="Spell4EffectsEntry"/>.
         /// </summary>
         private uint CalculateBaseDamage(IUnitEntity caster, IUnitEntity target, Spell4EffectsEntry entry)
