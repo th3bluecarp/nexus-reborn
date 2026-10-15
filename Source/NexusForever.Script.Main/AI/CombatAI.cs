@@ -267,6 +267,10 @@ namespace NexusForever.Script.Main.AI
         {
             entity.SetTarget((IWorldEntity)null);
 
+            // a dead creature keeps its corpse where it fell, healing and leashing only apply to the living
+            if (!entity.IsAlive)
+                return;
+
             entity.ModifyHealth(entity.MaxHealth, DamageType.Heal, null);
 
             // TODO: cancel all pending spells
