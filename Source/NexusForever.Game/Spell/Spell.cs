@@ -70,6 +70,7 @@ namespace NexusForever.Game.Spell
         private readonly UpdateTimer persistCheck = new(TimeSpan.FromMilliseconds(100));
 
         private readonly Dictionary<Spell4EffectsEntry, UpdateTimer> delayedEffects = [];
+        private bool questCreditGiven;
 
         private IScriptCollection scriptCollection;
 
@@ -472,6 +473,18 @@ namespace NexusForever.Game.Spell
             SelectTargets(executionContext);  // First Select Targets
             ExecuteEffects(executionContext); // All Effects are evaluated and executed (after SelectTargets())
             HandleProxies(executionContext);  // Any Proxies that are added by Effects are evaluated and executed (after ExecuteEffects())
+
+            // quest objectives that ask for a spell or quest item to be used count once per cast
+            if (Caster is IPlayer player && !questCreditGiven && !executionContext.IsDelayed)
+            {
+                questCreditGiven = true;
+                IEnumerable<IUnitEntity> hit = executionContext.TargetCollection
+                    .GetTargets(SpellEffectTargetFlags.ExplicitTarget | SpellEffectTargetFlags.ImplicitTarget)
+                    .Select(t => t.Entity)
+                    .Where(e => e != null && e != Caster)
+                    .Distinct();
+                player.QuestManager.SpellSuccessUpdate(Parameters.SpellInfo.Entry.Id, hit);
+            }
             
             if (!executionContext.IsDelayed)
                 SendSpellGo();                // Inform the Client once all evaluations are taken place (after Effects & Proxies are executed)

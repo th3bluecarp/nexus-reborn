@@ -747,6 +747,13 @@ namespace NexusForever.Game.Entity
         /// <summary>
         /// Invoked when the number of an item in the player's bags changes, updates <see cref="QuestObjectiveType.CollectItem"/> objectives.
         /// </summary>
+        public void SpellSuccessUpdate(uint spell4Id, IEnumerable<IUnitEntity> targets)
+        {
+            List<IUnitEntity> targetList = targets.ToList();
+            foreach (IQuest quest in activeQuests.Values.ToList())
+                quest.SpellSuccessUpdate(spell4Id, targetList);
+        }
+
         public void ItemCountUpdate(uint itemId, uint count)
         {
             foreach (IQuest quest in activeQuests.Values.ToList())

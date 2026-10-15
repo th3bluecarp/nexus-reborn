@@ -140,6 +140,11 @@ namespace NexusForever.Game.Abstract.Entity
         /// </summary>
         void ItemCountUpdate(uint itemId, uint count);
 
+        /// <summary>
+        /// Invoked when the player successfully casts a spell, updates SpellSuccess objectives.
+        /// </summary>
+        void SpellSuccessUpdate(uint spell4Id, IEnumerable<IUnitEntity> targets);
+
         // <summary>
         /// Update any active quest <see cref="IQuestObjective"/>'s with supplied ID with progress.
         /// </summary>

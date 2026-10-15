@@ -89,6 +89,11 @@ namespace NexusForever.Game.Abstract.Quest
         void ObjectiveSet(QuestObjectiveType type, uint data, uint value);
 
         /// <summary>
+        /// Update SpellSuccess objectives for a successful cast of supplied spell on supplied targets.
+        /// </summary>
+        void SpellSuccessUpdate(uint spell4Id, IReadOnlyList<IUnitEntity> targets);
+
+        /// <summary>
         /// Update any <see cref="IQuestObjective"/>'s with supplied ID with progress.
         /// </summary>
         void ObjectiveUpdate(uint id, uint progress);

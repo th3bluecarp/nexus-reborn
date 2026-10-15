@@ -509,6 +509,33 @@ namespace NexusForever.Game.Quest
                 State = QuestState.Accepted;
         }
 
+        /// <summary>
+        /// Update SpellSuccess objectives for a successful cast of supplied spell on supplied targets.
+        /// </summary>
+        /// <remarks>
+        /// Objectives with a reward pane target group only count targets from that group, one per target hit (for example "use the Glop Gun on creatures").
+        /// Objectives without one count the cast itself.
+        /// </remarks>
+        public void SpellSuccessUpdate(uint spell4Id, IReadOnlyList<IUnitEntity> targets)
+        {
+            foreach (IQuestObjective objective in objectives
+                .Where(o => o.ObjectiveInfo.Entry.Data == spell4Id
+                    && (QuestObjectiveType)o.ObjectiveInfo.Entry.Type is QuestObjectiveType.SpellSuccess
+                        or QuestObjectiveType.SpellSuccess2
+                        or QuestObjectiveType.SpellSuccess3
+                        or QuestObjectiveType.SpellSuccess4)
+                .ToList())
+            {
+                uint progress = 1u;
+                uint targetGroupId = objective.ObjectiveInfo.Entry.TargetGroupIdRewardPane;
+                if (targetGroupId != 0u)
+                    progress = (uint)targets.Count(t => AssetManager.Instance.GetTargetGroupsForCreatureId(t.CreatureId).Contains(targetGroupId));
+
+                if (progress > 0u)
+                    ObjectiveUpdate(objective.ObjectiveInfo.Id, progress);
+            }
+        }
+
         private void ObjectiveUpdate(Func<IQuestObjective, bool> predicate, uint progress)
         {
             if (PendingDelete)
