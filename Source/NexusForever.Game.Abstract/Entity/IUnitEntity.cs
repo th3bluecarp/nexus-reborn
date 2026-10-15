@@ -135,6 +135,24 @@ namespace NexusForever.Game.Abstract.Entity
         void TakeDamage(IUnitEntity attacker, IDamageDescription damageDescription);
 
         /// <summary>
+        /// Add an absorb pool from a spell effect, damage of a type in the mask is taken from it before shield and health.
+        /// </summary>
+        /// <remarks>
+        /// The mask has one bit per <see cref="DamageType"/> (bit 0 physical, bit 1 tech, bit 2 magic), a mask of 0 absorbs everything.
+        /// </remarks>
+        void AddAbsorb(uint effectId, uint amount, uint damageTypeMask);
+
+        /// <summary>
+        /// Remove the absorb pool added by supplied spell effect.
+        /// </summary>
+        void RemoveAbsorb(uint effectId);
+
+        /// <summary>
+        /// Take as much of supplied damage as the absorb pools allow and return the amount absorbed.
+        /// </summary>
+        uint ConsumeAbsorb(DamageType damageType, uint damage);
+
+        /// <summary>
         /// Modify the health of this <see cref="IUnitEntity"/> by the supplied amount.
         /// </summary>
         /// <remarks>

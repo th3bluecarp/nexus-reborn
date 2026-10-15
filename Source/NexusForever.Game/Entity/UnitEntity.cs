@@ -524,6 +524,49 @@ namespace NexusForever.Game.Entity
         /// <summary>
         /// Deal damage to this <see cref="IUnitEntity"/> from the supplied <see cref="IUnitEntity"/>.
         /// </summary>
+        private readonly List<(uint EffectId, uint Remaining, uint Mask)> absorbs = [];
+
+        /// <summary>
+        /// Add an absorb pool from a spell effect, damage of a type in the mask is taken from it before shield and health.
+        /// </summary>
+        public void AddAbsorb(uint effectId, uint amount, uint damageTypeMask)
+        {
+            RemoveAbsorb(effectId);
+            if (amount > 0u)
+                absorbs.Add((effectId, amount, damageTypeMask));
+        }
+
+        /// <summary>
+        /// Remove the absorb pool added by supplied spell effect.
+        /// </summary>
+        public void RemoveAbsorb(uint effectId)
+        {
+            absorbs.RemoveAll(a => a.EffectId == effectId);
+        }
+
+        /// <summary>
+        /// Take as much of supplied damage as the absorb pools allow, oldest first, and return the amount absorbed.
+        /// </summary>
+        public uint ConsumeAbsorb(DamageType damageType, uint damage)
+        {
+            uint bit      = damageType is >= DamageType.Physical and <= DamageType.Magic ? 1u << ((int)damageType - 1) : 0u;
+            uint absorbed = 0u;
+            for (int i = 0; i < absorbs.Count && damage > 0u; i++)
+            {
+                (uint effectId, uint remaining, uint mask) = absorbs[i];
+                if (mask != 0u && (bit == 0u || (mask & bit) == 0u))
+                    continue;
+
+                uint take = Math.Min(remaining, damage);
+                absorbed += take;
+                damage   -= take;
+                absorbs[i] = (effectId, remaining - take, mask);
+            }
+
+            absorbs.RemoveAll(a => a.Remaining == 0u);
+            return absorbed;
+        }
+
         public void TakeDamage(IUnitEntity attacker, IDamageDescription damageDescription)
         {
             if (!IsAlive || !attacker.IsAlive || attacker == this)

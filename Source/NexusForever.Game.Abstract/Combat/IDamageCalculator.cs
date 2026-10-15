@@ -18,5 +18,10 @@ namespace NexusForever.Game.Abstract.Combat
         /// Returns the calculated heal amount for a Heal or HealShields effect and updates the referenced <see cref="ISpellTargetEffectInfo"/> appropriately.
         /// </summary>
         uint CalculateHeal(ISpellExecutionContext executionContext, IUnitEntity target, ISpellTargetEffectInfo info);
+
+        /// <summary>
+        /// Returns the base amount of an effect (multiplier, base value and scaling parameters) with no modifiers applied.
+        /// </summary>
+        uint CalculateEffectAmount(IUnitEntity caster, IUnitEntity target, GameTable.Model.Spell4EffectsEntry entry);
     }
 }

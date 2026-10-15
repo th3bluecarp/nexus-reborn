@@ -81,6 +81,11 @@ namespace NexusForever.Game.Combat
                 // TODO: Add CombatLog
             }
 
+            // absorb shields from spells take damage before the shield does
+            uint absorbedAmount = victim.ConsumeAbsorb(info.Entry.DamageType, damage);
+            damage -= absorbedAmount;
+            damageDescription.AbsorbedAmount = absorbedAmount;
+
             uint shieldedAmount = CalculateShieldAmount(damage, victim);
             if (shieldedAmount > damage)
             {
@@ -113,12 +118,7 @@ namespace NexusForever.Game.Combat
         {
             IUnitEntity caster = executionContext.Spell.Caster;
 
-            float basePropertyDamage = CalculateBasePropertyDamage(caster, info.Entry);
-            float baseEntityDamage   = CalculateBaseEntityDamage(caster, target, info.Entry);
-            float typeMultiplier     = BitConverter.UInt32BitsToSingle(info.Entry.DataBits00);
-            float typeBaseDamage     = info.Entry.DataBits01;
-
-            float heal = basePropertyDamage + ((typeBaseDamage + baseEntityDamage) * typeMultiplier);
+            float heal = CalculateEffectAmount(caster, target, info.Entry);
             heal *= caster.GetPropertyValue(Property.HealingMultiplierOutgoing);
             heal *= target.GetPropertyValue(Property.HealingMultiplierIncoming);
 
@@ -132,6 +132,23 @@ namespace NexusForever.Game.Combat
 
             info.AddDamage(damageDescription);
             return amount;
+        }
+
+        /// <summary>
+        /// Returns the base amount of an effect (multiplier, base value and scaling parameters) with no modifiers applied.
+        /// </summary>
+        /// <remarks>
+        /// Used by Heal, HealShields and Absorption, which keep the multiplier in DataBits00 and the base value in DataBits01.
+        /// </remarks>
+        public uint CalculateEffectAmount(IUnitEntity caster, IUnitEntity target, Spell4EffectsEntry entry)
+        {
+            float basePropertyDamage = CalculateBasePropertyDamage(caster, entry);
+            float baseEntityDamage   = CalculateBaseEntityDamage(caster, target, entry);
+            float typeMultiplier     = BitConverter.UInt32BitsToSingle(entry.DataBits00);
+            // Absorption stores its base value as a float, Heal and HealShields as an integer
+            float typeBaseDamage     = entry.EffectType == SpellEffectType.Absorption ? BitConverter.UInt32BitsToSingle(entry.DataBits01) : entry.DataBits01;
+
+            return (uint)Math.Max(0f, basePropertyDamage + ((typeBaseDamage + baseEntityDamage) * typeMultiplier));
         }
 
         /// <summary>
