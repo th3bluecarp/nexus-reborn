@@ -1,4 +1,4 @@
-using NexusForever.Game.Abstract.Combat;
+﻿using NexusForever.Game.Abstract.Combat;
 using NexusForever.Game.Abstract.Spell;
 using NexusForever.Game.Abstract.Spell.Proc;
 using NexusForever.Game.Combat.CrowdControl;
@@ -159,6 +159,11 @@ namespace NexusForever.Game.Abstract.Entity
         /// If the <see cref="DamageType"/> is <see cref="DamageType.Heal"/> amount is added to current health otherwise subtracted.
         /// </remarks>
         void ModifyHealth(uint amount, DamageType? type, IUnitEntity source);
+
+        /// <summary>
+        /// Remove this unit from the map without killing it, world database spawns come back after the respawn delay.
+        /// </summary>
+        void Despawn();
 
         /// <summary>
         /// Set target to supplied target guid.

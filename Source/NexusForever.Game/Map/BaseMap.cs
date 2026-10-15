@@ -1,4 +1,4 @@
-using System.Collections.Concurrent;
+﻿using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.Numerics;
 using System.Text;
@@ -24,6 +24,7 @@ using NexusForever.Script.Template;
 using NexusForever.Script.Template.Collection;
 using NexusForever.Shared;
 using NexusForever.Shared.Configuration;
+using NexusForever.Shared.Game;
 using NLog;
 
 namespace NexusForever.Game.Map
@@ -102,6 +103,7 @@ namespace NexusForever.Game.Map
         /// </summary>
         public virtual void Update(double lastTick)
         {
+            UpdateDelayedAdds(lastTick);
             ProcessGridActions();
             UpdateGrids(lastTick);
 
@@ -198,6 +200,30 @@ namespace NexusForever.Game.Map
                 activeGrids.Remove(grid.Coord);
 
                 log.Trace($"Deactivated grid at X:{grid.Coord.X}, Z:{grid.Coord.Z}.");
+            }
+        }
+
+        private readonly List<(UpdateTimer Timer, IGridEntity Entity, Vector3 Position)> delayedAdds = [];
+
+        /// <summary>
+        /// Enqueue <see cref="IGridEntity"/> to be added to <see cref="IBaseMap"/> once the supplied delay has passed.
+        /// </summary>
+        public void EnqueueAdd(IGridEntity entity, Vector3 position, TimeSpan delay)
+        {
+            delayedAdds.Add((new UpdateTimer(delay), entity, position));
+        }
+
+        private void UpdateDelayedAdds(double lastTick)
+        {
+            for (int i = delayedAdds.Count - 1; i >= 0; i--)
+            {
+                (UpdateTimer timer, IGridEntity entity, Vector3 position) = delayedAdds[i];
+                timer.Update(lastTick);
+                if (!timer.HasElapsed)
+                    continue;
+
+                delayedAdds.RemoveAt(i);
+                EnqueueAdd(entity, position);
             }
         }
 

@@ -1,4 +1,4 @@
-using System.Numerics;
+﻿using System.Numerics;
 using NexusForever.Game.Abstract.Entity;
 using NexusForever.Game.Abstract.Loot;
 using NexusForever.Game.Abstract.Map.Search;
@@ -26,6 +26,11 @@ namespace NexusForever.Game.Abstract.Map
         /// Enqueue <see cref="IGridEntity"/> to be added to <see cref="IBaseMap"/>.
         /// </summary>
         void EnqueueAdd(IGridEntity entity, Vector3 position, OnAddDelegate callback = null, OnExceptionDelegate exception = null);
+
+        /// <summary>
+        /// Enqueue <see cref="IGridEntity"/> to be added to <see cref="IBaseMap"/> once the supplied delay has passed.
+        /// </summary>
+        void EnqueueAdd(IGridEntity entity, Vector3 position, TimeSpan delay);
 
         /// <summary>
         /// Enqueue <see cref="IPlayer"/> to be added to <see cref="IBaseMap"/>.

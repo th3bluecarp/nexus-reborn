@@ -1,4 +1,4 @@
-using System.Numerics;
+﻿using System.Numerics;
 using SpellInit = NexusForever.Network.World.Message.Model.Shared.SpellInit;
 using Microsoft.Extensions.DependencyInjection;
 using NexusForever.Game.Abstract.Map;
@@ -632,14 +632,28 @@ namespace NexusForever.Game.Entity
         /// </summary>
         private void ScheduleRespawn()
         {
+            TimeSpan? delay = GetRespawnDelay();
+            if (delay.HasValue)
+                respawnTimer = new UpdateTimer(delay.Value);
+        }
+
+        private TimeSpan? GetRespawnDelay()
+        {
             if (this is IPlayer || SpawnModel == null || Map is IMapInstance)
-                return;
+                return null;
 
             RespawnConfig config = SharedConfiguration.Instance.Get<RealmConfig>()?.Respawn ?? new RespawnConfig();
             if (!config.Enable)
-                return;
+                return null;
 
-            respawnTimer = new UpdateTimer(TimeSpan.FromSeconds(config.DelaySeconds));
+            return TimeSpan.FromSeconds(config.DelaySeconds);
+        }
+
+        private IWorldEntity CreateRespawnEntity()
+        {
+            IWorldEntity entity = LegacyServiceProvider.Provider.GetService<IEntityFactory>().CreateWorldEntity((EntityType)SpawnModel.Type);
+            entity.Initialise(CreatureInfo, SpawnModel);
+            return entity;
         }
 
         private void Respawn()
@@ -648,11 +662,27 @@ namespace NexusForever.Game.Entity
             if (map == null)
                 return;
 
-            IWorldEntity entity = LegacyServiceProvider.Provider.GetService<IEntityFactory>().CreateWorldEntity((EntityType)SpawnModel.Type);
-            entity.Initialise(CreatureInfo, SpawnModel);
-
+            IWorldEntity entity = CreateRespawnEntity();
             RemoveFromMap();
             map.EnqueueAdd(entity, new Vector3(SpawnModel.X, SpawnModel.Y, SpawnModel.Z));
+        }
+
+        /// <summary>
+        /// Remove this unit from the map without killing it, world database spawns come back after the respawn delay.
+        /// </summary>
+        public void Despawn()
+        {
+            IBaseMap map = Map;
+            if (this is IPlayer || map == null)
+                return;
+
+            // the map owns the respawn from here, the pending corpse respawn (if any) goes with this entity
+            TimeSpan? delay = GetRespawnDelay();
+            if (delay.HasValue)
+                map.EnqueueAdd(CreateRespawnEntity(), new Vector3(SpawnModel.X, SpawnModel.Y, SpawnModel.Z), delay.Value);
+
+            respawnTimer = null;
+            RemoveFromMap();
         }
 
         protected virtual void GenerateRewards(IUnitEntity killer)
