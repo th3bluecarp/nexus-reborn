@@ -723,8 +723,8 @@ namespace NexusForever.Game.Entity
             else if (previousCombatState && !InCombat)
                 scriptCollection?.Invoke<IUnitScript>(s => s.OnLeaveCombat());
 
-            Sheathed   = !InCombat;
-            StandState = InCombat ? StandState.Stand : StandState.State0;
+            Sheathed = !InCombat;
+            SetStandState(InCombat ? StandState.Stand : StandState.State0);
 
             statUpdateManager.OnCombatStateUpdate(InCombat);
         }

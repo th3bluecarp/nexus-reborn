@@ -11,6 +11,8 @@ using NexusForever.GameTable;
 using NexusForever.GameTable.Model;
 using NexusForever.Network.World.Message.Model;
 using NexusForever.Shared;
+using NexusForever.Network.World.Message.Model.Abilities;
+using NexusForever.Network.World.Message.Model.Spell;
 using NexusForever.Shared.Game;
 
 namespace NexusForever.Game.Spell

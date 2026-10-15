@@ -15,6 +15,7 @@ namespace NexusForever.Database.World
         public DbSet<CreatureInfoStatModel> CreatureInfoStat { get; set; }
         public DbSet<DisableModel> Disable { get; set; }
         public DbSet<EntityModel> Entity { get; set; }
+        public DbSet<EntityEmoteModel> Emote { get; set; }
         public DbSet<EntityEventModel> EntityEvent { get; set; }
         public DbSet<EntityPropertyModel> EntityProperty { get; set; }
         public DbSet<EntityScriptModel> EntityScript { get; set; }
@@ -121,6 +122,29 @@ namespace NexusForever.Database.World
                     .HasColumnName("note")
                     .HasColumnType("varchar(500)")
                     .HasDefaultValue("");
+            });
+
+            modelBuilder.Entity<EntityEmoteModel>(entity =>
+            {
+                entity.ToTable("entity_emote");
+
+                entity.HasKey(e => new { e.Id, e.EmoteId })
+                    .HasName("PRIMARY");
+
+                entity.Property(e => e.Id)
+                    .HasColumnName("id")
+                    .HasColumnType("int(10) unsigned")
+                    .HasDefaultValue(0);
+
+                entity.Property(e => e.EmoteId)
+                    .HasColumnName("emoteId")
+                    .HasColumnType("smallint(5) unsigned")
+                    .HasDefaultValue(0);
+
+                entity.HasOne(d => d.Entity)
+                    .WithOne(p => p.EntityEmote)
+                    .HasForeignKey<EntityEmoteModel>(d => d.Id)
+                    .HasConstraintName("FK__entity_emote_id__entity_id");
             });
 
             modelBuilder.Entity<EntityEventModel>(entity =>

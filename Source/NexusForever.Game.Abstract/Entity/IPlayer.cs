@@ -12,6 +12,7 @@ using NexusForever.Game.Abstract.Reputation;
 using NexusForever.Game.Static.Entity;
 using NexusForever.Game.Static.PVP;
 using NexusForever.Game.Static.Setting;
+using NexusForever.Game.Static.Option;
 using NexusForever.GameTable.Model;
 using NexusForever.Network.Session;
 using NexusForever.Network.World.Message.Static;
@@ -29,7 +30,7 @@ namespace NexusForever.Game.Abstract.Entity
         Race Race { get; set; }
         Class Class { get; }
         CharacterFlag Flags { get; set; }
-        Static.Entity.Path Path { get; set; }
+        Static.PlayerPath.Path Path { get; set; }
         DateTime PathActivatedTime { get; }
         InputSets InputKeySet { get; set; }
 

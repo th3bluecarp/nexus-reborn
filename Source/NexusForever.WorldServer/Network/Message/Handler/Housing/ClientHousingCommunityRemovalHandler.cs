@@ -9,6 +9,7 @@ using NexusForever.Network;
 using NexusForever.Network.Message;
 using NexusForever.Network.World.Message.Model;
 using NexusForever.Shared;
+using NexusForever.Network.World.Message.Model.Housing;
 
 namespace NexusForever.WorldServer.Network.Message.Handler.Housing
 {
@@ -44,7 +45,7 @@ namespace NexusForever.WorldServer.Network.Message.Handler.Housing
             if (entrance == null)
                 throw new InvalidOperationException();
 
-            IResidenceChild child = community.Residence.GetChild(session.Player.CharacterId);
+            IResidenceChild child = community.Residence.GetChild(session.Player.Identity);
             if (child == null)
                 throw new InvalidOperationException();
 

@@ -9,7 +9,7 @@ using NexusForever.Game.Abstract.Customisation;
 using NexusForever.Game.Abstract.Entity;
 using NexusForever.Game.Entity;
 using NexusForever.Game.Static;
-using NexusForever.Game.Static.Account;
+using NexusForever.Game.Static.AccountInventory;
 using NexusForever.Game.Static.Entity;
 using NexusForever.Game.Static.Quest;
 using NexusForever.Game.Static.Reputation;
@@ -20,7 +20,6 @@ using NexusForever.GameTable.Text.Filter;
 using NexusForever.GameTable.Text.Static;
 using NexusForever.Network;
 using NexusForever.Network.Message;
-using NexusForever.Network.World.Message.Model;
 using NexusForever.Network.World.Message.Model.Pregame;
 using NexusForever.Network.World.Message.Static;
 using NexusForever.Shared.Game.Events;
@@ -78,7 +77,7 @@ namespace NexusForever.WorldServer.Network.Message.Handler.Character
                     return CharacterModifyResult.CreateFailed_Internal;
 
                 if (creationEntry.CharacterCreationStartEnum == CharacterCreationStart.Level50
-                    && !session.Account.CurrencyManager.CanAfford(AccountCurrencyType.MaxLevelToken, 1ul))
+                    && !session.Account.CurrencyManager.CanAfford(AccountCurrencyType.PromotionToken, 1ul))
                     return CharacterModifyResult.CreateFailed_InsufficientFunds;
 
                 List<(uint Label, uint Value)> customisations = characterCreate.Labels
@@ -128,7 +127,7 @@ namespace NexusForever.WorldServer.Network.Message.Handler.Character
 
                 uint startingLevel = gameTableManager.XpPerLevel.Entries.First(l => l.MinXpForLevel >= creationEntry.Xp).Id;
 
-                for (Game.Static.Entity.Path path = Game.Static.Entity.Path.Soldier; path <= Game.Static.Entity.Path.Explorer; path++)
+                for (Game.Static.PlayerPath.Path path = Game.Static.PlayerPath.Path.Soldier; path <= Game.Static.PlayerPath.Path.Explorer; path++)
                 {
                     character.Path.Add(new CharacterPathModel
                     {
@@ -272,7 +271,7 @@ namespace NexusForever.WorldServer.Network.Message.Handler.Character
                     characterManager.AddCharacter(character);
 
                     if (creationEntry.CharacterCreationStartEnum == CharacterCreationStart.Level50)
-                        session.Account.CurrencyManager.CurrencySubtractAmount(AccountCurrencyType.MaxLevelToken, 1u);
+                        session.Account.CurrencyManager.CurrencySubtractAmount(AccountCurrencyType.PromotionToken, 1u);
 
                     session.EnqueueMessageEncrypted(new ServerCharacterCreate
                     {

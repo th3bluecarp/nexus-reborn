@@ -1,4 +1,5 @@
 using System.Numerics;
+using Newtonsoft.Json.Linq;
 using NexusForever.Database.World.Model;
 using NexusForever.Game.Abstract.Chat;
 using NexusForever.Game.Abstract.Entity;
@@ -242,20 +243,13 @@ namespace NexusForever.Game.Entity
             set => SetStat(Static.Entity.Stat.Sheathed, Convert.ToUInt32(value));
         }
 
-        public StandState StandState
-        {
-            get => (StandState)(GetStatInteger(Static.Entity.Stat.StandState) ?? 0u);
-            set
-            {
-                SetStat(Static.Entity.Stat.StandState, (uint)value);
-
-                EnqueueToVisible(new ServerEmote
-                {
-                    Guid       = Guid,
-                    StandState = value
-                });
-            }
-        }
+        /// <summary>
+        /// The current stand state for the <see cref="IWorldEntity"/>.
+        /// </summary>
+        /// <remarks>
+        /// To set the stand state, see <see cref="SetStandState(StandState, uint)"/> or <see cref="Emote(uint)"/>.
+        /// </remarks>
+        public StandState StandState => (StandState)(GetStatInteger(Stat.StandState) ?? 0u);
 
         /// <summary>
         /// Collection of guids currently targeting this <see cref="IWorldEntity"/>.
@@ -398,6 +392,9 @@ namespace NexusForever.Game.Entity
                 .Select(e => e.ScriptName)
                 .ToList();
             InitialiseScriptCollection(scriptNames.Count > 0 ? scriptNames : null);
+
+            if (model.EntityEmote != null)
+                Emote(model.EntityEmote.EmoteId);
         }
 
         /// <summary>
@@ -652,7 +649,7 @@ namespace NexusForever.Game.Entity
         /// <summary>
         /// Add or update <see cref="IItemVisual"/> at <see cref="ItemSlot"/> with supplied data.
         /// </summary>
-        public void AddVisual(ItemSlot slot, ushort displayId, ushort colourSetId = 0, int dyeData = 0)
+        public void AddVisual(ItemSlot slot, ushort displayId, ushort colourSetId = 0, uint dyeData = 0)
         {
             AddVisual(new ItemVisual
             {
@@ -924,7 +921,7 @@ namespace NexusForever.Game.Entity
         protected uint? GetStatInteger(Static.Entity.Stat stat)
         {
             StatAttribute attribute = EntityManager.Instance.GetStatAttribute(stat);
-            if (attribute?.Type != StatType.Integer)
+            if (attribute?.Type is not StatType.Integer and not StatType.Data)
                 throw new ArgumentException();
 
             if (!stats.TryGetValue(stat, out IStatValue statValue))
@@ -975,10 +972,10 @@ namespace NexusForever.Game.Entity
         /// <summary>
         /// Set <see cref="Stat"/> to the supplied <see cref="uint"/> value.
         /// </summary>
-        protected void SetStat(Static.Entity.Stat stat, uint value)
+        protected void SetStat(Static.Entity.Stat stat, uint value, uint data = 0u)
         {
             StatAttribute attribute = EntityManager.Instance.GetStatAttribute(stat);
-            if (attribute?.Type != StatType.Integer)
+            if (attribute?.Type is not StatType.Integer and not StatType.Data)
                 throw new ArgumentException();
 
             float previousValue = 0f;
@@ -986,10 +983,16 @@ namespace NexusForever.Game.Entity
             {
                 previousValue   = statValue.Value;
                 statValue.Value = value;
+                if (attribute.Type == StatType.Data)
+                    statValue.Data = data;
             }
             else
             {
-                statValue = new StatValue(stat, value);
+                if (attribute.Type == StatType.Data)
+                    statValue = new StatValue(stat, value, data);
+                else
+                    statValue = new StatValue(stat, value);
+
                 stats.Add(stat, statValue);
             }
 
@@ -1326,6 +1329,46 @@ namespace NexusForever.Game.Entity
         public virtual void OnEntityCommandFinalise(IEntityCommand command)
         {
             InvokeScriptCollection<IWorldEntityScript>(s => s.OnEntityCommandFinalise(command));
+        }
+
+        /// <summary>
+        /// Set the emote id for this <see cref="IWorldEntity"/>.
+        /// </summary>
+        /// <remarks>
+        /// If no emote id is provided, the stand state will be set to <see cref="StandState.Stand"/>.
+        /// </remarks>
+        /// <param name="emoteId">The emote id to set.</param>
+        public void Emote(uint emoteId)
+        {
+            if (emoteId == 0)
+            {
+                SetStandState(StandState.Stand);
+                return;
+            }
+
+            EmotesEntry entry = GameTableManager.Instance.Emotes.GetEntry(emoteId);
+            if (entry == null)
+                return;
+
+            if (entry.ChangesStandState)
+                SetStandState(entry.StandState, emoteId);
+        }
+
+        /// <summary>
+        /// Set the stand state for this <see cref="IWorldEntity"/>.
+        /// </summary>
+        /// <param name="standState">The stand state id to set.</param>
+        /// <param name="emoteId">The emote id to use if <paramref name="standState"/> is <see cref="StandState.Emote"/>.</param>
+        public void SetStandState(StandState standState, uint emoteId = 0u)
+        {
+            SetStat(Stat.StandState, (uint)standState, emoteId);
+
+            EnqueueToVisible(new ServerEntityStandState
+            {
+                Guid       = Guid,
+                StandState = standState,
+                EmoteId    = emoteId
+            });
         }
     }
 }

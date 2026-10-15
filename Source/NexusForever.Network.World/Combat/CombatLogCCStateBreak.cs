@@ -8,7 +8,7 @@ namespace NexusForever.Network.World.Combat
         public CombatLogType Type => CombatLogType.CCStateBreak;
 
         public uint CasterId { get; set; }
-        public CCState State { get; set; }
+        public CCState State { get; set; } // 5u
 
         public void Write(GamePacketWriter writer)
         {

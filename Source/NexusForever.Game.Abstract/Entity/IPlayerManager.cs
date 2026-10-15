@@ -31,5 +31,10 @@
         /// Return the number of online players.
         /// </summary>
         uint GetPlayerCount();
+
+        /// <summary>
+        /// Return <see cref="IPlayer"/> with supplied account id.
+        /// </summary>
+        IPlayer GetPlayerByAccountId(uint accountId);
     }
 }

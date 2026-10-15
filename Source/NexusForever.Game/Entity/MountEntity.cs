@@ -45,7 +45,11 @@ namespace NexusForever.Game.Entity
             Rotation         = owner.Rotation;
             Position         = owner.Position;
 
-            CreateFlags |= EntityCreateFlag.SpawnAnimation;
+            Creature2DisplayGroupEntryEntry displayGroupEntry = GameTableManager.Instance.Creature2DisplayGroupEntry.Entries
+                .SingleOrDefault(x => x.Creature2DisplayGroupId == CreatureEntry.Creature2DisplayGroupId);
+            DisplayInfo = displayGroupEntry?.Creature2DisplayInfoId ?? 0u;
+
+            CreateFlags |= EntityCreateFlag.UseDefaultBirthSequence;
         }
 
         protected override IEntityModel BuildEntityModel()
@@ -70,8 +74,8 @@ namespace NexusForever.Game.Entity
         {
             base.OnAddToMap(map, guid, vector);
 
-            CreateFlags &= ~EntityCreateFlag.SpawnAnimation;
-            CreateFlags |= EntityCreateFlag.NoSpawnAnimation;
+            CreateFlags &= ~EntityCreateFlag.UseDefaultBirthSequence;
+            CreateFlags |= EntityCreateFlag.Immediate;
         }
 
         protected override void OnPassengerAdd(IPlayer player, VehicleSeatType seatType, byte seatPosition)
