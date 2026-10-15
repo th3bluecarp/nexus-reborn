@@ -1,5 +1,6 @@
 ﻿using System.Numerics;
 using NexusForever.Game.Abstract.Entity;
+using NexusForever.Game.Abstract.Loot.Distribute;
 using NexusForever.Game.Abstract.Entity.Movement;
 using NexusForever.Game.Abstract.Entity.Stat;
 using NexusForever.Game.Abstract.Map;
@@ -27,8 +28,9 @@ namespace NexusForever.Game.Entity
             IEntitySummonFactory entitySummonFactory,
             IStatUpdateManager<IUnitEntity> statUpdateManager,
             ISpellFactory spellFactory,
+            ILootDistributor lootDistributor,
             IFactory<ISpellParameters> spellParameterFactory)
-            : base(movementManager, entitySummonFactory, statUpdateManager, spellFactory)
+            : base(movementManager, entitySummonFactory, statUpdateManager, spellFactory, lootDistributor)
         {
             this.spellParameterFactory = spellParameterFactory;
         }

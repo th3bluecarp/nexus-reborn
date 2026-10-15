@@ -61,6 +61,11 @@ namespace NexusForever.Game.Entity
             return players.TryGetValue(identity, out IPlayer player) ? player : null;
         }
 
+        public uint GetPlayerCount()
+        {
+            return (uint)players.Count;
+        }
+
         public IEnumerator<IPlayer> GetEnumerator()
         {
             return players.Values.GetEnumerator();

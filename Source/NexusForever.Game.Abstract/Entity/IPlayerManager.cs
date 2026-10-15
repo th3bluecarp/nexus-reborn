@@ -26,5 +26,10 @@
         /// Returns <see cref="IPlayer"/> with supplied identity.
         /// </summary>
         IPlayer GetPlayer(Identity identity);
+
+        /// <summary>
+        /// Return the number of online players.
+        /// </summary>
+        uint GetPlayerCount();
     }
 }

@@ -22,6 +22,7 @@ namespace NexusForever.WorldServer.Network.Internal.Handler
             sc.AddRebusHandler<ChatWhisperTextHandler>();
 
             sc.AddRebusHandler<GroupActionResultHandler>();
+            sc.AddRebusHandler<GroupDisbandedHandler>();
             sc.AddRebusHandler<GroupFlagsUpdatedHandler>();
             sc.AddRebusHandler<GroupLootRulesUpdatedHandler>();
             sc.AddRebusHandler<GroupMarkerUpdatedHandler>();

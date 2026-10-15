@@ -606,7 +606,7 @@ namespace NexusForever.Game.Entity
             map.EnqueueAdd(entity, new Vector3(SpawnModel.X, SpawnModel.Y, SpawnModel.Z));
         }
 
-        private void GenerateRewards(IUnitEntity killer)
+        protected virtual void GenerateRewards(IUnitEntity killer)
         {
             foreach (uint targetGroupId in AssetManager.Instance.GetTargetGroupsForCreatureId(CreatureId))
                 Map.PublicEventManager.UpdateObjective(PublicEventObjectiveType.KillTargetGroup, targetGroupId, 1);

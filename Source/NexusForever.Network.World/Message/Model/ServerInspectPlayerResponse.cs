@@ -7,7 +7,7 @@ namespace NexusForever.Network.World.Message.Model
     public class ServerInspectPlayerResponse : IWritable
     {
         public uint Guid { get; set; }
-        public List<Item> Items { get; set; } = new();
+        public List<Shared.Item> Items { get; set; } = new();
 
         public void Write(GamePacketWriter writer)
         {
