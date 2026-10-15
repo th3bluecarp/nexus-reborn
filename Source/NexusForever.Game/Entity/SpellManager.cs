@@ -1,4 +1,4 @@
-using Microsoft.EntityFrameworkCore.ChangeTracking;
+﻿using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.Extensions.DependencyInjection;
 using NexusForever.Database.Character;
 using NexusForever.Database.Character.Model;
@@ -557,9 +557,42 @@ namespace NexusForever.Game.Entity
                 if (!PrerequisiteManager.Instance.Meets(player, entry.PrerequisiteIdInnateAbility[index]))
                     return;
 
-            // TODO: Cast Innate Passives
+            if (index != InnateIndex)
+                RemoveInnatePassive(entry, InnateIndex);
 
             InnateIndex = index;
+            CastInnatePassive(entry, index);
+        }
+
+        /// <summary>
+        /// Apply the passive half of the innate ability with the supplied index, such as the stance bonuses of a Warrior or Stalker.
+        /// </summary>
+        private void CastInnatePassive(ClassEntry entry, byte index)
+        {
+            if (entry == null || index >= entry.Spell4IdInnateAbilityPassive.Length)
+                return;
+
+            uint spell4Id = entry.Spell4IdInnateAbilityPassive[index];
+            if (spell4Id == 0u || player.HasSpell(spell4Id, out ISpell _))
+                return;
+
+            if (entry.PrerequisiteIdInnateAbility[index] > 0 && !PrerequisiteManager.Instance.Meets(player, entry.PrerequisiteIdInnateAbility[index]))
+                return;
+
+            player.CastSpell(spell4Id, new SpellParameters
+            {
+                UserInitiatedSpellCast = false
+            });
+        }
+
+        private void RemoveInnatePassive(ClassEntry entry, byte index)
+        {
+            if (index >= entry.Spell4IdInnateAbilityPassive.Length)
+                return;
+
+            uint spell4Id = entry.Spell4IdInnateAbilityPassive[index];
+            if (spell4Id != 0u && player.HasSpell(spell4Id, out ISpell passive))
+                passive.Finish();
         }
 
         /// <summary>
@@ -598,7 +631,7 @@ namespace NexusForever.Game.Entity
             SendServerActionSets();
             SendServerAmpLists();
             SendServerPlayerInnate();
-            // TODO: Cast Innate Spells
+            CastInnatePassive(GameTableManager.Instance.Class.GetEntry((ulong)player.Class), InnateIndex);
             CastClassPassives();
 
             player.Session.EnqueueMessageEncrypted(new ServerCooldownList
