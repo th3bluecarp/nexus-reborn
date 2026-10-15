@@ -81,10 +81,10 @@ namespace NexusForever.WorldServer
                     sc.AddHostedService<ConfigurationHostedService>();
                     sc.AddHostedService<GameTableHostedService>();
                     sc.AddHostedService<SpellHostedService>();
-                    sc.AddHostedService<LootHostedService>();
                     sc.AddHostedService<NetworkInternalHandlerHostedService>();
                     sc.AddHostedService<OnlineHostedService>();
                     sc.AddHostedService<HostedService>();
+                    sc.AddHostedService<LootHostedService>();
 
                     sc.AddOptions<NetworkConfig>()
                         .Bind(hb.Configuration.GetSection("Network"));
