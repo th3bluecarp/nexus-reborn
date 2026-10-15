@@ -4,6 +4,12 @@ Newest first. "Live" means running on the desktop server.
 
 ## 2026-10-15
 
+- **SummonCreature spell effects** (a5d22eac, not deployed). 1951 summon effects (quest helpers and enemies, boss adds) now summon their creatures around the target at the data distance and angle, timed ones despawn when the effect ends.
+- **Absorb shields** (2d822f91, not deployed). 581 Absorption effects now give absorb pools, limited to the damage types in the effect mask, that take damage before the shield.
+- **QuestAdvanceObjective spell effects** (c4f5140b, not deployed). 251 quest item and quest ability effects now advance their quest objective.
+- **Quest rewards and CompleteQuest objectives** (6565b16c, not deployed). Reputation and account currency rewards are paid on turn-in, CompleteQuest objectives progress.
+- **Use item or ability objectives** (481039da, not deployed). 147 SpellSuccess objectives progress on successful casts, counting only hits from the objective target group when it has one.
+- **Collect item objectives** (1655238f, not deployed). 327 CollectItem objectives follow the item count in the bags (and drop back if items leave), items are handed in on turn-in.
 - **Heal and HealShields spell effects** (dc88210b, not deployed). 3098 heal effects in the client data had no handler, so heals and heal potions did nothing. Uses the damage base formula with the healing multipliers, can crit, capped at missing health or shield, writes a heal combat log.
 - **Upstream merge** (69686742, 0d34d66b, not deployed). Brought in the 34 game_rework commits we were missing: emotes, friends (new Friendship server), /who on the Character server, crowd control, spell, housing, reward and costume messages, socket shutdown fix. Upstream renamed most spell and crowd control messages; our spell code now uses their names with the same wire format. Needs three new server processes and two new databases on deploy.
 - **Combat fixes** (c4b27514, live). Physical damage used the magic mitigation offset. Corpses were healed to full and sent back to their leash point when combat ended.
