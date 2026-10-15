@@ -14,6 +14,7 @@ using NexusForever.GameTable.Model;
 using NexusForever.Network.World.Message.Model;
 using NexusForever.Network.World.Message.Static;
 using NexusForever.Shared;
+using NexusForever.Shared.Game;
 using NLog;
 
 namespace NexusForever.Game.Entity
@@ -126,6 +127,8 @@ namespace NexusForever.Game.Entity
         public void Update(double lastTick)
         {
             var botchedQuests = new List<IQuest>();
+            UpdateAreaObjectives(lastTick);
+
             foreach (IQuest quest in activeQuests.Values)
             {
                 quest.Update(lastTick);
@@ -140,6 +143,71 @@ namespace NexusForever.Game.Entity
 
                 log.LogTrace($"Failed to complete quest {quest.Id} before the timer expired!");
             }
+        }
+
+        private readonly UpdateTimer areaTimer = new(TimeSpan.FromSeconds(1d));
+
+        /// <summary>
+        /// Progress <see cref="QuestObjectiveType.EnterArea"/> objectives the player is standing in.
+        /// </summary>
+        /// <remarks>
+        /// Retail used map trigger volumes we don't have, the objective's map marker world location (radius at least 10m) stands in for the volume.
+        /// </remarks>
+        private void UpdateAreaObjectives(double lastTick)
+        {
+            areaTimer.Update(lastTick);
+            if (!areaTimer.HasElapsed)
+                return;
+
+            areaTimer.Reset();
+
+            if (player.Map == null)
+                return;
+
+            var updates = new List<(IQuest Quest, uint ObjectiveId)>();
+            foreach (IQuest quest in activeQuests.Values)
+            {
+                if (quest.State != QuestState.Accepted)
+                    continue;
+
+                foreach (IQuestObjective objective in quest)
+                {
+                    if (objective.ObjectiveInfo.Type != QuestObjectiveType.EnterArea || !quest.IsObjectiveActive(objective.Index))
+                        continue;
+
+                    if (IsInObjectiveArea(objective.ObjectiveInfo.Entry))
+                        updates.Add((quest, objective.ObjectiveInfo.Id));
+                }
+            }
+
+            foreach ((IQuest quest, uint objectiveId) in updates)
+                quest.ObjectiveUpdate(objectiveId, 1u);
+        }
+
+        private bool IsInObjectiveArea(QuestObjectiveEntry entry)
+        {
+            foreach (uint worldLocationId in new[] { entry.WorldLocationsIdIndicator00, entry.WorldLocationsIdIndicator01, entry.WorldLocationsIdIndicator02, entry.WorldLocationsIdIndicator03 })
+            {
+                if (worldLocationId == 0u)
+                    continue;
+
+                WorldLocation2Entry location = GameTableManager.Instance.WorldLocation2.GetEntry(worldLocationId);
+                if (location == null || location.WorldId != player.Map.Entry.Id)
+                    continue;
+
+                float dx = player.Position.X - location.Position0;
+                float dz = player.Position.Z - location.Position2;
+                float radius = Math.Max(location.Radius, 10f);
+                if (dx * dx + dz * dz > radius * radius)
+                    continue;
+
+                if (location.MaxVerticalDistance > 0f && Math.Abs(player.Position.Y - location.Position1) > location.MaxVerticalDistance)
+                    continue;
+
+                return true;
+            }
+
+            return false;
         }
 
         public void SendInitialPackets()
