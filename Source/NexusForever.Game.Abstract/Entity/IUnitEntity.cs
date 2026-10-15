@@ -166,6 +166,11 @@ namespace NexusForever.Game.Abstract.Entity
         void Despawn();
 
         /// <summary>
+        /// Return active <see cref="ISpell"/>s cast by this unit that have the supplied unit as a target.
+        /// </summary>
+        IEnumerable<ISpell> GetSpellsAffecting(IUnitEntity target);
+
+        /// <summary>
         /// Set target to supplied target guid.
         /// </summary>
         /// <remarks>

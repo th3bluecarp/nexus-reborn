@@ -335,6 +335,16 @@ namespace NexusForever.Game.Entity
         }
 
         /// <summary>
+        /// Return active <see cref="ISpell"/>s cast by this unit that have the supplied unit as a target.
+        /// </summary>
+        public IEnumerable<ISpell> GetSpellsAffecting(IUnitEntity target)
+        {
+            foreach (ISpell spell in spells.Values)
+                if (!spell.IsCasting && !spell.IsFinished && spell.GetTarget(target) != null)
+                    yield return spell;
+        }
+
+        /// <summary>
         /// Return a collection of <see cref="ISpell"/> that are applying the supplied <see cref="SpellEffectType"/> to entity.
         /// </summary>
         public IEnumerable<ISpell> GetSpellsByEffect(SpellEffectType type)
