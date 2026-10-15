@@ -1,4 +1,5 @@
 using System.Numerics;
+using SpellInit = NexusForever.Network.World.Message.Model.Shared.SpellInit;
 using Microsoft.Extensions.DependencyInjection;
 using NexusForever.Game.Abstract.Map;
 using NexusForever.Game.Abstract.Map.Instance;

@@ -45,10 +45,6 @@ namespace NexusForever.Game.Entity
             Rotation         = owner.Rotation;
             Position         = owner.Position;
 
-            Creature2DisplayGroupEntryEntry displayGroupEntry = GameTableManager.Instance.Creature2DisplayGroupEntry.Entries
-                .SingleOrDefault(x => x.Creature2DisplayGroupId == CreatureEntry.Creature2DisplayGroupId);
-            DisplayInfo = displayGroupEntry?.Creature2DisplayInfoId ?? 0u;
-
             CreateFlags |= EntityCreateFlag.UseDefaultBirthSequence;
         }
 

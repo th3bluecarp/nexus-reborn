@@ -1,24 +1,26 @@
 ﻿using System;
+using NexusForever.Game.Static.Spell;
 using NexusForever.Game.Abstract.Spell;
 using NexusForever.Game.Spell.Type;
 using NexusForever.Network.Message;
 using NexusForever.Network.World.Message.Model;
+using NexusForever.Network.World.Message.Model.Spell;
 using NexusForever.Network.World.Message.Static;
 
 namespace NexusForever.WorldServer.Network.Message.Handler.Spell
 {
-    public class ClientSpellInteractionResultHandler : IMessageHandler<IWorldSession, ClientSpellInteractionResult>
+    public class ClientSpellInteractionResultHandler : IMessageHandler<IWorldSession, ClientSpellClientSideInteraction>
     {
-        public void HandleMessage(IWorldSession session, ClientSpellInteractionResult spellInteractionResult)
+        public void HandleMessage(IWorldSession session, ClientSpellClientSideInteraction spellInteractionResult)
         {
-            ISpell spell = session.Player.GetSpell(spellInteractionResult.CastingId);
+            ISpell spell = session.Player.GetSpell(spellInteractionResult.ServerUniqueId);
             if (spell == null)
-                throw new ArgumentNullException($"Spell cast {spellInteractionResult.CastingId} not found.");
+                throw new ArgumentNullException($"Spell cast {spellInteractionResult.ServerUniqueId} not found.");
 
             if (spell is not SpellClientSideInteraction spellCSI)
                 throw new ArgumentNullException($"Spell missing a ClientSideInteraction.");
 
-            switch (spellInteractionResult.Result)
+            switch (spellInteractionResult.CSIResponse)
             {
                 case 0:
                     spellCSI.FailClientInteraction();

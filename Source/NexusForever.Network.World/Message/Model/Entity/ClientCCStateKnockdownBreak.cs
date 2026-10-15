@@ -1,4 +1,4 @@
-﻿using NexusForever.Game.Static.Entity.Movement;
+﻿using NexusForever.Game.Static.Entity;
 using NexusForever.Network.Message;
 
 namespace NexusForever.Network.World.Message.Model.Entity

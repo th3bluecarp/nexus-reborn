@@ -93,7 +93,7 @@ namespace NexusForever.Network.World.Message.Model
         public List<INetworkEntityCommand> Commands { get; set; } = new();
         public List<PropertyValue> Properties { get; set; } = new();
         public List<ItemVisual> VisibleItems { get; set; } = new();
-        public List<SpellInit> SpellInitData { get; } = new();
+        public List<Shared.SpellInit> SpellInitData { get; } = new();
         public uint CurrentSpellUniqueId { get; set; }
         public Faction Faction1 { get; set; }
         public Faction Faction2 { get; set; }

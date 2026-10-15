@@ -1,4 +1,5 @@
 ﻿using System.Numerics;
+using NexusForever.Network.World.Message.Model.Entity;
 using NexusForever.Game.Abstract.Entity;
 using NexusForever.Game.Abstract.Loot.Distribute;
 using NexusForever.Game.Abstract.Entity.Movement;
@@ -57,7 +58,7 @@ namespace NexusForever.Game.Entity
 
             summoner.Session.EnqueueMessageEncrypted(new ServerEntityCCTetherUnit
             {
-                Guid = guid
+                UnitId = guid
             });
         }
 

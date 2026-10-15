@@ -1,6 +1,6 @@
 ﻿using NexusForever.Game.Abstract.Spell;
 using NexusForever.Game.Static.Spell;
-using NetworkDamageDescription = NexusForever.Network.World.Message.Model.Shared.DamageDescription;
+using NetworkDamageDescription = NexusForever.Network.World.Message.Model.Spell.SpellEffectResult;
 
 namespace NexusForever.Game.Spell
 {

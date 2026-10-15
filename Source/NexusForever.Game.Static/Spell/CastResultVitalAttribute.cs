@@ -1,6 +1,6 @@
 ﻿using NexusForever.Game.Static.Entity;
 
-namespace NexusForever.Network.World.Message
+namespace NexusForever.Game.Static.Spell
 {
     [AttributeUsage(AttributeTargets.Field, AllowMultiple = true)]
     public class CastResultVitalAttribute : Attribute

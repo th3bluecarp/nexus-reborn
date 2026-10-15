@@ -1,4 +1,5 @@
 ﻿using System.Collections.Immutable;
+using NexusForever.Game.Static.Spell;
 using System.Reflection;
 using NexusForever.Game.Abstract.Spell;
 using NexusForever.Game.Static.Entity;

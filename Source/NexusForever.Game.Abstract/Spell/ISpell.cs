@@ -1,4 +1,5 @@
 using NexusForever.Game.Abstract.Entity;
+using SpellInit = NexusForever.Network.World.Message.Model.Shared.SpellInit;
 using NexusForever.Game.Abstract.Spell.Target;
 using NexusForever.Game.Static.Spell;
 using NexusForever.Network.World.Message.Model.Shared;

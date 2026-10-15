@@ -1,4 +1,5 @@
 ﻿using NexusForever.Game.Abstract.Entity;
+using NexusForever.Game.Static.Spell;
 using NexusForever.Game.Abstract.Spell;
 using NexusForever.Game.Abstract.Spell.Validator;
 using NexusForever.Game.Static.Combat.CrowdControl;

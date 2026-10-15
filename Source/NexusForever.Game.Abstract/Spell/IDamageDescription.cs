@@ -4,7 +4,7 @@ using NexusForever.Network.World.Message.Model.Shared;
 
 namespace NexusForever.Game.Abstract.Spell
 {
-    public interface IDamageDescription : INetworkBuildable<DamageDescription>
+    public interface IDamageDescription : INetworkBuildable<NexusForever.Network.World.Message.Model.Spell.SpellEffectResult>
     {
         uint RawDamage { get; set; }
         uint RawScaledDamage { get; set; }

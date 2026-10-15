@@ -249,7 +249,7 @@ namespace NexusForever.Game.Entity
         /// <remarks>
         /// To set the stand state, see <see cref="SetStandState(StandState, uint)"/> or <see cref="Emote(uint)"/>.
         /// </remarks>
-        public StandState StandState => (StandState)(GetStatInteger(Stat.StandState) ?? 0u);
+        public StandState StandState => (StandState)(GetStatInteger(Static.Entity.Stat.StandState) ?? 0u);
 
         /// <summary>
         /// Collection of guids currently targeting this <see cref="IWorldEntity"/>.
@@ -1361,7 +1361,7 @@ namespace NexusForever.Game.Entity
         /// <param name="emoteId">The emote id to use if <paramref name="standState"/> is <see cref="StandState.Emote"/>.</param>
         public void SetStandState(StandState standState, uint emoteId = 0u)
         {
-            SetStat(Stat.StandState, (uint)standState, emoteId);
+            SetStat(Static.Entity.Stat.StandState, (uint)standState, emoteId);
 
             EnqueueToVisible(new ServerEntityStandState
             {

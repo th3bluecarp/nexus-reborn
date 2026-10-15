@@ -1,4 +1,5 @@
 ﻿using NexusForever.Network.World.Message.Static;
+using NexusForever.Game.Static.Spell;
 
 namespace NexusForever.Game.Abstract.Spell.Validator
 {

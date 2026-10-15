@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
+using NexusForever.Network.World.Message.Model.Spell;
 using NexusForever.Game.Abstract;
 using NexusForever.Game.Abstract.Entity;
 using NexusForever.Game.Abstract.Spell;
@@ -219,7 +220,7 @@ namespace NexusForever.Game.Spell.Type
                     Spell4Id = Parameters.SpellInfo.Entry.Id,
                     RootSpell4Id = Parameters.RootSpellInfo?.Entry.Id ?? 0,
                     ParentSpell4Id = Parameters.ParentSpellInfo?.Entry.Id ?? 0,
-                    CastingId = CastingId
+                    ServerUniqueId = CastingId
                 });
         }
 
@@ -229,7 +230,7 @@ namespace NexusForever.Game.Spell.Type
                 player.Session.EnqueueMessageEncrypted(new ServerSpellThresholdUpdate
                 {
                     Spell4Id = Parameters.ParentSpellInfo?.Entry.Id ?? Spell4Id,
-                    Value = Parameters.ThresholdValue > 0 ? (byte)Parameters.ThresholdValue : (byte)thresholdValue
+                    CurrentThreshold = Parameters.ThresholdValue > 0 ? (byte)Parameters.ThresholdValue : (byte)thresholdValue
                 });
         }
 

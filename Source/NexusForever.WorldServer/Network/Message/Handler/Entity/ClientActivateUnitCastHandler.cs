@@ -13,7 +13,7 @@ namespace NexusForever.WorldServer.Network.Message.Handler.Entity
             if (entity == null)
                 throw new InvalidPacketValueException();
 
-            entity.OnActivateCast(session.Player, activateUnitCast.ClientUniqueId);
+            entity.OnActivateCast(session.Player, activateUnitCast.ClientSpellCastUniqueId);
         }
     }
 }

@@ -2,55 +2,17 @@ using NexusForever.Network.Message;
 using NexusForever.Network.World.Entity;
 using NexusForever.Network.World.Message.Model.Shared;
 
-namespace NexusForever.Network.World.Message.Model.Spell
+namespace NexusForever.Network.World.Message.Model
 {
     [Message(GameMessageOpcode.ServerSpellStart)]
     public class ServerSpellStart : IWritable
     {
-        public class InitialPosition : IWritable
-        {   
-            public uint  UnitId { get; set; }
-            public byte  TargetFlags { get; set; }
-            public Position Position { get; set; } = new Position();
-            public float Yaw { get; set; }
-            public float Pitch { get; set; }
-
-            public void Write(GamePacketWriter writer)
-            {
-                writer.Write(UnitId);
-                writer.Write(TargetFlags);
-                Position.Write(writer);
-                writer.Write(Yaw);
-                writer.Write(Pitch);
-            }
-        }
-
-        public class TelegraphPosition : IWritable
-        {   
-            public ushort TelegraphId { get; set; }
-            public uint   AttachedUnitId { get; set; }
-            public byte   TargetFlags { get; set; }
-            public Position Position { get; set; } = new Position();
-            public float  Yaw { get; set; }
-            public float  Pitch { get; set; }
-
-            public void Write(GamePacketWriter writer)
-            {
-                writer.Write(TelegraphId);
-                writer.Write(AttachedUnitId);
-                writer.Write(TargetFlags);
-                Position.Write(writer);
-                writer.Write(Yaw);
-                writer.Write(Pitch);
-            }
-        }
-
         public uint ServerUniqueId { get; set; }
         public uint Spell4Id { get; set; }
         public uint RootSpell4Id { get; set; }
         public uint ParentSpell4Id { get; set; }
         public uint CasterId { get; set; }
-        public ushort Unused { get; set; } // Server did send values here but the client does not use them
+        public ushort Unknown20 { get; set; }
         public uint PrimaryTargetId { get; set; }
         public Position FieldPosition { get; set; } = new Position();
         public float Yaw { get; set; }
@@ -67,7 +29,7 @@ namespace NexusForever.Network.World.Message.Model.Spell
             writer.Write(RootSpell4Id, 18u);
             writer.Write(ParentSpell4Id, 18u);
             writer.Write(CasterId);
-            writer.Write(Unused);
+            writer.Write(Unknown20);
             writer.Write(PrimaryTargetId);
             FieldPosition.Write(writer);
             writer.Write(Yaw);

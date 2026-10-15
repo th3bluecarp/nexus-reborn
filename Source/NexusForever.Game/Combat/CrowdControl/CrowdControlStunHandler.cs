@@ -1,4 +1,5 @@
 ﻿using NexusForever.Game.Abstract.Combat.CrowdControl;
+using NexusForever.Network.World.Message.Model.Entity;
 using NexusForever.Game.Abstract.Entity;
 using NexusForever.Game.Abstract.Spell.Effect.Data;
 using NexusForever.Game.Abstract.Spell.Target;

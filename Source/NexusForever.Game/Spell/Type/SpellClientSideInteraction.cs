@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
+using NexusForever.Network.World.Message.Model.Spell;
 using NexusForever.Game.Abstract;
 using NexusForever.Game.Abstract.Entity;
 using NexusForever.Game.Abstract.Spell;
@@ -56,9 +57,9 @@ namespace NexusForever.Game.Spell.Type
             // Shoule we actually emit client interaction events to everyone? - Logs suggest that we only see this packet firing when the client interacts with -something- and is likely only sent to them
             if (Caster is IPlayer player)
             {
-                player.Session.EnqueueMessageEncrypted(new ServerSpellStartClientInteraction
+                player.Session.EnqueueMessageEncrypted(new ServerSpellConfirmCast
                 {
-                    ClientUniqueId = Parameters.ClientSideInteraction.ClientUniqueId,
+                    ClientSpellCastUniqueId = Parameters.ClientSideInteraction.ClientUniqueId,
                     CastingId = CastingId,
                     CasterId = GetPrimaryTargetId()
                 });

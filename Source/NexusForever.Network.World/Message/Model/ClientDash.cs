@@ -1,4 +1,4 @@
-﻿using NexusForever.Game.Static.Entity.Movement;
+﻿using NexusForever.Game.Static.Entity;
 using NexusForever.Network.Message;
 
 namespace NexusForever.Network.World.Message.Model
@@ -6,11 +6,11 @@ namespace NexusForever.Network.World.Message.Model
     [Message(GameMessageOpcode.ClientDash)]
     public class ClientDash : IReadable
     {
-        public DashDirection DashDirection { get; set; }
+        public DashDirection Direction { get; private set; }
 
         public void Read(GamePacketReader reader)
         {
-            DashDirection = reader.ReadEnum<DashDirection>(3);
+            Direction = reader.ReadEnum<DashDirection>(3u);
         }
     }
 }

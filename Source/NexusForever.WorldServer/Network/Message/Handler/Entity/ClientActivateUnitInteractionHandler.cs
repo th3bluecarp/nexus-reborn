@@ -2,21 +2,22 @@
 using NexusForever.Network;
 using NexusForever.Network.Message;
 using NexusForever.Network.World.Message.Model;
+using NexusForever.Network.World.Message.Model.Spell;
 
 namespace NexusForever.WorldServer.Network.Message.Handler.Entity
 {
     /// <remarks>
     /// Possibly only used by Bindpoint entities
     /// </remarks>
-    public class ClientActivateUnitInteractionHandler : IMessageHandler<IWorldSession, ClientActivateUnitInteraction>
+    public class ClientActivateUnitInteractionHandler : IMessageHandler<IWorldSession, ClientCastBindPointSpell>
     {
-        public void HandleMessage(IWorldSession session, ClientActivateUnitInteraction activateUnitInteraction)
+        public void HandleMessage(IWorldSession session, ClientCastBindPointSpell activateUnitInteraction)
         {
-            IWorldEntity entity = session.Player.GetVisible<IWorldEntity>(activateUnitInteraction.ActivateUnitId);
+            IWorldEntity entity = session.Player.GetVisible<IWorldEntity>(activateUnitInteraction.UnitId);
             if (entity == null)
                 throw new InvalidPacketValueException();
 
-            entity.OnActivateCast(session.Player, activateUnitInteraction.ClientUniqueId);
+            entity.OnActivateCast(session.Player, activateUnitInteraction.ClientSpellCastUniqueId);
         }
     }
 }

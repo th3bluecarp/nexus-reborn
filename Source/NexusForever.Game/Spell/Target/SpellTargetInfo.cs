@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
+using NexusForever.Network.World.Message.Model.Spell;
 using NexusForever.Game.Abstract.Entity;
 using NexusForever.Game.Abstract.Spell;
 using NexusForever.Game.Abstract.Spell.Target;
@@ -177,10 +178,10 @@ namespace NexusForever.Game.Spell.Target
             if (unitIds.Count == 0)
                 return;
 
-            Collection.Spell.Caster.EnqueueToVisible(new ServerSpellBuffsRemoved
+            Collection.Spell.Caster.EnqueueToVisible(new ServerSpellBuffRemove
             {
-                CastingId    = Collection.Spell.CastingId,
-                SpellTargets = unitIds
+                ServerUniqueId = Collection.Spell.CastingId,
+                Targets        = unitIds
             }, true);
         }
     }

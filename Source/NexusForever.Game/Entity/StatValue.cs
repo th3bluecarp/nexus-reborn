@@ -99,7 +99,7 @@ namespace NexusForever.Game.Entity
             saveMask = StatSaveMask.Create;
         }
 
-        public StatValue(Stat stat, uint value, uint data)
+        public StatValue(Static.Entity.Stat stat, uint value, uint data)
         {
             Stat     = stat;
             Type     = StatType.Data;

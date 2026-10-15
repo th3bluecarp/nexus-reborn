@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
+using NexusForever.Network.World.Message.Model.Spell;
 using NexusForever.Game.Abstract.Entity;
 using NexusForever.Game.Abstract.Spell;
 using NexusForever.Game.Abstract.Spell.Effect;
@@ -103,7 +104,7 @@ namespace NexusForever.Game.Spell.Target
             if (Damage != null)
             {
                 effectInfo.InfoType              = 1;
-                effectInfo.DamageDescriptionData = Damage.Build();
+                effectInfo.EffectResultData = Damage.Build();
             }
 
             return effectInfo;
@@ -134,7 +135,8 @@ namespace NexusForever.Game.Spell.Target
                         target.EnqueueToVisible(new ServerSpellEffectExecute()
                         {
                             CastingId           = executionContext.Spell.CastingId,
-                            TargetGuid          = target.Guid,
+                            // upstream names this field the caster, we keep sending the target as before
+                            CasterUnitId        = target.Guid,
                             SpellEffectUniqueId = EffectId
                         }, true);
                     }
@@ -225,10 +227,10 @@ namespace NexusForever.Game.Spell.Target
 
                 target.EnqueueToVisible(new ServerSpellUpdateEffectDuration
                 {
-                    CastingId           = Target.Collection.Spell.CastingId,
-                    TargetId            = target.Guid,
+                    ServerUniqueId      = Target.Collection.Spell.CastingId,
+                    TargetUnitId        = target.Guid,
                     SpellEffectUniqueId = EffectId,
-                    Duration            = duration != null ? (int)TimeSpan.FromSeconds(duration.Duration).TotalMilliseconds : -1
+                    TimeRemaining       = duration != null ? (int)TimeSpan.FromSeconds(duration.Duration).TotalMilliseconds : -1
                 }, true);
             }
         }
