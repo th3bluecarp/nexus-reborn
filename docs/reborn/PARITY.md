@@ -15,10 +15,10 @@ Columns in parity.csv:
 | | Ours | Upstream |
 |---|---|---|
 | Implemented | 63 | 50 |
-| Partial | 45 | 44 |
-| Missing | 42 | 53 |
+| Partial | 46 | 44 |
+| Missing | 41 | 53 |
 | Only on a side branch | 0 | 3 |
-| Features where we are ahead | 22 | |
+| Features where we are ahead | 23 | |
 
 ## Coverage counts
 
@@ -35,6 +35,7 @@ Columns in parity.csv:
 - Spell effects: Heal, HealShields, Absorption (absorb shields), SummonCreature, QuestAdvanceObjective, DespawnUnit, Scale.
 - Quest objectives: CollectItem (from bag counts), SpellSuccess 1 to 4 (use item or ability, target group aware), CompleteQuest, CompleteEvent, Unknown10 target group activations, EnterArea from map marker locations. Reputation and account currency quest rewards.
 - 18 more prerequisite types, led by IsObjectiveActive and QuestObjective (5,763 uses between them), plus objective progress, health, faction, reputation, item, zone and target checks.
+- Class innate passives (Warrior and Engineer stances, Stalker Nano Skin) applied on login and on change.
 - Combat fixes: both creature auto attacks used, physical mitigation offset, corpses no longer heal and slide home.
 - Veteran start fix (Bon Voyage completed for Nexus start characters).
 - Starting zone content from Jabbithole: 101 spawns, 7 vendors with 150 items, 63 loot tables (see the wildstar-archive repo).

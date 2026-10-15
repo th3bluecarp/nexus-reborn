@@ -4,6 +4,7 @@ Newest first. "Live" means running on the desktop server.
 
 ## 2026-10-15
 
+- **Innate passives** (2031daa9, not deployed). The stance half of each class innate (Warrior Onslaught or Juggernaut, Engineer modes, Stalker Nano Skins) was never applied. Now cast on login and swapped when the innate changes.
 - **EnterArea objectives** (11ae97eb, not deployed). 511 "go to this place" objectives only worked in the tutorial. They now complete when the player stands inside the objective's map marker area (166 of the 180 level 1 to 15 ones have a marker). Retail used trigger volumes we don't have, so this is an approximation.
 - **Quest objective activations and events** (8ef987c4, not deployed). Activating a creature progresses Unknown10 objectives for its target groups (the Dominion cannons in Shellshock!, Camp Icefur). Winning a public event progresses CompleteEvent objectives. QuestObjective6 prerequisites check objective completion.
 - **Scale spell effects** (15256f1b, not deployed). 531 Scale effects resize server controlled units, timed ones revert.

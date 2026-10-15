@@ -45,7 +45,7 @@ Spells,Cooldowns and GCD,Spell and global cooldowns,Partial,Partial,,,,Entity/Sp
 Spells,Limited Action Set (LAS) and specs,"8-slot LAS, multiple specs, tiers",Implemented,Implemented,,,,"ClientRequestActionSetChanges, ClientSetSpec, ActionSet.cs",
 Spells,AMPs,Choose and reset AMPs,Partial,Partial,,,,"ActionSetAmp, ClientRespecAmps",No AMP point gating by level; AMP unlock items not tracked
 Spells,Class resources,"Focus, Volatility, Kinetic Energy, Psi Points, Suit Power, Spell Surge",Implemented,Implemented,,,,Entity/Stat/Player/*StatUpdater.cs,From Kirmmin's branch; tuning unverified
-Spells,Innate abilities and passives,Class innates and passive spells cast on login,Missing,Missing,,,high,SpellManager TODO Cast Innate Passives / Innate Spells,
+Spells,Innate abilities and passives,Class innates and passive spells cast on login,Partial (not deployed),Missing,yes,2031daa9,high,SpellManager TODO Cast Innate Passives / Innate Spells,Innate passive (stance) cast on login and swapped on innate change. Innate actives are cast from the client action bar. Class passives use the hardcoded sniffed list.
 Spells,"Class pets (Engineer bots, Esper)",Summon combat pets,Missing,Missing,,,high,"SummonPet, SummonCreature, PetCastSpell effects unhandled; ClientPetSetStance unhandled",Engineer bot abilities do nothing
 Spells,Stealth (Stalker),Stealth and break on damage,Missing,Missing,,,high,"Stealth, RemoveStealth effects unhandled",
 Spells,Despawn and scale effects,"Quest objects vanish when used, units grow or shrink",Implemented (not deployed),Missing,yes,6d95305e 15256f1b,,"SpellEffectDespawnUnitHandler, SpellEffectScaleHandler",Despawned world spawns return after the respawn delay; scale applies to server controlled units
