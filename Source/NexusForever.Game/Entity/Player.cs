@@ -420,6 +420,7 @@ namespace NexusForever.Game.Entity
             TitleManager.Update(lastTick);
             SpellManager.Update(lastTick);
             CostumeManager.Update(lastTick);
+            Inventory.Update(lastTick);
             QuestManager.Update(lastTick);
             ResurrectionManager.Update(lastTick);
 

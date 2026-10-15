@@ -166,7 +166,14 @@ namespace NexusForever.Game.Quest
             Progress = Math.Min(progress + update, GetMaxValue());
         }
 
-       
+        /// <summary>
+        /// Set objective progress to an absolute value, capped at the objective maximum.
+        /// </summary>
+        public void ObjectiveSet(uint value)
+        {
+            Progress = Math.Min(value, GetMaxValue());
+        }
+
         public void Complete()
         {
             Progress = GetMaxValue();

@@ -72,7 +72,17 @@ namespace NexusForever.Game.Entity
         public void Update(double lastTick)
         {
             // TODO: tick items with limited lifespans
+
+            // item counts are reported once per tick so a move (remove then add) never looks like a loss
+            if (countChangedItems.Count > 0 && player?.QuestManager != null)
+            {
+                foreach (uint itemId in countChangedItems.ToList())
+                    player.QuestManager.ItemCountUpdate(itemId, GetItemCount(itemId));
+                countChangedItems.Clear();
+            }
         }
+
+        private readonly HashSet<uint> countChangedItems = [];
 
         public void Save(CharacterContext context)
         {
@@ -138,6 +148,18 @@ namespace NexusForever.Game.Entity
         /// <summary>
         /// Returns if the count of items with id exists in <see cref="InventoryLocation.Inventory"/>.
         /// </summary>
+        /// <summary>
+        /// Returns the total stack count of supplied item id in the player's bags.
+        /// </summary>
+        public uint GetItemCount(uint itemId)
+        {
+            IBag bag = GetBag(InventoryLocation.Inventory);
+            if (bag == null)
+                return 0u;
+
+            return (uint)bag.Where(i => i.Id == itemId).Sum(i => i.StackCount);
+        }
+
         public bool HasItemCount(uint itemId, uint count)
         {
             IBag bag = GetBag(InventoryLocation.Inventory);
@@ -663,6 +685,7 @@ namespace NexusForever.Game.Entity
                 throw new ArgumentException();
 
             bag.AddItem(item, bagIndex);
+            countChangedItems.Add(item.Id);
 
             if (location == InventoryLocation.Equipped && player != null)
                 ApplyProperties(item);
@@ -699,6 +722,7 @@ namespace NexusForever.Game.Entity
                 InventoryResize(InventoryLocation.PlayerBank, (int)-item.Info.Entry.MaxStackCount);
 
             bag.RemoveItem(item);
+            countChangedItems.Add(item.Id);
 
             if (IsVisualItemSlot(item.PreviousLocation, item.PreviousBagIndex) && player != null)
                 player.RemoveVisual((ItemSlot)item.Info.TypeEntry.ItemSlotId);
@@ -742,6 +766,7 @@ namespace NexusForever.Game.Entity
                 throw new ArgumentNullException();
 
             item.StackCount = stackCount;
+            countChangedItems.Add(item.Id);
 
             player.Session.EnqueueMessageEncrypted(new ServerItemStackCountUpdate
             {

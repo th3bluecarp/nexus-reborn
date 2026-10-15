@@ -81,6 +81,14 @@ namespace NexusForever.Game.Abstract.Quest
         void RewardPaneObjectiveUpdate(QuestObjectiveType type, uint targetGroupId, uint progress);
 
         /// <summary>
+        /// Set any <see cref="IQuestObjective"/>'s with supplied <see cref="QuestObjectiveType"/> and data to an absolute progress value.
+        /// </summary>
+        /// <remarks>
+        /// Unlike an update, progress can go down, which moves an achieved quest back to accepted.
+        /// </remarks>
+        void ObjectiveSet(QuestObjectiveType type, uint data, uint value);
+
+        /// <summary>
         /// Update any <see cref="IQuestObjective"/>'s with supplied ID with progress.
         /// </summary>
         void ObjectiveUpdate(uint id, uint progress);

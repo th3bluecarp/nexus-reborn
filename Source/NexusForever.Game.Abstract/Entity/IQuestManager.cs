@@ -135,6 +135,11 @@ namespace NexusForever.Game.Abstract.Entity
         /// </summary>
         void RewardPaneObjectiveUpdate(QuestObjectiveType type, uint targetGroupId, uint progress);
 
+        /// <summary>
+        /// Invoked when the number of an item in the player's bags changes, updates <see cref="QuestObjectiveType.CollectItem"/> objectives.
+        /// </summary>
+        void ItemCountUpdate(uint itemId, uint count);
+
         // <summary>
         /// Update any active quest <see cref="IQuestObjective"/>'s with supplied ID with progress.
         /// </summary>

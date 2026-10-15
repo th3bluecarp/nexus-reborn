@@ -464,6 +464,51 @@ namespace NexusForever.Game.Quest
             ObjectiveUpdate(o => o.ObjectiveInfo.Entry.Type == (uint)type && o.ObjectiveInfo.Entry.TargetGroupIdRewardPane == targetGroupId, progress);
         }
 
+        /// <summary>
+        /// Set any <see cref="IQuestObjective"/>'s with supplied <see cref="QuestObjectiveType"/> and data to an absolute progress value.
+        /// </summary>
+        public void ObjectiveSet(QuestObjectiveType type, uint data, uint value)
+        {
+            if (PendingDelete)
+                return;
+
+            if (State is not (QuestState.Accepted or QuestState.Achieved))
+                return;
+
+            bool changed = false;
+            foreach (IQuestObjective objective in objectives
+                .Where(o => o.ObjectiveInfo.Entry.Type == (uint)type && o.ObjectiveInfo.Entry.Data == data))
+            {
+                if (!CanUpdateObjective(objective))
+                    continue;
+
+                uint oldProgress = objective.Progress;
+                objective.ObjectiveSet(value);
+                if (objective.Progress == oldProgress)
+                    continue;
+
+                changed = true;
+                SendQuestObjectiveUpdate(objective);
+                scriptCollection?.Invoke<IQuestScript>(s => s.OnObjectiveUpdate(objective));
+            }
+
+            if (!changed)
+                return;
+
+            player.VisibilityUpdate();
+
+            if (RequiredObjectivesComplete())
+                CompleteOptionalObjectives();
+
+            if (objectives.All(o => o.IsComplete()))
+            {
+                if (State == QuestState.Accepted)
+                    State = QuestState.Achieved;
+            }
+            else if (State == QuestState.Achieved)
+                State = QuestState.Accepted;
+        }
+
         private void ObjectiveUpdate(Func<IQuestObjective, bool> predicate, uint progress)
         {
             if (PendingDelete)

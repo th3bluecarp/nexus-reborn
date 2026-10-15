@@ -9,6 +9,14 @@ namespace NexusForever.Game.Abstract.Quest
         IQuestObjectiveInfo ObjectiveInfo { get; }
         byte Index { get; }
         uint Progress { get; set; }
+
+        /// <summary>
+        /// Set objective progress to an absolute value, capped at the objective maximum.
+        /// </summary>
+        /// <remarks>
+        /// Used for objectives such as <see cref="QuestObjectiveType.CollectItem"/> where progress mirrors a count that can also go down.
+        /// </remarks>
+        void ObjectiveSet(uint value);
         uint? Timer { get; set; }
 
         /// <summary>

@@ -417,6 +417,10 @@ namespace NexusForever.Game.Entity
 
             quest.Initialise(player, info);
             activeQuests.Add((ushort)info.Entry.Id, quest);
+
+            // collect objectives count items the player already carries
+            foreach (IQuestObjective objective in quest.Where(o => o.ObjectiveInfo.Entry.Type == (uint)QuestObjectiveType.CollectItem))
+                quest.ObjectiveSet(QuestObjectiveType.CollectItem, objective.ObjectiveInfo.Entry.Data, player.Inventory.GetItemCount(objective.ObjectiveInfo.Entry.Data));
             
             log.LogTrace($"Accepted new quest {info.Entry.Id}.");
         }
@@ -600,6 +604,14 @@ namespace NexusForever.Game.Entity
             activeQuests.Remove(questId);
             completedQuests.Add(questId, quest);
 
+            // collected items are handed in with the quest
+            foreach (IQuestObjective objective in quest.Where(o => o.ObjectiveInfo.Entry.Type == (uint)QuestObjectiveType.CollectItem))
+            {
+                uint count = Math.Min(objective.ObjectiveInfo.Entry.Count, player.Inventory.GetItemCount(objective.ObjectiveInfo.Entry.Data));
+                if (count > 0u)
+                    player.Inventory.ItemDelete(objective.ObjectiveInfo.Entry.Data, count, ItemUpdateReason.Quest);
+            }
+
             // entities with a visibility prerequisite on this quest may need to appear or disappear
             player.VisibilityUpdate();
         }
@@ -730,6 +742,15 @@ namespace NexusForever.Game.Entity
         {
             foreach (IQuest quest in activeQuests.Values.ToList())
                 quest.RewardPaneObjectiveUpdate(type, targetGroupId, progress);
+        }
+
+        /// <summary>
+        /// Invoked when the number of an item in the player's bags changes, updates <see cref="QuestObjectiveType.CollectItem"/> objectives.
+        /// </summary>
+        public void ItemCountUpdate(uint itemId, uint count)
+        {
+            foreach (IQuest quest in activeQuests.Values.ToList())
+                quest.ObjectiveSet(QuestObjectiveType.CollectItem, itemId, count);
         }
 
         /// <summary>
