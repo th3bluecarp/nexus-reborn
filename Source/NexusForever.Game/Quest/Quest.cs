@@ -435,6 +435,12 @@ namespace NexusForever.Game.Quest
                 case QuestRewardType.Money:
                     player.CurrencyManager.CurrencyAddAmount((CurrencyType)entry.ObjectId, entry.ObjectAmount);
                     break;
+                case QuestRewardType.Reputation:
+                    player.ReputationManager.UpdateReputation((NexusForever.Game.Static.Reputation.Faction)entry.ObjectId, entry.ObjectAmount);
+                    break;
+                case QuestRewardType.AccountCurrency:
+                    player.Account.CurrencyManager.CurrencyAddAmount((NexusForever.Game.Static.AccountInventory.AccountCurrencyType)entry.ObjectId, entry.ObjectAmount);
+                    break;
                 default:
                 {
                     log.LogWarning($"Unhandled quest reward type {entry.Quest2RewardTypeId}!");

@@ -604,6 +604,9 @@ namespace NexusForever.Game.Entity
             activeQuests.Remove(questId);
             completedQuests.Add(questId, quest);
 
+            // other quests can ask for this one to be completed
+            ObjectiveUpdate(QuestObjectiveType.CompleteQuest, questId, 1u);
+
             // collected items are handed in with the quest
             foreach (IQuestObjective objective in quest.Where(o => o.ObjectiveInfo.Entry.Type == (uint)QuestObjectiveType.CollectItem))
             {
