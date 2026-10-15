@@ -835,13 +835,12 @@ namespace NexusForever.Game.Entity
             if (canSeeMe != null && !canSeeMe.Value)
                 return false;
 
-            // TODO: implement me...
-            /*if (entity is IWorldEntity worldEntity && worldEntity.CreatureInfo != null)
-            {
-                if (worldEntity.CreatureInfo.PrerequisiteVisibilityEntry != null
-                    && !PrerequisiteManager.Instance.Meets(this, worldEntity.CreatureInfo.PrerequisiteVisibilityEntry.Id))
-                        return false;
-            }*/
+            // creatures that move as the story progresses (e.g. a quest giver who relocates to a camp after a quest)
+            // have a visibility prerequisite, unhandled prerequisite types leave the entity visible
+            if (entity is IWorldEntity worldEntity
+                && worldEntity.CreatureInfo?.PrerequisiteVisibilityEntry != null
+                && !PrerequisiteManager.Instance.Meets(this, worldEntity.CreatureInfo.PrerequisiteVisibilityEntry.Id, new PrerequisiteParameters { UnhandledResult = true }))
+                return false;
 
             return base.CanSeeEntity(entity);
         }

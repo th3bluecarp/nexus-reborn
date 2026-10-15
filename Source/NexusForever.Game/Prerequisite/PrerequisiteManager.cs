@@ -103,7 +103,7 @@ namespace NexusForever.Game.Prerequisite
             if (handler == null)
             {
                 log.LogWarning($"Unhandled PrerequisiteType {type}!");
-                return false;
+                return parameters?.UnhandledResult ?? false;
             }
 
             return handler.Meets(player, comparison, value, objectId, parameters);

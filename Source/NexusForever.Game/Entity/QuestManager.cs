@@ -599,6 +599,9 @@ namespace NexusForever.Game.Entity
 
             activeQuests.Remove(questId);
             completedQuests.Add(questId, quest);
+
+            // entities with a visibility prerequisite on this quest may need to appear or disappear
+            player.VisibilityUpdate();
         }
 
         /// <summary>
@@ -622,6 +625,9 @@ namespace NexusForever.Game.Entity
 
             activeQuests.Remove(questId);
             completedQuests.Add(questId, quest);
+
+            // entities with a visibility prerequisite on this quest may need to appear or disappear
+            player.VisibilityUpdate();
         }
 
         /// <summary>
