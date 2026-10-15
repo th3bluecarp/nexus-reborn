@@ -10,30 +10,31 @@ Columns in parity.csv:
 - **commits**: our commits for that row.
 - **priority_1_15**: high when it matters for levelling 1 to 15 and is not done yet.
 
-## Scoreboard (149 features)
+## Scoreboard (151 features)
 
 | | Ours | Upstream |
 |---|---|---|
-| Implemented | 59 | 50 |
+| Implemented | 62 | 50 |
 | Partial | 46 | 44 |
-| Missing | 43 | 51 |
+| Missing | 42 | 53 |
 | Only on a side branch | 0 | 3 |
-| Features where we are ahead | 18 | |
+| Features where we are ahead | 21 | |
 
 ## Coverage counts
 
 | | Ours | Upstream | Total in client data |
 |---|---|---|---|
-| Spell effect types with a handler | 30 | 16 | 136 |
-| Prerequisite types checked | 23 | 17 | 273 |
-| Quest objective types that progress | 19 | 9 | 40 |
+| Spell effect types with a handler | 32 | 16 | 136 |
+| Prerequisite types checked | 41 | 17 | 273 |
+| Quest objective types that progress | 21 | 9 | 40 |
 
 ## What we have that upstream does not
 
 - Kill XP, open world respawn, creature visibility prerequisites, VirtualCollect quest objectives.
 - The maintainers' loot rework (only on their side branch upstream), with the inverted drop roll fixed.
-- Spell effects: Heal, HealShields, Absorption (absorb shields), SummonCreature, QuestAdvanceObjective.
-- Quest objectives: CollectItem (from bag counts), SpellSuccess 1 to 4 (use item or ability, target group aware), CompleteQuest. Reputation and account currency quest rewards.
+- Spell effects: Heal, HealShields, Absorption (absorb shields), SummonCreature, QuestAdvanceObjective, DespawnUnit, Scale.
+- Quest objectives: CollectItem (from bag counts), SpellSuccess 1 to 4 (use item or ability, target group aware), CompleteQuest, CompleteEvent, Unknown10 target group activations. Reputation and account currency quest rewards.
+- 18 more prerequisite types, led by IsObjectiveActive and QuestObjective (5,763 uses between them), plus objective progress, health, faction, reputation, item, zone and target checks.
 - Combat fixes: both creature auto attacks used, physical mitigation offset, corpses no longer heal and slide home.
 - Veteran start fix (Bon Voyage completed for Nexus start characters).
 - Starting zone content from Jabbithole: 101 spawns, 7 vendors with 150 items, 63 loot tables (see the wildstar-archive repo).

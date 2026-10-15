@@ -4,6 +4,11 @@ Newest first. "Live" means running on the desktop server.
 
 ## 2026-10-15
 
+- **Quest objective activations and events** (8ef987c4, not deployed). Activating a creature progresses Unknown10 objectives for its target groups (the Dominion cannons in Shellshock!, Camp Icefur). Winning a public event progresses CompleteEvent objectives. QuestObjective6 prerequisites check objective completion.
+- **Scale spell effects** (15256f1b, not deployed). 531 Scale effects resize server controlled units, timed ones revert.
+- **DespawnUnit spell effects** (6d95305e, not deployed). 855 effects remove the target without killing it. World spawns come back after the respawn delay through a new delayed add queue on the map.
+- **18 prerequisite types** (b34e47bc, not deployed). IsObjectiveActive and QuestObjective (5,763 uses) were unhandled and always failed, which hid or blocked quest NPCs, objects and abilities. Added those plus objective progress (QuestObjective0 to 5), Health, TrueLevel, Faction, Reputation, ItemOnCharacter, InSubZone, IsPlayer, IsCreature and InTargetGroup.
+- **Jabbithole newest snapshots** (wildstar-archive 87f8917, loaded into the desktop world DB). 1,400 newer pages merged with the oldest pass. Loot tables went from 63 to 64 (Barkblight Horror and Queen added, one dropped for lack of a spawn), spawn pins refreshed. Takes effect on the next server restart.
 - **SummonCreature spell effects** (a5d22eac, not deployed). 1951 summon effects (quest helpers and enemies, boss adds) now summon their creatures around the target at the data distance and angle, timed ones despawn when the effect ends.
 - **Absorb shields** (2d822f91, not deployed). 581 Absorption effects now give absorb pools, limited to the damage types in the effect mask, that take damage before the shield.
 - **QuestAdvanceObjective spell effects** (c4f5140b, not deployed). 251 quest item and quest ability effects now advance their quest objective.
@@ -25,4 +30,4 @@ Newest first. "Live" means running on the desktop server.
 
 ## Data (wildstar-archive repo)
 
-- Jabbithole Wayback scrape: 101 starting zone spawns, 7 vendors with 150 items, 63 loot tables with observed drop rates. A newer snapshot pass (1,403 pages, mostly 2017) is downloading.
+- Jabbithole Wayback scrape: 101 starting zone spawns, 7 vendors with 150 items, 63 loot tables with observed drop rates. A newer snapshot pass (1,400 of 1,403 pages, mostly 2017) is merged in.
