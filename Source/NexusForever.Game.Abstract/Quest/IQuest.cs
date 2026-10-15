@@ -57,6 +57,14 @@ namespace NexusForever.Game.Abstract.Quest
         IQuestObjective GetQuestObjectiveByIndex(byte index);
 
         /// <summary>
+        /// Return if the <see cref="IQuestObjective"/> with the supplied index can currently be progressed.
+        /// </summary>
+        /// <remarks>
+        /// The quest must be accepted, the objective incomplete and, for sequential objectives, every earlier objective complete.
+        /// </remarks>
+        bool IsObjectiveActive(byte index);
+
+        /// <summary>
         /// Complete the <see cref="IQuest"/> without rewards.
         /// </summary>
         void CompleteQuest();

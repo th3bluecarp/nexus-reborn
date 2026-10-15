@@ -358,6 +358,21 @@ namespace NexusForever.Game.Quest
         }
 
         /// <summary>
+        /// Return if the <see cref="IQuestObjective"/> with the supplied index can currently be progressed.
+        /// </summary>
+        public bool IsObjectiveActive(byte index)
+        {
+            if (State != QuestState.Accepted)
+                return false;
+
+            IQuestObjective objective = GetQuestObjectiveByIndex(index);
+            if (objective == null || objective.IsComplete())
+                return false;
+
+            return CanUpdateObjective(objective);
+        }
+
+        /// <summary>
         /// Complete the <see cref="IQuest"/> without rewards.
         /// </summary>
         public void CompleteQuest()
