@@ -35,6 +35,8 @@ namespace NexusForever.Game.Entity
 {
     public abstract class UnitEntity : WorldEntity, IUnitEntity
     {
+        private static readonly NLog.ILogger combatLog = NLog.LogManager.GetLogger("Combat");
+
         public float HitRadius { get; protected set; } = 1f;
 
         /// <summary>
@@ -531,6 +533,9 @@ namespace NexusForever.Game.Entity
 
             Shield -= damageDescription.ShieldAbsorbAmount;
             ModifyHealth(damageDescription.AdjustedDamage, damageDescription.DamageType, attacker);
+
+            if (attacker is IPlayer || this is IPlayer)
+                combatLog.Debug($"{attacker.Guid} (creature {attacker.CreatureId}, level {attacker.Level}) hit {Guid} (creature {CreatureId}, level {Level}) for {damageDescription.AdjustedDamage} (raw {damageDescription.RawDamage}, shield {damageDescription.ShieldAbsorbAmount}, {damageDescription.CombatResult}), health now {Health}/{MaxHealth}.");
         }
 
         /// <summary>

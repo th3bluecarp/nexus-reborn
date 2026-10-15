@@ -100,7 +100,7 @@ namespace NexusForever.Script.Main.AI
                 return;
 
             uint spell4Id = autoAttacks[autoAttackIndex];
-            autoAttackIndex = (autoAttackIndex++) % autoAttacks.Count;
+            autoAttackIndex = (autoAttackIndex + 1) % autoAttacks.Count;
 
             Spell4Entry spell4Entry = gameTableManager.Spell4.GetEntry(spell4Id);
             if (spell4Entry == null)
