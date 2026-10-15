@@ -130,6 +130,11 @@ namespace NexusForever.Game.Abstract.Entity
         /// </summary>
         void ObjectiveUpdate(QuestObjectiveType type, uint data, uint progress);
 
+        /// <summary>
+        /// Update any active quest <see cref="IQuestObjective"/>'s with supplied <see cref="QuestObjectiveType"/> whose reward pane target group matches with progress.
+        /// </summary>
+        void RewardPaneObjectiveUpdate(QuestObjectiveType type, uint targetGroupId, uint progress);
+
         // <summary>
         /// Update any active quest <see cref="IQuestObjective"/>'s with supplied ID with progress.
         /// </summary>

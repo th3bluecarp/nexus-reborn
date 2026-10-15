@@ -450,6 +450,22 @@ namespace NexusForever.Game.Quest
         /// </summary>
         public void ObjectiveUpdate(QuestObjectiveType type, uint data, uint progress)
         {
+            ObjectiveUpdate(o => o.ObjectiveInfo.Entry.Type == (uint)type && o.ObjectiveInfo.Entry.Data == data, progress);
+        }
+
+        /// <summary>
+        /// Update any <see cref="IQuestObjective"/>'s with supplied <see cref="QuestObjectiveType"/> whose reward pane target group matches with progress.
+        /// </summary>
+        public void RewardPaneObjectiveUpdate(QuestObjectiveType type, uint targetGroupId, uint progress)
+        {
+            if (targetGroupId == 0u)
+                return;
+
+            ObjectiveUpdate(o => o.ObjectiveInfo.Entry.Type == (uint)type && o.ObjectiveInfo.Entry.TargetGroupIdRewardPane == targetGroupId, progress);
+        }
+
+        private void ObjectiveUpdate(Func<IQuestObjective, bool> predicate, uint progress)
+        {
             if (PendingDelete)
                 return;
 
@@ -458,7 +474,7 @@ namespace NexusForever.Game.Quest
 
             // Order in reverse Index so that sequential steps don't completed by the same action
             foreach (IQuestObjective objective in objectives
-                .Where(o => o.ObjectiveInfo.Entry.Type == (uint)type && o.ObjectiveInfo.Entry.Data == data)
+                .Where(predicate)
                 .OrderByDescending(o => o.Index))
             {
                 if (objective.IsComplete())

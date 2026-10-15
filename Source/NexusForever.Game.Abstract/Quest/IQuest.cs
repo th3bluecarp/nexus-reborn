@@ -72,6 +72,15 @@ namespace NexusForever.Game.Abstract.Quest
         void ObjectiveUpdate(QuestObjectiveType type, uint data, uint progress);
 
         /// <summary>
+        /// Update any <see cref="IQuestObjective"/>'s with supplied <see cref="QuestObjectiveType"/> whose reward pane target group matches with progress.
+        /// </summary>
+        /// <remarks>
+        /// Used for objectives such as <see cref="QuestObjectiveType.VirtualCollect"/> where data is not the source of progress,
+        /// the reward pane target group lists the creatures that grant progress.
+        /// </remarks>
+        void RewardPaneObjectiveUpdate(QuestObjectiveType type, uint targetGroupId, uint progress);
+
+        /// <summary>
         /// Update any <see cref="IQuestObjective"/>'s with supplied ID with progress.
         /// </summary>
         void ObjectiveUpdate(uint id, uint progress);
