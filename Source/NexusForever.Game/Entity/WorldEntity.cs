@@ -363,8 +363,9 @@ namespace NexusForever.Game.Entity
             Rotation             = new Vector3(model.Rx, model.Ry, model.Rz);
             CreatureDisplayEntry = GameTableManager.Instance.Creature2DisplayInfo.GetEntry(model.DisplayInfo);
             CreatureOutfitEntry  = GameTableManager.Instance.Creature2OutfitInfo.GetEntry(model.OutfitInfo);
-            Faction1             = (Faction)model.Faction1;
-            Faction2             = (Faction)model.Faction2;
+            // some world database spawns have no faction, fall back to the creature's faction from the game table
+            Faction1             = model.Faction1 != 0 ? (Faction)model.Faction1 : creatureInfo.Entry.FactionId;
+            Faction2             = model.Faction2 != 0 ? (Faction)model.Faction2 : creatureInfo.Entry.FactionId;
             QuestChecklistIdx    = model.QuestChecklistIdx;
             ActivePropId         = model.ActivePropId;
             WorldSocketId        = model.WorldSocketId;

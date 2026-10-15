@@ -184,6 +184,10 @@ namespace NexusForever.Script.Main.AI
             if (source is not IUnitEntity unit)
                 return;
 
+            // units without a faction can't be evaluated for disposition
+            if (unit.Faction1 == 0)
+                return;
+
             if (entity.GetDispositionTo(unit.Faction1) != Disposition.Hostile)
                 return;
 
