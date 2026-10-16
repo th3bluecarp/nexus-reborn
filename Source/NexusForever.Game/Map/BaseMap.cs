@@ -89,6 +89,9 @@ namespace NexusForever.Game.Map
             PublicEventManager.Initialise(this);
             LootManager.Initialise(this);
 
+            if (this is not IMapInstance)
+                NexusForever.Game.PublicEvent.OpenWorldEventStarter.Attach(this);
+
             InitialiseScriptCollection();
         }
 
