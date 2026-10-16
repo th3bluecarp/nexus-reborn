@@ -112,8 +112,9 @@ namespace NexusForever.Game.Map
                 player.AchievementManager.CheckAchievements(player, AchievementType.MapComplete, currentZoneMap);
         }
 
-        // share of the level's base quest XP given for each newly revealed part of the zone map, retail value unknown
-        private const float ExplorationXpShare = 0.2f;
+        // exploring a whole zone map is worth this many times the level's base quest XP, split over its hex groups
+        // (Northern Wilds has 11, a typical zone 38); retail value unknown
+        private const float ExplorationXpPerZone = 10f;
 
         private void GrantExplorationXp()
         {
@@ -121,7 +122,8 @@ namespace NexusForever.Game.Map
             if (entry == null || entry.BaseQuestXpPerLevel == 0u)
                 return;
 
-            player.XpManager.GrantXp((uint)Math.Max(1f, entry.BaseQuestXpPerLevel * ExplorationXpShare), ExpReason.Exploration);
+            int groups = Math.Max(1, GameTableManager.Instance.MapZoneHexGroup.Entries.Count(m => m.MapZoneId == currentZoneMap));
+            player.XpManager.GrantXp((uint)Math.Max(1f, entry.BaseQuestXpPerLevel * ExplorationXpPerZone / groups), ExpReason.Exploration);
         }
 
         private static ZoneMapCoordinate Points2ZoneMapCoordinate(Vector3 position)

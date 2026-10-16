@@ -816,12 +816,6 @@ namespace NexusForever.Game.Entity
         {
             if (Zone != null)
             {
-                TextTable tt = GameTableManager.Instance.GetTextTable(Language.English);
-                if (tt != null)
-                {
-                    GlobalChatManager.Instance.SendMessage(Session, $"New Zone: ({Zone.Id}){tt.GetEntry(Zone.LocalizedTextIdName)}");
-                }
-
                 uint tutorialId = AssetManager.Instance.GetTutorialIdForZone(Zone.Id);
                 if (tutorialId > 0)
                 {
