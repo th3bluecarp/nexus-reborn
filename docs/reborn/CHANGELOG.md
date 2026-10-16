@@ -4,6 +4,7 @@ Newest first. "Live" means running on the desktop server.
 
 ## 2026-10-15
 
+- **Stuck menu** (834e88cd, not deployed). The stuck options work: recall to your bind point, recall to your house, or a free suicide.
 - **Bind points and Recall** (d497a029, not deployed). Using a transmat terminal now binds you there and Recall - Transmat takes you back. The recall tooltip may not show the location name yet.
 - **Esper channels and combo attacks** (98d85604, not deployed). ProxyChannelVariableTime and ProxyLinearAE effects work, which drive Esper Subjugating Blades and Wave Lash and many creature combo attacks.
 - **Deploy smoke test passed** (merge build at 72440c1b, PC). Copies of all 5 databases took every pending migration (upstream ones plus PathMissions) cleanly, the 101 custom spawns survived, and the merge WorldServer started on a test port and RabbitMQ vhost and ran 150 s with no errors. The live server was not touched.
