@@ -96,6 +96,7 @@ Confidence: **High** = consistent across all the data we checked and no counter 
 | creature specials interval | 8 to 14 s | CombatAI |
 | aggro range | 15 m, 2 m less per level the player is above the creature (min 5 m), none at 8+ levels above | CombatAI |
 | calls for help | idle same faction creatures within 10 m join, one ring only, Prime rank (bosses) never answer | CombatAI |
+| fall damage | free up to 25 m from the highest point of the Fall state, then 3 percent of max health per metre (lethal near 58 m); none when the landing batch leaves the player swimming | MovementManager (if the client switches to Swim one packet after landing, a water dive still hurts) |
 | leash range | 50 m from where combat started, then 10 s ignoring proximity on the walk home | CombatAI |
 
 ## Special cases that stand in for an unknown generic mechanism

@@ -19,7 +19,7 @@ Character,Titles,Earn and display titles,Implemented,Implemented,,,,"Entity/Titl
 Movement,Player movement relay,Client authoritative movement broadcast to others,Implemented,Implemented,,,,"Entity/ClientEntityCommandHandler, Entity/Movement (74 files)",No server-side speed or position validation
 Movement,Dash and sprint,"Dash charges, sprint stamina",Implemented,Implemented,,,,"Spell/ClientDashHandler, Stat/Player/DashStatUpdater",
 Movement,"Forced movement (knockback, pull)",Spell-driven forced movement,Implemented,Implemented,,,,"SpellEffectForcedMoveHandler, Movement/Force",Initial implementation
-Movement,Fall damage,Damage from long falls,Missing,Missing,,,high,Player.ModifyHealth maps DamageType.Fall but nothing applies it,
+Movement,Fall damage,Damage from long falls,Implemented,Missing,yes,bcb54500,,Player.ModifyHealth maps DamageType.Fall but nothing applies it,"MovementManager tracks the client's Fall state flag on players on foot: free up to 25 m, then 3 percent of max health per metre, none when landing swimming. Values invented. Fall damage health mask sent through Player.ModifyHealth."
 Movement,Taxi flights,"Talk to taxi NPC, fly on spline to node",Missing,Missing,,,high,ClientEntityInteractionHandler event 48 InvokeTaxiWindow unhandled,Taxi entity type exists only
 Movement,Rapid transport,Pay credits to teleport to a taxi node,Implemented,Implemented,,,,"ClientRapidTransport, SpellEffectRapidTransportHandler, PrerequisiteCheckRapidTransport",Cost and cooldown implemented
 Movement,Shuttle prompts between zones,Shuttle NPC offers travel to next zone,Missing,Missing,,,high,Interaction event 45 InvokeShuttlePrompt unhandled,May block hand-off from starting zones if a quest relies on it
