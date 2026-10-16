@@ -99,6 +99,14 @@ namespace NexusForever.Game.Entity
                         break;
                     return new PathMission { Entry = entry, Kind = MissionKind.Kill, CreatureId = assassinate.Creature2Id, TargetGroupId = assassinate.TargetGroupId, Count = Math.Max(assassinate.Count, 1u) };
                 }
+                case (Path.Soldier, 7u):
+                {
+                    // SWAT: retail had a gadget used on the targets (VirtualItemIdDisplay), here killing them counts
+                    PathSoldierSWATEntry swat = GameTableManager.Instance.PathSoldierSWAT.GetEntry(entry.ObjectId);
+                    if (swat == null)
+                        break;
+                    return new PathMission { Entry = entry, Kind = MissionKind.Kill, CreatureId = swat.Creature2Id, TargetGroupId = swat.TargetGroupId, Count = Math.Max(swat.Count, 1u) };
+                }
                 case (Path.Soldier, 5u):
                 case (Path.Soldier, 6u):
                 {
