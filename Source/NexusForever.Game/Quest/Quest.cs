@@ -471,7 +471,7 @@ namespace NexusForever.Game.Quest
         /// </summary>
         public void ObjectiveUpdate(QuestObjectiveType type, uint data, uint progress)
         {
-            ObjectiveUpdate(o => o.ObjectiveInfo.Entry.Type == (uint)type && o.ObjectiveInfo.Entry.Data == data, progress);
+            ObjectiveUpdate(o => o.ObjectiveInfo.Entry.Type == (uint)type && o.ObjectiveInfo.Data == data, progress);
         }
 
         /// <summary>
@@ -498,7 +498,7 @@ namespace NexusForever.Game.Quest
 
             bool changed = false;
             foreach (IQuestObjective objective in objectives
-                .Where(o => o.ObjectiveInfo.Entry.Type == (uint)type && o.ObjectiveInfo.Entry.Data == data))
+                .Where(o => o.ObjectiveInfo.Entry.Type == (uint)type && o.ObjectiveInfo.Data == data))
             {
                 if (!CanUpdateObjective(objective))
                     continue;

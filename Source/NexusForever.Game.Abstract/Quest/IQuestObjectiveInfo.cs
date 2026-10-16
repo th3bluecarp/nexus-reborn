@@ -11,6 +11,11 @@ namespace NexusForever.Game.Abstract.Quest
         QuestObjectiveEntry Entry { get; }
 
         /// <summary>
+        /// Objective target: Entry.Data, or for an ActivateEntity objective with no data the one creature its text names.
+        /// </summary>
+        uint Data { get; }
+
+        /// <summary>
         /// Quest objective is sequential, previous quest objective must be complete.
         /// </summary>
         bool IsSequential();

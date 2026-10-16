@@ -646,12 +646,30 @@ namespace NexusForever.Game.Entity
 
             scriptCollection?.Invoke<IWorldEntityScript>(s => s.OnActivateSuccess(activator));
 
+            // transports whose flight was a lost server script: using them takes the player to where the next step happens
+            if (CreatureInfo?.Entry != null && ScriptedTransports.TryGetValue(CreatureInfo.Entry.Id, out uint locationId)
+                && GameTableManager.Instance.WorldLocation2.GetEntry(locationId) is WorldLocation2Entry location)
+                activator.TeleportTo((ushort)location.WorldId, location.Position0, location.Position1, location.Position2);
+
             // Quest creatures (trapped survivors, cages, cannons) go away once used and come back on the respawn timer when
             // their activate spells give no rule of their own. Spells with a DespawnUnit effect remove the object themselves and
             // spells that clear SetBusy after a delay mean a reusable object, both are left to the data.
             if (questTarget && this is IUnitEntity unit && unit is not IPlayer && !ActivateSpellsHandleUse())
                 unit.Despawn();
         }
+
+        /// <summary>
+        /// Creature2 id of a transport object to the WorldLocation2 it takes the player to. Retail flew the player with server
+        /// scripts that are lost; the destination is the receiver location of the quest that ends there.
+        /// </summary>
+        private static readonly Dictionary<uint, uint> ScriptedTransports = new()
+        {
+            // Ship Controls on the Dominion ships at Camp Icefury, Northern Wilds: More Important Than Revenge (3963)
+            // is turned in to Deadeye Brightland at WorldLocation2IdReceiver 12354 (world 51)
+            { 27196u, 12354u },
+            // Navigation Controls in Levian Bay: A Daring Escape (5866) is turned in at WorldLocation2IdReceiver 45329 (world 22)
+            { 46980u, 45329u }
+        };
 
         private static readonly System.Collections.Concurrent.ConcurrentDictionary<uint, bool> activateSpellHandlesUse = new();
 
@@ -700,7 +718,7 @@ namespace NexusForever.Game.Entity
                         case QuestObjectiveType.ActivateEntity:
                         case QuestObjectiveType.ActivateEntity2:
                         case QuestObjectiveType.SucceedCSI:
-                            if (entry.Data == creatureId)
+                            if (objective.ObjectiveInfo.Data == creatureId)
                                 return true;
                             break;
                         case QuestObjectiveType.ActivateTargetGroup:

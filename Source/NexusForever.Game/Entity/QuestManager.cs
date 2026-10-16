@@ -600,7 +600,7 @@ namespace NexusForever.Game.Entity
                 throw new QuestException($"Player {player.CharacterId} tried to achieve quest {questId} with invalid state!");
 
             foreach (IQuestObjectiveInfo info in quest.Info.Objectives)
-                quest.ObjectiveUpdate(info.Type, info.Entry.Data, info.Entry.Count);
+                quest.ObjectiveUpdate(info.Type, info.Data, info.Entry.Count);
         }
 
         /// <summary>
@@ -622,7 +622,7 @@ namespace NexusForever.Game.Entity
             if (objective == null)
                 throw new QuestException();
 
-            quest.ObjectiveUpdate(objective.ObjectiveInfo.Type, objective.ObjectiveInfo.Entry.Data, objective.ObjectiveInfo.Entry.Count);
+            quest.ObjectiveUpdate(objective.ObjectiveInfo.Type, objective.ObjectiveInfo.Data, objective.ObjectiveInfo.Entry.Count);
         }
 
         /// <summary>
