@@ -3,6 +3,7 @@ using NexusForever.Database.Character;
 using NexusForever.Database.Character.Model;
 using NexusForever.Game.Abstract.Entity;
 using NexusForever.Game.Static.Entity;
+using NexusForever.Game.Static.Quest;
 using NexusForever.Game.Static.Reputation;
 using NexusForever.Game.Static.Challenges;
 using NexusForever.GameTable;
@@ -265,6 +266,7 @@ namespace NexusForever.Game.Entity
             {
                 challenge.CompletionCount++;
                 SendResult(challenge.Entry.Id, ChallengeResult.Completed, (int)Math.Max(challenge.CurrentTier, 1u) - 1);
+                player.QuestManager.ObjectiveUpdate(QuestObjectiveType.CompleteChallenge, 0u, 1u);
                 AddRewardPoints(challenge.Entry.RewardTrackId, TierPoints[Math.Clamp((int)challenge.CurrentTier, 1, TierPoints.Length) - 1]);
             }
             else
