@@ -4,6 +4,7 @@ Newest first. "Live" means running on our test server.
 
 ## 2026-10-15
 
+- - **Named quest targets spawn once** (8cdb7634, live, published in data/). Named creatures like Golthox and Firewalker Jarrok were spawning up to 12 times because players had pinned them in many places. Targets now spawn as many times as their quest asks for. A third download for quest NPCs never searched brought the world to 874 extra spawns of 489 creatures, with 264 quest givers and turn-ins placed.
 - - **Missing quest NPCs, second pass** (410fbcef, live, published in data/). A download of 254 pages for the quest givers and objects still missing brought spawns from 387 to 751, covering 329 creatures the world did not have at all. Vendors 115 with 4,050 items.
 - - **World data from the level 1 to 20 Jabbithole download** (647c32b8, live, and published in data/). NPC spawns went from 158 to 387 (more missing quest givers and objects), vendors from 7 to 108 stocking 3,987 items, loot from 101 to 115 creatures, creature abilities from 228 to 1,167 creatures. Checked on a fresh NexusForever world database first, no errors.
 - - **Holocrypt respawn** (853ca8ab, live). When you die in the open world you now get the holocrypt option, which brings you back at full health at the nearest friendly transmat. Retail's holocrypt locations were never in the client data, so the transmat stands in for them. Wake here still works as before.
