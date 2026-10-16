@@ -191,6 +191,16 @@ namespace NexusForever.Game.Abstract.Entity
         void BreakStealth();
 
         /// <summary>
+        /// Returns if the unit takes no damage, from at least one active invulnerability effect.
+        /// </summary>
+        bool IsInvulnerable { get; }
+
+        /// <summary>
+        /// Add or remove an invulnerability source from the spell with the supplied casting id.
+        /// </summary>
+        void SetInvulnerable(uint castingId, bool invulnerable);
+
+        /// <summary>
         /// Stance used by the creature AI when this unit is a combat pet.
         /// </summary>
         NexusForever.Game.Static.Pet.PetStance PetStance { get; set; }

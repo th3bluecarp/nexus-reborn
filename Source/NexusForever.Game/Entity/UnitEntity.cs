@@ -337,6 +337,23 @@ namespace NexusForever.Game.Entity
         }
 
         private readonly HashSet<uint> stealthSources = [];
+        private readonly HashSet<uint> invulnerableSources = [];
+
+        /// <summary>
+        /// Returns if the unit takes no damage, from at least one active invulnerability effect.
+        /// </summary>
+        public bool IsInvulnerable => invulnerableSources.Count > 0;
+
+        /// <summary>
+        /// Add or remove an invulnerability source from the spell with the supplied casting id.
+        /// </summary>
+        public void SetInvulnerable(uint castingId, bool invulnerable)
+        {
+            if (invulnerable)
+                invulnerableSources.Add(castingId);
+            else
+                invulnerableSources.Remove(castingId);
+        }
 
         /// <summary>
         /// Stance used by the creature AI when this unit is a combat pet.

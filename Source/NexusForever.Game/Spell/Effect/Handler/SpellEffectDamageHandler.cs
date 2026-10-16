@@ -39,6 +39,10 @@ namespace NexusForever.Game.Spell.Effect.Handler
             if (!target.CanAttack(executionContext.Spell.Caster))
                 return SpellEffectExecutionResult.PreventEffect;
 
+            // Invulnerability, Energy Shield and similar UnitStateSet 6 effects
+            if (target.IsInvulnerable)
+                return SpellEffectExecutionResult.PreventEffect;
+
             IDamageCalculator damageCalculator = damageCalculatorFactory.Resolve();
             damageCalculator.CalculateDamage(executionContext, target, info);
 
