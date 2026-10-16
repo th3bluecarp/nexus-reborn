@@ -4,6 +4,7 @@ Newest first. "Live" means running on our test server.
 
 ## 2026-10-15
 
+- - **NPCs placed with real terrain height** (7e806faa, live, published in data/). NPCs whose map pins were far from any known spawn were skipped because their ground height was unknown. A small tool now reads the height and area from the server's map files, which come from the game client. It matches existing NPCs to within 0.19 m on median. 44 more creatures placed, 965 extra spawns in total, 275 quest givers and turn-ins. Not used in Illium and Thayd, where NPCs stand on buildings the terrain does not include.
 - - **Defensive pet stance** (4d78731f, live). Pets on Defensive now protect you, going after whatever is attacking you instead of copying your target, which is what Assist does.
 - - **Exploration XP** (08a64f7d, live). Revealing a new part of the zone map now gives a little XP, about a fifth of a quest's base XP for your level. Retail had exploration XP but the amount is a guess.
 - - **Named quest targets spawn once** (8cdb7634, live, published in data/). Named creatures like Golthox and Firewalker Jarrok were spawning up to 12 times because players had pinned them in many places. Targets now spawn as many times as their quest asks for. A third download for quest NPCs never searched brought the world to 874 extra spawns of 489 creatures, with 264 quest givers and turn-ins placed.
