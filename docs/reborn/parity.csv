@@ -94,7 +94,7 @@ Items/Inventory,Equip gear and item stats,Equipping applies stats,Partial,Partia
 Items/Inventory,Use consumables,Use item casts its spell,Partial (not deployed),Partial,yes,dc88210b,high,Item/ClientItemUseHandler,Heal potions now work through the Heal handler. Works if the effect type is handled; heal potions (Heal effect) do nothing
 Items/Inventory,Supply satchel,Crafting materials satchel,Implemented,Implemented,,,,"ClientItemMoveTo/FromSupplySatchel, SupplySatchelManager",
 Items/Inventory,Durability and repair,"Gear loses durability on death, repair at vendor",Missing,Missing,,,high,Item.Durability stored only; no repair handler,
-Items/Inventory,Bank,Personal bank at banker NPC,Missing,Missing,,,,Interaction event 66 ShowBank unhandled,Bank bag slots exist in Inventory
+Items/Inventory,Bank,Personal bank at banker NPC,Partial (not deployed),Missing,yes,46cc9d88,,Interaction event 66 ShowBank unhandled,"Bank, SharedRealmBank and Dye interactions answer with ServerInteractionChange for the unit (untested, client behaviour not confirmed); items move with the normal item move messages. Bank slot purchase not handled."
 Items/Inventory,Salvage,Salvage items for materials,Missing,Missing,,,,Only an error code reference,
 Items/Inventory,Runes and item crafting upgrades,Rune slots on gear,Missing,Missing,,,,ClientCraftingRune* unhandled,
 Vendors,Buy from vendor,Vendor window and purchases with credits or currencies,Implemented,Implemented,,,,"Vendor/ClientVendorPurchaseHandler, EntityVendor* DB tables",7 starting zone vendors with 150 items from Jabbithole (data). Vendor inventories are DB data

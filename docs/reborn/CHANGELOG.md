@@ -4,6 +4,7 @@ Newest first. "Live" means running on the desktop server.
 
 ## 2026-10-15
 
+- **Bank and dye windows** (46cc9d88, not deployed, untested). Talking to a banker or dye vendor now sends the message that should open their window.
 - **Stuck menu** (834e88cd, not deployed). The stuck options work: recall to your bind point, recall to your house, or a free suicide.
 - **Bind points and Recall** (d497a029, not deployed). Using a transmat terminal now binds you there and Recall - Transmat takes you back. The recall tooltip may not show the location name yet.
 - **Esper channels and combo attacks** (98d85604, not deployed). ProxyChannelVariableTime and ProxyLinearAE effects work, which drive Esper Subjugating Blades and Wave Lash and many creature combo attacks.
