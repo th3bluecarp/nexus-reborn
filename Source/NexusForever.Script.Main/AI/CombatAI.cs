@@ -418,6 +418,12 @@ namespace NexusForever.Script.Main.AI
         [ThreadStatic]
         private static bool answeringCall;
 
+        private bool IsPrime(ICreatureEntity creature)
+        {
+            uint difficultyId = gameTableManager.Creature2.GetEntry(creature.CreatureId)?.Creature2DifficultyId ?? 0u;
+            return gameTableManager.Creature2Difficulty.GetEntry(difficultyId)?.RankValue == 2u;
+        }
+
         /// <summary>
         /// Idle creatures of the same faction within 10 m join the fight against the same target. Retail had social aggro,
         /// the range and rules here are invented.
@@ -442,6 +448,9 @@ namespace NexusForever.Script.Main.AI
                     if (ally.Position.GetDistance(entity.Position) > 10f)
                         continue;
                     if (ally.GetDispositionTo(target.Faction1) != Disposition.Hostile)
+                        continue;
+                    // Prime rank creatures (bosses) only fight when pulled themselves
+                    if (IsPrime(ally))
                         continue;
 
                     ally.ThreatManager.UpdateThreat(target, 1);
