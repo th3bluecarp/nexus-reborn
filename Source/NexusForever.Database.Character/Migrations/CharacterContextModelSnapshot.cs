@@ -1469,6 +1469,38 @@ namespace NexusForever.Database.Character.Migrations
                     b.ToTable("character_reputation", (string)null);
                 });
 
+            modelBuilder.Entity("NexusForever.Database.Character.Model.CharacterRewardTrackModel", b =>
+                {
+                    b.Property<ulong>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint(20) unsigned")
+                        .HasDefaultValue(0ul)
+                        .HasColumnName("id");
+
+                    b.Property<ushort>("RewardTrackId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("smallint(5) unsigned")
+                        .HasDefaultValue((ushort)0)
+                        .HasColumnName("rewardTrackId");
+
+                    b.Property<uint>("Claimed")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int(10) unsigned")
+                        .HasDefaultValue(0u)
+                        .HasColumnName("claimed");
+
+                    b.Property<uint>("Points")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int(10) unsigned")
+                        .HasDefaultValue(0u)
+                        .HasColumnName("points");
+
+                    b.HasKey("Id", "RewardTrackId")
+                        .HasName("PRIMARY");
+
+                    b.ToTable("character_reward_track", (string)null);
+                });
+
             modelBuilder.Entity("NexusForever.Database.Character.Model.CharacterSpellModel", b =>
                 {
                     b.Property<ulong>("Id")
@@ -2830,6 +2862,18 @@ namespace NexusForever.Database.Character.Migrations
                     b.Navigation("Character");
                 });
 
+            modelBuilder.Entity("NexusForever.Database.Character.Model.CharacterRewardTrackModel", b =>
+                {
+                    b.HasOne("NexusForever.Database.Character.Model.CharacterModel", "Character")
+                        .WithMany("RewardTrack")
+                        .HasForeignKey("Id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("FK__character_reward_track_id__character_id");
+
+                    b.Navigation("Character");
+                });
+
             modelBuilder.Entity("NexusForever.Database.Character.Model.CharacterSpellModel", b =>
                 {
                     b.HasOne("NexusForever.Database.Character.Model.CharacterModel", "Character")
@@ -3057,6 +3101,8 @@ namespace NexusForever.Database.Character.Migrations
                     b.Navigation("Reputation");
 
                     b.Navigation("Residence");
+
+                    b.Navigation("RewardTrack");
 
                     b.Navigation("Spell");
 
