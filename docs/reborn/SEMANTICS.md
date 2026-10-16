@@ -19,6 +19,7 @@ Confidence: **High** = consistent across all the data we checked and no counter 
 | PublicEvent117 | ObjectId a PublicEvent, Value 1 running on the map, 0 not | Medium | 458 uses, ObjectId a PublicEvent id in 457, Values 0 and 1, Equal/NotEqual | value might be a state rather than a flag | PrerequisiteCheckPublicEvent |
 | PublicEventObjective188 (118) | ObjectId a PublicEventObjective, Value its PublicEventStatus | High | 2,422 uses, ObjectId an objective id in 2,392, Values 0-3 line up with Inactive, Active, Succeeded, Failed | | PrerequisiteCheckPublicEventObjective |
 | Inventory (246) | Value an Item2 id, NotEqual = the player does not carry it | High | 793 uses, all NotEqual, Value an item in 791 (hoverboards, bags, titles) | ObjectId on 60 rows unknown, ignored | PrerequisiteCheckInventory |
+| TradeSkillProfession (19) | ObjectId a TradeskillTier, 1 when that tier of its tradeskill is reached | Medium | 268 uses, ObjectIds are tier ids, Value 0 with GreaterThan/LessThanOrEqual or 1 with Equal | could mean the tier is the current one, not reached | PrerequisiteCheckTradeskillProfession |
 | EpisodeState (9) | Value is a QuestState over the episode's quests (3 = all completed) | Medium | 31 of 34 uses are Value 3 | how "accepted" is defined for an episode is a guess | | PrerequisiteCheckEpisodeState |
 | Spell59 | **not implemented**: ObjectId a Spell4 id (253 of 260), Value 1 to 5 with numeric comparisons, probably a stack count; no way to count stacks yet | | | | |
 | Unknown47, ChallengeRequirement (69), ChallengeLocked (74), PlayerPathMission (54), PathMissionRequirement (67) | **not implemented** | | Value is a spell / challenge / mission id | several readings fit equally well | | unhandled on purpose |
@@ -60,6 +61,14 @@ Confidence: **High** = consistent across all the data we checked and no counter 
 | SetBusy (107) | DataBits00 1 busy, 0 free; busy objects refuse activation; 60 s fallback clear | High (meaning), Invented (fallback) | 352 of 508 spells are activate spells on the object; 62 spells set at 0 ms and clear after 2 to 60 s; 0 used by PSI Recharging and Failed | DataBits01 (a creature id on 6 rows) unknown; 275 set-only spells relied on lost scripts |
 | NpcExecutionDelay (35) | the casting creature does nothing for the effect duration, a recovery window | Medium | 3,288 effects, 94 percent with no data and 1 to 4 s durations, all on creature spells | DataBits on the other 6 percent unknown |
 | Teleport with no location | recall to bind point | Medium | Recall - Transmat (8568) is the only such spell | |
+
+## Tradeskills
+
+| Item | Our meaning | Confidence | Notes |
+|---|---|---|---|
+| Tradeskill.Flags | 2 gathering, 4 equipment crafting, 8 other crafting, 1 hobby (Cooking, Fishing, Farmer), 16 Runecrafting | Medium | from the names |
+| active limit | two crafting tradeskills, gathering and hobbies free | Medium | late retail rule |
+| messages | ServerProfessionsLoad, ServerProfessionUpdate and ClientTradeskillLearn layouts come from upstream and are untested with the client | | professions list only sent once something is learned |
 
 ## Path missions
 

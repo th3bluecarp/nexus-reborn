@@ -10,6 +10,7 @@ Newest first. "Live" means running on our test server.
 
 ## 2026-10-15
 
+- - **Tradeskills, first part** (8ede3472, live). Upstream added the tradeskill message formats, so I built on them: you can learn tradeskills from a trainer (two crafting skills at once, gathering free), they are saved, 'Learn two tradeskills' quests count, and the 400-odd crafting quest checks on a tradeskill tier now work. Untested with the client: whether the trainer window opens and whether the profession messages are right. Harvesting and crafting come next.
 - - **Owns-item prerequisite** (6ac2f6ae, live). 793 checks of the form 'does not already own this item', mostly on hoverboard, bag and title offers, used to always fail. They work now.
 - - **Public event prerequisites** (7a288f4e, live). Two prerequisite types tied to public events, used 2,880 times and gating 59 quests, now work: whether an event is running, and the state of one of its objectives. Creatures and quests that appear only during an event phase follow it now.
 - - **Two more prerequisite types** (d640a68a, live). The only unhandled prerequisites in the live logs were type 50 (a target under a buff, such as Exhausted: Combat Stealth) and type 71 (a health, shield or resource percentage). Unhandled types count as failed, which hides quests and dialogue options. Both now work. Meanings inferred from the data, logged in the ledger.
