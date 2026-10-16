@@ -1,4 +1,4 @@
-using NexusForever.Game.Static.Challenges;
+﻿using NexusForever.Game.Static.Challenges;
 using NexusForever.GameTable.Model;
 using NexusForever.Shared;
 
@@ -17,6 +17,11 @@ namespace NexusForever.Game.Abstract.Entity
         /// Invoked when the player gets kill credit for a creature.
         /// </summary>
         void OnKill(IEnumerable<uint> targetGroupIds);
+
+        /// <summary>
+        /// Invoked when the player successfully activates a creature.
+        /// </summary>
+        void OnActivate(IEnumerable<uint> targetGroupIds);
 
         /// <summary>
         /// Handle the challenge window buttons.

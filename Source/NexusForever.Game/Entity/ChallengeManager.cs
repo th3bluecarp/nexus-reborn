@@ -1,4 +1,4 @@
-using NexusForever.Game.Abstract.Entity;
+﻿using NexusForever.Game.Abstract.Entity;
 using NexusForever.Game.Static.Challenges;
 using NexusForever.GameTable;
 using NexusForever.GameTable.Model;
@@ -11,7 +11,7 @@ namespace NexusForever.Game.Entity
     /// Zone challenges for a player: unlock in their area, count qualifying kills, tiers, timer, leave area fail and cooldown.
     /// </summary>
     /// <remarks>
-    /// Only combat challenges (kill a target group) progress. Challenges with flag 0x20 start on the first qualifying kill,
+    /// Combat challenges count kills of a target group, collect challenges kills or activations, checklist challenges activations. Challenges with flag 0x20 start on the first qualifying kill,
     /// the others from the challenge window. Timer 5 minutes, leave area grace 10 seconds and cooldown 30 minutes are the
     /// common retail values, the per challenge values are not in the client data. Rewards are not given yet. State is not saved.
     /// </remarks>
@@ -61,7 +61,7 @@ namespace NexusForever.Game.Entity
             bool changed = false;
             foreach (ChallengeEntry entry in GameTableManager.Instance.Challenge.Entries)
             {
-                if (entry.ChallengeTypeEnum != (uint)ChallengeType.Combat || entry.Target == 0u || unlocked.ContainsKey(entry.Id))
+                if (!IsSupported(entry) || entry.Target == 0u || unlocked.ContainsKey(entry.Id))
                     continue;
 
                 uint areaZone = entry.WorldZoneIdRestriction != 0u ? entry.WorldZoneIdRestriction : entry.WorldZoneId;
@@ -84,6 +84,11 @@ namespace NexusForever.Game.Entity
                 SendUpdate();
         }
 
+        private static bool IsSupported(ChallengeEntry entry)
+        {
+            return (ChallengeType)entry.ChallengeTypeEnum is ChallengeType.Combat or ChallengeType.Collect or ChallengeType.ChecklistActivate;
+        }
+
         private bool InArea(Challenge challenge)
         {
             uint areaZone = challenge.Entry.WorldZoneIdRestriction != 0u ? challenge.Entry.WorldZoneIdRestriction : challenge.Entry.WorldZoneId;
@@ -95,12 +100,25 @@ namespace NexusForever.Game.Entity
         /// </summary>
         public void OnKill(IEnumerable<uint> targetGroupIds)
         {
+            OnTarget(targetGroupIds, ChallengeType.Combat, ChallengeType.Collect);
+        }
+
+        /// <summary>
+        /// Invoked when the player successfully activates a creature.
+        /// </summary>
+        public void OnActivate(IEnumerable<uint> targetGroupIds)
+        {
+            OnTarget(targetGroupIds, ChallengeType.Collect, ChallengeType.ChecklistActivate);
+        }
+
+        private void OnTarget(IEnumerable<uint> targetGroupIds, params ChallengeType[] types)
+        {
             var groups = targetGroupIds.ToHashSet();
             if (groups.Count == 0)
                 return;
 
             DateTime now = DateTime.UtcNow;
-            foreach (Challenge challenge in unlocked.Values.Where(c => groups.Contains(c.Entry.Target)).ToList())
+            foreach (Challenge challenge in unlocked.Values.Where(c => groups.Contains(c.Entry.Target) && types.Contains((ChallengeType)c.Entry.ChallengeTypeEnum)).ToList())
             {
                 if (!challenge.Activated)
                 {
