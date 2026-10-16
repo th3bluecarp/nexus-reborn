@@ -861,6 +861,7 @@ namespace NexusForever.Game.Entity
             player.QuestManager.ObjectiveUpdate(QuestObjectiveType.KillCreature2, CreatureId, 1u);
             // GatheResource objectives (destroy a Fallen Tree) name a harvest node creature; without tradeskills, destroying it counts
             player.QuestManager.ObjectiveUpdate(QuestObjectiveType.GatheResource, CreatureId, 1u);
+            player.TradeskillManager.OnKill(CreatureId);
             player.PathMissionManager.OnKill(CreatureId, AssetManager.Instance.GetTargetGroupsForCreatureId(CreatureId));
             player.ChallengeManager.OnKill(AssetManager.Instance.GetTargetGroupsForCreatureId(CreatureId));
 

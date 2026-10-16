@@ -218,6 +218,33 @@ namespace NexusForever.Game.Entity
             });
         }
 
+        /// <remarks>
+        /// TradeskillTier has no harvest xp column, the tier CraftXp stands in for it.
+        /// </remarks>
+        public void OnKill(uint creatureId)
+        {
+            Creature2Entry creature = GameTableManager.Instance.Creature2.GetEntry(creatureId);
+            if (creature == null || creature.TradeskillHarvestingInfoId == 0u)
+                return;
+
+            TradeskillHarvestingInfoEntry harvest = GameTableManager.Instance.TradeskillHarvestingInfo.GetEntry(creature.TradeskillHarvestingInfoId);
+            TradeskillTierEntry nodeTier = harvest != null ? GameTableManager.Instance.TradeskillTier.GetEntry(harvest.TradeSkillTierId) : null;
+            if (nodeTier == null)
+                return;
+
+            var type = (TradeskillType)nodeTier.TradeSkillId;
+            if (!tradeskills.TryGetValue(type, out Tradeskill tradeskill) || !tradeskill.Active)
+                return;
+
+            uint xp = CurrentTierEntry(type)?.CraftXp ?? 0u;
+            if (xp == 0u)
+                return;
+
+            tradeskill.Xp     += xp;
+            tradeskill.IsDirty = true;
+            SendUpdate(type, tradeskill);
+        }
+
         public void Craft(uint tradeskillSchematic2Id, uint count)
         {
             TradeskillSchematic2Entry schematic = GameTableManager.Instance.TradeskillSchematic2.GetEntry(tradeskillSchematic2Id);

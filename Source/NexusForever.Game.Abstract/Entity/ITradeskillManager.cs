@@ -26,5 +26,10 @@ namespace NexusForever.Game.Abstract.Entity
         /// Learn a schematic from a recipe item (GiveSchematic).
         /// </summary>
         void LearnSchematic(uint tradeskillSchematic2Id);
+
+        /// <summary>
+        /// Invoked when the player destroys a creature, gathering tradeskills earn xp from harvest nodes.
+        /// </summary>
+        void OnKill(uint creatureId);
     }
 }
