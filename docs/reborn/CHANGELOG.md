@@ -4,6 +4,7 @@ Newest first. "Live" means running on the desktop server.
 
 ## 2026-10-15
 
+- **Random proxy spells** (7c5fe043, not deployed). 195 ProxyRandomExclusive effects now cast one of their weighted spell choices.
 - **Pet stances** (1cd8fc5c, not deployed). The pet bar stance buttons work: passive, stay, assist and aggressive.
 - **Group kill credit** (27811a61, not deployed). Group members near a kill now get the quest credit and XP too, not only those who hit the creature.
 - **Creature abilities** (dc6f14a3, not deployed). 136 starting zone creatures now fight with the spells players saw them use on retail (archived Jabbithole ability lists), including telegraphed specials like the yeti Claw Slam, instead of a generic punch and jab.
