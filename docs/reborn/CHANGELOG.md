@@ -4,6 +4,7 @@ Newest first. "Live" means running on the desktop server.
 
 ## 2026-10-15
 
+- **World phases** (acd6d27b, not deployed). ChangePhase effects (portals, rituals) now move you into the other world phase.
 - **Percent heals and drains** (ee533d33, not deployed). SapVital effects work on health: levelling up fully heals you, food heals by percent, and percent drains and self-destructs hurt.
 - **Taunts and threat drops** (2fa12fb3, not deployed). ThreatModification effects now taunt, lower threat (Forget, Detaunt), drop you from a threat list or wipe it.
 - **Interrupts** (df39f928, not deployed). SpellCounter effects (school interrupts, Head Shot, Suffocate) now interrupt enemy casts once their interrupt armour is broken.
