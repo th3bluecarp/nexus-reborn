@@ -8,6 +8,7 @@ Newest first. "Live" means running on our test server.
 
 ## 2026-10-15
 
+- - **Every starting zone has a way out** (5bb1c74b, live). The Aurin Portal to Celestion and the Transport to Everstar Grove in Northern Wilds now work too, same stand in as the Ship Controls.
 - - **Leaving Northern Wilds** (fafe1b32, live). The ship out of Northern Wilds was a lost server script, so you would have been stuck there. Using the Ship Controls at the end of More Important Than Revenge now takes you to Deadeye Brightland on the continent to turn it in. The Dominion's Navigation Controls in Levian Bay do the same. Also, 313 quest objectives that say 'Activate the X' but had no target in the data now take the target from their own text, so they can be completed.
 - - **Soldier SWAT missions** (d99f5240, live). The 55 SWAT missions, where retail had you use a gadget like a flashbang on the targets, now count kills of those targets.
 - - **Explorer tracking missions** (ca6eeabd, live). The 25 Explorer TRACKING missions, where retail had you follow a creature or an energy trail, now complete when you reach their locations. Every Explorer mission type now does something.
