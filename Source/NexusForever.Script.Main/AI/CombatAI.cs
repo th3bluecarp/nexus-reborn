@@ -77,6 +77,9 @@ namespace NexusForever.Script.Main.AI
             if (petOwner != null)
                 UpdatePet(petOwner, lastTick);
 
+            if (stealthedInRange.Count > 0)
+                UpdateStealthed(lastTick);
+
             if (!entity.TargetGuid.HasValue)
                 return;
 
@@ -144,6 +147,36 @@ namespace NexusForever.Script.Main.AI
         }
 
         private readonly UpdateTimer petTimer = new(TimeSpan.FromSeconds(1d));
+
+        private readonly HashSet<uint> stealthedInRange = [];
+        private readonly UpdateTimer stealthTimer = new(TimeSpan.FromSeconds(1d));
+
+        /// <summary>
+        /// Aggro on units that came into range stealthed and have since dropped stealth while still in range.
+        /// </summary>
+        private void UpdateStealthed(double lastTick)
+        {
+            stealthTimer.Update(lastTick);
+            if (!stealthTimer.HasElapsed)
+                return;
+
+            stealthTimer.Reset();
+            foreach (uint guid in stealthedInRange.ToList())
+            {
+                IUnitEntity unit = entity.GetVisible<IUnitEntity>(guid);
+                if (unit == null || !unit.IsAlive || entity.Position.GetDistance(unit.Position) > 15f)
+                {
+                    stealthedInRange.Remove(guid);
+                    continue;
+                }
+
+                if (unit.IsStealthed)
+                    continue;
+
+                stealthedInRange.Remove(guid);
+                AggroEntity(unit);
+            }
+        }
 
         /// <summary>
         /// Return the player that summoned this creature as a pet, null for anything else.
@@ -241,9 +274,12 @@ namespace NexusForever.Script.Main.AI
         /// </summary>
         public void OnEnterRange(IGridEntity entity)
         {
-            // stealthed units walk past, damage still pulls through OnHealthChange
+            // stealthed units walk past, damage still pulls through OnHealthChange; they are re-checked in case stealth ends nearby
             if (entity is IUnitEntity { IsStealthed: true })
+            {
+                stealthedInRange.Add(entity.Guid);
                 return;
+            }
 
             // pets only pull on their own in the Aggressive stance, otherwise they fight what their owner fights
             if (GetPetOwner() != null && this.entity.PetStance != PetStance.Aggressive)
