@@ -2,6 +2,10 @@
 
 Newest first. "Live" means running on our test server.
 
+## 2026-10-16
+
+- **Fixes from a code review of the overnight work** (adcdabe2, live). The holocrypt respawn could throw on a transmat with no faction and leave you dead with no respawn button, and it gave a free full health revive where no transmat existed. Challenge gear was lost if your bags were full, it now waits for the next challenge. Creatures could be dragged 50 m at a time by hitting them as they walked home after a leash. Stealthed players near a creature busy with someone else were forgotten.
+
 ## 2026-10-15
 
 - - **NPCs placed with real terrain height** (7e806faa, live, published in data/). NPCs whose map pins were far from any known spawn were skipped because their ground height was unknown. A small tool now reads the height and area from the server's map files, which come from the game client. It matches existing NPCs to within 0.19 m on median. 44 more creatures placed, 965 extra spawns in total, 275 quest givers and turn-ins. Not used in Illium and Thayd, where NPCs stand on buildings the terrain does not include.
