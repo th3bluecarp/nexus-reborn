@@ -4,6 +4,7 @@ Newest first. "Live" means running on our test server.
 
 ## 2026-10-15
 
+- - **Leashing** (8709f911, live). Creatures no longer chase you across the zone. Past 50 m from where the fight started they give up, heal and walk home, and they ignore players they walk past on the way. The range is a guess.
 - - **Complete Challenges quest objectives** (55bb6a05, live). The two quests that ask you to complete challenges anywhere on Nexus now count them.
 - - **Challenge rewards** (78e399bb, live). Finishing a challenge now earns points on that zone's reward track, and every 300 points (up to 1,200) gives you a piece of your class's challenge gear at your level. Retail let you pick from three bags whose contents were never in the client data. The gear sets themselves are in the data, so the reward is real gear, but which piece you get and the point values are my guesses (logged in SEMANTICS.md). Progress is saved.
 - - **Pet abilities without a target** (c407e270, live). Bot ability buttons pressed with nothing targeted now fire at whatever the pet is already fighting instead of at the pet itself.
