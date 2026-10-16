@@ -1,4 +1,53 @@
-## NexusForever
+# Nexus Reborn
+
+A playable fork of [NexusForever](https://github.com/NexusForever/NexusForever), the WildStar server emulator.
+
+The goal here is different from upstream. NexusForever aims to rebuild the retail server accurately. Nexus Reborn aims for something people can sit down and play: quests that finish, paths that progress, challenges that pay out, creatures that fight back. Where the real retail behaviour is unknown, this fork makes a reasonable guess and writes it down instead of leaving the feature out. It is not a 1:1 copy of the original game and does not claim to be.
+
+## How this was built
+
+Most of the work in this fork was written with an AI coding assistant (Claude), directed and play tested by a human. That matters for how you should read it.
+
+* Many game data fields have no documentation. Their meanings here were inferred from patterns in the client tables, and some numbers are simply invented so a feature works.
+* Every one of those calls is recorded in [docs/reborn/SEMANTICS.md](docs/reborn/SEMANTICS.md) with the evidence, a confidence level (High, Medium, Low or Invented), the alternatives and what would settle it. If you work on WildStar emulation, treat anything marked Low or Invented as a guess, not as research.
+* Special cases that stand in for an unknown generic mechanism are listed at the end of that file so they can be replaced when the real mechanism is understood.
+
+Nothing in this fork has been offered upstream. If something here is useful to NexusForever, they are welcome to it under the license.
+
+## What is different from upstream
+
+The full feature comparison is in [docs/reborn/PARITY.md](docs/reborn/PARITY.md) and the history is in [docs/reborn/CHANGELOG.md](docs/reborn/CHANGELOG.md). Highlights:
+
+* Path missions for Soldier, Explorer and Settler, with path XP
+* Zone challenges with timers, tiers and reward tracks that give challenge gear
+* Bind points, Recall and the stuck menu
+* About 55 more spell effects, including pets, stealth, traps, dispels and threat
+* 41 more prerequisite types, more quest objective types and open world event starts
+* Group kill credit and combat pet kill credit
+* Creature special abilities from an optional data file
+
+## Setup
+
+Setup is the same as upstream, see the [NexusForever server guide](https://www.emulator.ws/installation/server-guide). This fork adds database migrations, so run the migrations as usual after updating.
+
+Optional settings in WorldServer.json under Realm:
+
+* CreatureSpellsPath: a JSON file of combat spells per creature. Without it creatures use their generic attacks.
+* PathMissionXp: base and per level path XP per mission (defaults 25 and 5).
+
+The world spawn, loot and vendor data used on the test server is not part of this repository.
+
+## License
+
+GNU AGPL v3, the same as NexusForever. See [LICENSE](LICENSE). All credit for the emulator this is built on goes to the NexusForever team and contributors.
+
+WildStar is a trademark of NCSOFT. This project is not affiliated with NCSOFT or Carbine Studios.
+
+---
+
+# Upstream NexusForever README
+
+## NexusForever (upstream)
 [![Discord](https://img.shields.io/discord/499473932131500034.svg?style=flat&logo=discord)](https://discord.gg/8wT3GEQ)
 
 ### Information
