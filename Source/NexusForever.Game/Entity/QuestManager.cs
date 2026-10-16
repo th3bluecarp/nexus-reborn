@@ -515,6 +515,11 @@ namespace NexusForever.Game.Entity
             // collect objectives count items the player already carries
             foreach (IQuestObjective objective in quest.Where(o => o.ObjectiveInfo.Entry.Type == (uint)QuestObjectiveType.CollectItem))
                 quest.ObjectiveSet(QuestObjectiveType.CollectItem, objective.ObjectiveInfo.Entry.Data, player.Inventory.GetItemCount(objective.ObjectiveInfo.Entry.Data));
+
+            // equip objectives count an item that is already equipped (30 equipment slots)
+            foreach (uint equipItemId in quest.Select(o => o.ObjectiveInfo.EquipItemId).Where(i => i != 0u).Distinct().ToList())
+                if (Enumerable.Range(0, 30).Any(i => player.Inventory.GetItem(InventoryLocation.Equipped, (uint)i)?.Info.Id == equipItemId))
+                    quest.EquipObjectiveUpdate(equipItemId);
             
             log.LogTrace($"Accepted new quest {info.Entry.Id}.");
         }
