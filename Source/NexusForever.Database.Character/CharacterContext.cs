@@ -24,6 +24,7 @@ namespace NexusForever.Database.Character
         public DbSet<CharacterMailModel> CharacterMail { get; set; }
         public DbSet<CharacterMailAttachmentModel> CharacterMailAttachment { get; set; }
         public DbSet<CharacterPathModel> CharacterPath { get; set; }
+        public DbSet<CharacterPathMissionModel> CharacterPathMission { get; set; }
         public DbSet<CharacterPetCustomisationModel> CharacterPetCustomisation { get; set; }
         public DbSet<CharacterPetFlairModel> CharacterPetFlair { get; set; }
         public DbSet<CharacterQuestModel> CharacterQuest { get; set; }
@@ -1253,6 +1254,39 @@ namespace NexusForever.Database.Character
                     .WithMany(p => p.Path)
                     .HasForeignKey(d => d.Id)
                     .HasConstraintName("FK__character_path_id__character_id");
+            });
+
+            modelBuilder.Entity<CharacterPathMissionModel>(entity =>
+            {
+                entity.ToTable("character_path_mission");
+
+                entity.HasKey(e => new { e.Id, e.MissionId })
+                    .HasName("PRIMARY");
+
+                entity.Property(e => e.Id)
+                    .HasColumnName("id")
+                    .HasColumnType("bigint(20) unsigned")
+                    .HasDefaultValue(0);
+
+                entity.Property(e => e.MissionId)
+                    .HasColumnName("missionId")
+                    .HasColumnType("smallint(5) unsigned")
+                    .HasDefaultValue(0);
+
+                entity.Property(e => e.State)
+                    .HasColumnName("state")
+                    .HasColumnType("tinyint(3) unsigned")
+                    .HasDefaultValue(0);
+
+                entity.Property(e => e.Progress)
+                    .HasColumnName("progress")
+                    .HasColumnType("int(10) unsigned")
+                    .HasDefaultValue(0);
+
+                entity.HasOne(d => d.Character)
+                    .WithMany(p => p.PathMission)
+                    .HasForeignKey(d => d.Id)
+                    .HasConstraintName("FK__character_path_mission_id__character_id");
             });
 
             modelBuilder.Entity<CharacterPetCustomisationModel>(entity =>
