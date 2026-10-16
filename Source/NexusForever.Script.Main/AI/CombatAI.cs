@@ -1,5 +1,6 @@
 ﻿using NexusForever.Game.Abstract.Combat;
 using NexusForever.Game.Abstract.Entity;
+using NexusForever.Game.Abstract.Entity.Creature;
 using NexusForever.Game.Abstract.Entity.Movement.Command;
 using NexusForever.Game.Abstract.Entity.Movement.Command.Position;
 using NexusForever.Game.Abstract.Spell;
@@ -33,13 +34,16 @@ namespace NexusForever.Script.Main.AI
 
         private readonly IFactory<ISpellParameters> spellParametersFactory;
         private readonly IGameTableManager gameTableManager;
+        private readonly ICreatureSpellCatalog creatureSpellCatalog;
 
         public CombatAI(
             IFactory<ISpellParameters> spellParametersFactory,
-            IGameTableManager gameTableManager)
+            IGameTableManager gameTableManager,
+            ICreatureSpellCatalog creatureSpellCatalog = null)
         {
             this.spellParametersFactory = spellParametersFactory;
-            this.gameTableManager = gameTableManager;
+            this.gameTableManager       = gameTableManager;
+            this.creatureSpellCatalog   = creatureSpellCatalog;
         }
 
         #endregion
@@ -51,6 +55,13 @@ namespace NexusForever.Script.Main.AI
         {
             entity = owner;
             entity.SetInRangeCheck(15f);
+
+            // spells this creature was seen using on retail replace the generic punch and jab
+            IReadOnlyList<uint> observed = creatureSpellCatalog?.GetAutoAttacks(entity.CreatureId) ?? [];
+            if (observed.Count > 0)
+                autoAttacks = observed.ToList();
+
+            specials = creatureSpellCatalog?.GetSpecials(entity.CreatureId).ToList() ?? [];
         }
 
         /// <summary>
@@ -89,6 +100,46 @@ namespace NexusForever.Script.Main.AI
                 DoChase();
                 chaseDistanceTimer.Reset();
             }
+
+            if (specials.Count > 0)
+            {
+                specialTimer.Update(lastTick);
+                if (specialTimer.HasElapsed)
+                {
+                    DoSpecial();
+                    specialTimer = new UpdateTimer(TimeSpan.FromSeconds(8d + Random.Shared.NextDouble() * 6d));
+                }
+            }
+        }
+
+        private List<uint> specials = [];
+        private UpdateTimer specialTimer = new(TimeSpan.FromSeconds(6d));
+
+        /// <summary>
+        /// Cast one of the creature's observed cast-time spells (telegraphed attacks such as a yeti's Claw Slam) at its target when in range.
+        /// </summary>
+        private void DoSpecial()
+        {
+            if (!entity.TargetGuid.HasValue)
+                return;
+
+            IUnitEntity target = entity.Map.GetEntity<IUnitEntity>(entity.TargetGuid.Value);
+            if (target == null)
+                return;
+
+            uint spell4Id = specials[Random.Shared.Next(specials.Count)];
+            Spell4Entry spell4Entry = gameTableManager.Spell4.GetEntry(spell4Id);
+            if (spell4Entry == null)
+                return;
+
+            float range = spell4Entry.TargetMaxRange > 0f ? spell4Entry.TargetMaxRange : 5f;
+            if (entity.Position.GetDistance(target.Position) > range + 1f)
+                return;
+
+            var parameters = spellParametersFactory.Resolve();
+            parameters.PrimaryTargetId = target.Guid;
+            entity.MovementManager.SetRotationFaceUnit(target.Guid);
+            entity.CastSpell(spell4Id, parameters);
         }
 
         private readonly UpdateTimer petTimer = new(TimeSpan.FromSeconds(1d));

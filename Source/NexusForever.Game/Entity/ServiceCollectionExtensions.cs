@@ -70,6 +70,7 @@ namespace NexusForever.Game.Entity
 
             sc.AddTransient<IEntitySummonFactory, EntitySummonFactory>();
             sc.AddSingleton<ICreatureInfoManager, CreatureInfoManager>();
+            sc.AddSingleton<ICreatureSpellCatalog, CreatureSpellCatalog>();
             sc.AddTransientFactory<ICreatureInfo, CreatureInfo>();
             sc.AddTransientFactory<ICreatureInfoProperty, CreatureInfoProperty>();
             sc.AddTransientFactory<ICreatureInfoStat, CreatureInfoStat>();
