@@ -95,7 +95,7 @@ Confidence: **High** = consistent across all the data we checked and no counter 
 | group kill credit range | 100 m, full XP each | UnitEntity.GenerateRewards |
 | creature specials interval | 8 to 14 s | CombatAI |
 | aggro range | 15 m, 2 m less per level the player is above the creature (min 5 m), none at 8+ levels above | CombatAI |
-| calls for help | idle same faction creatures within 10 m join, one ring only | CombatAI |
+| calls for help | idle same faction creatures within 10 m join, one ring only, Prime rank (bosses) never answer | CombatAI |
 | leash range | 50 m from where combat started, then 10 s ignoring proximity on the walk home | CombatAI |
 
 ## Special cases that stand in for an unknown generic mechanism
