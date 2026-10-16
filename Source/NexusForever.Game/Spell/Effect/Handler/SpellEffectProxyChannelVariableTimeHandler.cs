@@ -1,4 +1,4 @@
-using NexusForever.Game.Abstract.Entity;
+﻿using NexusForever.Game.Abstract.Entity;
 using NexusForever.Game.Abstract.Spell;
 using NexusForever.Game.Abstract.Spell.Effect;
 using NexusForever.Game.Abstract.Spell.Effect.Data;
@@ -55,15 +55,23 @@ namespace NexusForever.Game.Spell.Effect.Handler
 
             // instant parents finish straight away, so the effect duration bounds the sequence instead
             DateTime end = DateTime.UtcNow.AddMilliseconds(Math.Max(info.Entry.DurationTime, steps.Sum(s => (double)s.DelayMs)) + 250d);
+            // a channelled parent that stops (interrupt, movement) ends the sequence, instant parents finish straight away
+            bool channelled = parent.IsCasting;
             int next = 1;
+            DateTime nextAt = DateTime.UtcNow.AddMilliseconds(steps[0].DelayMs);
             if (next < steps.Count)
             {
-                caster.Map.AddTimer(TimeSpan.FromMilliseconds(Math.Max(steps[0].DelayMs, 50u)), () =>
+                caster.Map.AddTimer(TimeSpan.FromMilliseconds(50d), () =>
                 {
-                    if (DateTime.UtcNow > end || !caster.IsAlive || !target.IsAlive || caster.Map == null)
+                    DateTime now = DateTime.UtcNow;
+                    if (now > end || !caster.IsAlive || !target.IsAlive || caster.Map == null || (channelled && parent.IsFinished))
                         return false;
 
+                    if (now < nextAt)
+                        return true;
+
                     Cast(steps[next].Spell4Id);
+                    nextAt = now.AddMilliseconds(steps[next].DelayMs);
                     next++;
                     return next < steps.Count;
                 });

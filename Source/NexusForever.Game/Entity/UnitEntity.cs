@@ -756,7 +756,7 @@ namespace NexusForever.Game.Entity
         private void Respawn()
         {
             IBaseMap map = Map;
-            if (map == null)
+            if (map == null || PendingRemoval)
                 return;
 
             IWorldEntity entity = CreateRespawnEntity();
@@ -770,7 +770,7 @@ namespace NexusForever.Game.Entity
         public void Despawn()
         {
             IBaseMap map = Map;
-            if (this is IPlayer || map == null)
+            if (this is IPlayer || map == null || PendingRemoval)
                 return;
 
             // the map owns the respawn from here, the pending corpse respawn (if any) goes with this entity

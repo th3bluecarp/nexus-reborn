@@ -23,6 +23,8 @@ namespace NexusForever.Game.Spell.Effect.Handler
     [SpellEffectHandler(SpellEffectType.SummonPet)]
     public class SpellEffectSummonPetHandler : ISpellEffectApplyHandler<ISpellEffectDefaultData>, ISpellEffectRemoveHandler<ISpellEffectDefaultData>
     {
+        private static readonly System.Collections.Concurrent.ConcurrentDictionary<(uint Caster, uint CastingId), uint> summoned = new();
+
         #region Dependency Injection
 
         private readonly ICreatureInfoManager creatureInfoManager;
@@ -52,6 +54,8 @@ namespace NexusForever.Game.Spell.Effect.Handler
             IWorldEntity pet = caster.SummonFactory.Summon(creatureInfo, caster.Position.GetPoint2D(caster.Rotation.X + MathF.PI * 0.75f, 2.5f), caster.Rotation,
                 (map, guid, vector) =>
                 {
+                    summoned[(caster.Guid, executionContext.Spell.CastingId)] = guid;
+
                     if (caster is not IPlayer player)
                         return;
 
@@ -80,7 +84,9 @@ namespace NexusForever.Game.Spell.Effect.Handler
             if (info.Entry.DurationTime == 0u)
                 return;
 
-            spell.Caster?.SummonFactory.UnsummonCreature(data.DataBits00);
+            // a later cast may have replaced this pet already, only remove the one this cast made
+            if (spell.Caster != null && summoned.TryRemove((spell.Caster.Guid, spell.CastingId), out uint guid))
+                spell.Caster.SummonFactory.Unsummon(guid);
         }
     }
 }

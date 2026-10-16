@@ -125,6 +125,10 @@ namespace NexusForever.Game.Entity
                     if ((challenge.Entry.ChallengeFlags & AutoStartFlag) == 0u || now < challenge.CooldownUntil || !InArea(challenge))
                         continue;
 
+                    // auto start skips quietly when another challenge of the type runs, the window path reports it
+                    if (unlocked.Values.Any(c => c.Activated && c.Entry.ChallengeTypeEnum == challenge.Entry.ChallengeTypeEnum))
+                        continue;
+
                     if (!Activate(challenge))
                         continue;
                 }

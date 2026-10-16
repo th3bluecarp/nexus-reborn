@@ -1,4 +1,4 @@
-using NexusForever.Game.Abstract.Entity;
+﻿using NexusForever.Game.Abstract.Entity;
 using NexusForever.Game.Abstract.Entity.Creature;
 using NexusForever.Game.Abstract.Spell;
 using NexusForever.Game.Abstract.Spell.Effect;
@@ -60,6 +60,7 @@ namespace NexusForever.Game.Spell.Effect.Handler
                 radius = 3f;
             double lifetimeMs = info.Entry.DurationTime > 0u ? info.Entry.DurationTime : 60000d;
             double elapsedMs  = 0d;
+            bool fired        = false;
 
             caster.Map.AddTimer(TimeSpan.FromMilliseconds(CheckIntervalMs), () =>
             {
@@ -68,6 +69,13 @@ namespace NexusForever.Game.Spell.Effect.Handler
                 // trap or owner gone (unsummoned, owner logged out or changed map)
                 if (trap.Map == null || caster.Map != trap.Map)
                     return false;
+
+                // the spell fired last tick has run in the trap's update by now
+                if (fired)
+                {
+                    caster.SummonFactory.Unsummon(trap.Guid);
+                    return false;
+                }
 
                 if (elapsedMs >= lifetimeMs)
                 {
@@ -99,8 +107,9 @@ namespace NexusForever.Game.Spell.Effect.Handler
                     IsProxy                = true
                 });
 
-                caster.SummonFactory.Unsummon(trap.Guid);
-                return false;
+                // the cast is queued and runs in the trap's own update, so the trap goes on the next tick
+                fired = true;
+                return true;
             });
 
             return SpellEffectExecutionResult.Ok;

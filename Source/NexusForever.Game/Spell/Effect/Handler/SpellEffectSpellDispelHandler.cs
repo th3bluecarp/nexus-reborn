@@ -1,4 +1,4 @@
-using NexusForever.Game.Abstract.Entity;
+﻿using NexusForever.Game.Abstract.Entity;
 using NexusForever.Game.Abstract.Spell;
 using NexusForever.Game.Abstract.Spell.Effect;
 using NexusForever.Game.Abstract.Spell.Effect.Data;
@@ -35,6 +35,8 @@ namespace NexusForever.Game.Spell.Effect.Handler
             var toRemove = sources
                 .SelectMany(u => u.GetSpellsAffecting(target))
                 .Where(s => s != executionContext.Spell && s.Parameters.SpellInfo.BaseInfo.Entry.SpellClass == spellClass)
+                // finishing a spell ends it on every target, so area auras hitting others are left alone
+                .Where(s => sources.Count(u => u != target && s.GetTarget(u) != null) == 0)
                 .Take((int)Math.Min(max, int.MaxValue))
                 .ToList();
 
