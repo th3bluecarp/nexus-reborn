@@ -229,7 +229,9 @@ namespace NexusForever.Script.Main.AI
 
             petTimer.Reset();
 
-            if (entity.PetStance != PetStance.Passive && owner.InCombat && owner.TargetGuid is uint ownerTargetGuid && ownerTargetGuid != entity.TargetGuid)
+            if (entity.PetStance == PetStance.Defensive)
+                DefendOwner(owner);
+            else if (entity.PetStance != PetStance.Passive && owner.InCombat && owner.TargetGuid is uint ownerTargetGuid && ownerTargetGuid != entity.TargetGuid)
             {
                 IUnitEntity target = entity.Map.GetEntity<IUnitEntity>(ownerTargetGuid);
                 if (target != null && target.IsAlive && entity.CanAttack(target))
@@ -238,6 +240,25 @@ namespace NexusForever.Script.Main.AI
 
             if (entity.PetStance != PetStance.Stay && !entity.TargetGuid.HasValue && entity.Position.GetDistance(owner.Position) > 6f)
                 entity.MovementManager.Chase(owner, 3f);
+        }
+
+        /// <summary>
+        /// Defensive stance: when idle, fight whatever is in combat with the owner, preferring units that are attacking the owner,
+        /// instead of following the owner's target. Being hit pulls the pet in any stance but Passive through the normal damage aggro.
+        /// </summary>
+        private void DefendOwner(IPlayer owner)
+        {
+            if (entity.TargetGuid.HasValue || !owner.InCombat)
+                return;
+
+            IUnitEntity target = owner.ThreatManager
+                .Select(h => entity.Map.GetEntity<IUnitEntity>(h.HatedUnitId))
+                .Where(u => u != null && u.IsAlive && entity.CanAttack(u))
+                .OrderByDescending(u => u.TargetGuid == owner.Guid)
+                .FirstOrDefault();
+
+            if (target != null)
+                entity.ThreatManager.UpdateThreat(target, 100);
         }
 
         private void DoAutoAttack()
