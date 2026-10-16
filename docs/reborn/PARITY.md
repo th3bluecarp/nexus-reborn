@@ -4,7 +4,7 @@ Goal: get this server as close to retail WildStar (1:1) as we can, starting with
 The full feature list is in [parity.csv](parity.csv), which Gitea shows as a sortable table.
 
 Columns in parity.csv:
-- **reborn**: status on our branch. "(not deployed)" means merged and built but not yet running on the desktop server.
+- **reborn**: status on our branch. "(not deployed)" means merged and built but not yet running on our test server.
 - **upstream**: status on upstream NexusForever `game_rework`.
 - **ahead**: yes when we have something upstream does not.
 - **commits**: our commits for that row.
