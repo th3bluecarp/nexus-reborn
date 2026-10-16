@@ -669,6 +669,9 @@ namespace NexusForever.Game.Entity
             { 27196u, 12354u },
             // Navigation Controls in Levian Bay: A Daring Escape (5866) is turned in at WorldLocation2IdReceiver 45329 (world 22)
             { 46980u, 45329u },
+            // Ship Controls in Crimson Isle: no quest ends off the island, the next quest First Impressions (6811, needs Last
+            // Resistance 5594) starts at Artemis Zin in Ellevar, next to location 45329, where Levian Bay players land too
+            { 39962u, 45329u },
             // Portal to Celestion in Everstar Grove: The Path to Celestion (6844) is turned in at 23560 (world 51)
             { 32269u, 23560u },
             // Transport to Everstar Grove in Northern Wilds: Treasures within Treasures (10101) is turned in at 41641 (world 990)
