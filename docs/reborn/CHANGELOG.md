@@ -4,6 +4,7 @@ Newest first. "Live" means running on the desktop server.
 
 ## 2026-10-15
 
+- **Life drain** (894de141, not deployed). Transference effects (Stalker Bloodthirst and Nano Dart, Warrior Sapping Strikes) now damage the target and heal you.
 - **Stalker and Esper damage** (dcdae4ad, not deployed). DistributedDamage and DistanceDependentDamage effects did no damage, which broke Stalker Shred and Eviscerate and Esper Telekinetic Field. They now hit like normal damage.
 - **Invulnerability** (011c687e, not deployed). Invulnerability and energy shield spells (UnitStateSet state 6) now block all damage while they last.
 - **Item visual swaps** (581acdcc, not deployed). 1,542 ItemVisualSwap effects now show the carried or wielded item model (quest objects, weapon visuals) and restore the old one afterwards.
