@@ -8,6 +8,7 @@ Newest first. "Live" means running on our test server.
 
 ## 2026-10-15
 
+- - **Quest creatures at their map markers** (630cf85a, live, published in data/). Quest creatures that Jabbithole never recorded are now placed at their objective's map marker, with ground height from the terrain files. 121 more creatures, 1,149 extra spawns in total, including the Spatial Anomaly you follow in Northern Wilds.
 - - **Equip quests** (1ac8fd84, live). 14 quest steps that say 'Equip the X' could never complete. Equipping the named item now counts, for example in Algoroc Survivalist Expedition and Hunting for Eldan Relics.
 - - **More Northern Wilds quests finishable** (13339687, live). Empowered Tower (follow the power cables), Spatial Anomaly (investigate the wreckage) and Contact with Thayd (the hidden step after lighting the flares) had steps that only a lost script could finish. Steps with a place to go now complete when you get there (261 such steps), and hidden steps with nothing to do complete once the rest of the quest is done (27).
 - - **Creature recovery after big attacks** (7115c063, live). Many creature spells carry an NpcExecutionDelay effect, the only unhandled effect showing up in the live logs. The creature now pauses for its 1 to 4 seconds afterwards, an opening to hit back.

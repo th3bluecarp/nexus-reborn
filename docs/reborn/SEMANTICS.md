@@ -85,6 +85,7 @@ Confidence: **High** = consistent across all the data we checked and no counter 
 | Item | Our method | Confidence | Risk |
 |---|---|---|---|
 | missing quest NPC positions | Jabbithole map pins for the page with the same name and zone, quest linked pages first; height and area from the 5 nearest spawns within 40 m, else terrain height and area from the server map files (median 0.19 m off on 2,021 known spawns, not used in the capitals) | Medium | name-only matches can pick the wrong variant; pins are player-reported positions |
+| quest targets with no Jabbithole page | placed at the objective indicator world locations, terrain height from the map files | Low | 121 creatures | the marker may be an area centre, not where the creature stood |
 | loot tables | observed drops / (kills + 5), a small sample correction; quest items only while their CollectItem objective is open | Medium | small samples on rare creatures; quest item rates are per kill of players who happened to be on the quest |
 | creature abilities | spells seen on the Abilities tab; instant ones as auto attacks | Low | not the real rotation or conditions |
 
