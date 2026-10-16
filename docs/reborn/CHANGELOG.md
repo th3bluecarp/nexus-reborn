@@ -8,6 +8,7 @@ Newest first. "Live" means running on our test server.
 
 ## 2026-10-15
 
+- - **Equip quests** (1ac8fd84, live). 14 quest steps that say 'Equip the X' could never complete. Equipping the named item now counts, for example in Algoroc Survivalist Expedition and Hunting for Eldan Relics.
 - - **More Northern Wilds quests finishable** (13339687, live). Empowered Tower (follow the power cables), Spatial Anomaly (investigate the wreckage) and Contact with Thayd (the hidden step after lighting the flares) had steps that only a lost script could finish. Steps with a place to go now complete when you get there (261 such steps), and hidden steps with nothing to do complete once the rest of the quest is done (27).
 - - **Creature recovery after big attacks** (7115c063, live). Many creature spells carry an NpcExecutionDelay effect, the only unhandled effect showing up in the live logs. The creature now pauses for its 1 to 4 seconds afterwards, an opening to hit back.
 - - **Fix: Lost connection with world server** (eab3ea76, live). Entering the world disconnected you since path missions went live yesterday evening. The world server only loads the game tables it is told to, and 14 tables used by path missions, challenges, reward tracks and episode checks were never loaded, so the code crashed on zone entry. They load now. It also means path missions, challenges and challenge rewards never actually ran until now.
