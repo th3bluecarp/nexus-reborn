@@ -172,16 +172,35 @@ namespace NexusForever.Game.Entity
 
                 foreach (IQuestObjective objective in quest)
                 {
-                    if (objective.ObjectiveInfo.Type != QuestObjectiveType.EnterArea || !quest.IsObjectiveActive(objective.Index))
+                    if (objective.IsComplete() || !quest.IsObjectiveActive(objective.Index))
                         continue;
 
-                    if (IsInObjectiveArea(objective.ObjectiveInfo.Entry))
+                    QuestObjectiveEntry entry = objective.ObjectiveInfo.Entry;
+                    bool targetless = objective.ObjectiveInfo.Type == QuestObjectiveType.ActivateEntity
+                        && objective.ObjectiveInfo.Data == 0u && entry.TargetGroupIdRewardPane == 0u;
+
+                    // EnterArea, and activate objectives with nothing to activate but a place to go (Follow the power cables,
+                    // Investigate ship wreckage), complete inside the indicator location
+                    if ((objective.ObjectiveInfo.Type == QuestObjectiveType.EnterArea || (targetless && HasIndicator(entry)))
+                        && IsInObjectiveArea(entry))
+                        updates.Add((quest, objective.ObjectiveInfo.Id));
+
+                    // a hidden step with no text, target or place (the last step of Contact with Thayd) was finished by a lost
+                    // script once the other steps were done
+                    else if (targetless && !HasIndicator(entry) && entry.LocalizedTextIdFull == 0u
+                        && quest.Where(o => o != objective).All(o => o.IsComplete() || o.ObjectiveInfo.IsOptional()))
                         updates.Add((quest, objective.ObjectiveInfo.Id));
                 }
             }
 
             foreach ((IQuest quest, uint objectiveId) in updates)
                 quest.ObjectiveUpdate(objectiveId, 1u);
+        }
+
+        private static bool HasIndicator(QuestObjectiveEntry entry)
+        {
+            return entry.WorldLocationsIdIndicator00 != 0u || entry.WorldLocationsIdIndicator01 != 0u
+                || entry.WorldLocationsIdIndicator02 != 0u || entry.WorldLocationsIdIndicator03 != 0u;
         }
 
         private bool IsInObjectiveArea(QuestObjectiveEntry entry)
