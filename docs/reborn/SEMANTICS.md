@@ -98,6 +98,6 @@ Confidence: **High** = consistent across all the data we checked and no counter 
 
 These fix a visible symptom without knowing the real rule, the kind of patch that piles up. Each should be replaced when the mechanism is understood.
 
-- **Quest creatures despawn after activation** (WorldEntity.OnActivateSuccess). Narrowed in e9103c99 after decoding SetBusy: it now only applies when the activate spell has neither a DespawnUnit nor a timed SetBusy clear, the cases retail finished with server scripts (the Trapped Survivor spell 1817 has only Activate).
+- **Quest creatures despawn after activation** (WorldEntity.OnActivateSuccess). Narrowed in fbc02afc after decoding SetBusy: it now only applies when the activate spell has neither a DespawnUnit nor a timed SetBusy clear, the cases retail finished with server scripts (the Trapped Survivor spell 1817 has only Activate).
 - **Open world events start by proximity.** Retail started them from lost server scripts.
 - **Creature abilities from Jabbithole.** Observed spells, not the creature's real rotation or conditions.
