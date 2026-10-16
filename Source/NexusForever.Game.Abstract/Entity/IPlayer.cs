@@ -108,6 +108,11 @@ namespace NexusForever.Game.Abstract.Entity
         void Save(Action callback = null);
 
         /// <summary>
+        /// Track a summoned combat pet so the client pet frame is cleared when it goes away.
+        /// </summary>
+        void AddCombatPet(uint guid);
+
+        /// <summary>
         /// Save <see cref="IPlayer"/> to database.
         /// </summary>
         /// <remarks>

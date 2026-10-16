@@ -61,6 +61,10 @@ namespace NexusForever.Script.Main.AI
             if (!entity.IsAlive)
                 return;
 
+            IPlayer petOwner = GetPetOwner();
+            if (petOwner != null)
+                UpdatePet(petOwner, lastTick);
+
             if (!entity.TargetGuid.HasValue)
                 return;
 
@@ -85,6 +89,41 @@ namespace NexusForever.Script.Main.AI
                 DoChase();
                 chaseDistanceTimer.Reset();
             }
+        }
+
+        private readonly UpdateTimer petTimer = new(TimeSpan.FromSeconds(1d));
+
+        /// <summary>
+        /// Return the player that summoned this creature as a pet, null for anything else.
+        /// </summary>
+        protected IPlayer GetPetOwner()
+        {
+            if (entity.SummonerGuid is not uint summonerGuid)
+                return null;
+
+            return entity.Map?.GetEntity<IPlayer>(summonerGuid);
+        }
+
+        /// <summary>
+        /// Pets assist their owner's target and follow the owner when they have nothing to fight.
+        /// </summary>
+        private void UpdatePet(IPlayer owner, double lastTick)
+        {
+            petTimer.Update(lastTick);
+            if (!petTimer.HasElapsed)
+                return;
+
+            petTimer.Reset();
+
+            if (owner.InCombat && owner.TargetGuid is uint ownerTargetGuid && ownerTargetGuid != entity.TargetGuid)
+            {
+                IUnitEntity target = entity.Map.GetEntity<IUnitEntity>(ownerTargetGuid);
+                if (target != null && target.IsAlive && entity.CanAttack(target))
+                    entity.ThreatManager.UpdateThreat(target, 100);
+            }
+
+            if (!entity.TargetGuid.HasValue && entity.Position.GetDistance(owner.Position) > 6f)
+                entity.MovementManager.Chase(owner, 3f);
         }
 
         private void DoAutoAttack()
@@ -152,6 +191,10 @@ namespace NexusForever.Script.Main.AI
         {
             // stealthed units walk past, damage still pulls through OnHealthChange
             if (entity is IUnitEntity { IsStealthed: true })
+                return;
+
+            // pets only fight what their owner fights (Assist stance)
+            if (GetPetOwner() != null)
                 return;
 
             AggroEntity(entity);
@@ -273,6 +316,10 @@ namespace NexusForever.Script.Main.AI
 
             // a dead creature keeps its corpse where it fell, healing and leashing only apply to the living
             if (!entity.IsAlive)
+                return;
+
+            // pets go back to following their owner instead of healing and leashing
+            if (GetPetOwner() != null)
                 return;
 
             entity.ModifyHealth(entity.MaxHealth, DamageType.Heal, null);

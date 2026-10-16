@@ -1,4 +1,4 @@
-using System.Numerics;
+﻿using System.Numerics;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using NexusForever.Database;
 using NexusForever.Database.Auth;
@@ -52,6 +52,7 @@ using NexusForever.Network.World.Message.Model;
 using NexusForever.Network.World.Message.Model.Chat;
 using NexusForever.Network.World.Message.Model.Info;
 using NexusForever.Network.World.Message.Model.Pregame;
+using NexusForever.Network.World.Message.Model.Pet;
 using NexusForever.Network.World.Message.Model.Pvp;
 using NexusForever.Network.World.Message.Model.Housing;
 using NexusForever.Network.World.Message.Model.Shared;
@@ -405,6 +406,27 @@ namespace NexusForever.Game.Entity
 
             foreach (IPropertyModifier propertyValue in baseProperties.Concat(classProperties))
                 SetBaseProperty(propertyValue.Property, propertyValue.GetValue(Level));
+        }
+
+        private readonly HashSet<uint> combatPets = [];
+
+        /// <summary>
+        /// Track a summoned combat pet so the client pet frame is cleared when it goes away.
+        /// </summary>
+        public void AddCombatPet(uint guid)
+        {
+            combatPets.Add(guid);
+        }
+
+        public override void OnUnsummon(IWorldEntity entity)
+        {
+            base.OnUnsummon(entity);
+
+            if (combatPets.Remove(entity.Guid))
+                Session.EnqueueMessageEncrypted(new ServerPetDespawned
+                {
+                    PetUnitId = entity.Guid
+                });
         }
 
         public override void Update(double lastTick)

@@ -768,12 +768,19 @@ namespace NexusForever.Game.Entity
             if (killer is IPlayer killerPlayer)
                 Map.PublicEventManager.UpdateStat(killerPlayer, PublicEventStat.Kills, 1);
 
+            var rewarded = new HashSet<IPlayer>();
             foreach (IHostileEntity hostile in ThreatManager)
             {
                 IUnitEntity entity = GetVisible<IUnitEntity>(hostile.HatedUnitId);
                 if (entity is IPlayer hostilePlayer)
-                    RewardKiller(hostilePlayer);
+                    rewarded.Add(hostilePlayer);
+                // a pet's kills count for its owner
+                else if (entity?.SummonerGuid is uint summonerGuid && GetVisible<IUnitEntity>(summonerGuid) is IPlayer petOwner)
+                    rewarded.Add(petOwner);
             }
+
+            foreach (IPlayer player in rewarded)
+                RewardKiller(player);
         }
 
         protected virtual void RewardKiller(IPlayer player)
