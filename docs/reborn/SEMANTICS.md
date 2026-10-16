@@ -58,7 +58,7 @@ Confidence: **High** = consistent across all the data we checked and no counter 
 | mission type to table | ObjectId points into one table per (path, type) | High | type 0 Soldier → PathSoldierEvent 97 of 98, etc. |
 | PathMissionFactionEnum | 1 Exile, 2 Dominion | Medium | from Northern Wilds (Exile start) |
 | unlock rule | every mission of the zone episode unlocks on zone entry | Low | retail had per mission unlock (Creature2IdUnlock, proximity) |
-| vista / claim / exploration | reach the mission world location | Low | retail required placing a beacon or exploring a set of points |
+| vista / claim / exploration / tracking | reach the mission world locations (tracking: retail followed a creature or trail) | Low | retail required placing a beacon or exploring a set of points |
 | cartography | zone map explored percent, done at 95 | Invented | retail threshold unknown |
 | scavenger clue types | 0 activate, 1 creature or area, 2 location | Medium | field patterns per type; starting the hunt is skipped |
 | path XP per mission | 25 + 5 x level | Invented | fitted to the PathLevel curve, retail values unknown |

@@ -8,6 +8,7 @@ Newest first. "Live" means running on our test server.
 
 ## 2026-10-15
 
+- - **Explorer tracking missions** (ca6eeabd, live). The 25 Explorer TRACKING missions, where retail had you follow a creature or an energy trail, now complete when you reach their locations. Every Explorer mission type now does something.
 - - **Rescue and gather quest objectives** (eeceff6b, live). An audit of the quests ahead of you found two Algoroc rescue quests (Tremor Ridge Kidnappings, Caged Science) whose objective type was never handled: opening the cages now counts. Gather objectives like destroying the Fallen Trees in A Fiery Escape now count when you destroy or use the object, since real harvesting needs tradeskills. Northern Wilds itself has no blockers left on your quest line.
 - - **Fall damage** (bcb54500, live). Falling more than 25 m now hurts, about 3 percent of your health per extra metre, so a drop near 60 m kills. Landing in water is safe. Retail numbers are unknown, these are guesses.
 - - **Loot for 885 creatures** (39a3223d, live, published in data/). Newer Jabbithole pages label their drop table differently and my loot builder only read the older label, so most of the drop data was being ignored. Creatures with loot went from 115 to 885. Quest items only drop for players who have the matching collect objective open, through a new QuestObjectiveActive loot condition, and items that start a quest drop for everyone.
