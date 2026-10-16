@@ -4,6 +4,7 @@ Newest first. "Live" means running on the desktop server.
 
 ## 2026-10-15
 
+- **Path XP** (5d7a68db, not deployed). Finished path missions now give path XP (25 + 5 per character level, a tunable guess since retail values are unknown), so path levels and their rewards move.
 - **Explorer scavenger hunts** (65ac695b, not deployed). Relic hunts now track each clue: activate the relic or reach the dig spot.
 - **Explorer cartography** (b16868f7, not deployed). Survey missions like Northern Wilds Survey now fill in as you explore the zone map.
 - **Path missions** (dab0aafd, not deployed). Your path's missions for each zone now show up and progress: Soldier assassinations, demolitions and rescues, Explorer vistas, claims, exploration and activations, Settler scout, mayor and sheriff missions. Progress is saved. Scientist scans, Settler building and Soldier holdouts are next.
