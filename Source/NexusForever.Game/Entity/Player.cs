@@ -245,6 +245,7 @@ namespace NexusForever.Game.Entity
         public IDatacubeManager DatacubeManager { get; private set; }
         public IPathMissionManager PathMissionManager { get; private set; }
         public IChallengeManager ChallengeManager { get; private set; }
+        public ITradeskillManager TradeskillManager { get; private set; }
         public IMailManager MailManager { get; private set; }
         public IZoneMapManager ZoneMapManager { get; private set; }
         public IQuestManager QuestManager { get; private set; }
@@ -385,6 +386,7 @@ namespace NexusForever.Game.Entity
             DatacubeManager         = new DatacubeManager(this, model);
             PathMissionManager      = new PathMissionManager(this, model);
             ChallengeManager        = new ChallengeManager(this, model);
+            TradeskillManager       = new TradeskillManager(this, model);
             MailManager             = new MailManager(this, model);
             ZoneMapManager          = new ZoneMapManager(this, model);
             QuestManager.Initialise(this, model);
@@ -716,6 +718,7 @@ namespace NexusForever.Game.Entity
             DatacubeManager.Save(context);
             PathMissionManager.Save(context);
             ChallengeManager.Save(context);
+            TradeskillManager.Save(context);
             MailManager.Save(context);
             ZoneMapManager.Save(context);
             QuestManager.Save(context);
@@ -913,6 +916,7 @@ namespace NexusForever.Game.Entity
             DatacubeManager.SendInitialPackets();
             PathMissionManager.SendInitialPackets();
             ChallengeManager.SendInitialPackets();
+            TradeskillManager.SendInitialPackets();
             MailManager.SendInitialPackets();
             ZoneMapManager.SendInitialPackets();
             Account.CurrencyManager.SendInitialPackets();

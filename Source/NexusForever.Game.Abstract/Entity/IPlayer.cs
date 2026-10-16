@@ -83,6 +83,7 @@ namespace NexusForever.Game.Abstract.Entity
         IDatacubeManager DatacubeManager { get; }
         IPathMissionManager PathMissionManager { get; }
         IChallengeManager ChallengeManager { get; }
+        ITradeskillManager TradeskillManager { get; }
         IMailManager MailManager { get; }
         IZoneMapManager ZoneMapManager { get; }
         IQuestManager QuestManager { get; }

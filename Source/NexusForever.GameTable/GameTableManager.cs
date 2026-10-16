@@ -659,6 +659,7 @@ namespace NexusForever.GameTable
         public GameTable<TicketCategoryEntry> TicketCategory { get; private set; }
         public GameTable<TicketSubCategoryEntry> TicketSubCategory { get; private set; }
         public GameTable<TrackingSlotEntry> TrackingSlot { get; private set; }
+        [GameData]
         public GameTable<TradeskillEntry> Tradeskill { get; private set; }
         public GameTable<TradeskillAchievementLayoutEntry> TradeskillAchievementLayout { get; private set; }
         public GameTable<TradeskillAchievementRewardEntry> TradeskillAchievementReward { get; private set; }
@@ -675,6 +676,7 @@ namespace NexusForever.GameTable
         public GameTable<TradeskillProficiencyEntry> TradeskillProficiency { get; private set; }
         public GameTable<TradeskillSchematic2Entry> TradeskillSchematic2 { get; private set; }
         public GameTable<TradeskillTalentTierEntry> TradeskillTalentTier { get; private set; }
+        [GameData]
         public GameTable<TradeskillTierEntry> TradeskillTier { get; private set; }
         public GameTable<TutorialEntry> Tutorial { get; private set; }
         public GameTable<TutorialAnchorEntry> TutorialAnchor { get; private set; }

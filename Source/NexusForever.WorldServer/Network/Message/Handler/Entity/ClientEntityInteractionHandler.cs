@@ -64,6 +64,7 @@ namespace NexusForever.WorldServer.Network.Message.Handler.Entity
                 case InteractionType.Bank: // "ShowBank"
                 case InteractionType.SharedRealmBank: // "ShowRealmBank"
                 case InteractionType.Dye: // "ShowDye"
+                case InteractionType.TradeskillTrainer: // "InvokeTradeskillTrainerWindow", untested like the bank
                     // the client opens the window for the interaction unit it is told about
                     session.EnqueueMessageEncrypted(new ServerInteractionChange
                     {
@@ -74,7 +75,6 @@ namespace NexusForever.WorldServer.Network.Message.Handler.Entity
                 case InteractionType.ConvertItem:
                 case InteractionType.ConvertRep: // "ResourceConversionOpen"
                 case InteractionType.Trainer: // "ToggleAbilitiesWindow"
-                case InteractionType.TradeskillTrainer: // "InvokeTradeskillTrainerWindow"
                 case InteractionType.Shuttle: // "InvokeShuttlePrompt"
                 case InteractionType.FlightPathSettler:
                 case InteractionType.FlightPathNew:

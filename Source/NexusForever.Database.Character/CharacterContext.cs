@@ -29,6 +29,7 @@ namespace NexusForever.Database.Character
         public DbSet<CharacterPetCustomisationModel> CharacterPetCustomisation { get; set; }
         public DbSet<CharacterPetFlairModel> CharacterPetFlair { get; set; }
         public DbSet<CharacterRewardTrackModel> CharacterRewardTrack { get; set; }
+        public DbSet<CharacterTradeskillModel> CharacterTradeskill { get; set; }
         public DbSet<CharacterQuestModel> CharacterQuest { get; set; }
         public DbSet<CharacterQuestObjectiveModel> CharacterQuestObjective { get; set; }
         public DbSet<CharacterReputation> CharacterReputation { get; set; }
@@ -1362,6 +1363,39 @@ namespace NexusForever.Database.Character
                     .WithMany(p => p.RewardTrack)
                     .HasForeignKey(d => d.Id)
                     .HasConstraintName("FK__character_reward_track_id__character_id");
+            });
+
+            modelBuilder.Entity<CharacterTradeskillModel>(entity =>
+            {
+                entity.ToTable("character_tradeskill");
+
+                entity.HasKey(e => new { e.Id, e.TradeskillId })
+                    .HasName("PRIMARY");
+
+                entity.Property(e => e.Id)
+                    .HasColumnName("id")
+                    .HasColumnType("bigint(20) unsigned")
+                    .HasDefaultValue(0);
+
+                entity.Property(e => e.TradeskillId)
+                    .HasColumnName("tradeskillId")
+                    .HasColumnType("int(10) unsigned")
+                    .HasDefaultValue(0);
+
+                entity.Property(e => e.Xp)
+                    .HasColumnName("xp")
+                    .HasColumnType("int(10) unsigned")
+                    .HasDefaultValue(0);
+
+                entity.Property(e => e.Active)
+                    .HasColumnName("active")
+                    .HasColumnType("tinyint(1)")
+                    .HasDefaultValue(false);
+
+                entity.HasOne(d => d.Character)
+                    .WithMany(p => p.Tradeskill)
+                    .HasForeignKey(d => d.Id)
+                    .HasConstraintName("FK__character_tradeskill_id__character_id");
             });
 
             modelBuilder.Entity<CharacterPetCustomisationModel>(entity =>
