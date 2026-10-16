@@ -19,6 +19,11 @@ namespace NexusForever.Game.Entity
 
         private UpdateTimer timer;
 
+        /// <summary>
+        /// Seconds before the server timer elapses that a client logout confirm is still accepted.
+        /// </summary>
+        private const double LogoutConfirmSlack = 3d;
+
         private readonly IPlayer player;
 
         public LogoutManager(IPlayer player)
@@ -82,8 +87,9 @@ namespace NexusForever.Game.Entity
         /// </remarks>
         public void Finish(LogoutReason reason = LogoutReason.None)
         {
-            // can't finish logout if not started or still in countdown
-            if (reason == LogoutReason.None && (timer == null || !timer.HasElapsed))
+            // can't finish logout if not started or still in countdown, the client counts down on its own clock and can
+            // confirm a moment before the server timer has elapsed so a few seconds of slack are allowed
+            if (reason == LogoutReason.None && (timer == null || timer.Time > LogoutConfirmSlack))
                 throw new InvalidOperationException();
 
             // force logout can be performed if a reason is supplied
