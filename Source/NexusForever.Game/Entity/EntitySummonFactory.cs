@@ -159,6 +159,22 @@ namespace NexusForever.Game.Entity
         }
 
         /// <summary>
+        /// Return summoned entities of creature id that are still on the map.
+        /// </summary>
+        public IEnumerable<IWorldEntity> GetSummons(uint creatureId)
+        {
+            if (!creatureGuids.TryGetValue(creatureId, out List<uint> guids))
+                yield break;
+
+            foreach (uint guid in guids.ToList())
+            {
+                IWorldEntity summon = owner.Map?.GetEntity<IWorldEntity>(guid);
+                if (summon != null)
+                    yield return summon;
+            }
+        }
+
+        /// <summary>
         /// Unsummon all summoned entities.
         /// </summary>
         public void Unsummon()

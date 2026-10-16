@@ -61,6 +61,11 @@ namespace NexusForever.Game.Abstract.Entity
         void UnsummonCreature(uint creatureId);
 
         /// <summary>
+        /// Return summoned entities of creature id that are still on the map.
+        /// </summary>
+        IEnumerable<IWorldEntity> GetSummons(uint creatureId);
+
+        /// <summary>
         /// Unsummon all summoned entities.
         /// </summary>
         void Unsummon();
