@@ -171,6 +171,26 @@ namespace NexusForever.Game.Abstract.Entity
         IEnumerable<ISpell> GetSpellsAffecting(IUnitEntity target);
 
         /// <summary>
+        /// Returns if the unit is stealthed by at least one active stealth effect.
+        /// </summary>
+        bool IsStealthed { get; }
+
+        /// <summary>
+        /// Add a stealth source from the spell with the supplied casting id.
+        /// </summary>
+        void AddStealth(uint castingId);
+
+        /// <summary>
+        /// Remove the stealth source from the spell with the supplied casting id.
+        /// </summary>
+        void RemoveStealth(uint castingId);
+
+        /// <summary>
+        /// End every stealth effect on the unit, for example when it attacks.
+        /// </summary>
+        void BreakStealth();
+
+        /// <summary>
         /// Set target to supplied target guid.
         /// </summary>
         /// <remarks>

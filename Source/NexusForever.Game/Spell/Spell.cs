@@ -1,4 +1,4 @@
-using System.Numerics;
+﻿using System.Numerics;
 using SpellInit = NexusForever.Network.World.Message.Model.Shared.SpellInit;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -226,6 +226,10 @@ namespace NexusForever.Game.Spell
         {
             if (!CanCast())
                 return false;
+
+            // Stalker attacks are flagged to break stealth, stealth itself and Nano Skins are not
+            if (Parameters.SpellInfo.Entry.SpellCastStealthChange == 1u && Caster.IsStealthed)
+                Caster.BreakStealth();
 
             // TODO: Handle all GlobalCooldownEnums. It looks like it's just a "Type" that the GCD is stored against. Each spell checks the GCD for its type.
             if (Caster is IPlayer player)

@@ -150,6 +150,10 @@ namespace NexusForever.Script.Main.AI
         /// </summary>
         public void OnEnterRange(IGridEntity entity)
         {
+            // stealthed units walk past, damage still pulls through OnHealthChange
+            if (entity is IUnitEntity { IsStealthed: true })
+                return;
+
             AggroEntity(entity);
         }
 

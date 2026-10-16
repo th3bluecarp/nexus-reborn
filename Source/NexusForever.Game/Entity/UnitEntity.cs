@@ -24,6 +24,7 @@ using NexusForever.Game.Static.Reputation;
 using NexusForever.Game.Static.Spell;
 using NexusForever.GameTable;
 using NexusForever.GameTable.Model;
+using NexusForever.Network.World.Combat;
 using NexusForever.Network.World.Message.Model;
 using NexusForever.Network.World.Message.Model.Shared;
 using NexusForever.Network.World.Message.Static;
@@ -332,6 +333,69 @@ namespace NexusForever.Game.Entity
             foreach (ISpell spell in spells.Values)
                 if (spell.Parameters.SpellInfo.SpellGroups.Contains(spellGroupId))
                     yield return spell;
+        }
+
+        private readonly HashSet<uint> stealthSources = [];
+
+        /// <summary>
+        /// Returns if the unit is stealthed by at least one active stealth effect.
+        /// </summary>
+        public bool IsStealthed => stealthSources.Count > 0;
+
+        /// <summary>
+        /// Add a stealth source from the spell with the supplied casting id.
+        /// </summary>
+        public void AddStealth(uint castingId)
+        {
+            bool wasStealthed = IsStealthed;
+            stealthSources.Add(castingId);
+            if (!wasStealthed)
+                OnStealthChange(false);
+        }
+
+        /// <summary>
+        /// Remove the stealth source from the spell with the supplied casting id.
+        /// </summary>
+        public void RemoveStealth(uint castingId)
+        {
+            if (stealthSources.Remove(castingId) && !IsStealthed)
+                OnStealthChange(true);
+        }
+
+        /// <summary>
+        /// End every stealth effect on the unit, for example when it attacks.
+        /// </summary>
+        public void BreakStealth()
+        {
+            if (!IsStealthed)
+                return;
+
+            foreach (ISpell spell in GetSpellsByEffect(SpellEffectType.Stealth).ToList())
+                spell.Finish();
+
+            // stealth from spells cast by someone else (or already finished) still has to go
+            if (IsStealthed)
+            {
+                stealthSources.Clear();
+                OnStealthChange(true);
+            }
+        }
+
+        private void OnStealthChange(bool exiting)
+        {
+            if (exiting)
+                CreateFlags &= ~EntityCreateFlag.IsStealthed;
+            else
+                CreateFlags |= EntityCreateFlag.IsStealthed;
+
+            EnqueueToVisible(new ServerCombatLog
+            {
+                CombatLog = new CombatLogStealth
+                {
+                    UnitId   = Guid,
+                    BExiting = exiting
+                }
+            }, true);
         }
 
         /// <summary>
