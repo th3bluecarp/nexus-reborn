@@ -61,6 +61,14 @@ Confidence: **High** = consistent across all the data we checked and no counter 
 | scavenger clue types | 0 activate, 1 creature or area, 2 location | Medium | field patterns per type; starting the hunt is skipped |
 | path XP per mission | 25 + 5 x level | Invented | fitted to the PathLevel curve, retail values unknown |
 
+## World data from Jabbithole
+
+| Item | Our method | Confidence | Risk |
+|---|---|---|---|
+| missing quest NPC positions | Jabbithole map pins for the page with the same name and zone, quest linked pages first; height and area from the 5 nearest spawns within 40 m | Medium | name-only matches can pick the wrong variant; pins are player-reported positions |
+| loot tables | observed drop percentage per kill | Medium | small samples on rare creatures |
+| creature abilities | spells seen on the Abilities tab; instant ones as auto attacks | Low | not the real rotation or conditions |
+
 ## Other invented values
 
 | Value | Ours | Where |
