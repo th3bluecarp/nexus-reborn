@@ -1500,1401 +1500,1416 @@ INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900498,10,11),(900498,1
 -- Rusthoof Corpse (target, quest-linked)
 INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900499,0,26232,22,1351,-4615,-955.869,-42,0,0,0,23026,0,219,219);
 INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900499,10,11),(900499,15,0);
+-- Surveillance Camera Station (target, name-only)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900500,0,26421,22,585,-4797,-907.692,-1253,0,0,0,22904,0,219,219);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900500,10,1),(900500,15,0);
+-- Surveillance Camera Station (target, name-only)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900501,0,26421,22,1752,-4544,-964.966,-265,0,0,0,22904,0,219,219);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900501,10,1),(900501,15,0);
+-- Surveillance Camera Station (target, name-only)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900502,0,26421,22,1752,-4580,-966.281,-235,0,0,0,22904,0,219,219);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900502,10,1),(900502,15,0);
+-- Surveillance Camera Station (target, name-only)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900503,0,26421,22,1752,-4634,-965.104,-132,0,0,0,22904,0,219,219);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900503,10,1),(900503,15,0);
+-- Surveillance Camera Station (target, name-only)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900504,0,26421,22,1752,-4815,-956.635,-299,0,0,0,22904,0,219,219);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900504,10,1),(900504,15,0);
 -- Artemis Zin (giver/turn-in, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900500,0,26470,22,1880,-4890.6,-991.741,264.0,0,0,0,25236,9080,170,170);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900500,10,50),(900500,15,0);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900505,0,26470,22,1880,-4890.6,-991.741,264.0,0,0,0,25236,9080,170,170);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900505,10,50),(900505,15,0);
 -- Explorer Vectra (giver, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900501,0,26779,22,1319,-1841,-848.101,-2260,0,0,0,25700,9005,219,219);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900501,10,15),(900501,15,0);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900506,0,26779,22,1319,-1841,-848.101,-2260,0,0,0,25700,9005,219,219);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900506,10,15),(900506,15,0);
 -- Agent Lex (giver/turn-in, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900502,0,26908,22,484,-5713.5,-967.43,-707.75,0,0,0,26446,9082,170,170);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900502,10,50),(900502,15,0);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900507,0,26908,22,484,-5713.5,-967.43,-707.75,0,0,0,26446,9082,170,170);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900507,10,50),(900507,15,0);
 -- Injured ICI Tracker (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900503,0,26968,22,638,-4229,-947.478,-155,0,0,0,30354,9497,170,170);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900503,10,10),(900503,15,0);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900508,0,26968,22,638,-4229,-947.478,-155,0,0,0,30354,9497,170,170);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900508,10,10),(900508,15,0);
 -- Stolen ICI Speeder (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900504,0,26978,22,640,-4422,-967.25,35,0,0,0,21667,0,170,170);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900504,10,10),(900504,15,0);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900509,0,26978,22,640,-4422,-967.25,35,0,0,0,21667,0,170,170);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900509,10,10),(900509,15,0);
 -- Conservationist Caius (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900505,0,26997,22,639,-4668,-969.992,-429,0,0,0,26020,9058,170,170);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900505,10,15),(900505,15,0);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900510,0,26997,22,639,-4668,-969.992,-429,0,0,0,26020,9058,170,170);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900510,10,15),(900510,15,0);
 -- Protostar Arms Master (giver/turn-in, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900506,0,27095,22,72,-1739,-1167.33,-1976,0,0,0,21339,0,219,219);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900506,10,17),(900506,15,0);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900511,0,27095,22,72,-1739,-1167.33,-1976,0,0,0,21339,0,219,219);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900511,10,17),(900511,15,0);
 -- Special Agent Boyd (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900507,0,27100,51,138,4559,-807.5,-1186,0,0,0,25750,8991,171,171);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900507,10,24),(900507,15,0);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900512,0,27100,51,138,4559,-807.5,-1186,0,0,0,25750,8991,171,171);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900512,10,24),(900512,15,0);
 -- Special Agent Boyd (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900508,0,27101,51,138,4559,-807.5,-1186,0,0,0,25750,8991,171,171);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900508,10,24),(900508,15,0);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900513,0,27101,51,138,4559,-807.5,-1186,0,0,0,25750,8991,171,171);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900513,10,24),(900513,15,0);
 -- Doodad (giver, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900509,0,27215,22,743,-1510,-948.073,-1717,0,0,0,25671,0,256,256);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900509,10,16),(900509,15,0);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900514,0,27215,22,743,-1510,-948.073,-1717,0,0,0,25671,0,256,256);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900514,10,16),(900514,15,0);
 -- Rusty's Electro Chains (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900510,0,27362,51,1315,2388,-1039.89,695,0,0,0,24887,0,219,219);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900510,10,30),(900510,15,0);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900515,0,27362,51,1315,2388,-1039.89,695,0,0,0,24887,0,219,219);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900515,10,30),(900515,15,0);
 -- Bolt's Electro Chains (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900511,0,27363,51,1315,2214,-1039.89,843,0,0,0,24887,0,219,219);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900511,10,30),(900511,15,0);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900516,0,27363,51,1315,2214,-1039.89,843,0,0,0,24887,0,219,219);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900516,10,30),(900516,15,0);
 -- Farmer Gummer (giver/turn-in, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900512,0,27479,22,1461,-1812,-921.414,-1001,0,0,0,30199,9026,170,170);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900512,10,18),(900512,15,0);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900517,0,27479,22,1461,-1812,-921.414,-1001,0,0,0,30199,9026,170,170);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900517,10,18),(900517,15,0);
 -- Zesty Seasoning (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900513,0,27499,22,1393,-1684.8,-919.966,-836.6,0,0,0,21850,0,219,219);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900513,10,1),(900513,15,0);
--- Zesty Seasoning (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900514,0,27499,22,1393,-1686.0,-919.598,-814.75,0,0,0,21850,0,219,219);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900514,10,1),(900514,15,0);
--- Zesty Seasoning (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900515,0,27499,22,1393,-1716.333,-922.966,-895.0,0,0,0,21850,0,219,219);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900515,10,1),(900515,15,0);
--- Zesty Seasoning (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900516,0,27499,22,1392,-1660.0,-922.468,-788.0,0,0,0,21850,0,219,219);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900516,10,1),(900516,15,0);
--- Zesty Seasoning (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900517,0,27499,22,1393,-1711.5,-920.612,-844.0,0,0,0,21850,0,219,219);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900517,10,1),(900517,15,0);
--- Zesty Seasoning (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900518,0,27499,22,1393,-1708,-922.966,-903,0,0,0,21850,0,219,219);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900518,0,27499,22,1393,-1684.8,-919.966,-836.6,0,0,0,21850,0,219,219);
 INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900518,10,1),(900518,15,0);
 -- Zesty Seasoning (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900519,0,27499,22,1393,-1706,-920.741,-874,0,0,0,21850,0,219,219);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900519,0,27499,22,1393,-1686.0,-919.598,-814.75,0,0,0,21850,0,219,219);
 INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900519,10,1),(900519,15,0);
 -- Zesty Seasoning (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900520,0,27499,22,1392,-1635,-920.655,-828,0,0,0,21850,0,219,219);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900520,0,27499,22,1393,-1716.333,-922.966,-895.0,0,0,0,21850,0,219,219);
 INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900520,10,1),(900520,15,0);
+-- Zesty Seasoning (target, quest-linked)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900521,0,27499,22,1392,-1660.0,-922.468,-788.0,0,0,0,21850,0,219,219);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900521,10,1),(900521,15,0);
+-- Zesty Seasoning (target, quest-linked)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900522,0,27499,22,1393,-1711.5,-920.612,-844.0,0,0,0,21850,0,219,219);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900522,10,1),(900522,15,0);
+-- Zesty Seasoning (target, quest-linked)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900523,0,27499,22,1393,-1708,-922.966,-903,0,0,0,21850,0,219,219);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900523,10,1),(900523,15,0);
+-- Zesty Seasoning (target, quest-linked)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900524,0,27499,22,1393,-1706,-920.741,-874,0,0,0,21850,0,219,219);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900524,10,1),(900524,15,0);
+-- Zesty Seasoning (target, quest-linked)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900525,0,27499,22,1392,-1635,-920.655,-828,0,0,0,21850,0,219,219);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900525,10,1),(900525,15,0);
 -- Arwick Redleaf (giver/turn-in, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900521,0,27732,990,1416,-498.0,-914.528,-3266.0,0,0,0,27879,9074,171,171);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900521,10,50),(900521,15,0);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900526,0,27732,990,1416,-498.0,-914.528,-3266.0,0,0,0,27879,9074,171,171);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900526,10,50),(900526,15,0);
 -- Commander Durek (giver, name-only)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900522,0,27787,51,137,3712,-1109.56,-1240,0,0,0,22825,9375,171,171);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900522,10,50),(900522,15,0);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900527,0,27787,51,137,3712,-1109.56,-1240,0,0,0,22825,9375,171,171);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900527,10,50),(900527,15,0);
 -- Kezrek Warbringer (giver, name-only)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900523,0,27962,22,2194,-2890.0,-905.215,-504.4,0,0,0,25194,9894,170,170);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900523,10,50),(900523,15,0);
--- Livingroot Keeper (giver, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900524,0,28179,990,1416,-396.0,-1014.59,-3511.833,0,0,0,22600,0,219,219);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900524,10,4),(900524,15,0);
--- Livingroot Mender (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900525,0,28278,990,1416,-397.5,-1014.59,-3503.0,0,0,0,21537,0,219,219);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900525,10,4),(900525,15,0);
--- Researcher Omegus (giver/turn-in, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900526,0,28625,22,43,-1760,-1189.23,-1275,0,0,0,30329,9058,170,170);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900526,10,18),(900526,15,0);
--- Researcher Elizabeth (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900527,0,28632,22,43,-1767,-1189.23,-1277,0,0,0,30331,9058,219,219);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900527,10,18),(900527,15,0);
--- Queen Myala Everstar (giver/turn-in, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900528,0,28789,990,1420,657,-957.567,-3298,0,0,0,27881,9073,171,171);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900528,0,27962,22,2194,-2890.0,-905.215,-504.4,0,0,0,25194,9894,170,170);
 INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900528,10,50),(900528,15,0);
+-- Livingroot Keeper (giver, quest-linked)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900529,0,28179,990,1416,-396.0,-1014.59,-3511.833,0,0,0,22600,0,219,219);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900529,10,4),(900529,15,0);
+-- Livingroot Mender (target, quest-linked)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900530,0,28278,990,1416,-397.5,-1014.59,-3503.0,0,0,0,21537,0,219,219);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900530,10,4),(900530,15,0);
+-- Researcher Omegus (giver/turn-in, quest-linked)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900531,0,28625,22,43,-1760,-1189.23,-1275,0,0,0,30329,9058,170,170);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900531,10,18),(900531,15,0);
+-- Researcher Elizabeth (target, quest-linked)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900532,0,28632,22,43,-1767,-1189.23,-1277,0,0,0,30331,9058,219,219);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900532,10,18),(900532,15,0);
 -- Queen Myala Everstar (giver/turn-in, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900529,0,28843,990,1420,657,-957.567,-3298,0,0,0,27881,9073,171,171);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900529,10,50),(900529,15,0);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900533,0,28789,990,1420,657,-957.567,-3298,0,0,0,27881,9073,171,171);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900533,10,50),(900533,15,0);
 -- Queen Myala Everstar (giver/turn-in, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900530,0,28869,990,1420,657,-957.567,-3298,0,0,0,27881,9073,171,171);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900530,10,50),(900530,15,0);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900534,0,28843,990,1420,657,-957.567,-3298,0,0,0,27881,9073,171,171);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900534,10,50),(900534,15,0);
+-- Queen Myala Everstar (giver/turn-in, quest-linked)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900535,0,28869,990,1420,657,-957.567,-3298,0,0,0,27881,9073,171,171);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900535,10,50),(900535,15,0);
 -- Unstable Accelerite (giver/target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900531,0,29576,22,1529,-5036,-976.217,-654,0,0,0,25444,0,219,219);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900531,10,1),(900531,15,0);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900536,0,29576,22,1529,-5036,-976.217,-654,0,0,0,25444,0,219,219);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900536,10,1),(900536,15,0);
 -- Abandoned Collegium Tech (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900532,0,29793,22,43,-1892,-955.072,-1151,0,0,0,21374,0,219,219);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900532,10,1),(900532,15,0);
--- Royal Collegium Quartermaster (giver/turn-in, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900533,0,29830,22,43,-1841,-924.283,-1129,0,0,0,25804,9777,170,170);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900533,10,18),(900533,15,0);
--- Dominion Escort Ship (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900534,0,29977,22,38,-2474.5,-878.321,-1966.0,0,0,0,24290,0,219,219);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900534,10,1),(900534,15,0);
--- Royal Collegium Researcher (giver/turn-in, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900535,0,30047,22,43,-1835,-924.476,-1140,0,0,0,28453,9058,170,170);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900535,10,19),(900535,15,0);
--- Artemis Zin (turn-in, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900536,0,30240,1387,1307,-2528,-958.967,-4942,0,0,0,25236,9080,170,170);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900536,10,50),(900536,15,0);
--- Prayer Wine (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900537,0,30249,22,327,-2459.5,-761.561,-3440.0,0,0,0,26379,0,219,219);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900537,0,29793,22,43,-1892,-955.072,-1151,0,0,0,21374,0,219,219);
 INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900537,10,1),(900537,15,0);
+-- Royal Collegium Quartermaster (giver/turn-in, quest-linked)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900538,0,29830,22,43,-1841,-924.283,-1129,0,0,0,25804,9777,170,170);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900538,10,18),(900538,15,0);
+-- Dominion Escort Ship (target, quest-linked)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900539,0,29977,22,38,-2474.5,-878.321,-1966.0,0,0,0,24290,0,219,219);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900539,10,1),(900539,15,0);
+-- Royal Collegium Researcher (giver/turn-in, quest-linked)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900540,0,30047,22,43,-1835,-924.476,-1140,0,0,0,28453,9058,170,170);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900540,10,19),(900540,15,0);
+-- Artemis Zin (turn-in, quest-linked)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900541,0,30240,1387,1307,-2528,-958.967,-4942,0,0,0,25236,9080,170,170);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900541,10,50),(900541,15,0);
+-- Prayer Wine (target, quest-linked)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900542,0,30249,22,327,-2459.5,-761.561,-3440.0,0,0,0,26379,0,219,219);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900542,10,1),(900542,15,0);
 -- Poisoned Stormseeker (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900538,0,30250,22,393,-2990.5,-815.297,-3456.0,0,0,0,22435,0,219,219);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900538,10,7),(900538,15,0);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900543,0,30250,22,393,-2990.5,-815.297,-3456.0,0,0,0,22435,0,219,219);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900543,10,7),(900543,15,0);
 -- Poisoned Stormseeker (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900539,0,30250,22,393,-2959.0,-819.285,-3541.5,0,0,0,22435,0,219,219);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900539,10,7),(900539,15,0);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900544,0,30250,22,393,-2959.0,-819.285,-3541.5,0,0,0,22435,0,219,219);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900544,10,7),(900544,15,0);
 -- Poisoned Stormseeker (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900540,0,30250,22,393,-2995.0,-816.409,-3488.0,0,0,0,22435,0,219,219);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900540,10,7),(900540,15,0);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900545,0,30250,22,393,-2995.0,-816.409,-3488.0,0,0,0,22435,0,219,219);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900545,10,7),(900545,15,0);
 -- Poisoned Stormseeker (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900541,0,30250,22,393,-2972,-813.478,-3437,0,0,0,22435,0,219,219);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900541,10,7),(900541,15,0);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900546,0,30250,22,393,-2972,-813.478,-3437,0,0,0,22435,0,219,219);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900546,10,7),(900546,15,0);
 -- Poisoned Stormseeker (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900542,0,30250,22,393,-2894,-820.104,-3478,0,0,0,22435,0,219,219);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900542,10,7),(900542,15,0);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900547,0,30250,22,393,-2894,-820.104,-3478,0,0,0,22435,0,219,219);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900547,10,7),(900547,15,0);
 -- Nap Nap Juice (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900543,0,30253,22,327,-2570,-780.305,-3489,0,0,0,21652,0,219,219);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900543,10,1),(900543,15,0);
--- Dominion Supplies (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900544,0,30307,22,1901,-2549.667,-801.748,-3755.0,0,0,0,22556,0,219,219);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900544,10,1),(900544,15,0);
--- Dominion Supplies (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900545,0,30307,22,393,-2968,-818.525,-3488,0,0,0,22556,0,219,219);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900545,10,1),(900545,15,0);
--- Dominion Supplies (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900546,0,30307,22,393,-2957,-819.837,-3596,0,0,0,22556,0,219,219);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900546,10,1),(900546,15,0);
--- Poisoned Supplies (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900547,0,30308,22,393,-2918,-819.651,-3582,0,0,0,22556,0,219,219);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900547,10,1),(900547,15,0);
--- Poisoned Supplies (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900548,0,30308,22,393,-2943,-815.151,-3454,0,0,0,22556,0,219,219);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900548,0,30253,22,327,-2570,-780.305,-3489,0,0,0,21652,0,219,219);
 INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900548,10,1),(900548,15,0);
--- Poisoned Supplies (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900549,0,30308,22,393,-2952,-820.464,-3521,0,0,0,22556,0,219,219);
+-- Dominion Supplies (target, quest-linked)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900549,0,30307,22,1901,-2549.667,-801.748,-3755.0,0,0,0,22556,0,219,219);
 INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900549,10,1),(900549,15,0);
--- Poisoned Supplies (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900550,0,30308,22,396,-3288,-790.891,-3242,0,0,0,22556,0,219,219);
+-- Dominion Supplies (target, quest-linked)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900550,0,30307,22,393,-2968,-818.525,-3488,0,0,0,22556,0,219,219);
 INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900550,10,1),(900550,15,0);
--- Poisoned Supplies (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900551,0,30308,22,396,-3386,-774.089,-3239,0,0,0,22556,0,219,219);
+-- Dominion Supplies (target, quest-linked)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900551,0,30307,22,393,-2957,-819.837,-3596,0,0,0,22556,0,219,219);
 INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900551,10,1),(900551,15,0);
+-- Poisoned Supplies (target, quest-linked)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900552,0,30308,22,393,-2918,-819.651,-3582,0,0,0,22556,0,219,219);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900552,10,1),(900552,15,0);
+-- Poisoned Supplies (target, quest-linked)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900553,0,30308,22,393,-2943,-815.151,-3454,0,0,0,22556,0,219,219);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900553,10,1),(900553,15,0);
+-- Poisoned Supplies (target, quest-linked)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900554,0,30308,22,393,-2952,-820.464,-3521,0,0,0,22556,0,219,219);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900554,10,1),(900554,15,0);
+-- Poisoned Supplies (target, quest-linked)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900555,0,30308,22,396,-3288,-790.891,-3242,0,0,0,22556,0,219,219);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900555,10,1),(900555,15,0);
+-- Poisoned Supplies (target, quest-linked)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900556,0,30308,22,396,-3386,-774.089,-3239,0,0,0,22556,0,219,219);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900556,10,1),(900556,15,0);
 -- Professor Cornelius (giver/turn-in, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900552,0,30313,22,1636,-1717.0,-698.892,-3193.333,0,0,0,26015,9058,170,170);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900552,10,12),(900552,15,0);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900557,0,30313,22,1636,-1717.0,-698.892,-3193.333,0,0,0,26015,9058,170,170);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900557,10,12),(900557,15,0);
 -- Elder Spirit-Walker (giver/turn-in, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900553,0,30484,22,393,-2892,-820.104,-3486,0,0,0,22436,0,219,219);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900553,10,7),(900553,15,0);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900558,0,30484,22,393,-2892,-820.104,-3486,0,0,0,22436,0,219,219);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900558,10,7),(900558,15,0);
 -- Corrigan Doon (giver/turn-in, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900554,0,30560,22,394,-2054.526,-737.799,-3766.684,0,0,0,27880,9083,170,170);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900554,10,50),(900554,15,0);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900559,0,30560,22,394,-2054.526,-737.799,-3766.684,0,0,0,27880,9083,170,170);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900559,10,50),(900559,15,0);
 -- Poisoned Spirit-Walker (giver/turn-in, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900555,0,30561,22,393,-2948,-818.674,-3661,0,0,0,22436,0,219,219);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900555,10,7),(900555,15,0);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900560,0,30561,22,393,-2948,-818.674,-3661,0,0,0,22436,0,219,219);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900560,10,7),(900560,15,0);
 -- Bonerazer Ambusher (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900556,0,30600,51,1575,1282.0,-904.607,-2026.875,0,0,0,27012,9193,1249,1249);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900556,10,8),(900556,15,0);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900561,0,30600,51,1575,1282.0,-904.607,-2026.875,0,0,0,27012,9193,1249,1249);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900561,10,8),(900561,15,0);
 -- Bonerazer Ambusher (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900557,0,30600,51,1575,1249.143,-906.318,-1954.286,0,0,0,27012,9193,1249,1249);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900557,10,8),(900557,15,0);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900562,0,30600,51,1575,1249.143,-906.318,-1954.286,0,0,0,27012,9193,1249,1249);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900562,10,8),(900562,15,0);
 -- Bonerazer Ambusher (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900558,0,30600,51,1575,1267.5,-904.859,-1970.667,0,0,0,27012,9193,1249,1249);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900558,10,8),(900558,15,0);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900563,0,30600,51,1575,1267.5,-904.859,-1970.667,0,0,0,27012,9193,1249,1249);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900563,10,8),(900563,15,0);
 -- Bonerazer Ambusher (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900559,0,30600,51,1575,1294.333,-913.412,-2071.0,0,0,0,27012,9193,1249,1249);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900559,10,8),(900559,15,0);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900564,0,30600,51,1575,1294.333,-913.412,-2071.0,0,0,0,27012,9193,1249,1249);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900564,10,8),(900564,15,0);
 -- Bonerazer Ambusher (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900560,0,30600,51,1575,1280.0,-903.672,-2069.667,0,0,0,27012,9193,1249,1249);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900560,10,8),(900560,15,0);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900565,0,30600,51,1575,1280.0,-903.672,-2069.667,0,0,0,27012,9193,1249,1249);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900565,10,8),(900565,15,0);
 -- Arwick Redleaf (turn-in, name-only)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900561,0,30682,990,1416,-498.0,-914.528,-3266.0,0,0,0,27879,9074,171,171);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900561,10,50),(900561,15,0);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900566,0,30682,990,1416,-498.0,-914.528,-3266.0,0,0,0,27879,9074,171,171);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900566,10,50),(900566,15,0);
 -- Professor Cornelius (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900562,0,30776,22,1636,-1717.0,-698.892,-3193.333,0,0,0,26015,9058,170,170);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900562,10,12),(900562,15,0);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900567,0,30776,22,1636,-1717.0,-698.892,-3193.333,0,0,0,26015,9058,170,170);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900567,10,12),(900567,15,0);
 -- Primal Storm Emitter (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900563,0,30817,22,396,-3451,-770.896,-3270,0,0,0,22054,0,219,219);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900563,10,1),(900563,15,0);
--- Primal Storm Emitter (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900564,0,30817,22,396,-3343,-786.884,-3298,0,0,0,22054,0,219,219);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900564,10,1),(900564,15,0);
--- Primal Storm Emitter (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900565,0,30817,22,396,-3461,-773.032,-3212,0,0,0,22054,0,219,219);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900565,10,1),(900565,15,0);
--- Primal Storm Emitter (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900566,0,30817,22,396,-3409,-772.962,-3282,0,0,0,22054,0,219,219);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900566,10,1),(900566,15,0);
--- Primal Storm Emitter (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900567,0,30817,22,396,-3678,-736.309,-3206,0,0,0,22054,0,219,219);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900567,10,1),(900567,15,0);
--- Primal Storm Emitter (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900568,0,30817,22,396,-3634,-743.948,-3214,0,0,0,22054,0,219,219);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900568,0,30817,22,396,-3451,-770.896,-3270,0,0,0,22054,0,219,219);
 INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900568,10,1),(900568,15,0);
 -- Primal Storm Emitter (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900569,0,30817,22,396,-3550,-765.965,-3180,0,0,0,22054,0,219,219);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900569,0,30817,22,396,-3343,-786.884,-3298,0,0,0,22054,0,219,219);
 INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900569,10,1),(900569,15,0);
 -- Primal Storm Emitter (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900570,0,30817,22,396,-3501,-769.734,-3213,0,0,0,22054,0,219,219);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900570,0,30817,22,396,-3461,-773.032,-3212,0,0,0,22054,0,219,219);
 INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900570,10,1),(900570,15,0);
 -- Primal Storm Emitter (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900571,0,30817,22,396,-3377,-779.855,-3313,0,0,0,22054,0,219,219);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900571,0,30817,22,396,-3409,-772.962,-3282,0,0,0,22054,0,219,219);
 INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900571,10,1),(900571,15,0);
 -- Primal Storm Emitter (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900572,0,30817,22,396,-3710,-736.422,-3263,0,0,0,22054,0,219,219);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900572,0,30817,22,396,-3678,-736.309,-3206,0,0,0,22054,0,219,219);
 INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900572,10,1),(900572,15,0);
 -- Primal Storm Emitter (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900573,0,30817,22,396,-3554,-748.943,-3374,0,0,0,22054,0,219,219);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900573,0,30817,22,396,-3634,-743.948,-3214,0,0,0,22054,0,219,219);
 INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900573,10,1),(900573,15,0);
 -- Primal Storm Emitter (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900574,0,30817,22,396,-3652,-740.332,-3313,0,0,0,22054,0,219,219);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900574,0,30817,22,396,-3550,-765.965,-3180,0,0,0,22054,0,219,219);
 INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900574,10,1),(900574,15,0);
 -- Primal Storm Emitter (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900575,0,30818,22,396,-3451,-770.896,-3270,0,0,0,22054,0,219,219);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900575,0,30817,22,396,-3501,-769.734,-3213,0,0,0,22054,0,219,219);
 INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900575,10,1),(900575,15,0);
 -- Primal Storm Emitter (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900576,0,30818,22,396,-3343,-786.884,-3298,0,0,0,22054,0,219,219);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900576,0,30817,22,396,-3377,-779.855,-3313,0,0,0,22054,0,219,219);
 INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900576,10,1),(900576,15,0);
 -- Primal Storm Emitter (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900577,0,30818,22,396,-3461,-773.032,-3212,0,0,0,22054,0,219,219);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900577,0,30817,22,396,-3710,-736.422,-3263,0,0,0,22054,0,219,219);
 INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900577,10,1),(900577,15,0);
 -- Primal Storm Emitter (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900578,0,30818,22,396,-3409,-772.962,-3282,0,0,0,22054,0,219,219);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900578,0,30817,22,396,-3554,-748.943,-3374,0,0,0,22054,0,219,219);
 INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900578,10,1),(900578,15,0);
 -- Primal Storm Emitter (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900579,0,30818,22,396,-3678,-736.309,-3206,0,0,0,22054,0,219,219);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900579,0,30817,22,396,-3652,-740.332,-3313,0,0,0,22054,0,219,219);
 INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900579,10,1),(900579,15,0);
 -- Primal Storm Emitter (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900580,0,30818,22,396,-3634,-743.948,-3214,0,0,0,22054,0,219,219);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900580,0,30818,22,396,-3451,-770.896,-3270,0,0,0,22054,0,219,219);
 INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900580,10,1),(900580,15,0);
 -- Primal Storm Emitter (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900581,0,30818,22,396,-3550,-765.965,-3180,0,0,0,22054,0,219,219);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900581,0,30818,22,396,-3343,-786.884,-3298,0,0,0,22054,0,219,219);
 INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900581,10,1),(900581,15,0);
 -- Primal Storm Emitter (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900582,0,30818,22,396,-3501,-769.734,-3213,0,0,0,22054,0,219,219);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900582,0,30818,22,396,-3461,-773.032,-3212,0,0,0,22054,0,219,219);
 INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900582,10,1),(900582,15,0);
 -- Primal Storm Emitter (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900583,0,30818,22,396,-3377,-779.855,-3313,0,0,0,22054,0,219,219);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900583,0,30818,22,396,-3409,-772.962,-3282,0,0,0,22054,0,219,219);
 INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900583,10,1),(900583,15,0);
 -- Primal Storm Emitter (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900584,0,30818,22,396,-3710,-736.422,-3263,0,0,0,22054,0,219,219);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900584,0,30818,22,396,-3678,-736.309,-3206,0,0,0,22054,0,219,219);
 INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900584,10,1),(900584,15,0);
 -- Primal Storm Emitter (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900585,0,30818,22,396,-3554,-748.943,-3374,0,0,0,22054,0,219,219);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900585,0,30818,22,396,-3634,-743.948,-3214,0,0,0,22054,0,219,219);
 INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900585,10,1),(900585,15,0);
 -- Primal Storm Emitter (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900586,0,30818,22,396,-3652,-740.332,-3313,0,0,0,22054,0,219,219);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900586,0,30818,22,396,-3550,-765.965,-3180,0,0,0,22054,0,219,219);
 INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900586,10,1),(900586,15,0);
 -- Primal Storm Emitter (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900587,0,30819,22,396,-3451,-770.896,-3270,0,0,0,22054,0,219,219);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900587,0,30818,22,396,-3501,-769.734,-3213,0,0,0,22054,0,219,219);
 INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900587,10,1),(900587,15,0);
 -- Primal Storm Emitter (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900588,0,30819,22,396,-3343,-786.884,-3298,0,0,0,22054,0,219,219);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900588,0,30818,22,396,-3377,-779.855,-3313,0,0,0,22054,0,219,219);
 INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900588,10,1),(900588,15,0);
 -- Primal Storm Emitter (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900589,0,30819,22,396,-3461,-773.032,-3212,0,0,0,22054,0,219,219);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900589,0,30818,22,396,-3710,-736.422,-3263,0,0,0,22054,0,219,219);
 INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900589,10,1),(900589,15,0);
 -- Primal Storm Emitter (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900590,0,30819,22,396,-3409,-772.962,-3282,0,0,0,22054,0,219,219);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900590,0,30818,22,396,-3554,-748.943,-3374,0,0,0,22054,0,219,219);
 INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900590,10,1),(900590,15,0);
 -- Primal Storm Emitter (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900591,0,30819,22,396,-3678,-736.309,-3206,0,0,0,22054,0,219,219);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900591,0,30818,22,396,-3652,-740.332,-3313,0,0,0,22054,0,219,219);
 INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900591,10,1),(900591,15,0);
 -- Primal Storm Emitter (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900592,0,30819,22,396,-3634,-743.948,-3214,0,0,0,22054,0,219,219);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900592,0,30819,22,396,-3451,-770.896,-3270,0,0,0,22054,0,219,219);
 INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900592,10,1),(900592,15,0);
 -- Primal Storm Emitter (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900593,0,30819,22,396,-3550,-765.965,-3180,0,0,0,22054,0,219,219);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900593,0,30819,22,396,-3343,-786.884,-3298,0,0,0,22054,0,219,219);
 INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900593,10,1),(900593,15,0);
 -- Primal Storm Emitter (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900594,0,30819,22,396,-3501,-769.734,-3213,0,0,0,22054,0,219,219);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900594,0,30819,22,396,-3461,-773.032,-3212,0,0,0,22054,0,219,219);
 INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900594,10,1),(900594,15,0);
 -- Primal Storm Emitter (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900595,0,30819,22,396,-3377,-779.855,-3313,0,0,0,22054,0,219,219);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900595,0,30819,22,396,-3409,-772.962,-3282,0,0,0,22054,0,219,219);
 INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900595,10,1),(900595,15,0);
 -- Primal Storm Emitter (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900596,0,30819,22,396,-3710,-736.422,-3263,0,0,0,22054,0,219,219);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900596,0,30819,22,396,-3678,-736.309,-3206,0,0,0,22054,0,219,219);
 INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900596,10,1),(900596,15,0);
 -- Primal Storm Emitter (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900597,0,30819,22,396,-3554,-748.943,-3374,0,0,0,22054,0,219,219);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900597,0,30819,22,396,-3634,-743.948,-3214,0,0,0,22054,0,219,219);
 INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900597,10,1),(900597,15,0);
 -- Primal Storm Emitter (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900598,0,30819,22,396,-3652,-740.332,-3313,0,0,0,22054,0,219,219);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900598,0,30819,22,396,-3550,-765.965,-3180,0,0,0,22054,0,219,219);
 INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900598,10,1),(900598,15,0);
 -- Primal Storm Emitter (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900599,0,30820,22,396,-3451,-770.896,-3270,0,0,0,22054,0,219,219);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900599,0,30819,22,396,-3501,-769.734,-3213,0,0,0,22054,0,219,219);
 INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900599,10,1),(900599,15,0);
 -- Primal Storm Emitter (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900600,0,30820,22,396,-3343,-786.884,-3298,0,0,0,22054,0,219,219);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900600,0,30819,22,396,-3377,-779.855,-3313,0,0,0,22054,0,219,219);
 INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900600,10,1),(900600,15,0);
 -- Primal Storm Emitter (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900601,0,30820,22,396,-3461,-773.032,-3212,0,0,0,22054,0,219,219);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900601,0,30819,22,396,-3710,-736.422,-3263,0,0,0,22054,0,219,219);
 INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900601,10,1),(900601,15,0);
 -- Primal Storm Emitter (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900602,0,30820,22,396,-3409,-772.962,-3282,0,0,0,22054,0,219,219);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900602,0,30819,22,396,-3554,-748.943,-3374,0,0,0,22054,0,219,219);
 INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900602,10,1),(900602,15,0);
 -- Primal Storm Emitter (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900603,0,30820,22,396,-3678,-736.309,-3206,0,0,0,22054,0,219,219);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900603,0,30819,22,396,-3652,-740.332,-3313,0,0,0,22054,0,219,219);
 INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900603,10,1),(900603,15,0);
 -- Primal Storm Emitter (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900604,0,30820,22,396,-3634,-743.948,-3214,0,0,0,22054,0,219,219);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900604,0,30820,22,396,-3451,-770.896,-3270,0,0,0,22054,0,219,219);
 INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900604,10,1),(900604,15,0);
 -- Primal Storm Emitter (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900605,0,30820,22,396,-3550,-765.965,-3180,0,0,0,22054,0,219,219);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900605,0,30820,22,396,-3343,-786.884,-3298,0,0,0,22054,0,219,219);
 INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900605,10,1),(900605,15,0);
 -- Primal Storm Emitter (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900606,0,30820,22,396,-3501,-769.734,-3213,0,0,0,22054,0,219,219);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900606,0,30820,22,396,-3461,-773.032,-3212,0,0,0,22054,0,219,219);
 INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900606,10,1),(900606,15,0);
 -- Primal Storm Emitter (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900607,0,30820,22,396,-3377,-779.855,-3313,0,0,0,22054,0,219,219);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900607,0,30820,22,396,-3409,-772.962,-3282,0,0,0,22054,0,219,219);
 INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900607,10,1),(900607,15,0);
 -- Primal Storm Emitter (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900608,0,30820,22,396,-3710,-736.422,-3263,0,0,0,22054,0,219,219);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900608,0,30820,22,396,-3678,-736.309,-3206,0,0,0,22054,0,219,219);
 INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900608,10,1),(900608,15,0);
 -- Primal Storm Emitter (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900609,0,30820,22,396,-3554,-748.943,-3374,0,0,0,22054,0,219,219);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900609,0,30820,22,396,-3634,-743.948,-3214,0,0,0,22054,0,219,219);
 INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900609,10,1),(900609,15,0);
 -- Primal Storm Emitter (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900610,0,30820,22,396,-3652,-740.332,-3313,0,0,0,22054,0,219,219);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900610,0,30820,22,396,-3550,-765.965,-3180,0,0,0,22054,0,219,219);
 INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900610,10,1),(900610,15,0);
 -- Primal Storm Emitter (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900611,0,30821,22,396,-3451,-770.896,-3270,0,0,0,22054,0,219,219);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900611,0,30820,22,396,-3501,-769.734,-3213,0,0,0,22054,0,219,219);
 INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900611,10,1),(900611,15,0);
 -- Primal Storm Emitter (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900612,0,30821,22,396,-3343,-786.884,-3298,0,0,0,22054,0,219,219);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900612,0,30820,22,396,-3377,-779.855,-3313,0,0,0,22054,0,219,219);
 INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900612,10,1),(900612,15,0);
 -- Primal Storm Emitter (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900613,0,30821,22,396,-3461,-773.032,-3212,0,0,0,22054,0,219,219);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900613,0,30820,22,396,-3710,-736.422,-3263,0,0,0,22054,0,219,219);
 INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900613,10,1),(900613,15,0);
 -- Primal Storm Emitter (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900614,0,30821,22,396,-3409,-772.962,-3282,0,0,0,22054,0,219,219);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900614,0,30820,22,396,-3554,-748.943,-3374,0,0,0,22054,0,219,219);
 INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900614,10,1),(900614,15,0);
 -- Primal Storm Emitter (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900615,0,30821,22,396,-3678,-736.309,-3206,0,0,0,22054,0,219,219);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900615,0,30820,22,396,-3652,-740.332,-3313,0,0,0,22054,0,219,219);
 INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900615,10,1),(900615,15,0);
 -- Primal Storm Emitter (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900616,0,30821,22,396,-3634,-743.948,-3214,0,0,0,22054,0,219,219);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900616,0,30821,22,396,-3451,-770.896,-3270,0,0,0,22054,0,219,219);
 INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900616,10,1),(900616,15,0);
 -- Primal Storm Emitter (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900617,0,30821,22,396,-3550,-765.965,-3180,0,0,0,22054,0,219,219);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900617,0,30821,22,396,-3343,-786.884,-3298,0,0,0,22054,0,219,219);
 INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900617,10,1),(900617,15,0);
 -- Primal Storm Emitter (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900618,0,30821,22,396,-3501,-769.734,-3213,0,0,0,22054,0,219,219);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900618,0,30821,22,396,-3461,-773.032,-3212,0,0,0,22054,0,219,219);
 INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900618,10,1),(900618,15,0);
 -- Primal Storm Emitter (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900619,0,30821,22,396,-3377,-779.855,-3313,0,0,0,22054,0,219,219);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900619,0,30821,22,396,-3409,-772.962,-3282,0,0,0,22054,0,219,219);
 INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900619,10,1),(900619,15,0);
 -- Primal Storm Emitter (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900620,0,30821,22,396,-3710,-736.422,-3263,0,0,0,22054,0,219,219);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900620,0,30821,22,396,-3678,-736.309,-3206,0,0,0,22054,0,219,219);
 INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900620,10,1),(900620,15,0);
 -- Primal Storm Emitter (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900621,0,30821,22,396,-3554,-748.943,-3374,0,0,0,22054,0,219,219);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900621,0,30821,22,396,-3634,-743.948,-3214,0,0,0,22054,0,219,219);
 INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900621,10,1),(900621,15,0);
 -- Primal Storm Emitter (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900622,0,30821,22,396,-3652,-740.332,-3313,0,0,0,22054,0,219,219);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900622,0,30821,22,396,-3550,-765.965,-3180,0,0,0,22054,0,219,219);
 INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900622,10,1),(900622,15,0);
--- Eldan Artifact (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900623,0,30843,22,327,-2424,-823.144,-3714,0,0,0,25519,0,219,219);
+-- Primal Storm Emitter (target, quest-linked)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900623,0,30821,22,396,-3501,-769.734,-3213,0,0,0,22054,0,219,219);
 INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900623,10,1),(900623,15,0);
--- Ikthian Transport Controls (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900624,0,30844,22,3030,-562,-86.938,-3503,0,0,0,22610,0,219,219);
+-- Primal Storm Emitter (target, quest-linked)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900624,0,30821,22,396,-3377,-779.855,-3313,0,0,0,22054,0,219,219);
 INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900624,10,1),(900624,15,0);
+-- Primal Storm Emitter (target, quest-linked)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900625,0,30821,22,396,-3710,-736.422,-3263,0,0,0,22054,0,219,219);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900625,10,1),(900625,15,0);
+-- Primal Storm Emitter (target, quest-linked)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900626,0,30821,22,396,-3554,-748.943,-3374,0,0,0,22054,0,219,219);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900626,10,1),(900626,15,0);
+-- Primal Storm Emitter (target, quest-linked)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900627,0,30821,22,396,-3652,-740.332,-3313,0,0,0,22054,0,219,219);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900627,10,1),(900627,15,0);
+-- Eldan Artifact (target, quest-linked)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900628,0,30843,22,327,-2424,-823.144,-3714,0,0,0,25519,0,219,219);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900628,10,1),(900628,15,0);
+-- Ikthian Transport Controls (target, quest-linked)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900629,0,30844,22,3030,-562,-86.938,-3503,0,0,0,22610,0,219,219);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900629,10,1),(900629,15,0);
 -- Voreth Crate (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900625,0,30870,22,1545,-1633.667,-917.091,-188.333,0,0,0,21373,0,219,219);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900625,10,8),(900625,15,0);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900630,0,30870,22,1545,-1633.667,-917.091,-188.333,0,0,0,21373,0,219,219);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900630,10,8),(900630,15,0);
 -- Voreth Crate (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900626,0,30870,22,1545,-1339.0,-917.091,-269.0,0,0,0,21373,0,219,219);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900626,10,8),(900626,15,0);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900631,0,30870,22,1545,-1339.0,-917.091,-269.0,0,0,0,21373,0,219,219);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900631,10,8),(900631,15,0);
 -- Voreth Crate (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900627,0,30870,22,1545,-1314.0,-917.091,-191.0,0,0,0,21373,0,219,219);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900627,10,8),(900627,15,0);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900632,0,30870,22,1545,-1314.0,-917.091,-191.0,0,0,0,21373,0,219,219);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900632,10,8),(900632,15,0);
 -- Voreth Crate (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900628,0,30870,22,1545,-1590.5,-920.951,-218.0,0,0,0,21373,0,219,219);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900628,10,8),(900628,15,0);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900633,0,30870,22,1545,-1590.5,-920.951,-218.0,0,0,0,21373,0,219,219);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900633,10,8),(900633,15,0);
 -- Voreth Crate (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900629,0,30870,22,1545,-1357,-917.091,-213,0,0,0,21373,0,219,219);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900629,10,8),(900629,15,0);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900634,0,30870,22,1545,-1357,-917.091,-213,0,0,0,21373,0,219,219);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900634,10,8),(900634,15,0);
 -- Crate of Eldan Technology (giver, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900630,0,30899,22,3030,-662,-306.25,-3403,0,0,0,27800,0,219,219);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900630,10,1),(900630,15,0);
--- Dismantled Eldan Component (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900631,0,30903,22,3030,-620,-218.75,-3407,0,0,0,25520,0,219,219);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900631,10,1),(900631,15,0);
--- Dismantled Eldan Component (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900632,0,30903,22,3030,-568,-97.25,-3468,0,0,0,25520,0,219,219);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900632,10,1),(900632,15,0);
--- Dismantled Eldan Component (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900633,0,30903,22,3030,-586,-133.125,-3481,0,0,0,25520,0,219,219);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900633,10,1),(900633,15,0);
--- Dismantled Eldan Component (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900634,0,30903,22,3030,-582,-137.375,-3447,0,0,0,25520,0,219,219);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900634,10,1),(900634,15,0);
--- Dismantled Eldan Component (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900635,0,30903,22,3030,-605,-186.875,-3403,0,0,0,25520,0,219,219);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900635,0,30899,22,3030,-662,-306.25,-3403,0,0,0,27800,0,219,219);
 INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900635,10,1),(900635,15,0);
 -- Dismantled Eldan Component (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900636,0,30903,22,3030,-593,-161.062,-3429,0,0,0,25520,0,219,219);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900636,0,30903,22,3030,-620,-218.75,-3407,0,0,0,25520,0,219,219);
 INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900636,10,1),(900636,15,0);
 -- Dismantled Eldan Component (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900637,0,30903,22,3030,-615,-182.0,-3478,0,0,0,25520,0,219,219);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900637,0,30903,22,3030,-568,-97.25,-3468,0,0,0,25520,0,219,219);
 INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900637,10,1),(900637,15,0);
 -- Dismantled Eldan Component (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900638,0,30903,22,3030,-591,-150.688,-3460,0,0,0,25520,0,219,219);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900638,0,30903,22,3030,-586,-133.125,-3481,0,0,0,25520,0,219,219);
 INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900638,10,1),(900638,15,0);
+-- Dismantled Eldan Component (target, quest-linked)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900639,0,30903,22,3030,-582,-137.375,-3447,0,0,0,25520,0,219,219);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900639,10,1),(900639,15,0);
+-- Dismantled Eldan Component (target, quest-linked)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900640,0,30903,22,3030,-605,-186.875,-3403,0,0,0,25520,0,219,219);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900640,10,1),(900640,15,0);
+-- Dismantled Eldan Component (target, quest-linked)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900641,0,30903,22,3030,-593,-161.062,-3429,0,0,0,25520,0,219,219);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900641,10,1),(900641,15,0);
+-- Dismantled Eldan Component (target, quest-linked)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900642,0,30903,22,3030,-615,-182.0,-3478,0,0,0,25520,0,219,219);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900642,10,1),(900642,15,0);
+-- Dismantled Eldan Component (target, quest-linked)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900643,0,30903,22,3030,-591,-150.688,-3460,0,0,0,25520,0,219,219);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900643,10,1),(900643,15,0);
 -- Toric Antevian (giver, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900639,0,30949,22,327,-2471.111,-761.57,-3447.333,0,0,0,24957,9077,170,170);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900639,10,50),(900639,15,0);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900644,0,30949,22,327,-2471.111,-761.57,-3447.333,0,0,0,24957,9077,170,170);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900644,10,50),(900644,15,0);
 -- Scaleborn Leviathan (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900640,0,30999,22,37,-736.283,-264.401,-3509.453,0,0,0,22858,0,340,340);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900640,10,13),(900640,15,0);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900645,0,30999,22,37,-736.283,-264.401,-3509.453,0,0,0,22858,0,340,340);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900645,10,13),(900645,15,0);
 -- Cortex Breachscale (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900641,0,31000,22,3030,-609.364,-186.288,-3631.0,0,0,0,28394,0,340,340);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900641,10,13),(900641,15,0);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900646,0,31000,22,3030,-609.364,-186.288,-3631.0,0,0,0,28394,0,340,340);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900646,10,13),(900646,15,0);
 -- Toric Antevian (turn-in, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900642,0,31037,22,327,-2471.111,-761.57,-3447.333,0,0,0,24957,9077,170,170);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900642,10,50),(900642,15,0);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900647,0,31037,22,327,-2471.111,-761.57,-3447.333,0,0,0,24957,9077,170,170);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900647,10,50),(900647,15,0);
 -- Raedon the Ox Snatcher (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900643,0,31056,22,37,-2037.278,-662.513,-2903.593,0,0,0,21690,0,493,493);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900643,10,12),(900643,15,0);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900648,0,31056,22,37,-2037.278,-662.513,-2903.593,0,0,0,21690,0,493,493);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900648,10,12),(900648,15,0);
 -- Life Force Anomaly (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900644,0,31220,51,1578,1583,-954.191,-2119,0,0,0,23185,0,219,219);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900644,10,8),(900644,15,0);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900649,0,31220,51,1578,1583,-954.191,-2119,0,0,0,23185,0,219,219);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900649,10,8),(900649,15,0);
 -- Life Force Anomaly (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900645,0,31221,51,1578,1583,-954.191,-2119,0,0,0,23185,0,219,219);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900645,10,8),(900645,15,0);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900650,0,31221,51,1578,1583,-954.191,-2119,0,0,0,23185,0,219,219);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900650,10,8),(900650,15,0);
 -- Life Force Anomaly (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900646,0,31222,51,1578,1583,-954.191,-2119,0,0,0,23185,0,219,219);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900646,10,8),(900646,15,0);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900651,0,31222,51,1578,1583,-954.191,-2119,0,0,0,23185,0,219,219);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900651,10,8),(900651,15,0);
 -- Stormseeker Arcanist (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900647,0,31223,22,396,-3340.5,-791.721,-3668.5,0,0,0,22434,0,219,219);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900647,10,7),(900647,15,0);
--- Stormseeker Arcanist (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900648,0,31223,22,393,-2954,-817.837,-3684,0,0,0,22434,0,219,219);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900648,10,7),(900648,15,0);
--- Stormseeker Arcanist (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900649,0,31223,22,396,-3456,-786.753,-3693,0,0,0,22434,0,219,219);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900649,10,7),(900649,15,0);
--- Stormseeker Arcanist (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900650,0,31223,22,396,-3493,-754.67,-3420,0,0,0,22434,0,219,219);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900650,10,7),(900650,15,0);
--- Stormseeker Arcanist (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900651,0,31223,22,396,-3552,-747.065,-3470,0,0,0,22434,0,219,219);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900651,10,7),(900651,15,0);
--- Stormseeker Arcanist (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900652,0,31223,22,388,-3200,-808.682,-3458,0,0,0,22434,0,219,219);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900652,0,31223,22,396,-3340.5,-791.721,-3668.5,0,0,0,22434,0,219,219);
 INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900652,10,7),(900652,15,0);
 -- Stormseeker Arcanist (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900653,0,31223,22,396,-3242,-805.224,-3455,0,0,0,22434,0,219,219);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900653,0,31223,22,393,-2954,-817.837,-3684,0,0,0,22434,0,219,219);
 INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900653,10,7),(900653,15,0);
 -- Stormseeker Arcanist (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900654,0,31223,22,388,-3262,-804.337,-3495,0,0,0,22434,0,219,219);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900654,0,31223,22,396,-3456,-786.753,-3693,0,0,0,22434,0,219,219);
 INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900654,10,7),(900654,15,0);
 -- Stormseeker Arcanist (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900655,0,31223,22,388,-3284,-802.582,-3509,0,0,0,22434,0,219,219);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900655,0,31223,22,396,-3493,-754.67,-3420,0,0,0,22434,0,219,219);
 INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900655,10,7),(900655,15,0);
 -- Stormseeker Arcanist (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900656,0,31223,22,396,-3603,-745.192,-3358,0,0,0,22434,0,219,219);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900656,0,31223,22,396,-3552,-747.065,-3470,0,0,0,22434,0,219,219);
 INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900656,10,7),(900656,15,0);
 -- Stormseeker Arcanist (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900657,0,31223,22,396,-3516,-754.655,-3396,0,0,0,22434,0,219,219);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900657,0,31223,22,388,-3200,-808.682,-3458,0,0,0,22434,0,219,219);
 INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900657,10,7),(900657,15,0);
 -- Stormseeker Arcanist (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900658,0,31223,22,396,-3336,-792.759,-3656,0,0,0,22434,0,219,219);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900658,0,31223,22,396,-3242,-805.224,-3455,0,0,0,22434,0,219,219);
 INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900658,10,7),(900658,15,0);
+-- Stormseeker Arcanist (target, quest-linked)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900659,0,31223,22,388,-3262,-804.337,-3495,0,0,0,22434,0,219,219);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900659,10,7),(900659,15,0);
+-- Stormseeker Arcanist (target, quest-linked)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900660,0,31223,22,388,-3284,-802.582,-3509,0,0,0,22434,0,219,219);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900660,10,7),(900660,15,0);
+-- Stormseeker Arcanist (target, quest-linked)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900661,0,31223,22,396,-3603,-745.192,-3358,0,0,0,22434,0,219,219);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900661,10,7),(900661,15,0);
+-- Stormseeker Arcanist (target, quest-linked)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900662,0,31223,22,396,-3516,-754.655,-3396,0,0,0,22434,0,219,219);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900662,10,7),(900662,15,0);
+-- Stormseeker Arcanist (target, quest-linked)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900663,0,31223,22,396,-3336,-792.759,-3656,0,0,0,22434,0,219,219);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900663,10,7),(900663,15,0);
 -- Professor Cornelius (giver/turn-in, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900659,0,31234,22,1636,-1717.0,-698.892,-3193.333,0,0,0,26015,9058,170,170);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900659,10,12),(900659,15,0);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900664,0,31234,22,1636,-1717.0,-698.892,-3193.333,0,0,0,26015,9058,170,170);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900664,10,12),(900664,15,0);
 -- Watti Mozz (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900660,0,31269,22,330,-2610,-797.602,-3732,0,0,0,26862,9021,508,508);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900660,10,8),(900660,15,0);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900665,0,31269,22,330,-2610,-797.602,-3732,0,0,0,26862,9021,508,508);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900665,10,8),(900665,15,0);
 -- Mercenary Arkos (turn-in, name-only)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900661,0,31271,22,1339,-5264.333,-1000.26,92.333,0,0,0,22575,8981,170,170);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900661,10,11),(900661,15,0);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900666,0,31271,22,1339,-5264.333,-1000.26,92.333,0,0,0,22575,8981,170,170);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900666,10,11),(900666,15,0);
 -- Lifter (target, name-only)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900662,0,31320,22,393,-2946.222,-818.8,-3698.556,0,0,0,37148,0,219,219);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900662,10,9),(900662,15,0);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900667,0,31320,22,393,-2946.222,-818.8,-3698.556,0,0,0,37148,0,219,219);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900667,10,9),(900667,15,0);
 -- Data Center: Eldan Tech (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900663,0,31489,22,3030,-614,-182.75,-3474,0,0,0,25609,0,219,219);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900663,10,1),(900663,15,0);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900668,0,31489,22,3030,-614,-182.75,-3474,0,0,0,25609,0,219,219);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900668,10,1),(900668,15,0);
 -- Data Center: Ikthian Tech (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900664,0,31490,22,3030,-506,33.125,-3630,0,0,0,25609,0,219,219);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900664,10,1),(900664,15,0);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900669,0,31490,22,3030,-506,33.125,-3630,0,0,0,25609,0,219,219);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900669,10,1),(900669,15,0);
 -- Reaper Serge (giver/turn-in, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900665,0,31494,51,1570,946,-954.5,-2284,0,0,0,29283,9902,219,219);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900665,10,10),(900665,15,0);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900670,0,31494,51,1570,946,-954.5,-2284,0,0,0,29283,9902,219,219);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900670,10,10),(900670,15,0);
 -- Arwick Redleaf (giver, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900666,0,31534,51,1570,1106,-951.822,-2372,0,0,0,27879,9074,171,171);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900666,10,50),(900666,15,0);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900671,0,31534,51,1570,1106,-951.822,-2372,0,0,0,27879,9074,171,171);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900671,10,50),(900671,15,0);
 -- Ikthian Transport Controls (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900667,0,31663,22,3030,-562,-86.938,-3503,0,0,0,22610,0,219,219);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900667,10,1),(900667,15,0);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900672,0,31663,22,3030,-562,-86.938,-3503,0,0,0,22610,0,219,219);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900672,10,1),(900672,15,0);
 -- Greenbough Guardian (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900668,0,31734,51,1584,1570.889,-887.418,-3033.222,0,0,0,21921,0,219,219);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900668,10,7),(900668,15,0);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900673,0,31734,51,1584,1570.889,-887.418,-3033.222,0,0,0,21921,0,219,219);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900673,10,7),(900673,15,0);
 -- Corrigan Doon (giver/turn-in, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900669,0,31899,22,394,-2054.526,-737.799,-3766.684,0,0,0,27880,9083,170,170);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900669,10,50),(900669,15,0);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900674,0,31899,22,394,-2054.526,-737.799,-3766.684,0,0,0,27880,9083,170,170);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900674,10,50),(900674,15,0);
 -- Guardian Zelcon (giver, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900670,0,31918,22,390,-3175,-792.919,-3670,0,0,0,29394,9018,508,508);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900670,10,8),(900670,15,0);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900675,0,31918,22,390,-3175,-792.919,-3670,0,0,0,29394,9018,508,508);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900675,10,8),(900675,15,0);
 -- Brinlanya Moonstone (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900671,0,31923,22,1548,-2287.75,-919.821,-396.5,0,0,0,26995,9106,171,171);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900671,10,22),(900671,15,0);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900676,0,31923,22,1548,-2287.75,-919.821,-396.5,0,0,0,26995,9106,171,171);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900676,10,22),(900676,15,0);
 -- Corrigan Doon (giver/turn-in, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900672,0,31943,22,394,-2054.526,-737.799,-3766.684,0,0,0,27880,9083,170,170);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900672,10,50),(900672,15,0);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900677,0,31943,22,394,-2054.526,-737.799,-3766.684,0,0,0,27880,9083,170,170);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900677,10,50),(900677,15,0);
 -- Settler Project Resource (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900673,0,32221,51,1570,1091,-950.531,-2358,0,0,0,26539,0,219,219);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900673,10,5),(900673,15,0);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900678,0,32221,51,1570,1091,-950.531,-2358,0,0,0,26539,0,219,219);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900678,10,5),(900678,15,0);
 -- Webwood Taskmaster (giver/turn-in, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900674,0,32532,22,1773,-2508,-698.97,-2648,0,0,0,27105,0,219,219);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900674,10,9),(900674,15,0);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900679,0,32532,22,1773,-2508,-698.97,-2648,0,0,0,27105,0,219,219);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900679,10,9),(900679,15,0);
 -- Webwood Larva (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900675,0,32560,22,37,-2395.5,-430.062,-2506.0,0,0,0,22265,0,219,219);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900675,10,1),(900675,15,0);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900680,0,32560,22,37,-2395.5,-430.062,-2506.0,0,0,0,22265,0,219,219);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900680,10,1),(900680,15,0);
 -- Webwood Larva (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900676,0,32560,22,37,-2384.0,-428.75,-2504.0,0,0,0,22265,0,219,219);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900676,10,1),(900676,15,0);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900681,0,32560,22,37,-2384.0,-428.75,-2504.0,0,0,0,22265,0,219,219);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900681,10,1),(900681,15,0);
 -- Webwood Larva (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900677,0,32560,22,37,-2376.0,-396.875,-2491.5,0,0,0,22265,0,219,219);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900677,10,1),(900677,15,0);
--- Webwood Larva (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900678,0,32560,22,37,-2375,-453.375,-2500,0,0,0,22265,0,219,219);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900678,10,1),(900678,15,0);
--- Webwood Larva (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900679,0,32560,22,37,-2381,-388.25,-2485,0,0,0,22265,0,219,219);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900679,10,1),(900679,15,0);
--- Recruiter Emilija (giver/turn-in, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900680,0,32758,51,300,2918,-929.612,-2348,0,0,0,29947,8991,171,171);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900680,10,10),(900680,15,0);
--- Alchemist Polovic (giver/turn-in, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900681,0,32804,51,308,2080.4,-898.465,-2971.2,0,0,0,30188,9410,171,171);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900681,10,13),(900681,15,0);
--- The Highborn: Seduction of Honor (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900682,0,32925,22,404,-2505,-731.916,-2794,0,0,0,27128,0,219,219);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900682,0,32560,22,37,-2376.0,-396.875,-2491.5,0,0,0,22265,0,219,219);
 INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900682,10,1),(900682,15,0);
--- Analyst Spector (turn-in, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900683,0,32926,1387,1307,-2539,-958.967,-4930,0,0,0,26606,9527,170,170);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900683,10,6),(900683,15,0);
--- The Highborn: Lust for Power (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900684,0,32927,22,398,-2511,-764.647,-2928,0,0,0,27128,0,219,219);
+-- Webwood Larva (target, quest-linked)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900683,0,32560,22,37,-2375,-453.375,-2500,0,0,0,22265,0,219,219);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900683,10,1),(900683,15,0);
+-- Webwood Larva (target, quest-linked)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900684,0,32560,22,37,-2381,-388.25,-2485,0,0,0,22265,0,219,219);
 INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900684,10,1),(900684,15,0);
--- Shattercrag the Broken (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900685,0,32957,22,389,-3375.19,-753.326,-2962.476,0,0,0,24388,0,1067,1067);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900685,10,11),(900685,15,0);
--- Deactivated Zeta Agent (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900686,0,32974,51,1751,3179,-898.068,-2154,0,0,0,29384,9497,219,219);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900686,10,11),(900686,15,0);
--- Augmentation Avatar (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900687,0,32994,51,4848,2810,-1299.81,-1478,0,0,0,24954,0,219,219);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900687,10,10),(900687,15,0);
--- Irradiated Bio-Mech Minerals (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900688,0,33043,22,389,-3049,-803.419,-3067,0,0,0,25351,0,219,219);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900688,10,1),(900688,15,0);
--- Irradiated Bio-Mech Minerals (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900689,0,33043,22,389,-3077,-803.419,-3075,0,0,0,25351,0,219,219);
+-- Recruiter Emilija (giver/turn-in, quest-linked)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900685,0,32758,51,300,2918,-929.612,-2348,0,0,0,29947,8991,171,171);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900685,10,10),(900685,15,0);
+-- Alchemist Polovic (giver/turn-in, quest-linked)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900686,0,32804,51,308,2080.4,-898.465,-2971.2,0,0,0,30188,9410,171,171);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900686,10,13),(900686,15,0);
+-- The Highborn: Seduction of Honor (target, quest-linked)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900687,0,32925,22,404,-2505,-731.916,-2794,0,0,0,27128,0,219,219);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900687,10,1),(900687,15,0);
+-- Analyst Spector (turn-in, quest-linked)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900688,0,32926,1387,1307,-2539,-958.967,-4930,0,0,0,26606,9527,170,170);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900688,10,6),(900688,15,0);
+-- The Highborn: Lust for Power (target, quest-linked)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900689,0,32927,22,398,-2511,-764.647,-2928,0,0,0,27128,0,219,219);
 INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900689,10,1),(900689,15,0);
+-- Shattercrag the Broken (target, quest-linked)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900690,0,32957,22,389,-3375.19,-753.326,-2962.476,0,0,0,24388,0,1067,1067);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900690,10,11),(900690,15,0);
+-- Deactivated Zeta Agent (target, quest-linked)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900691,0,32974,51,1751,3179,-898.068,-2154,0,0,0,29384,9497,219,219);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900691,10,11),(900691,15,0);
+-- Augmentation Avatar (target, quest-linked)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900692,0,32994,51,4848,2810,-1299.81,-1478,0,0,0,24954,0,219,219);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900692,10,10),(900692,15,0);
 -- Irradiated Bio-Mech Minerals (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900690,0,33043,22,389,-3147,-785.182,-2954,0,0,0,25351,0,219,219);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900690,10,1),(900690,15,0);
--- Irradiated Bio-Mech Minerals (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900691,0,33043,22,389,-3033,-776.54,-2944,0,0,0,25351,0,219,219);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900691,10,1),(900691,15,0);
--- Irradiated Bio-Mech Minerals (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900692,0,33043,22,389,-3054,-785.213,-2978,0,0,0,25351,0,219,219);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900692,10,1),(900692,15,0);
--- Irradiated Bio-Mech Minerals (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900693,0,33043,22,389,-3098,-791.605,-2975,0,0,0,25351,0,219,219);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900693,0,33043,22,389,-3049,-803.419,-3067,0,0,0,25351,0,219,219);
 INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900693,10,1),(900693,15,0);
 -- Irradiated Bio-Mech Minerals (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900694,0,33043,22,389,-3001,-769.321,-2911,0,0,0,25351,0,219,219);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900694,0,33043,22,389,-3077,-803.419,-3075,0,0,0,25351,0,219,219);
 INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900694,10,1),(900694,15,0);
+-- Irradiated Bio-Mech Minerals (target, quest-linked)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900695,0,33043,22,389,-3147,-785.182,-2954,0,0,0,25351,0,219,219);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900695,10,1),(900695,15,0);
+-- Irradiated Bio-Mech Minerals (target, quest-linked)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900696,0,33043,22,389,-3033,-776.54,-2944,0,0,0,25351,0,219,219);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900696,10,1),(900696,15,0);
+-- Irradiated Bio-Mech Minerals (target, quest-linked)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900697,0,33043,22,389,-3054,-785.213,-2978,0,0,0,25351,0,219,219);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900697,10,1),(900697,15,0);
+-- Irradiated Bio-Mech Minerals (target, quest-linked)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900698,0,33043,22,389,-3098,-791.605,-2975,0,0,0,25351,0,219,219);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900698,10,1),(900698,15,0);
+-- Irradiated Bio-Mech Minerals (target, quest-linked)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900699,0,33043,22,389,-3001,-769.321,-2911,0,0,0,25351,0,219,219);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900699,10,1),(900699,15,0);
 -- Safety Avatar (giver/target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900695,0,33078,51,4439,2545,-1208.4,-1550,0,0,0,24983,0,219,219);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900695,10,10),(900695,15,0);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900700,0,33078,51,4439,2545,-1208.4,-1550,0,0,0,24983,0,219,219);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900700,10,10),(900700,15,0);
 -- Trader Lukadat (giver/turn-in, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900696,0,33093,51,301,2100,-868.625,-1393,0,0,0,28123,0,363,363);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900696,10,9),(900696,15,0);
--- Burgaska Nest (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900697,0,33159,51,1429,2179.0,-751.125,-1165.5,0,0,0,24404,0,219,219);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900697,10,9),(900697,15,0);
--- Burgaska Nest (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900698,0,33159,51,1429,2147.5,-748.375,-1150.0,0,0,0,24404,0,219,219);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900698,10,9),(900698,15,0);
--- Burgaska Nest (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900699,0,33159,51,1429,2205,-716.5,-1162,0,0,0,24404,0,219,219);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900699,10,9),(900699,15,0);
--- Burgaska Nest (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900700,0,33159,51,1429,2196,-724.75,-1157,0,0,0,24404,0,219,219);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900700,10,9),(900700,15,0);
--- Burgaska Nest (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900701,0,33159,51,1429,2204,-712.0,-1152,0,0,0,24404,0,219,219);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900701,0,33093,51,301,2100,-868.625,-1393,0,0,0,28123,0,363,363);
 INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900701,10,9),(900701,15,0);
--- Safety Avatar (giver/turn-in, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900702,0,33163,51,4439,2545,-1208.4,-1550,0,0,0,24983,0,219,219);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900702,10,10),(900702,15,0);
--- Augmentation Avatar (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900703,0,33183,51,4848,2810,-1299.81,-1478,0,0,0,24954,0,219,219);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900703,10,10),(900703,15,0);
--- Consort Yaenna (giver/target/turn-in, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900704,0,33221,51,300,2805.545,-816.249,-2480.909,0,0,0,29861,9185,171,171);
+-- Burgaska Nest (target, quest-linked)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900702,0,33159,51,1429,2179.0,-751.125,-1165.5,0,0,0,24404,0,219,219);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900702,10,9),(900702,15,0);
+-- Burgaska Nest (target, quest-linked)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900703,0,33159,51,1429,2147.5,-748.375,-1150.0,0,0,0,24404,0,219,219);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900703,10,9),(900703,15,0);
+-- Burgaska Nest (target, quest-linked)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900704,0,33159,51,1429,2205,-716.5,-1162,0,0,0,24404,0,219,219);
 INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900704,10,9),(900704,15,0);
--- Consort Yaenna (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900705,0,33222,51,300,2805.545,-816.249,-2480.909,0,0,0,29861,9185,171,171);
+-- Burgaska Nest (target, quest-linked)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900705,0,33159,51,1429,2196,-724.75,-1157,0,0,0,24404,0,219,219);
 INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900705,10,9),(900705,15,0);
--- Consort Yaenna (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900706,0,33223,51,300,2805.545,-816.249,-2480.909,0,0,0,29861,9185,171,171);
+-- Burgaska Nest (target, quest-linked)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900706,0,33159,51,1429,2204,-712.0,-1152,0,0,0,24404,0,219,219);
 INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900706,10,9),(900706,15,0);
--- Alchemist Polovic (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900707,0,33231,51,308,2080.4,-898.465,-2971.2,0,0,0,30188,9410,171,171);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900707,10,13),(900707,15,0);
--- Treasure Hunter Tuwawi (giver/turn-in, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900708,0,33363,51,1429,2098,-701.25,-1163,0,0,0,28125,0,363,363);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900708,10,9),(900708,15,0);
--- Corbus Fleming (turn-in, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900709,0,33466,22,327,-2498.958,-765.124,-3476.542,0,0,0,39776,9221,170,170);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900709,10,10),(900709,15,0);
--- Dio (giver/turn-in, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900710,0,33482,22,404,-2344,-735.857,-2909,0,0,0,21349,0,219,219);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900710,10,9),(900710,15,0);
--- Spirit Guardian Bohumir (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900711,0,33560,51,300,2683.032,-927.716,-2344.0,0,0,0,22413,0,189,189);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900711,10,9),(900711,15,0);
--- Xenobiologist Karizi (giver/turn-in, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900712,0,33650,22,405,-2951,-758.09,-2489,0,0,0,25920,9014,170,170);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900712,10,12),(900712,15,0);
--- Cargo Lifter (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900713,0,33699,51,301,2102,-868.538,-1391,0,0,0,23652,0,219,219);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900713,10,9),(900713,15,0);
+-- Safety Avatar (giver/turn-in, quest-linked)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900707,0,33163,51,4439,2545,-1208.4,-1550,0,0,0,24983,0,219,219);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900707,10,10),(900707,15,0);
 -- Augmentation Avatar (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900714,0,33720,51,4848,2810,-1299.81,-1478,0,0,0,24954,0,219,219);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900708,0,33183,51,4848,2810,-1299.81,-1478,0,0,0,24954,0,219,219);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900708,10,10),(900708,15,0);
+-- Consort Yaenna (giver/target/turn-in, quest-linked)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900709,0,33221,51,300,2805.545,-816.249,-2480.909,0,0,0,29861,9185,171,171);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900709,10,9),(900709,15,0);
+-- Consort Yaenna (target, quest-linked)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900710,0,33222,51,300,2805.545,-816.249,-2480.909,0,0,0,29861,9185,171,171);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900710,10,9),(900710,15,0);
+-- Consort Yaenna (target, quest-linked)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900711,0,33223,51,300,2805.545,-816.249,-2480.909,0,0,0,29861,9185,171,171);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900711,10,9),(900711,15,0);
+-- Alchemist Polovic (target, quest-linked)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900712,0,33231,51,308,2080.4,-898.465,-2971.2,0,0,0,30188,9410,171,171);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900712,10,13),(900712,15,0);
+-- Treasure Hunter Tuwawi (giver/turn-in, quest-linked)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900713,0,33363,51,1429,2098,-701.25,-1163,0,0,0,28125,0,363,363);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900713,10,9),(900713,15,0);
+-- Corbus Fleming (turn-in, quest-linked)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900714,0,33466,22,327,-2498.958,-765.124,-3476.542,0,0,0,39776,9221,170,170);
 INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900714,10,10),(900714,15,0);
--- Dominion Medical Kit (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900715,0,33732,22,638,-4183,-938.411,-464,0,0,0,23423,0,219,219);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900715,10,10),(900715,15,0);
--- Wounded Game Huntress (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900716,0,33733,22,638,-4294,-944.341,-346,0,0,0,26575,9201,170,170);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900716,10,10),(900716,15,0);
--- Datachron (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900717,0,33736,51,1740,3543,-844.052,-2649,0,0,0,27128,0,219,219);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900717,10,13),(900717,15,0);
--- Agent Varac (giver/turn-in, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900718,0,33773,22,404,-2351,-725.952,-2874,0,0,0,27342,9497,170,170);
+-- Dio (giver/turn-in, quest-linked)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900715,0,33482,22,404,-2344,-735.857,-2909,0,0,0,21349,0,219,219);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900715,10,9),(900715,15,0);
+-- Spirit Guardian Bohumir (target, quest-linked)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900716,0,33560,51,300,2683.032,-927.716,-2344.0,0,0,0,22413,0,189,189);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900716,10,9),(900716,15,0);
+-- Xenobiologist Karizi (giver/turn-in, quest-linked)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900717,0,33650,22,405,-2951,-758.09,-2489,0,0,0,25920,9014,170,170);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900717,10,12),(900717,15,0);
+-- Cargo Lifter (target, quest-linked)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900718,0,33699,51,301,2102,-868.538,-1391,0,0,0,23652,0,219,219);
 INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900718,10,9),(900718,15,0);
--- Grim Reaper Lukov (giver/turn-in, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900719,0,33806,51,1757,3858,-837.536,-2445,0,0,0,30145,9902,171,171);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900719,10,13),(900719,15,0);
--- Safety Avatar (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900720,0,33887,51,4439,2545,-1208.4,-1550,0,0,0,24983,0,219,219);
+-- Augmentation Avatar (target, quest-linked)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900719,0,33720,51,4848,2810,-1299.81,-1478,0,0,0,24954,0,219,219);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900719,10,10),(900719,15,0);
+-- Dominion Medical Kit (target, quest-linked)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900720,0,33732,22,638,-4183,-938.411,-464,0,0,0,23423,0,219,219);
 INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900720,10,10),(900720,15,0);
--- Slank Trap (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900721,0,33934,22,38,-2582,-898.641,-1924,0,0,0,22691,0,219,219);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900721,10,1),(900721,15,0);
--- Slank Trap (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900722,0,33935,22,38,-2582,-898.641,-1924,0,0,0,22691,0,219,219);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900722,10,1),(900722,15,0);
--- Slank Trap (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900723,0,33937,22,38,-2582,-898.641,-1924,0,0,0,22691,0,219,219);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900723,10,1),(900723,15,0);
--- Slank Trap (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900724,0,33938,22,38,-2582,-898.641,-1924,0,0,0,22691,0,219,219);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900724,10,1),(900724,15,0);
--- Identity Module (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900725,0,33948,51,1429,2701,-757.5,-1254,0,0,0,24340,0,219,219);
+-- Wounded Game Huntress (target, quest-linked)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900721,0,33733,22,638,-4294,-944.341,-346,0,0,0,26575,9201,170,170);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900721,10,10),(900721,15,0);
+-- Datachron (target, quest-linked)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900722,0,33736,51,1740,3543,-844.052,-2649,0,0,0,27128,0,219,219);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900722,10,13),(900722,15,0);
+-- Agent Varac (giver/turn-in, quest-linked)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900723,0,33773,22,404,-2351,-725.952,-2874,0,0,0,27342,9497,170,170);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900723,10,9),(900723,15,0);
+-- Grim Reaper Lukov (giver/turn-in, quest-linked)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900724,0,33806,51,1757,3858,-837.536,-2445,0,0,0,30145,9902,171,171);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900724,10,13),(900724,15,0);
+-- Safety Avatar (target, quest-linked)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900725,0,33887,51,4439,2545,-1208.4,-1550,0,0,0,24983,0,219,219);
 INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900725,10,10),(900725,15,0);
+-- Slank Trap (target, quest-linked)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900726,0,33934,22,38,-2582,-898.641,-1924,0,0,0,22691,0,219,219);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900726,10,1),(900726,15,0);
+-- Slank Trap (target, quest-linked)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900727,0,33935,22,38,-2582,-898.641,-1924,0,0,0,22691,0,219,219);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900727,10,1),(900727,15,0);
+-- Slank Trap (target, quest-linked)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900728,0,33937,22,38,-2582,-898.641,-1924,0,0,0,22691,0,219,219);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900728,10,1),(900728,15,0);
+-- Slank Trap (target, quest-linked)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900729,0,33938,22,38,-2582,-898.641,-1924,0,0,0,22691,0,219,219);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900729,10,1),(900729,15,0);
+-- Identity Module (target, quest-linked)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900730,0,33948,51,1429,2701,-757.5,-1254,0,0,0,24340,0,219,219);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900730,10,10),(900730,15,0);
 -- Squirg Giant (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900726,0,34203,51,1251,3998.792,-968.289,204.958,0,0,0,29064,0,1019,1019);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900726,10,25),(900726,15,0);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900731,0,34203,51,1251,3998.792,-968.289,204.958,0,0,0,29064,0,1019,1019);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900731,10,25),(900731,15,0);
 -- Squirg Giant (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900727,0,34237,51,1251,3998.792,-968.289,204.958,0,0,0,29064,0,1019,1019);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900727,10,25),(900727,15,0);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900732,0,34237,51,1251,3998.792,-968.289,204.958,0,0,0,29064,0,1019,1019);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900732,10,25),(900732,15,0);
 -- Equalizer Julius (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900728,0,34447,51,138,5956.815,-831.4,-77.593,0,0,0,30457,9205,170,170);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900728,10,23),(900728,15,0);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900733,0,34447,51,138,5956.815,-831.4,-77.593,0,0,0,30457,9205,170,170);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900733,10,23),(900733,15,0);
 -- Cycler Kolo (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900729,0,34448,51,138,5970.087,-819.025,-116.304,0,0,0,30456,9655,170,170);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900729,10,23),(900729,15,0);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900734,0,34448,51,138,5970.087,-819.025,-116.304,0,0,0,30456,9655,170,170);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900734,10,23),(900734,15,0);
 -- Judge Kain's Arm (giver/turn-in, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900730,0,34932,51,2843,3862,-996.01,-3872,0,0,0,27728,0,219,219);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900730,10,1),(900730,15,0);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900735,0,34932,51,2843,3862,-996.01,-3872,0,0,0,27728,0,219,219);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900735,10,1),(900735,15,0);
 -- Ikthian Transport Controls (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900731,0,34934,22,3030,-562,-86.938,-3503,0,0,0,22610,0,219,219);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900731,10,1),(900731,15,0);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900736,0,34934,22,3030,-562,-86.938,-3503,0,0,0,22610,0,219,219);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900736,10,1),(900736,15,0);
 -- Botsmith Redfield (turn-in, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900732,0,34936,51,129,4065.056,-1058.92,-4598.111,0,0,0,23619,8155,171,171);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900732,10,10),(900732,15,0);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900737,0,34936,51,129,4065.056,-1058.92,-4598.111,0,0,0,23619,8155,171,171);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900737,10,10),(900737,15,0);
 -- Judge Kain (turn-in, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900733,0,34941,51,21,4178.125,-1045.28,-4010.375,0,0,0,24602,8568,171,171);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900733,10,50),(900733,15,0);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900738,0,34941,51,21,4178.125,-1045.28,-4010.375,0,0,0,24602,8568,171,171);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900738,10,50),(900738,15,0);
 -- Settler Project Resource (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900734,0,34973,22,484,-5708,-974.568,-610,0,0,0,26563,0,219,219);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900734,10,5),(900734,15,0);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900739,0,34973,22,484,-5708,-974.568,-610,0,0,0,26563,0,219,219);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900739,10,5),(900739,15,0);
 -- Mercenary Grimdred (giver, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900735,0,35865,51,23,3695,-1031.35,-4489,0,0,0,26304,8979,219,219);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900735,10,6),(900735,15,0);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900740,0,35865,51,23,3695,-1031.35,-4489,0,0,0,26304,8979,219,219);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900740,10,6),(900740,15,0);
 -- Livingroot Mender (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900736,0,36124,990,1416,-397.5,-1014.59,-3503.0,0,0,0,21537,0,219,219);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900736,10,4),(900736,15,0);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900741,0,36124,990,1416,-397.5,-1014.59,-3503.0,0,0,0,21537,0,219,219);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900741,10,4),(900741,15,0);
 -- Livingroot Mender (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900737,0,36125,990,1416,-397.5,-1014.59,-3503.0,0,0,0,21537,0,219,219);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900737,10,4),(900737,15,0);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900742,0,36125,990,1416,-397.5,-1014.59,-3503.0,0,0,0,21537,0,219,219);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900742,10,4),(900742,15,0);
 -- Vengeful Mender (giver, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900738,0,36240,990,1416,-156,-922.196,-3452,0,0,0,21537,0,219,219);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900738,10,5),(900738,15,0);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900743,0,36240,990,1416,-156,-922.196,-3452,0,0,0,21537,0,219,219);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900743,10,5),(900743,15,0);
 -- Elderoot (giver/turn-in, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900739,0,36247,990,1416,-338,-911.55,-3263,0,0,0,27745,0,219,219);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900739,10,50),(900739,15,0);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900744,0,36247,990,1416,-338,-911.55,-3263,0,0,0,27745,0,219,219);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900744,10,50),(900744,15,0);
 -- Outfitter Keynes (turn-in, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900740,0,36421,51,240,4559,-915.924,-805,0,0,0,25777,9158,171,171);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900740,10,50),(900740,15,0);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900745,0,36421,51,240,4559,-915.924,-805,0,0,0,25777,9158,171,171);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900745,10,50),(900745,15,0);
 -- Alchemist Polovic (giver/target/turn-in, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900741,0,36519,51,308,2080.4,-898.465,-2971.2,0,0,0,30188,9410,171,171);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900741,10,13),(900741,15,0);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900746,0,36519,51,308,2080.4,-898.465,-2971.2,0,0,0,30188,9410,171,171);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900746,10,13),(900746,15,0);
 -- Stranded Protostar Crash Survivor (turn-in, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900742,0,37198,51,694,2479.0,-997.071,-3944.5,0,0,0,21339,0,255,255);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900742,10,8),(900742,15,0);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900747,0,37198,51,694,2479.0,-997.071,-3944.5,0,0,0,21339,0,255,255);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900747,10,8),(900747,15,0);
 -- Miner Ganther (giver, name-only)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900743,0,37212,51,216,3219,-984.279,-4190,0,0,0,21348,0,171,171);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900743,10,7),(900743,15,0);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900748,0,37212,51,216,3219,-984.279,-4190,0,0,0,21348,0,171,171);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900748,10,7),(900748,15,0);
 -- Deadrock Dirtdigger (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900744,0,37626,51,1160,1528.417,-994.7,243.167,0,0,0,25726,9335,171,171);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900744,10,24),(900744,15,0);
--- Deadrock Dirtdigger (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900745,0,37626,51,1160,1481.375,-994.0,243.625,0,0,0,25726,9335,171,171);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900745,10,24),(900745,15,0);
--- Deadrock Dirtdigger (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900746,0,37626,51,1160,1527.429,-994.225,235.143,0,0,0,25726,9335,171,171);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900746,10,24),(900746,15,0);
--- Deadrock Dirtdigger (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900747,0,37626,51,1344,1538.0,-996.5,261.0,0,0,0,25726,9335,171,171);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900747,10,24),(900747,15,0);
--- Deadrock Dirtdigger (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900748,0,37626,51,1160,1516.0,-995.0,247.6,0,0,0,25726,9335,171,171);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900748,10,24),(900748,15,0);
--- Deadrock Dirtdigger (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900749,0,37626,51,1160,1496.75,-994.0,234.75,0,0,0,25726,9335,171,171);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900749,0,37626,51,1160,1528.417,-994.7,243.167,0,0,0,25726,9335,171,171);
 INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900749,10,24),(900749,15,0);
 -- Deadrock Dirtdigger (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900750,0,37626,51,1344,1452.5,-996.0,269.5,0,0,0,25726,9335,171,171);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900750,0,37626,51,1160,1481.375,-994.0,243.625,0,0,0,25726,9335,171,171);
 INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900750,10,24),(900750,15,0);
 -- Deadrock Dirtdigger (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900751,0,37626,51,1344,1520.25,-996.45,266.0,0,0,0,25726,9335,171,171);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900751,0,37626,51,1160,1527.429,-994.225,235.143,0,0,0,25726,9335,171,171);
 INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900751,10,24),(900751,15,0);
 -- Deadrock Dirtdigger (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900752,0,37626,51,1344,1522.0,-996.0,254.0,0,0,0,25726,9335,171,171);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900752,0,37626,51,1344,1538.0,-996.5,261.0,0,0,0,25726,9335,171,171);
 INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900752,10,24),(900752,15,0);
 -- Deadrock Dirtdigger (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900753,0,37626,51,1344,1494.75,-996.7,272.0,0,0,0,25726,9335,171,171);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900753,0,37626,51,1160,1516.0,-995.0,247.6,0,0,0,25726,9335,171,171);
 INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900753,10,24),(900753,15,0);
+-- Deadrock Dirtdigger (target, quest-linked)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900754,0,37626,51,1160,1496.75,-994.0,234.75,0,0,0,25726,9335,171,171);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900754,10,24),(900754,15,0);
+-- Deadrock Dirtdigger (target, quest-linked)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900755,0,37626,51,1344,1452.5,-996.0,269.5,0,0,0,25726,9335,171,171);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900755,10,24),(900755,15,0);
+-- Deadrock Dirtdigger (target, quest-linked)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900756,0,37626,51,1344,1520.25,-996.45,266.0,0,0,0,25726,9335,171,171);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900756,10,24),(900756,15,0);
+-- Deadrock Dirtdigger (target, quest-linked)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900757,0,37626,51,1344,1522.0,-996.0,254.0,0,0,0,25726,9335,171,171);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900757,10,24),(900757,15,0);
+-- Deadrock Dirtdigger (target, quest-linked)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900758,0,37626,51,1344,1494.75,-996.7,272.0,0,0,0,25726,9335,171,171);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900758,10,24),(900758,15,0);
 -- Deadrock Runner (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900754,0,37628,51,1160,1525.0,-995.0,246.75,0,0,0,30648,9041,171,171);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900754,10,23),(900754,15,0);
--- Deadrock Runner (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900755,0,37628,51,1160,1482.667,-993.0,238.5,0,0,0,30648,9041,171,171);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900755,10,23),(900755,15,0);
--- Deadrock Runner (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900756,0,37628,51,1160,1479.2,-994.0,247.0,0,0,0,30648,9041,171,171);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900756,10,23),(900756,15,0);
--- Deadrock Runner (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900757,0,37628,51,1160,1460.5,-992.0,228.0,0,0,0,30648,9041,171,171);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900757,10,23),(900757,15,0);
--- Deadrock Runner (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900758,0,37628,51,1344,1525.0,-996.5,263.5,0,0,0,30648,9041,171,171);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900758,10,23),(900758,15,0);
--- Deadrock Runner (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900759,0,37628,51,1344,1502.5,-996.5,282.25,0,0,0,30648,9041,171,171);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900759,0,37628,51,1160,1525.0,-995.0,246.75,0,0,0,30648,9041,171,171);
 INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900759,10,23),(900759,15,0);
 -- Deadrock Runner (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900760,0,37628,51,1344,1466.667,-995.0,259.667,0,0,0,30648,9041,171,171);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900760,0,37628,51,1160,1482.667,-993.0,238.5,0,0,0,30648,9041,171,171);
 INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900760,10,23),(900760,15,0);
 -- Deadrock Runner (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900761,0,37628,51,1160,1538.667,-995.5,246.333,0,0,0,30648,9041,171,171);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900761,0,37628,51,1160,1479.2,-994.0,247.0,0,0,0,30648,9041,171,171);
 INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900761,10,23),(900761,15,0);
 -- Deadrock Runner (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900762,0,37628,51,1160,1531.667,-994.075,236.667,0,0,0,30648,9041,171,171);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900762,0,37628,51,1160,1460.5,-992.0,228.0,0,0,0,30648,9041,171,171);
 INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900762,10,23),(900762,15,0);
 -- Deadrock Runner (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900763,0,37628,51,1344,1503.333,-996.5,270.0,0,0,0,30648,9041,171,171);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900763,0,37628,51,1344,1525.0,-996.5,263.5,0,0,0,30648,9041,171,171);
 INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900763,10,23),(900763,15,0);
+-- Deadrock Runner (target, quest-linked)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900764,0,37628,51,1344,1502.5,-996.5,282.25,0,0,0,30648,9041,171,171);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900764,10,23),(900764,15,0);
+-- Deadrock Runner (target, quest-linked)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900765,0,37628,51,1344,1466.667,-995.0,259.667,0,0,0,30648,9041,171,171);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900765,10,23),(900765,15,0);
+-- Deadrock Runner (target, quest-linked)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900766,0,37628,51,1160,1538.667,-995.5,246.333,0,0,0,30648,9041,171,171);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900766,10,23),(900766,15,0);
+-- Deadrock Runner (target, quest-linked)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900767,0,37628,51,1160,1531.667,-994.075,236.667,0,0,0,30648,9041,171,171);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900767,10,23),(900767,15,0);
+-- Deadrock Runner (target, quest-linked)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900768,0,37628,51,1344,1503.333,-996.5,270.0,0,0,0,30648,9041,171,171);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900768,10,23),(900768,15,0);
 -- DATACUBE: Skeletal Catalyst (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900764,0,40187,22,483,-5102,-1214.21,595,0,0,0,23302,0,219,219);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900764,10,1),(900764,15,0);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900769,0,40187,22,483,-5102,-1214.21,595,0,0,0,23302,0,219,219);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900769,10,1),(900769,15,0);
 -- Scientist Bizi (giver, name-only)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900765,0,40432,51,1315,1941.0,-1030.62,721.685,0,0,0,30632,9058,170,170);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900765,10,30),(900765,15,0);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900770,0,40432,51,1315,1941.0,-1030.62,721.685,0,0,0,30632,9058,170,170);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900770,10,30),(900770,15,0);
 -- Captain Visia (target/turn-in, name-only)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900766,0,40588,51,1151,1776,-997.863,-737,0,0,0,28092,9203,170,170);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900766,10,50),(900766,15,0);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900771,0,40588,51,1151,1776,-997.863,-737,0,0,0,28092,9203,170,170);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900771,10,50),(900771,15,0);
 -- Captain Milo (turn-in, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900767,0,41201,51,28,4371,-1057.19,-3981,0,0,0,28578,0,466,466);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900767,10,50),(900767,15,0);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900772,0,41201,51,28,4371,-1057.19,-3981,0,0,0,28578,0,466,466);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900772,10,50),(900772,15,0);
 -- Captain Milo (turn-in, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900768,0,41201,22,327,-2574,-779.781,-3480,0,0,0,28578,0,466,466);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900768,10,50),(900768,15,0);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900773,0,41201,22,327,-2574,-779.781,-3480,0,0,0,28578,0,466,466);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900773,10,50),(900773,15,0);
 -- Captain Milo (turn-in, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900769,0,41201,51,1828,3034,-932.466,-2939,0,0,0,28578,0,466,466);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900769,10,50),(900769,15,0);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900774,0,41201,51,1828,3034,-932.466,-2939,0,0,0,28578,0,466,466);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900774,10,50),(900774,15,0);
 -- Captain Milo (turn-in, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900770,0,41201,22,327,-2574,-779.781,-3480,0,0,0,28578,0,466,466);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900770,10,50),(900770,15,0);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900775,0,41201,22,327,-2574,-779.781,-3480,0,0,0,28578,0,466,466);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900775,10,50),(900775,15,0);
 -- Trapped Researcher (giver, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900771,0,41336,22,486,-5377,-1086.38,-1894,0,0,0,25691,9038,170,170);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900771,10,8),(900771,15,0);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900776,0,41336,22,486,-5377,-1086.38,-1894,0,0,0,25691,9038,170,170);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900776,10,8),(900776,15,0);
 -- Bomb Plant Loc (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900772,0,44320,51,138,5991,-850.75,-46,0,0,0,27794,0,219,219);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900772,10,1),(900772,15,0);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900777,0,44320,51,138,5991,-850.75,-46,0,0,0,27794,0,219,219);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900777,10,1),(900777,15,0);
 -- Bomb Plant Loc (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900773,0,44320,51,138,5964,-843.5,-57,0,0,0,27794,0,219,219);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900773,10,1),(900773,15,0);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900778,0,44320,51,138,5964,-843.5,-57,0,0,0,27794,0,219,219);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900778,10,1),(900778,15,0);
 -- Bomb Plant Loc (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900774,0,44320,51,138,5997,-845.0,-63,0,0,0,27794,0,219,219);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900774,10,1),(900774,15,0);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900779,0,44320,51,138,5997,-845.0,-63,0,0,0,27794,0,219,219);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900779,10,1),(900779,15,0);
 -- Spycam Install Point (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900775,0,44737,51,138,5442,-1000.25,-766,0,0,0,27794,0,219,219);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900775,10,20),(900775,15,0);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900780,0,44737,51,138,5442,-1000.25,-766,0,0,0,27794,0,219,219);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900780,10,20),(900780,15,0);
 -- Spycam Install Point (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900776,0,44738,51,138,5442,-1000.25,-766,0,0,0,27794,0,219,219);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900776,10,20),(900776,15,0);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900781,0,44738,51,138,5442,-1000.25,-766,0,0,0,27794,0,219,219);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900781,10,20),(900781,15,0);
 -- Spycam Install Point (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900777,0,44739,51,138,5442,-1000.25,-766,0,0,0,27794,0,219,219);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900777,10,20),(900777,15,0);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900782,0,44739,51,138,5442,-1000.25,-766,0,0,0,27794,0,219,219);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900782,10,20),(900782,15,0);
 -- Avra Darkos (giver/turn-in, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900778,0,44797,51,240,4397.375,-1066.53,-1183.625,0,0,0,23187,9072,171,171);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900778,10,50),(900778,15,0);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900783,0,44797,51,240,4397.375,-1066.53,-1183.625,0,0,0,23187,9072,171,171);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900783,10,50),(900783,15,0);
 -- Ringo Hax (turn-in, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900779,0,44961,22,2193,-3449,-890.59,-739,0,0,0,27341,9016,170,170);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900779,10,45),(900779,15,0);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900784,0,44961,22,2193,-3449,-890.59,-739,0,0,0,27341,9016,170,170);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900784,10,45),(900784,15,0);
 -- Lulu Blackbush (turn-in, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900780,0,44963,51,4959,4030.5,-796.994,-2380.5,0,0,0,27812,9094,171,171);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900780,10,45),(900780,15,0);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900785,0,44963,51,4959,4030.5,-796.994,-2380.5,0,0,0,27812,9094,171,171);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900785,10,45),(900785,15,0);
 -- Lulu Blackbush (turn-in, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900781,0,44963,51,4959,4030.5,-796.994,-2380.5,0,0,0,27812,9094,171,171);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900781,10,45),(900781,15,0);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900786,0,44963,51,4959,4030.5,-796.994,-2380.5,0,0,0,27812,9094,171,171);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900786,10,45),(900786,15,0);
 -- Bomb Plant Loc Alice (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900782,0,45043,51,1154,2309.5,-980.693,-621.5,0,0,0,37143,0,219,219);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900782,10,1),(900782,15,0);
--- Bomb Plant Loc Alice (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900783,0,45043,51,1154,2320.5,-981.05,-642.5,0,0,0,37143,0,219,219);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900783,10,1),(900783,15,0);
--- Bomb Plant Loc Alice (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900784,0,45043,51,1154,2296,-979.797,-638,0,0,0,37143,0,219,219);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900784,10,1),(900784,15,0);
--- Bomb Plant Loc Alice (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900785,0,45043,51,1154,2314,-981.947,-653,0,0,0,37143,0,219,219);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900785,10,1),(900785,15,0);
--- Bomb Plant Loc Bertha (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900786,0,45046,51,1155,2492.0,-1004.72,-479.0,0,0,0,37143,0,219,219);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900786,10,1),(900786,15,0);
--- Bomb Plant Loc Bertha (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900787,0,45046,51,1152,2476.5,-1002.83,-514.0,0,0,0,37143,0,219,219);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900787,0,45043,51,1154,2309.5,-980.693,-621.5,0,0,0,37143,0,219,219);
 INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900787,10,1),(900787,15,0);
--- Bomb Plant Loc Bertha (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900788,0,45046,51,1155,2477,-1004.52,-496,0,0,0,37143,0,219,219);
+-- Bomb Plant Loc Alice (target, quest-linked)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900788,0,45043,51,1154,2320.5,-981.05,-642.5,0,0,0,37143,0,219,219);
 INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900788,10,1),(900788,15,0);
--- Bomb Plant Loc Bertha (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900789,0,45046,51,1155,2468,-1004.52,-496,0,0,0,37143,0,219,219);
+-- Bomb Plant Loc Alice (target, quest-linked)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900789,0,45043,51,1154,2296,-979.797,-638,0,0,0,37143,0,219,219);
 INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900789,10,1),(900789,15,0);
--- Bomb Plant Loc Chuck (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900790,0,45047,51,1152,2520.0,-994.215,-362.0,0,0,0,37143,0,219,219);
+-- Bomb Plant Loc Alice (target, quest-linked)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900790,0,45043,51,1154,2314,-981.947,-653,0,0,0,37143,0,219,219);
 INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900790,10,1),(900790,15,0);
--- Bomb Plant Loc Chuck (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900791,0,45047,51,1156,2546,-993.232,-361,0,0,0,37143,0,219,219);
+-- Bomb Plant Loc Bertha (target, quest-linked)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900791,0,45046,51,1155,2492.0,-1004.72,-479.0,0,0,0,37143,0,219,219);
 INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900791,10,1),(900791,15,0);
--- Bomb Plant Loc Chuck (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900792,0,45047,51,1156,2531,-994.215,-360,0,0,0,37143,0,219,219);
+-- Bomb Plant Loc Bertha (target, quest-linked)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900792,0,45046,51,1152,2476.5,-1002.83,-514.0,0,0,0,37143,0,219,219);
 INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900792,10,1),(900792,15,0);
--- Bomb Plant Loc Chuck (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900793,0,45047,51,1156,2532,-994.215,-368,0,0,0,37143,0,219,219);
+-- Bomb Plant Loc Bertha (target, quest-linked)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900793,0,45046,51,1155,2477,-1004.52,-496,0,0,0,37143,0,219,219);
 INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900793,10,1),(900793,15,0);
--- Jetpack Launch Target (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900794,0,45099,51,1160,1212,-946.437,131,0,0,0,27794,0,219,219);
+-- Bomb Plant Loc Bertha (target, quest-linked)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900794,0,45046,51,1155,2468,-1004.52,-496,0,0,0,37143,0,219,219);
 INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900794,10,1),(900794,15,0);
+-- Bomb Plant Loc Chuck (target, quest-linked)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900795,0,45047,51,1152,2520.0,-994.215,-362.0,0,0,0,37143,0,219,219);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900795,10,1),(900795,15,0);
+-- Bomb Plant Loc Chuck (target, quest-linked)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900796,0,45047,51,1156,2546,-993.232,-361,0,0,0,37143,0,219,219);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900796,10,1),(900796,15,0);
+-- Bomb Plant Loc Chuck (target, quest-linked)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900797,0,45047,51,1156,2531,-994.215,-360,0,0,0,37143,0,219,219);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900797,10,1),(900797,15,0);
+-- Bomb Plant Loc Chuck (target, quest-linked)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900798,0,45047,51,1156,2532,-994.215,-368,0,0,0,37143,0,219,219);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900798,10,1),(900798,15,0);
+-- Jetpack Launch Target (target, quest-linked)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900799,0,45099,51,1160,1212,-946.437,131,0,0,0,27794,0,219,219);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900799,10,1),(900799,15,0);
 -- Matria Yaenna (turn-in, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900795,0,45255,51,300,2762,-927.142,-2323,0,0,0,29861,9409,171,171);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900795,10,9),(900795,15,0);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900800,0,45255,51,300,2762,-927.142,-2323,0,0,0,29861,9409,171,171);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900800,10,9),(900800,15,0);
 -- Consort Yaenna (giver, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900796,0,45267,51,300,2805.545,-816.249,-2480.909,0,0,0,29861,9185,171,171);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900796,10,9),(900796,15,0);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900801,0,45267,51,300,2805.545,-816.249,-2480.909,0,0,0,29861,9185,171,171);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900801,10,9),(900801,15,0);
 -- Cairnguard Drakuz (giver, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900797,0,45306,22,641,-5129,-932.854,-148,0,0,0,26371,9196,170,170);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900797,10,12),(900797,15,0);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900802,0,45306,22,641,-5129,-932.854,-148,0,0,0,26371,9196,170,170);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900802,10,12),(900802,15,0);
 -- Treasure Collector Rung (giver/turn-in, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900798,0,45476,51,227,3784,-929.77,-525,0,0,0,21810,0,363,363);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900798,10,30),(900798,15,0);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900803,0,45476,51,227,3784,-929.77,-525,0,0,0,21810,0,363,363);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900803,10,30),(900803,15,0);
 -- Infected Alchemist (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900799,0,45535,990,1418,-431,-950.623,-2355,0,0,0,29211,9578,219,219);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900799,10,3),(900799,15,0);
--- Infected Alchemist (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900800,0,45535,990,1418,-485,-960.844,-2524,0,0,0,29211,9578,219,219);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900800,10,3),(900800,15,0);
--- Infected Alchemist (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900801,0,45535,990,1418,-413,-943.36,-2260,0,0,0,29211,9578,219,219);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900801,10,3),(900801,15,0);
--- Infected Alchemist (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900802,0,45535,990,1418,-463,-958.832,-2499,0,0,0,29211,9578,219,219);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900802,10,3),(900802,15,0);
--- Infected Alchemist (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900803,0,45537,990,1418,-431,-950.623,-2355,0,0,0,29211,9579,219,219);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900803,10,3),(900803,15,0);
--- Infected Alchemist (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900804,0,45537,990,1418,-485,-960.844,-2524,0,0,0,29211,9579,219,219);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900804,0,45535,990,1418,-431,-950.623,-2355,0,0,0,29211,9578,219,219);
 INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900804,10,3),(900804,15,0);
 -- Infected Alchemist (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900805,0,45537,990,1418,-413,-943.36,-2260,0,0,0,29211,9579,219,219);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900805,0,45535,990,1418,-485,-960.844,-2524,0,0,0,29211,9578,219,219);
 INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900805,10,3),(900805,15,0);
 -- Infected Alchemist (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900806,0,45537,990,1418,-463,-958.832,-2499,0,0,0,29211,9579,219,219);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900806,0,45535,990,1418,-413,-943.36,-2260,0,0,0,29211,9578,219,219);
 INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900806,10,3),(900806,15,0);
+-- Infected Alchemist (target, quest-linked)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900807,0,45535,990,1418,-463,-958.832,-2499,0,0,0,29211,9578,219,219);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900807,10,3),(900807,15,0);
+-- Infected Alchemist (target, quest-linked)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900808,0,45537,990,1418,-431,-950.623,-2355,0,0,0,29211,9579,219,219);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900808,10,3),(900808,15,0);
+-- Infected Alchemist (target, quest-linked)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900809,0,45537,990,1418,-485,-960.844,-2524,0,0,0,29211,9579,219,219);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900809,10,3),(900809,15,0);
+-- Infected Alchemist (target, quest-linked)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900810,0,45537,990,1418,-413,-943.36,-2260,0,0,0,29211,9579,219,219);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900810,10,3),(900810,15,0);
+-- Infected Alchemist (target, quest-linked)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900811,0,45537,990,1418,-463,-958.832,-2499,0,0,0,29211,9579,219,219);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900811,10,3),(900811,15,0);
 -- Fertile Ground (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900807,0,46004,990,1416,-473,-945.18,-3539,0,0,0,25573,0,219,219);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900807,10,1),(900807,15,0);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900812,0,46004,990,1416,-473,-945.18,-3539,0,0,0,25573,0,219,219);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900812,10,1),(900812,15,0);
 -- Fertile Ground (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900808,0,46004,990,1421,-547,-944.836,-3618,0,0,0,25573,0,219,219);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900808,10,1),(900808,15,0);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900813,0,46004,990,1421,-547,-944.836,-3618,0,0,0,25573,0,219,219);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900813,10,1),(900813,15,0);
 -- Fertile Ground (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900809,0,46004,990,1416,-494,-947.488,-3590,0,0,0,25573,0,219,219);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900809,10,1),(900809,15,0);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900814,0,46004,990,1416,-494,-947.488,-3590,0,0,0,25573,0,219,219);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900814,10,1),(900814,15,0);
 -- Victor Lazarin (turn-in, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900810,0,46153,990,1419,-112,-923.754,-3476,0,0,0,27878,9075,171,171);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900810,10,50),(900810,15,0);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900815,0,46153,990,1419,-112,-923.754,-3476,0,0,0,27878,9075,171,171);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900815,10,50),(900815,15,0);
 -- Weapons Instructor (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900811,0,46237,51,943,5628,-1012.76,-2473,0,0,0,26030,8980,171,171);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900811,10,18),(900811,15,0);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900816,0,46237,51,943,5628,-1012.76,-2473,0,0,0,26030,8980,171,171);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900816,10,18),(900816,15,0);
 -- Dazed Mutation (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900812,0,46429,51,1242,3797.867,-988.995,355.333,0,0,0,29169,0,847,847);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900812,10,25),(900812,15,0);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900817,0,46429,51,1242,3797.867,-988.995,355.333,0,0,0,29169,0,847,847);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900817,10,25),(900817,15,0);
 -- Loving Mutation (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900813,0,46525,51,1965,3697.27,-982.748,406.811,0,0,0,21683,0,379,379);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900813,10,25),(900813,15,0);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900818,0,46525,51,1965,3697.27,-982.748,406.811,0,0,0,21683,0,379,379);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900818,10,25),(900818,15,0);
 -- Varill Goldwood (giver, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900814,0,46577,51,1965,3711,-980.51,423,0,0,0,30527,8980,219,219);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900814,10,25),(900814,15,0);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900819,0,46577,51,1965,3711,-980.51,423,0,0,0,30527,8980,219,219);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900819,10,25),(900819,15,0);
 -- Felis Gladedancer (giver, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900815,0,46605,51,300,2889.0,-928.252,-2304.0,0,0,0,29088,9471,171,171);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900815,10,10),(900815,15,0);
--- Victor Lazarin (giver/turn-in, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900816,0,46607,990,1419,-112,-923.754,-3476,0,0,0,27878,9075,171,171);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900816,10,50),(900816,15,0);
--- Fern Moonleaf (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900817,0,46633,51,4848,2708,-965.0,-1523,0,0,0,22530,9054,219,219);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900817,10,15),(900817,15,0);
--- Saefar Moonleaf (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900818,0,46634,51,301,3147,-933.631,-2395,0,0,0,22531,9054,219,219);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900818,10,15),(900818,15,0);
--- Myyn Longweed (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900819,0,46664,51,301,2565.5,-1039.32,-1350.75,0,0,0,27073,9054,219,219);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900819,10,11),(900819,15,0);
--- Felis Gladedancer (turn-in, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900820,0,46666,51,300,2889.0,-928.252,-2304.0,0,0,0,29088,9471,171,171);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900820,0,46605,51,300,2889.0,-928.252,-2304.0,0,0,0,29088,9471,171,171);
 INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900820,10,10),(900820,15,0);
--- Fezar (giver, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900821,0,46678,51,1242,3628,-987.292,379,0,0,0,30531,9005,219,219);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900821,10,25),(900821,15,0);
--- Webbed Victim (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900822,0,46710,51,301,2567,-1039.32,-1351,0,0,0,26808,0,171,171);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900822,10,9),(900822,15,0);
--- Mondo Zax (turn-in, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900823,0,46873,870,1218,-7488.6,-976.798,-828.2,0,0,0,25202,9079,219,219);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900823,10,50),(900823,15,0);
--- Myyn Longweed (turn-in, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900824,0,46923,51,301,2565.5,-1039.32,-1350.75,0,0,0,27073,9054,171,171);
+-- Victor Lazarin (giver/turn-in, quest-linked)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900821,0,46607,990,1419,-112,-923.754,-3476,0,0,0,27878,9075,171,171);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900821,10,50),(900821,15,0);
+-- Fern Moonleaf (target, quest-linked)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900822,0,46633,51,4848,2708,-965.0,-1523,0,0,0,22530,9054,219,219);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900822,10,15),(900822,15,0);
+-- Saefar Moonleaf (target, quest-linked)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900823,0,46634,51,301,3147,-933.631,-2395,0,0,0,22531,9054,219,219);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900823,10,15),(900823,15,0);
+-- Myyn Longweed (target, quest-linked)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900824,0,46664,51,301,2565.5,-1039.32,-1350.75,0,0,0,27073,9054,219,219);
 INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900824,10,11),(900824,15,0);
--- Lothar Vondergott (giver/turn-in, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900825,0,47271,22,327,-2554,-770.586,-3447,0,0,0,27254,9013,170,170);
+-- Felis Gladedancer (turn-in, quest-linked)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900825,0,46666,51,300,2889.0,-928.252,-2304.0,0,0,0,29088,9471,171,171);
 INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900825,10,10),(900825,15,0);
+-- Fezar (giver, quest-linked)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900826,0,46678,51,1242,3628,-987.292,379,0,0,0,30531,9005,219,219);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900826,10,25),(900826,15,0);
+-- Webbed Victim (target, quest-linked)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900827,0,46710,51,301,2567,-1039.32,-1351,0,0,0,26808,0,171,171);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900827,10,9),(900827,15,0);
+-- Mondo Zax (turn-in, quest-linked)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900828,0,46873,870,1218,-7488.6,-976.798,-828.2,0,0,0,25202,9079,219,219);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900828,10,50),(900828,15,0);
+-- Myyn Longweed (turn-in, quest-linked)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900829,0,46923,51,301,2565.5,-1039.32,-1350.75,0,0,0,27073,9054,171,171);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900829,10,11),(900829,15,0);
+-- Lothar Vondergott (giver/turn-in, quest-linked)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900830,0,47271,22,327,-2554,-770.586,-3447,0,0,0,27254,9013,170,170);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900830,10,10),(900830,15,0);
 -- Rioting Prisoner (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900826,0,47368,22,2191,-2745.478,-952.985,-1183.725,0,0,0,25821,9041,1450,1450);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900826,10,15),(900826,15,0);
--- Rioting Prisoner (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900827,0,47368,22,2191,-2745.077,-954.719,-1173.385,0,0,0,25821,9041,1450,1450);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900827,10,15),(900827,15,0);
--- Rioting Prisoner (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900828,0,47368,22,2191,-2746.25,-952.588,-1196.5,0,0,0,25821,9041,1450,1450);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900828,10,15),(900828,15,0);
--- Rioting Prisoner (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900829,0,47371,22,2191,-2745.478,-952.985,-1183.725,0,0,0,25811,9041,1450,1450);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900829,10,15),(900829,15,0);
--- Rioting Prisoner (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900830,0,47371,22,2191,-2745.077,-954.719,-1173.385,0,0,0,25811,9041,1450,1450);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900830,10,15),(900830,15,0);
--- Rioting Prisoner (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900831,0,47371,22,2191,-2746.25,-952.588,-1196.5,0,0,0,25811,9041,1450,1450);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900831,0,47368,22,2191,-2745.478,-952.985,-1183.725,0,0,0,25821,9041,1450,1450);
 INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900831,10,15),(900831,15,0);
 -- Rioting Prisoner (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900832,0,47374,22,2191,-2745.478,-952.985,-1183.725,0,0,0,27780,9041,1450,1450);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900832,0,47368,22,2191,-2745.077,-954.719,-1173.385,0,0,0,25821,9041,1450,1450);
 INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900832,10,15),(900832,15,0);
 -- Rioting Prisoner (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900833,0,47374,22,2191,-2745.077,-954.719,-1173.385,0,0,0,27780,9041,1450,1450);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900833,0,47368,22,2191,-2746.25,-952.588,-1196.5,0,0,0,25821,9041,1450,1450);
 INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900833,10,15),(900833,15,0);
 -- Rioting Prisoner (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900834,0,47374,22,2191,-2746.25,-952.588,-1196.5,0,0,0,27780,9041,1450,1450);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900834,0,47371,22,2191,-2745.478,-952.985,-1183.725,0,0,0,25811,9041,1450,1450);
 INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900834,10,15),(900834,15,0);
+-- Rioting Prisoner (target, quest-linked)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900835,0,47371,22,2191,-2745.077,-954.719,-1173.385,0,0,0,25811,9041,1450,1450);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900835,10,15),(900835,15,0);
+-- Rioting Prisoner (target, quest-linked)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900836,0,47371,22,2191,-2746.25,-952.588,-1196.5,0,0,0,25811,9041,1450,1450);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900836,10,15),(900836,15,0);
+-- Rioting Prisoner (target, quest-linked)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900837,0,47374,22,2191,-2745.478,-952.985,-1183.725,0,0,0,27780,9041,1450,1450);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900837,10,15),(900837,15,0);
+-- Rioting Prisoner (target, quest-linked)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900838,0,47374,22,2191,-2745.077,-954.719,-1173.385,0,0,0,27780,9041,1450,1450);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900838,10,15),(900838,15,0);
+-- Rioting Prisoner (target, quest-linked)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900839,0,47374,22,2191,-2746.25,-952.588,-1196.5,0,0,0,27780,9041,1450,1450);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900839,10,15),(900839,15,0);
 -- The Caretaker (giver/turn-in, name-only)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900835,0,47396,51,1315,2289,-1029.77,465,0,0,0,25105,0,219,219);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900835,10,40),(900835,15,0);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900840,0,47396,51,1315,2289,-1029.77,465,0,0,0,25105,0,219,219);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900840,10,40),(900840,15,0);
 -- Drusera (giver, name-only)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900836,0,48664,51,137,3749,-1108.6,-1251,0,0,0,29337,0,219,219);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900836,10,50),(900836,15,0);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900841,0,48664,51,137,3749,-1108.6,-1251,0,0,0,29337,0,219,219);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900841,10,50),(900841,15,0);
 -- Hycrest Nutritionist (giver/turn-in, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900837,0,50582,22,384,-2282,-926.088,-1451,0,0,0,29705,8985,219,219);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900837,10,12),(900837,15,0);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900842,0,50582,22,384,-2282,-926.088,-1451,0,0,0,29705,8985,219,219);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900842,10,12),(900842,15,0);
 -- Logistics Officer (turn-in, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900838,0,50685,51,322,4202.5,-1044.34,-4015.0,0,0,0,26051,8979,171,171);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900838,10,14),(900838,15,0);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900843,0,50685,51,322,4202.5,-1044.34,-4015.0,0,0,0,26051,8979,171,171);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900843,10,14),(900843,15,0);
 -- Artemis Zin (giver/turn-in, name-only)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900839,0,50949,1387,1307,-2528,-958.967,-4942,0,0,0,25236,9080,170,170);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900839,10,50),(900839,15,0);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900844,0,50949,1387,1307,-2528,-958.967,-4942,0,0,0,25236,9080,170,170);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900844,10,50),(900844,15,0);
 -- Field Medic Lutton (giver/turn-in, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900840,0,51166,22,1959,-1621,-731.45,-3800,0,0,0,27275,8985,170,170);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900840,10,14),(900840,15,0);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900845,0,51166,22,1959,-1621,-731.45,-3800,0,0,0,27275,8985,170,170);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900845,10,14),(900845,15,0);
 -- Pyrius Octavian (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900841,0,51440,22,327,-2465.667,-761.561,-3437.667,0,0,0,26831,9559,170,170);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900841,10,7),(900841,15,0);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900846,0,51440,22,327,-2465.667,-761.561,-3437.667,0,0,0,26831,9559,170,170);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900846,10,7),(900846,15,0);
 -- Captured Scientist Egg Sac (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900842,0,51673,51,1886,4775,-1153.87,-3965,0,0,0,26808,0,219,219);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900842,10,1),(900842,15,0);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900847,0,51673,51,1886,4775,-1153.87,-3965,0,0,0,26808,0,219,219);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900847,10,1),(900847,15,0);
 -- Captured Scientist Egg Sac (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900843,0,51673,51,1036,4883,-1149.23,-3942,0,0,0,26808,0,219,219);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900843,10,1),(900843,15,0);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900848,0,51673,51,1036,4883,-1149.23,-3942,0,0,0,26808,0,219,219);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900848,10,1),(900848,15,0);
 -- Captured Scientist Egg Sac (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900844,0,51673,51,1886,4737,-1142.79,-3897,0,0,0,26808,0,219,219);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900844,10,1),(900844,15,0);
--- Captured Scientist Egg Sac (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900845,0,51673,51,1036,4859,-847.746,-3886,0,0,0,26808,0,219,219);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900845,10,1),(900845,15,0);
--- Captured Scientist Egg Sac (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900846,0,51673,51,29,4833,-1159.65,-3963,0,0,0,26808,0,219,219);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900846,10,1),(900846,15,0);
--- Sylphia Barkberry (giver/target, name-only)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900847,0,51921,51,1336,2650,-1081.22,979,0,0,0,30020,9489,219,219);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900847,10,40),(900847,15,0);
--- Sylphia Barkberry (turn-in, name-only)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900848,0,51986,51,1336,2650,-1081.22,979,0,0,0,30020,9489,219,219);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900848,10,40),(900848,15,0);
--- Power Conduit (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900849,0,52373,22,410,-2765.0,-1154.62,-2466.667,0,0,0,22855,0,234,234);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900849,0,51673,51,1886,4737,-1142.79,-3897,0,0,0,26808,0,219,219);
 INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900849,10,1),(900849,15,0);
--- Power Conduit (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900850,0,52373,22,389,-2991,-1171.42,-2856,0,0,0,22855,0,234,234);
+-- Captured Scientist Egg Sac (target, quest-linked)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900850,0,51673,51,1036,4859,-847.746,-3886,0,0,0,26808,0,219,219);
 INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900850,10,1),(900850,15,0);
--- Power Conduit (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900851,0,52373,22,389,-2983,-1171.42,-2865,0,0,0,22855,0,234,234);
+-- Captured Scientist Egg Sac (target, quest-linked)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900851,0,51673,51,29,4833,-1159.65,-3963,0,0,0,26808,0,219,219);
 INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900851,10,1),(900851,15,0);
+-- Sylphia Barkberry (giver/target, name-only)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900852,0,51921,51,1336,2650,-1081.22,979,0,0,0,30020,9489,219,219);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900852,10,40),(900852,15,0);
+-- Sylphia Barkberry (turn-in, name-only)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900853,0,51986,51,1336,2650,-1081.22,979,0,0,0,30020,9489,219,219);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900853,10,40),(900853,15,0);
 -- Power Conduit (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900852,0,52384,22,410,-2765.0,-1154.62,-2466.667,0,0,0,22855,0,234,234);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900852,10,1),(900852,15,0);
--- Power Conduit (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900853,0,52384,22,389,-2991,-1171.42,-2856,0,0,0,22855,0,234,234);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900853,10,1),(900853,15,0);
--- Power Conduit (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900854,0,52384,22,389,-2983,-1171.42,-2865,0,0,0,22855,0,234,234);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900854,0,52373,22,410,-2765.0,-1154.62,-2466.667,0,0,0,22855,0,234,234);
 INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900854,10,1),(900854,15,0);
--- Tomas Borgoli (turn-in, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900855,0,52483,51,300,2642.667,-931.126,-2480.0,0,0,0,29265,9086,171,171);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900855,10,10),(900855,15,0);
--- Infiltration Chopper (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900856,0,52811,51,138,6370,-693.75,-73,0,0,0,23984,0,219,219);
+-- Power Conduit (target, quest-linked)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900855,0,52373,22,389,-2991,-1171.42,-2856,0,0,0,22855,0,234,234);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900855,10,1),(900855,15,0);
+-- Power Conduit (target, quest-linked)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900856,0,52373,22,389,-2983,-1171.42,-2865,0,0,0,22855,0,234,234);
 INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900856,10,1),(900856,15,0);
+-- Power Conduit (target, quest-linked)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900857,0,52384,22,410,-2765.0,-1154.62,-2466.667,0,0,0,22855,0,234,234);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900857,10,1),(900857,15,0);
+-- Power Conduit (target, quest-linked)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900858,0,52384,22,389,-2991,-1171.42,-2856,0,0,0,22855,0,234,234);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900858,10,1),(900858,15,0);
+-- Power Conduit (target, quest-linked)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900859,0,52384,22,389,-2983,-1171.42,-2865,0,0,0,22855,0,234,234);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900859,10,1),(900859,15,0);
+-- Tomas Borgoli (turn-in, quest-linked)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900860,0,52483,51,300,2642.667,-931.126,-2480.0,0,0,0,29265,9086,171,171);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900860,10,10),(900860,15,0);
+-- Infiltration Chopper (target, quest-linked)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900861,0,52811,51,138,6370,-693.75,-73,0,0,0,23984,0,219,219);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900861,10,1),(900861,15,0);
 -- Alchemist's Fire (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900857,0,52872,51,1814,2486,-783.208,-3138,0,0,0,37660,0,219,219);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900857,10,13),(900857,15,0);
--- Alchemist's Fire (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900858,0,52872,51,1814,2493,-783.208,-3143,0,0,0,37660,0,219,219);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900858,10,13),(900858,15,0);
--- Plant Hellfire Explosives (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900859,0,53084,51,1743,3491,-837.412,-2498,0,0,0,27794,0,219,219);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900859,10,13),(900859,15,0);
--- Plant Hellfire Explosives (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900860,0,53085,51,1743,3491,-837.412,-2498,0,0,0,27794,0,219,219);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900860,10,13),(900860,15,0);
--- Plant Hellfire Explosives (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900861,0,53086,51,1743,3491,-837.412,-2498,0,0,0,27794,0,219,219);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900861,10,13),(900861,15,0);
--- Plant Hellfire Explosives (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900862,0,53087,51,1743,3491,-837.412,-2498,0,0,0,27794,0,219,219);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900862,0,52872,51,1814,2486,-783.208,-3138,0,0,0,37660,0,219,219);
 INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900862,10,13),(900862,15,0);
--- Matria Yaenna (giver, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900863,0,53243,51,300,2762,-927.142,-2323,0,0,0,29861,9409,171,171);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900863,10,9),(900863,15,0);
--- Bounty Board (giver, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900864,0,53246,51,1100,4967,-936.708,-272,0,0,0,25399,0,171,171);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900864,10,1),(900864,15,0);
--- Bounty Board (giver, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900865,0,53290,51,1100,4967,-936.708,-272,0,0,0,25399,0,170,170);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900865,10,1),(900865,15,0);
--- Mayor Hamhorn (turn-in, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900866,0,53330,51,1805,3496,-839.088,-2234,0,0,0,21839,7542,171,171);
+-- Alchemist's Fire (target, quest-linked)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900863,0,52872,51,1814,2493,-783.208,-3143,0,0,0,37660,0,219,219);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900863,10,13),(900863,15,0);
+-- Plant Hellfire Explosives (target, quest-linked)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900864,0,53084,51,1743,3491,-837.412,-2498,0,0,0,27794,0,219,219);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900864,10,13),(900864,15,0);
+-- Plant Hellfire Explosives (target, quest-linked)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900865,0,53085,51,1743,3491,-837.412,-2498,0,0,0,27794,0,219,219);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900865,10,13),(900865,15,0);
+-- Plant Hellfire Explosives (target, quest-linked)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900866,0,53086,51,1743,3491,-837.412,-2498,0,0,0,27794,0,219,219);
 INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900866,10,13),(900866,15,0);
+-- Plant Hellfire Explosives (target, quest-linked)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900867,0,53087,51,1743,3491,-837.412,-2498,0,0,0,27794,0,219,219);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900867,10,13),(900867,15,0);
+-- Matria Yaenna (giver, quest-linked)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900868,0,53243,51,300,2762,-927.142,-2323,0,0,0,29861,9409,171,171);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900868,10,9),(900868,15,0);
+-- Bounty Board (giver, quest-linked)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900869,0,53246,51,1100,4967,-936.708,-272,0,0,0,25399,0,171,171);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900869,10,1),(900869,15,0);
+-- Bounty Board (giver, quest-linked)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900870,0,53290,51,1100,4967,-936.708,-272,0,0,0,25399,0,170,170);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900870,10,1),(900870,15,0);
+-- Mayor Hamhorn (turn-in, quest-linked)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900871,0,53330,51,1805,3496,-839.088,-2234,0,0,0,21839,7542,171,171);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900871,10,13),(900871,15,0);
 -- Dominion Tracker (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900867,0,53464,51,1088,4397.2,-952.079,-2122.68,0,0,0,30354,8235,170,170);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900867,10,15),(900867,15,0);
--- Dominion Tracker (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900868,0,53464,51,1088,4397.235,-952.593,-2110.824,0,0,0,30354,8235,170,170);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900868,10,15),(900868,15,0);
--- Dominion Tracker (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900869,0,53464,51,1088,4396.667,-952.079,-2132.333,0,0,0,30354,8235,170,170);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900869,10,15),(900869,15,0);
--- Dominion Tracking Lizard (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900870,0,53465,51,1088,4397.618,-952.079,-2120.294,0,0,0,26565,0,170,170);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900870,10,15),(900870,15,0);
--- Dominion Tracking Lizard (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900871,0,53465,51,1088,4400.455,-953.679,-2110.0,0,0,0,26565,0,170,170);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900871,10,15),(900871,15,0);
--- Dominion Tracking Lizard (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900872,0,53465,51,1088,4398.0,-952.079,-2129.5,0,0,0,26565,0,170,170);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900872,0,53464,51,1088,4397.2,-952.079,-2122.68,0,0,0,30354,8235,170,170);
 INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900872,10,15),(900872,15,0);
+-- Dominion Tracker (target, quest-linked)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900873,0,53464,51,1088,4397.235,-952.593,-2110.824,0,0,0,30354,8235,170,170);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900873,10,15),(900873,15,0);
+-- Dominion Tracker (target, quest-linked)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900874,0,53464,51,1088,4396.667,-952.079,-2132.333,0,0,0,30354,8235,170,170);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900874,10,15),(900874,15,0);
+-- Dominion Tracking Lizard (target, quest-linked)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900875,0,53465,51,1088,4397.618,-952.079,-2120.294,0,0,0,26565,0,170,170);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900875,10,15),(900875,15,0);
+-- Dominion Tracking Lizard (target, quest-linked)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900876,0,53465,51,1088,4400.455,-953.679,-2110.0,0,0,0,26565,0,170,170);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900876,10,15),(900876,15,0);
+-- Dominion Tracking Lizard (target, quest-linked)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900877,0,53465,51,1088,4398.0,-952.079,-2129.5,0,0,0,26565,0,170,170);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900877,10,15),(900877,15,0);
 -- Scout Frostfield (giver/turn-in, name-only)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900873,0,53533,426,645,3843,-669.066,-5279,0,0,0,30225,8978,171,171);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900873,10,3),(900873,15,0);
--- Stormseeker Tech-Tome Display (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900874,0,53610,22,3030,-3372,-562.25,-1673,0,0,0,21375,0,219,219);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900874,10,1),(900874,15,0);
--- Artemis Zin (turn-in, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900875,0,53616,22,3030,-3381,-494.375,-1721,0,0,0,25236,9080,170,170);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900875,10,50),(900875,15,0);
--- Artemis Zin (turn-in, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900876,0,53616,22,3030,-3381,-494.375,-1721,0,0,0,25236,9080,170,170);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900876,10,50),(900876,15,0);
--- Artemis Zin (turn-in, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900877,0,53616,22,3030,-3381,-494.375,-1721,0,0,0,25236,9080,170,170);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900877,10,50),(900877,15,0);
--- Agent Infivan (giver, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900878,0,53655,1387,1410,-3780,-996.093,-6337,0,0,0,30261,9527,170,170);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900878,0,53533,426,645,3843,-669.066,-5279,0,0,0,30225,8978,171,171);
 INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900878,10,3),(900878,15,0);
+-- Stormseeker Tech-Tome Display (target, quest-linked)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900879,0,53610,22,3030,-3372,-562.25,-1673,0,0,0,21375,0,219,219);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900879,10,1),(900879,15,0);
+-- Artemis Zin (turn-in, quest-linked)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900880,0,53616,22,3030,-3381,-494.375,-1721,0,0,0,25236,9080,170,170);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900880,10,50),(900880,15,0);
+-- Artemis Zin (turn-in, quest-linked)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900881,0,53616,22,3030,-3381,-494.375,-1721,0,0,0,25236,9080,170,170);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900881,10,50),(900881,15,0);
+-- Artemis Zin (turn-in, quest-linked)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900882,0,53616,22,3030,-3381,-494.375,-1721,0,0,0,25236,9080,170,170);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900882,10,50),(900882,15,0);
 -- Agent Infivan (giver, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900879,0,53656,870,1236,-8255,-994.589,-240,0,0,0,30261,9527,170,170);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900879,10,3),(900879,15,0);
--- Leg Bone of Shala-Boog Display (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900880,0,53703,22,3030,-3372,-517.0,-1698,0,0,0,21375,0,219,219);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900880,10,1),(900880,15,0);
--- Engineer Zric (giver, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900881,0,53715,870,1236,-8255,-994.589,-240,0,0,0,30264,9005,170,170);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900881,10,3),(900881,15,0);
--- Engineer Zric (giver, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900882,0,53716,1387,1411,-3835,-980.217,-6053,0,0,0,30264,9005,170,170);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900882,10,3),(900882,15,0);
--- Scout Naharra (giver, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900883,0,53725,870,1237,-7661,-992.343,46,0,0,0,30265,9005,170,170);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900883,0,53655,1387,1410,-3780,-996.093,-6337,0,0,0,30261,9527,170,170);
 INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900883,10,3),(900883,15,0);
--- Scout Naharra (giver, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900884,0,53726,1387,1411,-3835,-980.217,-6053,0,0,0,30265,9005,170,170);
+-- Agent Infivan (giver, quest-linked)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900884,0,53656,870,1236,-8255,-994.589,-240,0,0,0,30261,9527,170,170);
 INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900884,10,3),(900884,15,0);
--- Warhammer of Ugreth Foe-Breaker Display (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900885,0,53834,22,3030,-3372,-540.25,-1685,0,0,0,21375,0,219,219);
+-- Leg Bone of Shala-Boog Display (target, quest-linked)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900885,0,53703,22,3030,-3372,-517.0,-1698,0,0,0,21375,0,219,219);
 INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900885,10,1),(900885,15,0);
+-- Engineer Zric (giver, quest-linked)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900886,0,53715,870,1236,-8255,-994.589,-240,0,0,0,30264,9005,170,170);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900886,10,3),(900886,15,0);
+-- Engineer Zric (giver, quest-linked)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900887,0,53716,1387,1411,-3835,-980.217,-6053,0,0,0,30264,9005,170,170);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900887,10,3),(900887,15,0);
+-- Scout Naharra (giver, quest-linked)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900888,0,53725,870,1237,-7661,-992.343,46,0,0,0,30265,9005,170,170);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900888,10,3),(900888,15,0);
+-- Scout Naharra (giver, quest-linked)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900889,0,53726,1387,1411,-3835,-980.217,-6053,0,0,0,30265,9005,170,170);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900889,10,3),(900889,15,0);
+-- Warhammer of Ugreth Foe-Breaker Display (target, quest-linked)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900890,0,53834,22,3030,-3372,-540.25,-1685,0,0,0,21375,0,219,219);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900890,10,1),(900890,15,0);
 -- Governor Aluviel (giver, name-only)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900886,0,53919,22,1277,-2382,-929.089,-1509,0,0,0,21574,9362,170,170);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900886,10,15),(900886,15,0);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900891,0,53919,22,1277,-2382,-929.089,-1509,0,0,0,21574,9362,170,170);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900891,10,15),(900891,15,0);
 -- Trader Lukadat (turn-in, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900887,0,54098,51,301,2100,-868.625,-1393,0,0,0,28123,0,363,363);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900887,10,9),(900887,15,0);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900892,0,54098,51,301,2100,-868.625,-1393,0,0,0,28123,0,363,363);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900892,10,9),(900892,15,0);
 -- Protostar Housing Specialist (turn-in, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900888,0,54274,51,122,4047,-820.862,-1696,0,0,0,21339,0,171,171);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900888,10,40),(900888,15,0);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900893,0,54274,51,122,4047,-820.862,-1696,0,0,0,21339,0,171,171);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900893,10,40),(900893,15,0);
 -- Protostar Housing Specialist (turn-in, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900889,0,54275,22,3014,-3265,-904.256,-824,0,0,0,21339,0,170,170);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900889,10,40),(900889,15,0);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900894,0,54275,22,3014,-3265,-904.256,-824,0,0,0,21339,0,170,170);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900894,10,40),(900894,15,0);
 -- Mitsy Grassdancer (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900890,0,56149,51,1091,5232,-970.842,-72,0,0,0,24145,9000,171,171);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900890,10,30),(900890,15,0);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900895,0,56149,51,1091,5232,-970.842,-72,0,0,0,24145,9000,171,171);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900895,10,30),(900895,15,0);
 -- ICI Agent (giver/turn-in, name-only)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900891,0,56166,22,1547,-1150,-930.5,-1297,0,0,0,26092,9497,170,170);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900891,10,35),(900891,15,0);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900896,0,56166,22,1547,-1150,-930.5,-1297,0,0,0,26092,9497,170,170);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900896,10,35),(900896,15,0);
 -- Toric Antevian (giver, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900892,0,56354,22,1551,-574.5,-841.646,-747.0,0,0,0,24957,9077,170,170);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900892,10,50),(900892,15,0);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900897,0,56354,22,1551,-574.5,-841.646,-747.0,0,0,0,24957,9077,170,170);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900897,10,50),(900897,15,0);
 -- Pumpkin (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900893,0,56678,51,989,6043.667,-903.058,-2345.833,0,0,0,21876,0,219,219);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900893,10,20),(900893,15,0);
--- Pumpkin (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900894,0,56678,51,989,6057.8,-902.981,-2352.0,0,0,0,21876,0,219,219);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900894,10,20),(900894,15,0);
--- Pumpkin (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900895,0,56678,51,989,6050.0,-902.981,-2342.667,0,0,0,21876,0,219,219);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900895,10,20),(900895,15,0);
--- Pumpkin (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900896,0,56678,51,989,6051.5,-902.981,-2351.0,0,0,0,21876,0,219,219);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900896,10,20),(900896,15,0);
--- Radish (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900897,0,56679,51,989,6062.5,-905.937,-2384.75,0,0,0,21883,0,219,219);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900897,10,20),(900897,15,0);
--- Radish (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900898,0,56679,51,989,6038.333,-909.457,-2370.333,0,0,0,21883,0,219,219);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900898,0,56678,51,989,6043.667,-903.058,-2345.833,0,0,0,21876,0,219,219);
 INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900898,10,20),(900898,15,0);
--- Radish (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900899,0,56679,51,989,6051.0,-908.448,-2375.667,0,0,0,21883,0,219,219);
+-- Pumpkin (target, quest-linked)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900899,0,56678,51,989,6057.8,-902.981,-2352.0,0,0,0,21876,0,219,219);
 INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900899,10,20),(900899,15,0);
--- Radish (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900900,0,56679,51,989,6058.0,-905.937,-2377.0,0,0,0,21883,0,219,219);
+-- Pumpkin (target, quest-linked)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900900,0,56678,51,989,6050.0,-902.981,-2342.667,0,0,0,21876,0,219,219);
 INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900900,10,20),(900900,15,0);
--- Radish (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900901,0,56679,51,989,6071,-908.37,-2394,0,0,0,21883,0,219,219);
+-- Pumpkin (target, quest-linked)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900901,0,56678,51,989,6051.5,-902.981,-2351.0,0,0,0,21876,0,219,219);
 INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900901,10,20),(900901,15,0);
--- Corn (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900902,0,56680,51,973,6023.833,-909.795,-2363.833,0,0,0,30603,0,219,219);
+-- Radish (target, quest-linked)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900902,0,56679,51,989,6062.5,-905.937,-2384.75,0,0,0,21883,0,219,219);
 INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900902,10,20),(900902,15,0);
--- Corn (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900903,0,56680,51,989,6037.5,-908.953,-2375.0,0,0,0,30603,0,219,219);
+-- Radish (target, quest-linked)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900903,0,56679,51,989,6038.333,-909.457,-2370.333,0,0,0,21883,0,219,219);
 INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900903,10,20),(900903,15,0);
--- Corn (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900904,0,56680,51,973,6036.0,-909.795,-2364.0,0,0,0,30603,0,219,219);
+-- Radish (target, quest-linked)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900904,0,56679,51,989,6051.0,-908.448,-2375.667,0,0,0,21883,0,219,219);
 INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900904,10,20),(900904,15,0);
--- Corn (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900905,0,56680,51,973,6027.5,-909.795,-2373.0,0,0,0,30603,0,219,219);
+-- Radish (target, quest-linked)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900905,0,56679,51,989,6058.0,-905.937,-2377.0,0,0,0,21883,0,219,219);
 INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900905,10,20),(900905,15,0);
+-- Radish (target, quest-linked)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900906,0,56679,51,989,6071,-908.37,-2394,0,0,0,21883,0,219,219);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900906,10,20),(900906,15,0);
+-- Corn (target, quest-linked)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900907,0,56680,51,973,6023.833,-909.795,-2363.833,0,0,0,30603,0,219,219);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900907,10,20),(900907,15,0);
+-- Corn (target, quest-linked)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900908,0,56680,51,989,6037.5,-908.953,-2375.0,0,0,0,30603,0,219,219);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900908,10,20),(900908,15,0);
+-- Corn (target, quest-linked)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900909,0,56680,51,973,6036.0,-909.795,-2364.0,0,0,0,30603,0,219,219);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900909,10,20),(900909,15,0);
+-- Corn (target, quest-linked)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900910,0,56680,51,973,6027.5,-909.795,-2373.0,0,0,0,30603,0,219,219);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900910,10,20),(900910,15,0);
 -- Farmer Fieldstar (giver/turn-in, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900906,0,56681,51,989,6043,-903.058,-2354,0,0,0,30618,9026,171,171);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900906,10,14),(900906,15,0);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900911,0,56681,51,989,6043,-903.058,-2354,0,0,0,30618,9026,171,171);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900911,10,14),(900911,15,0);
 -- Dazed Mutation (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900907,0,56731,51,1242,3797.867,-988.995,355.333,0,0,0,29168,0,847,847);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900907,10,25),(900907,15,0);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900912,0,56731,51,1242,3797.867,-988.995,355.333,0,0,0,29168,0,847,847);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900912,10,25),(900912,15,0);
 -- Landing Flare Location (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900908,0,56991,51,975,6528,-786.336,-2616,0,0,0,27794,0,219,219);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900908,10,8),(900908,15,0);
--- Landing Flare Location (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900909,0,56991,51,975,6505,-782.025,-2648,0,0,0,27794,0,219,219);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900909,10,8),(900909,15,0);
--- Landing Flare Location (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900910,0,56991,51,973,6543,-787.336,-2646,0,0,0,27794,0,219,219);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900910,10,8),(900910,15,0);
--- Landing Flare Location (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900911,0,56992,51,975,6528,-786.336,-2616,0,0,0,27794,0,219,219);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900911,10,8),(900911,15,0);
--- Landing Flare Location (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900912,0,56992,51,975,6505,-782.025,-2648,0,0,0,27794,0,219,219);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900912,10,8),(900912,15,0);
--- Landing Flare Location (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900913,0,56992,51,973,6543,-787.336,-2646,0,0,0,27794,0,219,219);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900913,0,56991,51,975,6528,-786.336,-2616,0,0,0,27794,0,219,219);
 INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900913,10,8),(900913,15,0);
+-- Landing Flare Location (target, quest-linked)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900914,0,56991,51,975,6505,-782.025,-2648,0,0,0,27794,0,219,219);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900914,10,8),(900914,15,0);
+-- Landing Flare Location (target, quest-linked)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900915,0,56991,51,973,6543,-787.336,-2646,0,0,0,27794,0,219,219);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900915,10,8),(900915,15,0);
+-- Landing Flare Location (target, quest-linked)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900916,0,56992,51,975,6528,-786.336,-2616,0,0,0,27794,0,219,219);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900916,10,8),(900916,15,0);
+-- Landing Flare Location (target, quest-linked)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900917,0,56992,51,975,6505,-782.025,-2648,0,0,0,27794,0,219,219);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900917,10,8),(900917,15,0);
+-- Landing Flare Location (target, quest-linked)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900918,0,56992,51,973,6543,-787.336,-2646,0,0,0,27794,0,219,219);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900918,10,8),(900918,15,0);
 -- Arwick Redleaf (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900914,0,57050,51,1570,1106,-951.822,-2372,0,0,0,27879,9074,171,171);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900914,10,50),(900914,15,0);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900919,0,57050,51,1570,1106,-951.822,-2372,0,0,0,27879,9074,171,171);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900919,10,50),(900919,15,0);
 -- Illium Tour Holoprojector (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900915,0,57065,22,2192,-3321.5,-900.465,-1025.5,0,0,0,27450,0,170,170);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900915,10,1),(900915,15,0);
--- Illium Tour Holoprojector (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900916,0,57065,22,2194,-2892,-905.215,-868,0,0,0,27450,0,170,170);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900916,10,1),(900916,15,0);
--- Illium Tour Holoprojector (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900917,0,57065,22,2193,-3420,-890.59,-741,0,0,0,27450,0,170,170);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900917,10,1),(900917,15,0);
--- Illium Tour Holoprojector (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900918,0,57065,22,2196,-3491,-884.964,-1049,0,0,0,27450,0,170,170);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900918,10,1),(900918,15,0);
--- Illium Tour Holoprojector (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900919,0,57065,22,2195,-3195,-912.965,-713,0,0,0,27450,0,170,170);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900919,10,1),(900919,15,0);
--- Illium Tour Holoprojector (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900920,0,57065,22,2192,-2973,-896.215,-1137,0,0,0,27450,0,170,170);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900920,0,57065,22,2192,-3321.5,-900.465,-1025.5,0,0,0,27450,0,170,170);
 INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900920,10,1),(900920,15,0);
 -- Illium Tour Holoprojector (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900921,0,57065,22,2192,-3261,-889.213,-1170,0,0,0,27450,0,170,170);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900921,0,57065,22,2194,-2892,-905.215,-868,0,0,0,27450,0,170,170);
 INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900921,10,1),(900921,15,0);
 -- Illium Tour Holoprojector (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900922,0,57065,22,2193,-3568,-878.089,-578,0,0,0,27450,0,170,170);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900922,0,57065,22,2193,-3420,-890.59,-741,0,0,0,27450,0,170,170);
 INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900922,10,1),(900922,15,0);
+-- Illium Tour Holoprojector (target, quest-linked)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900923,0,57065,22,2196,-3491,-884.964,-1049,0,0,0,27450,0,170,170);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900923,10,1),(900923,15,0);
+-- Illium Tour Holoprojector (target, quest-linked)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900924,0,57065,22,2195,-3195,-912.965,-713,0,0,0,27450,0,170,170);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900924,10,1),(900924,15,0);
+-- Illium Tour Holoprojector (target, quest-linked)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900925,0,57065,22,2192,-2973,-896.215,-1137,0,0,0,27450,0,170,170);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900925,10,1),(900925,15,0);
+-- Illium Tour Holoprojector (target, quest-linked)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900926,0,57065,22,2192,-3261,-889.213,-1170,0,0,0,27450,0,170,170);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900926,10,1),(900926,15,0);
+-- Illium Tour Holoprojector (target, quest-linked)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900927,0,57065,22,2193,-3568,-878.089,-578,0,0,0,27450,0,170,170);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900927,10,1),(900927,15,0);
 -- Kit Brinny (turn-in, name-only)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900923,0,57071,51,2545,3758,-843.092,-1991,0,0,0,27567,8980,171,171);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900923,10,50),(900923,15,0);
--- Malvolio Portius (turn-in, name-only)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900924,0,57078,22,2192,-3292.5,-890.469,-1145.5,0,0,0,28157,9891,170,170);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900924,10,50),(900924,15,0);
--- Rapid Acquisition Coordinator (giver/turn-in, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900925,0,58482,51,1312,3195.0,-1035.29,801.0,0,0,0,21339,0,219,219);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900925,10,25),(900925,15,0);
--- Bounty Board (giver, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900926,0,58607,51,943,5634,-1010.62,-2514,0,0,0,25399,0,219,219);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900926,10,35),(900926,15,0);
--- Bounty Board (giver, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900927,0,58639,22,484,-5649,-974.523,-696,0,0,0,25399,0,219,219);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900927,10,10),(900927,15,0);
--- Fashion Designer Alexxa (giver, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900928,0,58644,22,410,-2956,-755.0,-2714,0,0,0,26106,9908,170,170);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900928,0,57071,51,2545,3758,-843.092,-1991,0,0,0,27567,8980,171,171);
 INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900928,10,50),(900928,15,0);
--- Public Works Supervisor (giver/turn-in, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900929,0,59640,51,122,4135,-799.696,-2078,0,0,0,26742,9028,171,171);
+-- Malvolio Portius (turn-in, name-only)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900929,0,57078,22,2192,-3292.5,-890.469,-1145.5,0,0,0,28157,9891,170,170);
 INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900929,10,50),(900929,15,0);
+-- Rapid Acquisition Coordinator (giver/turn-in, quest-linked)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900930,0,58482,51,1312,3195.0,-1035.29,801.0,0,0,0,21339,0,219,219);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900930,10,25),(900930,15,0);
+-- Bounty Board (giver, quest-linked)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900931,0,58607,51,943,5634,-1010.62,-2514,0,0,0,25399,0,219,219);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900931,10,35),(900931,15,0);
+-- Bounty Board (giver, quest-linked)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900932,0,58639,22,484,-5649,-974.523,-696,0,0,0,25399,0,219,219);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900932,10,10),(900932,15,0);
+-- Fashion Designer Alexxa (giver, quest-linked)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900933,0,58644,22,410,-2956,-755.0,-2714,0,0,0,26106,9908,170,170);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900933,10,50),(900933,15,0);
 -- Public Works Supervisor (giver/turn-in, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900930,0,59670,22,2192,-2881,-896.215,-1028,0,0,0,21342,9028,170,170);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900930,10,50),(900930,15,0);
--- Belle Walker (turn-in, name-only)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900931,0,62807,51,122,4141.25,-713.699,-1712.5,0,0,0,23604,9068,1346,1346);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900931,10,50),(900931,15,0);
--- Chef Theok (giver/turn-in, name-only)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900932,0,65545,51,2546,4289,-803.462,-2310,0,0,0,35135,10403,171,171);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900932,10,40),(900932,15,0);
--- Chef Cecilia (giver/turn-in, name-only)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900933,0,65546,22,2195,-3177,-909.34,-628,0,0,0,35134,10403,170,170);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900933,10,40),(900933,15,0);
--- Commander Durek (giver/turn-in, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900934,0,66066,51,137,3712,-1109.56,-1240,0,0,0,22825,9065,171,171);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900934,0,59640,51,122,4135,-799.696,-2078,0,0,0,26742,9028,171,171);
 INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900934,10,50),(900934,15,0);
--- Dorian Walker (giver/turn-in, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900935,0,66071,51,122,4095.286,-817.791,-1794.857,0,0,0,25510,8952,171,171);
+-- Public Works Supervisor (giver/turn-in, quest-linked)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900935,0,59670,22,2192,-2881,-896.215,-1028,0,0,0,21342,9028,170,170);
 INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900935,10,50),(900935,15,0);
--- Avra Darkos (giver/turn-in, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900936,0,66072,51,137,3757,-1108.52,-1215,0,0,0,23187,9072,171,171);
+-- Belle Walker (turn-in, name-only)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900936,0,62807,51,122,4141.25,-713.699,-1712.5,0,0,0,23604,9068,1346,1346);
 INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900936,10,50),(900936,15,0);
--- Mondo Zax (giver/turn-in, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900937,0,66095,22,2191,-2970,-1209.63,-272,0,0,0,25202,9079,170,170);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900937,10,50),(900937,15,0);
--- Varonia Cazalon (giver/turn-in, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900938,0,66099,22,2192,-3122.0,-888.271,-1260.0,0,0,0,26265,9078,170,170);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900938,10,50),(900938,15,0);
--- Kezrek Warbringer (giver/turn-in, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900939,0,66100,22,2194,-2890.0,-905.215,-504.4,0,0,0,25194,9076,170,170);
+-- Chef Theok (giver/turn-in, name-only)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900937,0,65545,51,2546,4289,-803.462,-2310,0,0,0,35135,10403,171,171);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900937,10,40),(900937,15,0);
+-- Chef Cecilia (giver/turn-in, name-only)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900938,0,65546,22,2195,-3177,-909.34,-628,0,0,0,35134,10403,170,170);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900938,10,40),(900938,15,0);
+-- Commander Durek (giver/turn-in, quest-linked)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900939,0,66066,51,137,3712,-1109.56,-1240,0,0,0,22825,9065,171,171);
 INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900939,10,50),(900939,15,0);
--- The Caretaker (giver/turn-in, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900940,0,66168,51,137,3777.5,-1108.6,-1254.5,0,0,0,25105,0,219,219);
+-- Dorian Walker (giver/turn-in, quest-linked)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900940,0,66071,51,122,4095.286,-817.791,-1794.857,0,0,0,25510,8952,171,171);
 INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900940,10,50),(900940,15,0);
--- Belle Walker (target, name-only)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900941,0,67337,51,122,4141.25,-713.699,-1712.5,0,0,0,23604,9068,171,171);
+-- Avra Darkos (giver/turn-in, quest-linked)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900941,0,66072,51,137,3757,-1108.52,-1215,0,0,0,23187,9072,171,171);
 INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900941,10,50),(900941,15,0);
--- Drusera (giver, name-only)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900942,0,67381,51,137,3749,-1108.6,-1251,0,0,0,29337,0,219,219);
+-- Mondo Zax (giver/turn-in, quest-linked)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900942,0,66095,22,2191,-2970,-1209.63,-272,0,0,0,25202,9079,170,170);
 INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900942,10,50),(900942,15,0);
--- Lyryan Redtail (giver, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900943,0,68055,51,1336,2698,-1227.0,937,0,0,0,29995,9489,219,219);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900943,10,30),(900943,15,0);
--- The Caretaker (giver, name-only)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900944,0,68069,51,1315,2289,-1029.77,465,0,0,0,24983,0,219,219);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900944,10,40),(900944,15,0);
--- Drusera (giver, name-only)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900945,0,68209,51,137,3749,-1108.6,-1251,0,0,0,29337,0,219,219);
+-- Varonia Cazalon (giver/turn-in, quest-linked)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900943,0,66099,22,2192,-3122.0,-888.271,-1260.0,0,0,0,26265,9078,170,170);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900943,10,50),(900943,15,0);
+-- Kezrek Warbringer (giver/turn-in, quest-linked)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900944,0,66100,22,2194,-2890.0,-905.215,-504.4,0,0,0,25194,9076,170,170);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900944,10,50),(900944,15,0);
+-- The Caretaker (giver/turn-in, quest-linked)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900945,0,66168,51,137,3777.5,-1108.6,-1254.5,0,0,0,25105,0,219,219);
 INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900945,10,50),(900945,15,0);
--- Tour Guide Jakke (giver, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900946,0,69953,51,2548,3930,-776.211,-2388,0,0,0,37140,10528,171,171);
+-- Belle Walker (target, name-only)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900946,0,67337,51,122,4141.25,-713.699,-1712.5,0,0,0,23604,9068,171,171);
 INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900946,10,50),(900946,15,0);
--- Tour Guide Aexa (giver, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900947,0,69954,22,2193,-3363,-890.59,-674,0,0,0,37141,10529,170,170);
+-- Drusera (giver, name-only)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900947,0,67381,51,137,3749,-1108.6,-1251,0,0,0,29337,0,219,219);
 INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900947,10,50),(900947,15,0);
--- Mondo Zax (giver, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900948,0,70921,22,1212,-4708,-910.215,-1547,0,0,0,25202,9079,170,170);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900948,10,50),(900948,15,0);
--- Professor Rhoda Wellspring (giver, name-only)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900949,0,71073,51,137,3757,-1108.6,-1251,0,0,0,34801,9114,171,171);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900949,10,50),(900949,15,0);
--- Professor Rhoda Wellspring (turn-in, name-only)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900950,0,71301,51,137,3757,-1108.6,-1251,0,0,0,34801,9114,171,171);
+-- Lyryan Redtail (giver, quest-linked)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900948,0,68055,51,1336,2698,-1227.0,937,0,0,0,29995,9489,219,219);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900948,10,30),(900948,15,0);
+-- The Caretaker (giver, name-only)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900949,0,68069,51,1315,2289,-1029.77,465,0,0,0,24983,0,219,219);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900949,10,40),(900949,15,0);
+-- Drusera (giver, name-only)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900950,0,68209,51,137,3749,-1108.6,-1251,0,0,0,29337,0,219,219);
 INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900950,10,50),(900950,15,0);
+-- Tour Guide Jakke (giver, quest-linked)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900951,0,69953,51,2548,3930,-776.211,-2388,0,0,0,37140,10528,171,171);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900951,10,50),(900951,15,0);
+-- Tour Guide Aexa (giver, quest-linked)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900952,0,69954,22,2193,-3363,-890.59,-674,0,0,0,37141,10529,170,170);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900952,10,50),(900952,15,0);
+-- Mondo Zax (giver, quest-linked)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900953,0,70921,22,1212,-4708,-910.215,-1547,0,0,0,25202,9079,170,170);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900953,10,50),(900953,15,0);
+-- Professor Rhoda Wellspring (giver, name-only)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900954,0,71073,51,137,3757,-1108.6,-1251,0,0,0,34801,9114,171,171);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900954,10,50),(900954,15,0);
+-- Professor Rhoda Wellspring (turn-in, name-only)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900955,0,71301,51,137,3757,-1108.6,-1251,0,0,0,34801,9114,171,171);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900955,10,50),(900955,15,0);
 -- Mysterious Portal (target, name-only)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900951,0,71609,51,2957,3955.0,-817.425,-2662.5,0,0,0,29834,0,219,219);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900951,10,1),(900951,15,0);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900956,0,71609,51,2957,3955.0,-817.425,-2662.5,0,0,0,29834,0,219,219);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900956,10,1),(900956,15,0);
 -- Mysterious Portal (target, name-only)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900952,0,71610,22,2191,-3680.0,-851.079,-1048.5,0,0,0,29834,0,219,219);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900952,10,1),(900952,15,0);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900957,0,71610,22,2191,-3680.0,-851.079,-1048.5,0,0,0,29834,0,219,219);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900957,10,1),(900957,15,0);
 -- Freight Supervisor Lola (turn-in, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900953,0,71762,51,23,3686,-1024.26,-4612,0,0,0,32807,0,219,219);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900953,10,6),(900953,15,0);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900958,0,71762,51,23,3686,-1024.26,-4612,0,0,0,32807,0,219,219);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900958,10,6),(900958,15,0);
 -- Freight Supervisor Lola (turn-in, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900954,0,71762,22,327,-2583,-781.135,-3475,0,0,0,32807,0,219,219);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900954,10,6),(900954,15,0);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900959,0,71762,22,327,-2583,-781.135,-3475,0,0,0,32807,0,219,219);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900959,10,6),(900959,15,0);
 -- Freight Supervisor Lola (turn-in, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900955,0,71762,51,1570,1034,-948.885,-2471,0,0,0,32807,0,219,219);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900955,10,6),(900955,15,0);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900960,0,71762,51,1570,1034,-948.885,-2471,0,0,0,32807,0,219,219);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900960,10,6),(900960,15,0);
 -- Freight Supervisor Lola (turn-in, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900956,0,71762,22,484,-5660,-977.071,-856,0,0,0,32807,0,219,219);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900956,10,6),(900956,15,0);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900961,0,71762,22,484,-5660,-977.071,-856,0,0,0,32807,0,219,219);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900961,10,6),(900961,15,0);
 -- Captain Tolben (turn-in, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900957,0,71764,51,984,5838,-861.905,-2278,0,0,0,28578,0,219,219);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900957,10,20),(900957,15,0);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900962,0,71764,51,984,5838,-861.905,-2278,0,0,0,28578,0,219,219);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900962,10,20),(900962,15,0);
 -- Captain Tolben (turn-in, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900958,0,71764,22,41,-1347,-898.634,-1157,0,0,0,28578,0,219,219);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900958,10,20),(900958,15,0);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900963,0,71764,22,41,-1347,-898.634,-1157,0,0,0,28578,0,219,219);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900963,10,20),(900963,15,0);
 -- Elderoot (giver/turn-in, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900959,0,72021,990,1416,-338,-911.55,-3263,0,0,0,37971,0,219,219);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900959,10,50),(900959,15,0);
--- Dorian Walker (giver/turn-in, name-only)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900960,0,73058,51,122,4095.286,-817.791,-1794.857,0,0,0,25510,8952,171,171);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900960,10,50),(900960,15,0);
--- Drusera (giver/turn-in, name-only)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900961,0,73090,51,137,3749,-1108.6,-1251,0,0,0,29337,0,219,219);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900961,10,50),(900961,15,0);
--- Dorian Walker (giver/turn-in, name-only)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900962,0,74962,51,122,4095.286,-817.791,-1794.857,0,0,0,25510,8952,171,171);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900962,10,50),(900962,15,0);
--- Dorian Walker (giver/turn-in, name-only)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900963,0,74963,51,122,4095.286,-817.791,-1794.857,0,0,0,25510,8952,171,171);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900963,10,50),(900963,15,0);
--- Dorian Walker (giver/turn-in, name-only)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900964,0,74964,51,122,4095.286,-817.791,-1794.857,0,0,0,25510,8952,171,171);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900964,0,72021,990,1416,-338,-911.55,-3263,0,0,0,37971,0,219,219);
 INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900964,10,50),(900964,15,0);
 -- Dorian Walker (giver/turn-in, name-only)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900965,0,74965,51,122,4095.286,-817.791,-1794.857,0,0,0,25510,8952,171,171);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900965,0,73058,51,122,4095.286,-817.791,-1794.857,0,0,0,25510,8952,171,171);
 INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900965,10,50),(900965,15,0);
+-- Drusera (giver/turn-in, name-only)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900966,0,73090,51,137,3749,-1108.6,-1251,0,0,0,29337,0,219,219);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900966,10,50),(900966,15,0);
+-- Dorian Walker (giver/turn-in, name-only)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900967,0,74962,51,122,4095.286,-817.791,-1794.857,0,0,0,25510,8952,171,171);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900967,10,50),(900967,15,0);
+-- Dorian Walker (giver/turn-in, name-only)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900968,0,74963,51,122,4095.286,-817.791,-1794.857,0,0,0,25510,8952,171,171);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900968,10,50),(900968,15,0);
+-- Dorian Walker (giver/turn-in, name-only)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900969,0,74964,51,122,4095.286,-817.791,-1794.857,0,0,0,25510,8952,171,171);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900969,10,50),(900969,15,0);
+-- Dorian Walker (giver/turn-in, name-only)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900970,0,74965,51,122,4095.286,-817.791,-1794.857,0,0,0,25510,8952,171,171);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900970,10,50),(900970,15,0);

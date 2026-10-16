@@ -17,7 +17,7 @@ pages=json.load(open('/a/parsed/jh_npcs.json'))
 best={}   # (world, name) -> page with the most kills observed
 for p in pages:
     if p['map'] not in MAPW: continue
-    rows=[d for d in p['drops'] if d['tab'] in ('tab-odrop','tab-vdrop') and d['chance'] is not None and d['item_id'] in items]
+    rows=[d for d in p['drops'] if d['tab'] in ('tab-odrop','tab-drop','tab-vdrop') and d['chance'] is not None and d['item_id'] in items]
     if not rows: continue
     k=(MAPW[p['map']],p['name']); kills=max(d['of'] or 0 for d in rows)
     if k not in best or kills>best[k][0]: best[k]=(kills,p,rows)

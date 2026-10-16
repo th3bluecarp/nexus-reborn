@@ -53,6 +53,22 @@ for q in Q.values():
             need[(i,z)]['roles'].add('target'); need[(i,z)]['quests'].add(q['Id'])
             # a kill or use count of 1 means a single (often named) creature
             need[(i,z)]['count']=max(need[(i,z)].get('count',0), o.get('Count',0) or 1)
+# path mission objects to activate (Explorer operations), placed like quest targets, once each
+episodes={e['Id']:e for e in ld('PathEpisode')}
+for kind,table in ((17,'PathExplorerActivate'),):
+    rows={r['Id']:r for r in ld(table)}
+    for m in ld('PathMission'):
+        if m['PathTypeEnum']!=3 or m['PathMissionTypeEnum']!=kind: continue
+        e=episodes.get(m['PathEpisodeId']); r=rows.get(m['ObjectId'])
+        if not e or not r: continue
+        z=top(e['WorldZoneId'])
+        if z not in ZONES: continue
+        ids={r['Creature2Id']} if r['Creature2Id'] else set()
+        ids|=mem(r['TargetGroupId']) if r['TargetGroupId'] else set()
+        ids={i for i in ids if i in cr}
+        if not ids or any(any(w2==ZONES[z][1] for w2,_ in bycre[i]) for i in ids): continue
+        for i in ids:
+            need[(i,z)]['roles'].add('target'); need[(i,z)]['count']=max(need[(i,z)].get('count',0), r.get('Count') or 1)
 # drop givers/turn-ins already spawned in their zone world
 todo={k:v for k,v in need.items() if not any(w==ZONES[k[1]][1] for w,_ in bycre[k[0]])}
 def clusters(pins, r=8.0):
