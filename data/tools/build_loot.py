@@ -2,7 +2,12 @@
 import json, csv, collections
 J='/w/json/'; ld=lambda n: json.load(open(J+n+'.json'))
 text={int(k):v for k,v in json.load(open(J+'text.json')).items()}; T=lambda i:(text.get(i) or '')
-cr={c['Id']:c for c in ld('Creature2')}; items={i['Id'] for i in ld('Item2')}
+cr={c['Id']:c for c in ld('Creature2')}; item2={i['Id']:i for i in ld('Item2')}; items=set(item2)
+QUEST_FAMILY=24
+# quest items drop only for players with a CollectItem objective for them still open (loot condition 8, QuestObjectiveActive)
+collect=collections.defaultdict(list)
+for o in ld('QuestObjective'):
+    if o['Type']==4 and o['Data']: collect[o['Data']].append(o['Id'])
 MAPW={'northernwilds':426,'everstargrove':990,'crimsonisle':870,'levianbay':1387,'algoroc':51,'celestion':51,'galeras':51,'thayd':51,'whitevale':51,'deradune':22,'ellevar':22,'auroria':22,'illium':22}
 spawned=collections.defaultdict(set)
 for r in csv.DictReader(open('/w/db/entity.tsv'),delimiter='\t'):
@@ -12,7 +17,7 @@ pages=json.load(open('/a/parsed/jh_npcs.json'))
 best={}   # (world, name) -> page with the most kills observed
 for p in pages:
     if p['map'] not in MAPW: continue
-    rows=[d for d in p['drops'] if d['tab']=='tab-odrop' and d['chance'] is not None and d['item_id'] in items]
+    rows=[d for d in p['drops'] if d['tab'] in ('tab-odrop','tab-vdrop') and d['chance'] is not None and d['item_id'] in items]
     if not rows: continue
     k=(MAPW[p['map']],p['name']); kills=max(d['of'] or 0 for d in rows)
     if k not in best or kills>best[k][0]: best[k]=(kills,p,rows)
@@ -29,9 +34,20 @@ for (w,name),(kills,p,rows) in sorted(best.items()):
     seen={}
     for d in rows:
         if d['item_id'] not in seen or d['chance']>seen[d['item_id']]['chance']: seen[d['item_id']]=d
-    vals=','.join(f"({gid},0,{d['item_id']},{d['chance']},1,1,'{esc(d['item'])}')" for d in seen.values())
-    sql.append(f"INSERT INTO `loot_item` (`id`,`type`,`staticId`,`probability`,`minCount`,`maxCount`,`comment`) VALUES {vals};")
-    for c in cids: sql.append(f"INSERT INTO `entity_loot` (`Id`,`lootGroupId`,`comment`) VALUES ({c},{gid},'{esc(name)}');")
+    root=gid; plain=[]
+    for d in seen.values():
+        quest=collect.get(d['item_id'])
+        # ordinary items, and quest items that start a quest when used, drop for everyone
+        if item2[d['item_id']]['Item2FamilyId']!=QUEST_FAMILY or item2[d['item_id']]['Quest2IdActivation']: plain.append(d); continue
+        for oid in quest or []:
+            gid+=1; stats['quest item groups']+=1
+            sql.append(f"INSERT INTO `loot_group` (`id`,`parentId`,`probability`,`minCount`,`maxCount`,`conditionType`,`condition`,`comment`) VALUES ({gid},{root},100,0,0,8,{oid},'{esc(d['item'])} while objective {oid} is open');")
+            sql.append(f"INSERT INTO `loot_item` (`id`,`type`,`staticId`,`probability`,`minCount`,`maxCount`,`comment`) VALUES ({gid},0,{d['item_id']},{d['chance']},1,1,'{esc(d['item'])}');")
+        if not quest: stats['quest items without objective, dropped']+=1
+    if plain:
+        vals=','.join(f"({root},0,{d['item_id']},{d['chance']},1,1,'{esc(d['item'])}')" for d in plain)
+        sql.append(f"INSERT INTO `loot_item` (`id`,`type`,`staticId`,`probability`,`minCount`,`maxCount`,`comment`) VALUES {vals};")
+    for c in cids: sql.append(f"INSERT INTO `entity_loot` (`Id`,`lootGroupId`,`comment`) VALUES ({c},{root},'{esc(name)}');")
     stats['groups']+=1; stats['items']+=len(seen); stats['creatures']+=len(cids)
 open('/a/parsed/starting_zone_loot.sql','w').write('\n'.join(sql)+'\n')
 print(dict(stats))
