@@ -635,6 +635,8 @@ namespace NexusForever.Game.Entity
                     // Unknown10 objectives name a target group of creatures to use, such as the Dominion cannons in Shellshock! (3487)
                     activator.QuestManager.ObjectiveUpdate(QuestObjectiveType.Unknown10, targetGroupId, 1u);
                     activator.QuestManager.RewardPaneObjectiveUpdate(QuestObjectiveType.VirtualCollect, targetGroupId, 1u);
+                    // rescue objectives (Unknown28) name the cage to open in their reward pane target group
+                    activator.QuestManager.RewardPaneObjectiveUpdate(QuestObjectiveType.Unknown28, targetGroupId, 1u);
 
                     Map.PublicEventManager.UpdateObjective(activator, PublicEventObjectiveType.ActivateTargetGroup, targetGroupId, 1);
                     Map.PublicEventManager.UpdateObjective(activator, PublicEventObjectiveType.ActivateTargetGroupChecklist, targetGroupId, QuestChecklistIdx);

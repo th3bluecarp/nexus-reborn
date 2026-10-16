@@ -26,7 +26,7 @@
         CompleteQuest                = 24, // data = QuestId, ObjectiveText describes either completing quests by name, or completing objectives of other quests (Count: 39)
         CompleteEvent                = 25, // data = unknown, ObjectiveText describes completing a mini event (killing a bunch of zombies like in http://wildstar.mmorpg-life.com/quests/here-they-come-exile/) (Count: 152)
         Unknown27                    = 27, // data = unknown, ObjectiveText not in localisation files (Count: 1)
-        Unknown28                    = 28, // data = unknown, ObjectiveText describes rescuing creatures (Count: 5)
+        Unknown28                    = 28, // rescue: progress when the player activates a creature of TargetGroupIdRewardPane (a cage); Data unknown (Count: 5)
         Unknown29                    = 29, // data = unknown, ObjectiveText not in localisation files (Count: 2)
         Unknown31                    = 31, // data = unknown, ObjectiveText are all empty (Count: 260)
         VirtualCollect               = 32, // data = VirtualItemId, ObjectiveText describes collecting items and lots of $v(vitem=xxx) macros (Count: 709)
