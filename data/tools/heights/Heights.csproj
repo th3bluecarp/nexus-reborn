@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>disable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <ManagePackageVersionsCentrally>false</ManagePackageVersionsCentrally>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="NexusForever.IO"><HintPath>D:\NexusForever\merge\Source\NexusForever.WorldServer\bin\Release\net10.0\NexusForever.IO.dll</HintPath></Reference>
+    <Reference Include="NexusForever.Shared"><HintPath>D:\NexusForever\merge\Source\NexusForever.WorldServer\bin\Release\net10.0\NexusForever.Shared.dll</HintPath></Reference>
+  </ItemGroup>
+</Project>
