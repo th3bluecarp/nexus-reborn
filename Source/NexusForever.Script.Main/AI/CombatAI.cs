@@ -1,4 +1,5 @@
-﻿using NexusForever.Game.Abstract.Combat;
+﻿using System.Numerics;
+using NexusForever.Game.Abstract.Combat;
 using NexusForever.Game.Abstract.Entity;
 using NexusForever.Game.Abstract.Entity.Creature;
 using NexusForever.Game.Abstract.Entity.Movement.Command;
@@ -30,6 +31,14 @@ namespace NexusForever.Script.Main.AI
 
         private float chaseDistance = 5f;
         private readonly UpdateTimer chaseDistanceTimer = new(TimeSpan.FromSeconds(1f));
+
+        // chasing further than this from where combat pulled it from makes the creature give up and walk home, retail range unknown
+        private const float LeashRange = 50f;
+        // while walking home the creature ignores players coming into range, until it arrives or this runs out
+        private static readonly TimeSpan EvadeTime = TimeSpan.FromSeconds(10d);
+        private DateTime? evadingUntil;
+        // where combat started, patrolling creatures can be pulled far from their spawn
+        private Vector3? pullPosition;
 
         #region Dependency Injection
 
@@ -79,6 +88,9 @@ namespace NexusForever.Script.Main.AI
 
             if (stealthedInRange.Count > 0)
                 UpdateStealthed(lastTick);
+
+            if (evadingUntil.HasValue && (DateTime.UtcNow >= evadingUntil || entity.Position.GetDistance(entity.LeashPosition) < 2f))
+                evadingUntil = null;
 
             if (!entity.TargetGuid.HasValue)
                 return;
@@ -249,6 +261,14 @@ namespace NexusForever.Script.Main.AI
             if (target == null)
                 return;
 
+            // pets follow their owner anywhere, everything else gives up past the leash range (scripted bosses that skip OnEnterCombat never leash)
+            if (GetPetOwner() == null && pullPosition.HasValue && entity.Position.GetDistance(pullPosition.Value) > LeashRange)
+            {
+                evadingUntil = DateTime.UtcNow + EvadeTime;
+                entity.ThreatManager.ClearThreatList();
+                return;
+            }
+
             if (entity.Position.GetDistance(target.Position) < chaseDistance)
                 return;
             
@@ -280,6 +300,10 @@ namespace NexusForever.Script.Main.AI
                 stealthedInRange.Add(entity.Guid);
                 return;
             }
+
+            // a creature walking home after leashing ignores what it passes, damage still pulls it back
+            if (evadingUntil.HasValue)
+                return;
 
             // pets only pull on their own in the Aggressive stance, otherwise they fight what their owner fights
             if (GetPetOwner() != null && this.entity.PetStance != PetStance.Aggressive)
@@ -340,7 +364,7 @@ namespace NexusForever.Script.Main.AI
         /// </summary>
         public virtual void OnEnterCombat()
         {
-            // deliberately empty
+            pullPosition = entity.Position;
         }
 
         /// <summary>
@@ -348,7 +372,7 @@ namespace NexusForever.Script.Main.AI
         /// </summary>
         public virtual void OnLeaveCombat()
         {
-            // deliberately empty
+            pullPosition = null;
         }
 
         /// <summary>
