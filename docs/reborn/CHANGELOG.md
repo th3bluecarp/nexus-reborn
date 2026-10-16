@@ -8,6 +8,7 @@ Newest first. "Live" means running on our test server.
 
 ## 2026-10-15
 
+- - **Creature recovery after big attacks** (7115c063, live). Many creature spells carry an NpcExecutionDelay effect, the only unhandled effect showing up in the live logs. The creature now pauses for its 1 to 4 seconds afterwards, an opening to hit back.
 - - **Fix: Lost connection with world server** (eab3ea76, live). Entering the world disconnected you since path missions went live yesterday evening. The world server only loads the game tables it is told to, and 14 tables used by path missions, challenges, reward tracks and episode checks were never loaded, so the code crashed on zone entry. They load now. It also means path missions, challenges and challenge rewards never actually ran until now.
 - - **More quest objectives with a target from their text** (9a5936bf, live). The same fix now covers 15 interaction objectives and 1 kill objective. Correction to the earlier entry: 274 activate objectives get a target this way, not 313.
 - - **Crimson Isle exit** (333322e6, live). The Crimson Isle Ship Controls now take Dominion players to Artemis Zin in Ellevar, where the next quest starts. All four starting zones now have a working way out.

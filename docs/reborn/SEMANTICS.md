@@ -51,6 +51,7 @@ Confidence: **High** = consistent across all the data we checked and no counter 
 | ProxyLinearAE (19) | sub spell cast at the target | Low | DataBits01/02 are an angle and distance we ignore | needs positioned casts |
 | DistributedDamage, DistanceDependentDamage | plain damage | Low | calculator reads them like Damage | no split or falloff |
 | SetBusy (107) | DataBits00 1 busy, 0 free; busy objects refuse activation; 60 s fallback clear | High (meaning), Invented (fallback) | 352 of 508 spells are activate spells on the object; 62 spells set at 0 ms and clear after 2 to 60 s; 0 used by PSI Recharging and Failed | DataBits01 (a creature id on 6 rows) unknown; 275 set-only spells relied on lost scripts |
+| NpcExecutionDelay (35) | the casting creature does nothing for the effect duration, a recovery window | Medium | 3,288 effects, 94 percent with no data and 1 to 4 s durations, all on creature spells | DataBits on the other 6 percent unknown |
 | Teleport with no location | recall to bind point | Medium | Recall - Transmat (8568) is the only such spell | |
 
 ## Path missions
