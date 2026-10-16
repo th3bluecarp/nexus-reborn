@@ -4,6 +4,8 @@ Newest first. "Live" means running on our test server.
 
 ## 2026-10-16
 
+- **Fixes from a second code review** (9bfe273e, live). Logging out and then closing the game could run the logout twice, which threw and slowly filled the login queue. A quest whose only step is a hidden one is no longer completed the moment you accept it. The starting zone ship controls no longer vanish after use.
+
 - **Fixes from a code review of the overnight work** (adcdabe2, live). The holocrypt respawn could throw on a transmat with no faction and leave you dead with no respawn button, and it gave a free full health revive where no transmat existed. Challenge gear was lost if your bags were full, it now waits for the next challenge. Creatures could be dragged 50 m at a time by hitting them as they walked home after a leash. Stealthed players near a creature busy with someone else were forgotten.
 
 ## 2026-10-15
