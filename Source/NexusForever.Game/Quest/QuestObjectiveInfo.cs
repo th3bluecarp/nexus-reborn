@@ -37,7 +37,7 @@ namespace NexusForever.Game.Quest
             if (string.IsNullOrEmpty(text) || !text.TrimStart().StartsWith("Equip"))
                 return 0u;
 
-            uint[] ids = Regex.Matches(text, @"item=(\d+)")
+            uint[] ids = Regex.Matches(text, @"item=([0-9]{1,9})")
                 .Select(m => uint.Parse(m.Groups[1].Value))
                 .Distinct()
                 .ToArray();
@@ -50,7 +50,7 @@ namespace NexusForever.Game.Quest
             if (string.IsNullOrEmpty(text))
                 return 0u;
 
-            uint[] ids = Regex.Matches(text, @"creature=(\d+)")
+            uint[] ids = Regex.Matches(text, @"creature=([0-9]{1,9})")
                 .Select(m => uint.Parse(m.Groups[1].Value))
                 .Distinct()
                 .ToArray();

@@ -87,6 +87,10 @@ namespace NexusForever.Game.Entity
         /// </remarks>
         public void Finish(LogoutReason reason = LogoutReason.None)
         {
+            // already logged out, a disconnect after a confirmed logout must not log out twice
+            if (State is LogoutState.Logout or LogoutState.Finished)
+                return;
+
             // the client counts down on its own clock and its confirm can arrive before the server timer elapsed, or with no
             // server timer at all; throwing left the player to drop by disconnect, so a confirm is honoured and logged
             if (reason == LogoutReason.None && (timer == null || timer.Time > LogoutConfirmSlack))
