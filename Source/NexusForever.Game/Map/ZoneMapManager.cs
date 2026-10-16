@@ -5,6 +5,7 @@ using NexusForever.Game.Abstract.Entity;
 using NexusForever.Game.Abstract.Map;
 using NexusForever.Game.Entity;
 using NexusForever.Game.Static.Achievement;
+using NexusForever.Network.World.Message.Static;
 using NexusForever.GameTable;
 using NexusForever.GameTable.Model;
 using NexusForever.IO.Map;
@@ -100,11 +101,27 @@ namespace NexusForever.Game.Map
                 if (mapZoneHexGroupEntry == null)
                     continue;
 
-                zoneMap?.AddHexGroup((ushort)mapZoneHexGroup.Id);
+                if (zoneMap == null)
+                    continue;
+
+                zoneMap.AddHexGroup((ushort)mapZoneHexGroup.Id);
+                GrantExplorationXp();
             }
 
-            if (zoneMap.IsComplete)
+            if (zoneMap != null && zoneMap.IsComplete)
                 player.AchievementManager.CheckAchievements(player, AchievementType.MapComplete, currentZoneMap);
+        }
+
+        // share of the level's base quest XP given for each newly revealed part of the zone map, retail value unknown
+        private const float ExplorationXpShare = 0.2f;
+
+        private void GrantExplorationXp()
+        {
+            XpPerLevelEntry entry = GameTableManager.Instance.XpPerLevel.GetEntry(player.Level);
+            if (entry == null || entry.BaseQuestXpPerLevel == 0u)
+                return;
+
+            player.XpManager.GrantXp((uint)Math.Max(1f, entry.BaseQuestXpPerLevel * ExplorationXpShare), ExpReason.Exploration);
         }
 
         private static ZoneMapCoordinate Points2ZoneMapCoordinate(Vector3 position)
