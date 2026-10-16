@@ -39,7 +39,7 @@ Spells,Absorb and shield spells,"Absorption, HealShields, DamageShields",Impleme
 Spells,Damage over time and auras,Periodic damage via aura spells,Partial (not deployed),Partial,,dcdae4ad 894de141,,"SpellAura type, Damage handler","Damage, DistributedDamage, DistanceDependentDamage (no split or falloff) and Transference life drain (health only) all deal damage."
 Spells,Buffs and debuffs (stat changes),"UnitPropertyModifier, ModifySpell, ModifySpellEffect",Partial,Partial,,,,SpellEffectUnitPropertyModifierHandler,Property modifiers work; ModifySpell/ModifySpellEffect/AddSpell/SpellImmunity missing
 Spells,Procs,"On-hit, on-crit procs",Implemented,Implemented,,,,"Game/Spell/Proc, SpellEffectProcHandler",Initial proc system
-Spells,Proxy spells,Spells that trigger other spells,Implemented,Implemented,,7c5fe043,,SpellEffectProxyHandler,"Proxy, ProxyRandomExclusive (weighted pick, not deployed). ProxyLinearAE and ProxyChannelVariableTime still missing."
+Spells,Proxy spells,Spells that trigger other spells,Implemented (not deployed),Implemented,,7c5fe043 98d85604,,SpellEffectProxyHandler,"Proxy, ProxyRandomExclusive (weighted pick), ProxyChannelVariableTime (timed sequence), ProxyLinearAE (cast at target, positioned casts not supported)."
 Spells,Telegraphs and targeting,Telegraph shapes select targets,Implemented,Implemented,,,,"Spell/Telegraph.cs, Spell/Target",
 Spells,Cooldowns and GCD,Spell and global cooldowns,Partial,Partial,,,,Entity/SpellManager.cs,"ModifySpellCooldown, CooldownReset, ActivateSpellCooldown and ability charges effects missing"
 Spells,Limited Action Set (LAS) and specs,"8-slot LAS, multiple specs, tiers",Implemented,Implemented,,,,"ClientRequestActionSetChanges, ClientSetSpec, ActionSet.cs",
