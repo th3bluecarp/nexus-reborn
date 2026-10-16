@@ -4,6 +4,7 @@ Newest first. "Live" means running on the desktop server.
 
 ## 2026-10-15
 
+- **Group kill credit** (27811a61, not deployed). Group members near a kill now get the quest credit and XP too, not only those who hit the creature.
 - **Creature abilities** (dc6f14a3, not deployed). 136 starting zone creatures now fight with the spells players saw them use on retail (archived Jabbithole ability lists), including telegraphed specials like the yeti Claw Slam, instead of a generic punch and jab.
 - **Quest creatures despawn once used** (live as 1ef1295d on reborn/loot, 7271a206 on the merge build). A tester could click the same Trapped Survivor over and over to finish the quest in seconds. Creatures that progress your quest when activated now despawn and come back on the respawn timer. DespawnUnit effects went live with it.
 - **Episode prerequisites** (1667b3b6, not deployed). Content gated on finishing a zone storyline now unlocks when its quests are done.
