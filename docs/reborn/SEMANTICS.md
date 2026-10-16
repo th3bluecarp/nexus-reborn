@@ -62,6 +62,18 @@ Confidence: **High** = consistent across all the data we checked and no counter 
 | scavenger clue types | 0 activate, 1 creature or area, 2 location | Medium | field patterns per type; starting the hunt is skipped |
 | path XP per mission | 25 + 5 x level | Invented | fitted to the PathLevel curve, retail values unknown |
 
+## Challenge rewards
+
+| Item | Our meaning | Confidence | Evidence | Alternatives / risks |
+|---|---|---|---|---|
+| Challenge.RewardTrackId | the zone reward track that completing the challenge adds points to | High | 525 of 643 challenges point at one of 20 tracks named "Reward Track - <zone>" | |
+| RewardTrack point costs | milestones; reaching one gives a reward | High | 300/600/900/1200 on every zone track | |
+| RewardTrackRewards.RewardPointFlags | bit N = milestone N; several rows per bit, each a choice of three items | Medium | bits 1, 2, 4, 8 line up with the four costs; the last bit offers a crate | why several rows share a bit (rotation or random) is unknown |
+| challenge gear sets (ItemSourceId 87, 88) | the contents of the "Challenger's Gear Bag" rewards | Medium | green sets levels 12 to 49 covering every class, role and slot, only source ids with that shape | the bags may also have held other items; 87 Exile and 88 Dominion read from names |
+| class of each armor piece | armor category gives two classes, id order within slot and level gives which, damage version first | High | matches the name prefix of all 552 armor pieces | |
+| points per challenge | 100, 150, 200 for bronze, silver, gold | Invented | | retail values unknown |
+| piece given per milestone | the class's damage version, best level at or under the player's, slot rotates by track and milestone | Invented | | retail let you pick from three bags; no support role choice yet |
+
 ## World data from Jabbithole
 
 | Item | Our method | Confidence | Risk |

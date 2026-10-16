@@ -4,6 +4,7 @@ Newest first. "Live" means running on the desktop server.
 
 ## 2026-10-15
 
+- - **Challenge rewards** (d2047ee2, live). Finishing a challenge now earns points on that zone's reward track, and every 300 points (up to 1,200) gives you a piece of your class's challenge gear at your level. Retail let you pick from three bags whose contents were never in the client data. The gear sets themselves are in the data, so the reward is real gear, but which piece you get and the point values are my guesses (logged in SEMANTICS.md). Progress is saved.
 - - **Pet abilities without a target** (8cecc0d5, live). Bot ability buttons pressed with nothing targeted now fire at whatever the pet is already fighting instead of at the pet itself.
 - **SetBusy decoded** (2da48e44). 1 marks an activatable object busy, 0 frees it; many objects free themselves after a cooldown. Busy objects can no longer be used by a second player at the same time. The quest object despawn special case now only covers objects whose spells give no rule of their own. Evidence in SEMANTICS.md.
 - **Missing quest NPCs in the level 1 to 20 zones** (wildstar-archive, live). An audit found many quest givers and turn-in NPCs never spawned (Galeras about a third, Algoroc, Celestion, Deradune, Ellevar, Auroria 10 to 15 percent). 57 placed so far at their Jabbithole map positions, creature abilities now cover 228 creatures and loot 101. A second download for 145 more missing NPCs is queued.
