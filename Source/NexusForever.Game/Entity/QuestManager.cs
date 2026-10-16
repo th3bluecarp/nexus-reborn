@@ -674,6 +674,7 @@ namespace NexusForever.Game.Entity
 
             // other quests can ask for this one to be completed
             ObjectiveUpdate(QuestObjectiveType.CompleteQuest, questId, 1u);
+            player.PathMissionManager.OnQuestComplete(questId);
 
             // collected items are handed in with the quest
             foreach (IQuestObjective objective in quest.Where(o => o.ObjectiveInfo.Entry.Type == (uint)QuestObjectiveType.CollectItem))

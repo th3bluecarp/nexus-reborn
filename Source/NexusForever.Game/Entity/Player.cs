@@ -243,6 +243,7 @@ namespace NexusForever.Game.Entity
         public IPetCustomisationManager PetCustomisationManager { get; private set; }
         public ICharacterKeybindingManager KeybindingManager { get; private set; }
         public IDatacubeManager DatacubeManager { get; private set; }
+        public IPathMissionManager PathMissionManager { get; private set; }
         public IMailManager MailManager { get; private set; }
         public IZoneMapManager ZoneMapManager { get; private set; }
         public IQuestManager QuestManager { get; private set; }
@@ -374,6 +375,7 @@ namespace NexusForever.Game.Entity
             PetCustomisationManager = new PetCustomisationManager(this, model);
             KeybindingManager       = new CharacterKeybindingManager(this, model);
             DatacubeManager         = new DatacubeManager(this, model);
+            PathMissionManager      = new PathMissionManager(this, model);
             MailManager             = new MailManager(this, model);
             ZoneMapManager          = new ZoneMapManager(this, model);
             QuestManager.Initialise(this, model);
@@ -452,6 +454,7 @@ namespace NexusForever.Game.Entity
             CostumeManager.Update(lastTick);
             Inventory.Update(lastTick);
             QuestManager.Update(lastTick);
+            PathMissionManager.Update(lastTick);
             ResurrectionManager.Update(lastTick);
 
             relocationTimer.Update(lastTick);
@@ -641,6 +644,7 @@ namespace NexusForever.Game.Entity
             KeybindingManager.Save(context);
             SpellManager.Save(context);
             DatacubeManager.Save(context);
+            PathMissionManager.Save(context);
             MailManager.Save(context);
             ZoneMapManager.Save(context);
             QuestManager.Save(context);
@@ -754,6 +758,7 @@ namespace NexusForever.Game.Entity
                 }
 
                 QuestManager.ObjectiveUpdate(QuestObjectiveType.EnterZone, Zone.Id, 1);
+                PathMissionManager.OnZoneUpdate(Zone);
             }
 
             ZoneMapManager.OnZoneUpdate();
@@ -834,6 +839,7 @@ namespace NexusForever.Game.Entity
             SpellManager.SendInitialPackets();
             PetCustomisationManager.SendInitialPackets();
             DatacubeManager.SendInitialPackets();
+            PathMissionManager.SendInitialPackets();
             MailManager.SendInitialPackets();
             ZoneMapManager.SendInitialPackets();
             Account.CurrencyManager.SendInitialPackets();

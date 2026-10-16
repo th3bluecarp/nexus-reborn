@@ -835,6 +835,7 @@ namespace NexusForever.Game.Entity
         {
             player.QuestManager.ObjectiveUpdate(QuestObjectiveType.KillCreature, CreatureId, 1u);
             player.QuestManager.ObjectiveUpdate(QuestObjectiveType.KillCreature2, CreatureId, 1u);
+            player.PathMissionManager.OnKill(CreatureId, AssetManager.Instance.GetTargetGroupsForCreatureId(CreatureId));
 
             foreach (uint targetGroupId in AssetManager.Instance.GetTargetGroupsForCreatureId(CreatureId))
             {
