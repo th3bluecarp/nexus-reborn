@@ -196,6 +196,21 @@ namespace NexusForever.Game.Abstract.Entity
         bool IsInvulnerable { get; }
 
         /// <summary>
+        /// Returns if the unit is busy (SetBusy effect), busy objects cannot be activated.
+        /// </summary>
+        bool IsBusy { get; }
+
+        /// <summary>
+        /// Changes every time the busy state is set, so a delayed clear can tell whether it still owns the state.
+        /// </summary>
+        uint BusyToken { get; }
+
+        /// <summary>
+        /// Set or clear the busy state.
+        /// </summary>
+        void SetBusy(bool busy);
+
+        /// <summary>
         /// Add or remove an invulnerability source from the spell with the supplied casting id.
         /// </summary>
         void SetInvulnerable(uint castingId, bool invulnerable);

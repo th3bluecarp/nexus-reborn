@@ -340,6 +340,25 @@ namespace NexusForever.Game.Entity
         private readonly HashSet<uint> invulnerableSources = [];
 
         /// <summary>
+        /// Returns if the unit is busy (SetBusy effect), busy objects cannot be activated.
+        /// </summary>
+        public bool IsBusy { get; private set; }
+
+        /// <summary>
+        /// Changes every time the busy state is set, so a delayed clear can tell whether it still owns the state.
+        /// </summary>
+        public uint BusyToken { get; private set; }
+
+        /// <summary>
+        /// Set or clear the busy state.
+        /// </summary>
+        public void SetBusy(bool busy)
+        {
+            IsBusy = busy;
+            BusyToken++;
+        }
+
+        /// <summary>
         /// Returns if the unit takes no damage, from at least one active invulnerability effect.
         /// </summary>
         public bool IsInvulnerable => invulnerableSources.Count > 0;

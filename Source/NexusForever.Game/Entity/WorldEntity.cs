@@ -18,6 +18,7 @@ using NexusForever.Game.Map.Search;
 using NexusForever.Game.Prerequisite;
 using NexusForever.Game.Reputation;
 using NexusForever.Game.Spell;
+using NexusForever.Game.Static.Spell;
 using NexusForever.Game.Static.Chat;
 using NexusForever.Game.Static.Entity;
 using NexusForever.Game.Static.PublicEvent;
@@ -30,6 +31,7 @@ using NexusForever.Network.Message;
 using NexusForever.Network.World.Entity;
 using NexusForever.Network.World.Message.Model;
 using NexusForever.Network.World.Message.Model.Shared;
+using NexusForever.Network.World.Message.Model.Spell;
 using NexusForever.Script;
 using NexusForever.Script.Template;
 using NexusForever.Script.Template.Collection;
@@ -585,6 +587,18 @@ namespace NexusForever.Game.Entity
             if (spell4Id == 0)
                 throw new InvalidOperationException($"Spell4Id should not be 0. Unhandled Creature ActivateCast {CreatureInfo.Entry.Id}");
 
+            // someone else is using it, or it is cooling down (SetBusy effect)
+            if (this is IUnitEntity { IsBusy: true })
+            {
+                activator.Session.EnqueueMessageEncrypted(new ServerSpellCastResult
+                {
+                    ClientSpellCastUniqueId = interactionId,
+                    Spell4Id                = spell4Id,
+                    CastResult              = CastResult.TargetIsNotUseable
+                });
+                return;
+            }
+
             SpellParameters parameters = new SpellParameters
             {
                 PrimaryTargetId        = Guid,
@@ -629,10 +643,31 @@ namespace NexusForever.Game.Entity
 
             scriptCollection?.Invoke<IWorldEntityScript>(s => s.OnActivateSuccess(activator));
 
-            // Quest creatures (trapped survivors, cages, cannons) go away once used and come back on the respawn timer.
-            // Their activate spells only carry an Activate effect, retail removed them server side.
-            if (questTarget && this is IUnitEntity unit && unit is not IPlayer)
+            // Quest creatures (trapped survivors, cages, cannons) go away once used and come back on the respawn timer when
+            // their activate spells give no rule of their own. Spells with a DespawnUnit effect remove the object themselves and
+            // spells that clear SetBusy after a delay mean a reusable object, both are left to the data.
+            if (questTarget && this is IUnitEntity unit && unit is not IPlayer && !ActivateSpellsHandleUse())
                 unit.Despawn();
+        }
+
+        private static readonly System.Collections.Concurrent.ConcurrentDictionary<uint, bool> activateSpellHandlesUse = new();
+
+        /// <summary>
+        /// Returns if one of the activate spells removes the object (DespawnUnit) or frees it again later (SetBusy clear).
+        /// </summary>
+        private bool ActivateSpellsHandleUse()
+        {
+            foreach (uint spell4Id in CreatureInfo.Entry.Spell4IdActivate.Where(s => s != 0u))
+            {
+                bool handles = activateSpellHandlesUse.GetOrAdd(spell4Id, id => GameTableManager.Instance.Spell4Effects.Entries
+                    .Any(e => e.SpellId == id
+                        && (e.EffectType == SpellEffectType.DespawnUnit
+                            || (e.EffectType == SpellEffectType.SetBusy && e.DataBits00 == 0u))));
+                if (handles)
+                    return true;
+            }
+
+            return false;
         }
 
         /// <summary>
