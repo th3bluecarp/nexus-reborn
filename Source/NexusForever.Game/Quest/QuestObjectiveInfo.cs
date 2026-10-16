@@ -21,10 +21,12 @@ namespace NexusForever.Game.Quest
         public QuestObjectiveInfo(QuestObjectiveEntry entry)
         {
             Entry = entry;
-            Data  = entry.Data != 0u || Type != QuestObjectiveType.ActivateEntity ? entry.Data : CreatureFromText(entry.LocalizedTextIdFull);
+            Data  = entry.Data == 0u && Type is QuestObjectiveType.ActivateEntity or QuestObjectiveType.SucceedCSI or QuestObjectiveType.KillCreature
+                ? CreatureFromText(entry.LocalizedTextIdFull)
+                : entry.Data;
         }
 
-        // 1,267 ActivateEntity objectives have Data 0; 313 of them name the creature to use in their text, as $(creature=27196)
+        // objectives with Data 0 that name exactly one creature in their text, as $(creature=27196): 274 ActivateEntity, 15 SucceedCSI, 1 KillCreature
         private static uint CreatureFromText(uint textId)
         {
             string text = GameTableManager.Instance.TextEnglish?.GetEntry(textId);

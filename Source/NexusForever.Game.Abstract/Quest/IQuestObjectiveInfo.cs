@@ -11,7 +11,7 @@ namespace NexusForever.Game.Abstract.Quest
         QuestObjectiveEntry Entry { get; }
 
         /// <summary>
-        /// Objective target: Entry.Data, or for an ActivateEntity objective with no data the one creature its text names.
+        /// Objective target: Entry.Data, or for an ActivateEntity, SucceedCSI or KillCreature objective with no data the one creature its text names.
         /// </summary>
         uint Data { get; }
 
