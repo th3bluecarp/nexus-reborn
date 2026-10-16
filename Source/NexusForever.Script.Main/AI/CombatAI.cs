@@ -98,6 +98,10 @@ namespace NexusForever.Script.Main.AI
             if (entity.IsCasting())
                 return;
 
+            // recovering after a spell with an NpcExecutionDelay effect
+            if (DateTime.UtcNow < entity.ExecutionDelayUntil)
+                return;
+
             UpdateAI(lastTick);
         }
 

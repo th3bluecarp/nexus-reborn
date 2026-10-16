@@ -206,6 +206,11 @@ namespace NexusForever.Game.Abstract.Entity
         uint BusyToken { get; }
 
         /// <summary>
+        /// Creature AI does not act before this time (UTC), set by NpcExecutionDelay spell effects.
+        /// </summary>
+        DateTime ExecutionDelayUntil { get; set; }
+
+        /// <summary>
         /// Set or clear the busy state.
         /// </summary>
         void SetBusy(bool busy);
