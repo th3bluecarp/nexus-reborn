@@ -8,6 +8,7 @@ using NexusForever.Game.Static.Entity;
 using NexusForever.Game.Static.Quest;
 using NexusForever.Network.Message;
 using NexusForever.Network.World.Message.Model;
+using NexusForever.Network.World.Message.Model.Spell;
 
 namespace NexusForever.WorldServer.Network.Message.Handler.Entity
 {
@@ -60,6 +61,15 @@ namespace NexusForever.WorldServer.Network.Message.Handler.Entity
                 case InteractionType.Mail: // "MailboxActivate"
                     var mailboxEntity = session.Player.Map.GetEntity<IMailboxEntity>(entityInteraction.UnitId);
                     break;
+                case InteractionType.Bank: // "ShowBank"
+                case InteractionType.SharedRealmBank: // "ShowRealmBank"
+                case InteractionType.Dye: // "ShowDye"
+                    // the client opens the window for the interaction unit it is told about
+                    session.EnqueueMessageEncrypted(new ServerInteractionChange
+                    {
+                        InteractionUnitId = entityInteraction.UnitId
+                    });
+                    break;
                 case InteractionType.HousingGuildBroker: // "HousingGuildNeighborhoodBrokerOpen"
                 case InteractionType.ConvertItem:
                 case InteractionType.ConvertRep: // "ResourceConversionOpen"
@@ -70,9 +80,6 @@ namespace NexusForever.WorldServer.Network.Message.Handler.Entity
                 case InteractionType.FlightPathNew:
                 case InteractionType.FlightPath: // "InvokeTaxiWindow"
                 case InteractionType.Mannequin: // "MannequinWindowOpen"
-                case InteractionType.Bank: // "ShowBank"
-                case InteractionType.SharedRealmBank: // "ShowRealmBank"
-                case InteractionType.Dye: // "ShowDye"
                 case InteractionType.GuildRegistrar: // "GuildRegistrarOpen"
                 case InteractionType.WarPartyRegistrar: // "WarPartyRegistrarOpen"
                 case InteractionType.GuildBank: // "GuildBankerOpen"
