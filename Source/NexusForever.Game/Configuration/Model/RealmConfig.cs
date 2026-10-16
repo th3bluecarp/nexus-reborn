@@ -9,6 +9,7 @@ namespace NexusForever.Game.Configuration.Model
         public MapConfig Map { get; set; }
         public KillXpConfig KillXp { get; set; } = new();
         public RespawnConfig Respawn { get; set; } = new();
+        public PathMissionXpConfig PathMissionXp { get; set; } = new();
 
         /// <summary>
         /// JSON file of observed creature combat spells (wildstar-archive creature_spells.json), optional.

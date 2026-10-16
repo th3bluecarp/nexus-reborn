@@ -2,6 +2,7 @@
 using NexusForever.Database.Character;
 using NexusForever.Database.Character.Model;
 using NexusForever.Game.Abstract.Entity;
+using NexusForever.Game.Configuration.Model;
 using NexusForever.Game.Prerequisite;
 using NexusForever.Game.Static.PlayerPath;
 using NexusForever.Game.Static.Reputation;
@@ -9,6 +10,7 @@ using NexusForever.GameTable;
 using NexusForever.GameTable.Model;
 using NexusForever.Network.World.Message.Model;
 using NexusForever.Network.World.Message.Model.PlayerPath;
+using NexusForever.Shared.Configuration;
 using NexusForever.Shared.Game;
 using Path = NexusForever.Game.Static.PlayerPath.Path;
 using NetworkMission = NexusForever.Network.World.Message.Model.PlayerPath.Mission;
@@ -475,10 +477,17 @@ namespace NexusForever.Game.Entity
             });
 
             if (complete)
+            {
                 player.Session.EnqueueMessageEncrypted(new ServerPathMissionAdvanced
                 {
                     PathMissionId = (ushort)mission.Entry.Id
                 });
+
+                PathMissionXpConfig xpConfig = SharedConfiguration.Instance.Get<RealmConfig>()?.PathMissionXp ?? new PathMissionXpConfig();
+                uint xp = xpConfig.Base + xpConfig.PerLevel * player.Level;
+                if (xp > 0u)
+                    player.PathManager.AddXp(xp);
+            }
         }
     }
 }
