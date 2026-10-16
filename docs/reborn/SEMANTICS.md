@@ -32,7 +32,7 @@ Confidence: **High** = consistent across all the data we checked and no counter 
 | DespawnUnit (97) | remove target, world spawns return on the respawn timer | Medium | names (Clearing Weeds, Detonate) | real respawn delay per object unknown |
 | Scale (18) | DataBits00 float scale, timed | High | values 1.1 to 2.0 on growth buffs | DataBits01/02 look like blend times, unused |
 | SummonPet (98) | DataBits00 creature | High | names match creatures (Repairbot, Geist) | DataBits01 (4, 5, 7, 9) probably a pet slot; limits unenforced |
-| PetCastSpell (111) | DataBits00 pet creature, DataBits01 spell | High | bot ability names line up | target choice when the owner has none is a guess |
+| PetCastSpell (111) | DataBits00 pet creature, DataBits01 spell | High | bot ability names line up | with no owner target the pet uses its own target, then itself (a guess) |
 | Stealth / RemoveStealth (83/84) | stealth state; SpellCastStealthChange 1 breaks it, 2 does not | Medium | 1 is on Stalker attacks, 2 on Stealth and Nano Skin | 0 on non-Stalker spells: does it break stealth? |
 | SpellDispel (53) | DataBits03 is the SpellClass removed, DataBits00 the count | Medium | values 36 and 38 match BuffDispellable / DebuffDispellable | Cleanse examples use 36 (buffs), which is odd |
 | Transference (5) | DataBits00/01 vitals drained and given, 02/03 damage, 05 return ratio | Medium | damage calculator already used 02/03; Sapping Strikes reads sensibly | DataBits04 (0, 1, 3) unknown |

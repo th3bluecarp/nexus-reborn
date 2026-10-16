@@ -4,6 +4,7 @@ Newest first. "Live" means running on the desktop server.
 
 ## 2026-10-15
 
+- - **Pet abilities without a target** (8cecc0d5, live). Bot ability buttons pressed with nothing targeted now fire at whatever the pet is already fighting instead of at the pet itself.
 - **SetBusy decoded** (2da48e44). 1 marks an activatable object busy, 0 frees it; many objects free themselves after a cooldown. Busy objects can no longer be used by a second player at the same time. The quest object despawn special case now only covers objects whose spells give no rule of their own. Evidence in SEMANTICS.md.
 - **Missing quest NPCs in the level 1 to 20 zones** (wildstar-archive, live). An audit found many quest givers and turn-in NPCs never spawned (Galeras about a third, Algoroc, Celestion, Deradune, Ellevar, Auroria 10 to 15 percent). 57 placed so far at their Jabbithole map positions, creature abilities now cover 228 creatures and loot 101. A second download for 145 more missing NPCs is queued.
 - **Merge build deployed to the desktop server** (c40c3f72, 18:56). Database backup D:\NexusForever\backup\pre-merge-20261015-1856.sql (13 MB). All 8 pending migrations applied, 101 custom spawns kept, all 9 server processes up with no errors (Auth, Sts, CharacterAPI, World, Group, Chat, AccountAPI, CharacterServer, FriendshipServer). Rollback: delete D:\NexusForever\active-source.txt and restart. Everything marked not deployed below is now live.
