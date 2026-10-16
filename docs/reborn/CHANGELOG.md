@@ -4,6 +4,7 @@ Newest first. "Live" means running on the desktop server.
 
 ## 2026-10-15
 
+- **Percent heals and drains** (ee533d33, not deployed). SapVital effects work on health: levelling up fully heals you, food heals by percent, and percent drains and self-destructs hurt.
 - **Taunts and threat drops** (2fa12fb3, not deployed). ThreatModification effects now taunt, lower threat (Forget, Detaunt), drop you from a threat list or wipe it.
 - **Interrupts** (df39f928, not deployed). SpellCounter effects (school interrupts, Head Shot, Suffocate) now interrupt enemy casts once their interrupt armour is broken.
 - **Traps, mines and probes** (a954a959, not deployed). Stalker proximity and tether mines and Medic probes and stations now get placed and fire on the first enemy, or ally for healing probes, that comes close.
