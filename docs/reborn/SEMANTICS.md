@@ -18,7 +18,9 @@ Confidence: **High** = consistent across all the data we checked and no counter 
 | Unknown71 | ObjectId a Vital, Value a percentage of its maximum | Medium | 166 uses, ObjectIds 1, 3, 6-9, 15 match Health, ShieldCapacity, resources, Focus; values 0-100, numeric comparisons | resource maximum property is a guess | PrerequisiteCheckVitalPercent |
 | PublicEvent117 | ObjectId a PublicEvent, Value 1 running on the map, 0 not | Medium | 458 uses, ObjectId a PublicEvent id in 457, Values 0 and 1, Equal/NotEqual | value might be a state rather than a flag | PrerequisiteCheckPublicEvent |
 | PublicEventObjective188 (118) | ObjectId a PublicEventObjective, Value its PublicEventStatus | High | 2,422 uses, ObjectId an objective id in 2,392, Values 0-3 line up with Inactive, Active, Succeeded, Failed | | PrerequisiteCheckPublicEventObjective |
+| Inventory (246) | Value an Item2 id, NotEqual = the player does not carry it | High | 793 uses, all NotEqual, Value an item in 791 (hoverboards, bags, titles) | ObjectId on 60 rows unknown, ignored | PrerequisiteCheckInventory |
 | EpisodeState (9) | Value is a QuestState over the episode's quests (3 = all completed) | Medium | 31 of 34 uses are Value 3 | how "accepted" is defined for an episode is a guess | | PrerequisiteCheckEpisodeState |
+| Spell59 | **not implemented**: ObjectId a Spell4 id (253 of 260), Value 1 to 5 with numeric comparisons, probably a stack count; no way to count stacks yet | | | | |
 | Unknown47, ChallengeRequirement (69), ChallengeLocked (74), PlayerPathMission (54), PathMissionRequirement (67) | **not implemented** | | Value is a spell / challenge / mission id | several readings fit equally well | | unhandled on purpose |
 
 ## Quest objectives
