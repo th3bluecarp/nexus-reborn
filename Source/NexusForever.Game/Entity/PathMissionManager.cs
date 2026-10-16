@@ -58,6 +58,11 @@ namespace NexusForever.Game.Entity
         private const float MinLocationRadius = 10f;
 
         /// <summary>
+        /// Explorer vista points sit on cliff tops, reaching one counts from anywhere within this distance on the ground, the height is ignored.
+        /// </summary>
+        private const float VistaRadius = 45f;
+
+        /// <summary>
         /// Explored percentage that completes a cartography mission, a little below 100 because some map hexes may not be reachable here.
         /// </summary>
         private const uint CartographyCompletePercent = 95u;
@@ -373,11 +378,12 @@ namespace NexusForever.Game.Entity
 
                     float dx = player.Position.X - location.Position0;
                     float dz = player.Position.Z - location.Position2;
-                    float radius = Math.Max(location.Radius, MinLocationRadius);
+                    bool vista = mission.Entry.PathTypeEnum == (uint)Path.Explorer && mission.Entry.PathMissionTypeEnum == 15u;
+                    float radius = Math.Max(location.Radius, vista ? VistaRadius : MinLocationRadius);
                     if (dx * dx + dz * dz > radius * radius)
                         continue;
 
-                    if (location.MaxVerticalDistance > 0f && Math.Abs(player.Position.Y - location.Position1) > location.MaxVerticalDistance)
+                    if (!vista && location.MaxVerticalDistance > 0f && Math.Abs(player.Position.Y - location.Position1) > location.MaxVerticalDistance)
                         continue;
 
                     Advance(mission, mission.Progress | bit);
