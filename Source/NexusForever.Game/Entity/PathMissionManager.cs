@@ -32,7 +32,8 @@ namespace NexusForever.Game.Entity
             Activate,
             Locations,
             Quests,
-            Cartography
+            Cartography,
+            ScavengerHunt
         }
 
         private class PathMission
@@ -122,6 +123,19 @@ namespace NexusForever.Game.Entity
                     if (locations.Length == 0)
                         break;
                     return new PathMission { Entry = entry, Kind = MissionKind.Locations, Objects = locations };
+                }
+                case (Path.Explorer, 13u):
+                {
+                    PathExplorerScavengerHuntEntry hunt = GameTableManager.Instance.PathExplorerScavengerHunt.GetEntry(entry.ObjectId);
+                    if (hunt == null)
+                        break;
+                    uint[] clues = new[] { hunt.PathExplorerScavengerClueId00, hunt.PathExplorerScavengerClueId01, hunt.PathExplorerScavengerClueId02,
+                            hunt.PathExplorerScavengerClueId03, hunt.PathExplorerScavengerClueId04, hunt.PathExplorerScavengerClueId05, hunt.PathExplorerScavengerClueId06 }
+                        .Where(c => c != 0u && GameTableManager.Instance.PathExplorerScavengerClue.GetEntry(c) != null)
+                        .ToArray();
+                    if (clues.Length == 0)
+                        break;
+                    return new PathMission { Entry = entry, Kind = MissionKind.ScavengerHunt, Objects = clues };
                 }
                 case (Path.Explorer, 16u):
                 {
@@ -316,6 +330,24 @@ namespace NexusForever.Game.Entity
                     Advance(mission, percent);
             }
 
+            // scavenger hunt clues without a creature are found by standing at their spot
+            foreach (PathMission mission in missions.Values.Where(m => m.Kind == MissionKind.ScavengerHunt && !m.IsComplete).ToList())
+            {
+                for (int i = 0; i < mission.Objects.Length; i++)
+                {
+                    uint bit = 1u << i;
+                    if ((mission.Progress & bit) != 0u)
+                        continue;
+
+                    PathExplorerScavengerClueEntry clue = GameTableManager.Instance.PathExplorerScavengerClue.GetEntry(mission.Objects[i]);
+                    if (clue.Creature2Id != 0u || clue.TargetGroupId != 0u)
+                        continue;
+
+                    if (IsAtLocation(clue.WorldLocation2IdMiniMap, clue.ActiveRadius))
+                        Advance(mission, mission.Progress | bit);
+                }
+            }
+
             foreach (PathMission mission in missions.Values.Where(m => m.Kind == MissionKind.Locations && !m.IsComplete).ToList())
             {
                 for (int i = 0; i < mission.Objects.Length && i < 32; i++)
@@ -358,9 +390,45 @@ namespace NexusForever.Game.Entity
             OnCreature(MissionKind.Activate, creatureId, targetGroupIds);
         }
 
+        private bool IsAtLocation(uint worldLocationId, float minRadius)
+        {
+            WorldLocation2Entry location = GameTableManager.Instance.WorldLocation2.GetEntry(worldLocationId);
+            if (location == null || location.WorldId != player.Map.Entry.Id)
+                return false;
+
+            float dx = player.Position.X - location.Position0;
+            float dz = player.Position.Z - location.Position2;
+            float radius = Math.Max(Math.Max(location.Radius, minRadius), MinLocationRadius);
+            if (dx * dx + dz * dz > radius * radius)
+                return false;
+
+            return location.MaxVerticalDistance <= 0f || Math.Abs(player.Position.Y - location.Position1) <= location.MaxVerticalDistance;
+        }
+
         private void OnCreature(MissionKind kind, uint creatureId, IEnumerable<uint> targetGroupIds)
         {
             var groups = targetGroupIds.ToHashSet();
+
+            // scavenger hunt relics are activated
+            if (kind == MissionKind.Activate)
+            {
+                foreach (PathMission mission in missions.Values.Where(m => m.Kind == MissionKind.ScavengerHunt && !m.IsComplete).ToList())
+                {
+                    for (int i = 0; i < mission.Objects.Length; i++)
+                    {
+                        uint bit = 1u << i;
+                        if ((mission.Progress & bit) != 0u)
+                            continue;
+
+                        PathExplorerScavengerClueEntry clue = GameTableManager.Instance.PathExplorerScavengerClue.GetEntry(mission.Objects[i]);
+                        if ((clue.Creature2Id != 0u && clue.Creature2Id == creatureId) || (clue.TargetGroupId != 0u && groups.Contains(clue.TargetGroupId)))
+                        {
+                            Advance(mission, mission.Progress | bit);
+                            break;
+                        }
+                    }
+                }
+            }
             foreach (PathMission mission in missions.Values.Where(m => m.Kind == kind && !m.IsComplete).ToList())
             {
                 bool match = (mission.CreatureId != 0u && mission.CreatureId == creatureId)
@@ -394,7 +462,7 @@ namespace NexusForever.Game.Entity
             bool complete = mission.Kind switch
             {
                 MissionKind.Kill or MissionKind.Activate or MissionKind.Cartography => mission.Progress >= mission.Count,
-                MissionKind.Locations or MissionKind.Quests => mission.Progress == (mission.Objects.Length >= 32 ? uint.MaxValue : (1u << mission.Objects.Length) - 1u),
+                MissionKind.Locations or MissionKind.Quests or MissionKind.ScavengerHunt => mission.Progress == (mission.Objects.Length >= 32 ? uint.MaxValue : (1u << mission.Objects.Length) - 1u),
                 _ => false
             };
 
