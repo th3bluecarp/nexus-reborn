@@ -1,4 +1,4 @@
-using Microsoft.EntityFrameworkCore.ChangeTracking;
+﻿using Microsoft.EntityFrameworkCore.ChangeTracking;
 using NexusForever.Database.Character;
 using NexusForever.Database.Character.Model;
 using NexusForever.Game.Abstract.Entity;
@@ -31,7 +31,8 @@ namespace NexusForever.Game.Entity
             Kill,
             Activate,
             Locations,
-            Quests
+            Quests,
+            Cartography
         }
 
         private class PathMission
@@ -52,6 +53,11 @@ namespace NexusForever.Game.Entity
         }
 
         private const float MinLocationRadius = 10f;
+
+        /// <summary>
+        /// Explored percentage that completes a cartography mission, a little below 100 because some map hexes may not be reachable here.
+        /// </summary>
+        private const uint CartographyCompletePercent = 95u;
 
         private readonly IPlayer player;
         private readonly Dictionary<ushort, PathMission> missions = [];
@@ -116,6 +122,14 @@ namespace NexusForever.Game.Entity
                     if (locations.Length == 0)
                         break;
                     return new PathMission { Entry = entry, Kind = MissionKind.Locations, Objects = locations };
+                }
+                case (Path.Explorer, 16u):
+                {
+                    // survey the episode zone, progress is the explored percentage of its zone map
+                    PathEpisodeEntry episode = GameTableManager.Instance.PathEpisode.GetEntry(entry.PathEpisodeId);
+                    if (episode == null)
+                        break;
+                    return new PathMission { Entry = entry, Kind = MissionKind.Cartography, Objects = [episode.WorldZoneId], Count = CartographyCompletePercent };
                 }
                 case (Path.Settler, 25u):
                 {
@@ -295,6 +309,13 @@ namespace NexusForever.Game.Entity
             if (player.Map == null)
                 return;
 
+            foreach (PathMission mission in missions.Values.Where(m => m.Kind == MissionKind.Cartography && !m.IsComplete).ToList())
+            {
+                uint percent = (uint)player.ZoneMapManager.GetExploredPercent(mission.Objects[0]);
+                if (percent > mission.Progress)
+                    Advance(mission, percent);
+            }
+
             foreach (PathMission mission in missions.Values.Where(m => m.Kind == MissionKind.Locations && !m.IsComplete).ToList())
             {
                 for (int i = 0; i < mission.Objects.Length && i < 32; i++)
@@ -372,7 +393,7 @@ namespace NexusForever.Game.Entity
 
             bool complete = mission.Kind switch
             {
-                MissionKind.Kill or MissionKind.Activate => mission.Progress >= mission.Count,
+                MissionKind.Kill or MissionKind.Activate or MissionKind.Cartography => mission.Progress >= mission.Count,
                 MissionKind.Locations or MissionKind.Quests => mission.Progress == (mission.Objects.Length >= 32 ? uint.MaxValue : (1u << mission.Objects.Length) - 1u),
                 _ => false
             };

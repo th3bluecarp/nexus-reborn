@@ -1,4 +1,4 @@
-using System.Numerics;
+﻿using System.Numerics;
 using NexusForever.Database.Character;
 using NexusForever.Database.Character.Model;
 using NexusForever.Game.Abstract.Entity;
@@ -120,6 +120,18 @@ namespace NexusForever.Game.Map
                 X = (ushort)(e * 2f + a),
                 Y = (ushort)(a * 0.5f)
             };
+        }
+
+        /// <summary>
+        /// Return the explored percentage (0 to 100) of the zone map for the supplied world zone, 0 when never visited.
+        /// </summary>
+        public float GetExploredPercent(uint worldZoneId)
+        {
+            MapZoneEntry mapZone = GameTableManager.Instance.MapZone.Entries.FirstOrDefault(m => m.WorldZoneId == worldZoneId);
+            if (mapZone == null || !zoneMaps.TryGetValue((ushort)mapZone.Id, out IZoneMap zoneMap))
+                return 0f;
+
+            return zoneMap.GetExploredPercent();
         }
 
         /// <summary>

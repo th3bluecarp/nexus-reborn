@@ -18,5 +18,10 @@ namespace NexusForever.Game.Abstract.Map
         /// Invoked when <see cref="IPlayer"/> moves to a new zone.
         /// </summary>
         void OnZoneUpdate();
+
+        /// <summary>
+        /// Return the explored percentage (0 to 100) of the zone map for the supplied world zone, 0 when never visited.
+        /// </summary>
+        float GetExploredPercent(uint worldZoneId);
     }
 }
