@@ -384,7 +384,7 @@ namespace NexusForever.Game.Entity
             KeybindingManager       = new CharacterKeybindingManager(this, model);
             DatacubeManager         = new DatacubeManager(this, model);
             PathMissionManager      = new PathMissionManager(this, model);
-            ChallengeManager        = new ChallengeManager(this);
+            ChallengeManager        = new ChallengeManager(this, model);
             MailManager             = new MailManager(this, model);
             ZoneMapManager          = new ZoneMapManager(this, model);
             QuestManager.Initialise(this, model);
@@ -715,6 +715,7 @@ namespace NexusForever.Game.Entity
             SpellManager.Save(context);
             DatacubeManager.Save(context);
             PathMissionManager.Save(context);
+            ChallengeManager.Save(context);
             MailManager.Save(context);
             ZoneMapManager.Save(context);
             QuestManager.Save(context);

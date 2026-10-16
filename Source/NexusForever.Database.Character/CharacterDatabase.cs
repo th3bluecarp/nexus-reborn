@@ -124,6 +124,7 @@ namespace NexusForever.Database.Character
                 .Include(c => c.Currency)
                 .Include(c => c.Path)
                 .Include(c => c.PathMission)
+                .Include(c => c.RewardTrack)
                 .Include(c => c.Bind)
                 .Include(c => c.CharacterTitle)
                 .Include(c => c.Stat)

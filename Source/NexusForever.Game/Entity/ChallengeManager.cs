@@ -1,8 +1,14 @@
-﻿using NexusForever.Game.Abstract.Entity;
+﻿using Microsoft.EntityFrameworkCore.ChangeTracking;
+using NexusForever.Database.Character;
+using NexusForever.Database.Character.Model;
+using NexusForever.Game.Abstract.Entity;
+using NexusForever.Game.Static.Entity;
+using NexusForever.Game.Static.Reputation;
 using NexusForever.Game.Static.Challenges;
 using NexusForever.GameTable;
 using NexusForever.GameTable.Model;
 using NexusForever.Network.World.Message.Model.Challenges;
+using NexusForever.Network.World.Message.Static;
 using NetworkChallenge = NexusForever.Network.World.Message.Model.Challenges.ServerChallengeUpdate.Challenge;
 
 namespace NexusForever.Game.Entity
@@ -13,7 +19,9 @@ namespace NexusForever.Game.Entity
     /// <remarks>
     /// Combat challenges count kills of a target group, collect challenges kills or activations, checklist challenges activations. Challenges with flag 0x20 start on the first qualifying kill,
     /// the others from the challenge window. Timer 5 minutes, leave area grace 10 seconds and cooldown 30 minutes are the
-    /// common retail values, the per challenge values are not in the client data. Rewards are not given yet. State is not saved.
+    /// common retail values, the per challenge values are not in the client data. Completing a challenge earns points on its zone
+    /// reward track (Challenge.RewardTrackId), each RewardTrack point cost reached gives a piece of challenge gear, see <see cref="ChallengeGear"/>.
+    /// Reward track progress is saved, challenge state is not.
     /// </remarks>
     public class ChallengeManager : IChallengeManager
     {
@@ -38,14 +46,57 @@ namespace NexusForever.Game.Entity
             public uint Goal => Tiers.Length > 0 ? Tiers[^1] : 0u;
         }
 
+        private class RewardTrack
+        {
+            public uint Points { get; set; }
+            public uint Claimed { get; set; }
+            public bool IsNew { get; set; }
+            public bool IsDirty { get; set; }
+        }
+
+        // reward points for finishing on bronze, silver and gold, retail values unknown
+        private static readonly uint[] TierPoints = [100u, 150u, 200u];
+
         private readonly IPlayer player;
         private readonly Dictionary<uint, Challenge> unlocked = [];
+        private readonly Dictionary<ushort, RewardTrack> rewardTracks = [];
         private HashSet<uint> zoneIds = [];
         private double updateTimer;
 
-        public ChallengeManager(IPlayer owner)
+        public ChallengeManager(IPlayer owner, CharacterModel model)
         {
             player = owner;
+            foreach (CharacterRewardTrackModel trackModel in model.RewardTrack)
+                rewardTracks.Add(trackModel.RewardTrackId, new RewardTrack { Points = trackModel.Points, Claimed = trackModel.Claimed });
+        }
+
+        public void Save(CharacterContext context)
+        {
+            foreach ((ushort id, RewardTrack track) in rewardTracks)
+            {
+                if (!track.IsDirty)
+                    continue;
+
+                var model = new CharacterRewardTrackModel
+                {
+                    Id            = player.CharacterId,
+                    RewardTrackId = id,
+                    Points        = track.Points,
+                    Claimed       = track.Claimed
+                };
+
+                if (track.IsNew)
+                    context.Add(model);
+                else
+                {
+                    EntityEntry<CharacterRewardTrackModel> entity = context.Attach(model);
+                    entity.Property(p => p.Points).IsModified  = true;
+                    entity.Property(p => p.Claimed).IsModified = true;
+                }
+
+                track.IsNew   = false;
+                track.IsDirty = false;
+            }
         }
 
         /// <summary>
@@ -214,6 +265,7 @@ namespace NexusForever.Game.Entity
             {
                 challenge.CompletionCount++;
                 SendResult(challenge.Entry.Id, ChallengeResult.Completed, (int)Math.Max(challenge.CurrentTier, 1u) - 1);
+                AddRewardPoints(challenge.Entry.RewardTrackId, TierPoints[Math.Clamp((int)challenge.CurrentTier, 1, TierPoints.Length) - 1]);
             }
             else
                 SendResult(challenge.Entry.Id, ChallengeResult.TimerExpired, 0);
@@ -221,6 +273,43 @@ namespace NexusForever.Game.Entity
             challenge.CooldownUntil = DateTime.UtcNow + CooldownTime;
             Reset(challenge);
             SendUpdate();
+        }
+
+        private void AddRewardPoints(uint rewardTrackId, uint points)
+        {
+            RewardTrackEntry entry = GameTableManager.Instance.RewardTrack.GetEntry(rewardTrackId);
+            if (entry == null)
+                return;
+
+            if (!rewardTracks.TryGetValue((ushort)rewardTrackId, out RewardTrack track))
+            {
+                track = new RewardTrack { IsNew = true };
+                rewardTracks.Add((ushort)rewardTrackId, track);
+            }
+
+            uint[] costs = new[] { entry.RewardPointCost00, entry.RewardPointCost01, entry.RewardPointCost02, entry.RewardPointCost03, entry.RewardPointCost04,
+                entry.RewardPointCost05, entry.RewardPointCost06, entry.RewardPointCost07, entry.RewardPointCost08, entry.RewardPointCost09 }
+                .TakeWhile(c => c != 0u)
+                .ToArray();
+            if (costs.Length == 0)
+                return;
+
+            track.Points  = Math.Min(track.Points + points, costs[^1]);
+            track.IsDirty = true;
+
+            string name = GameTableManager.Instance.TextEnglish.GetEntry(entry.LocalizedTextId) ?? "Challenge rewards";
+            player.SendSystemMessage($"{name}: {track.Points} of {costs[^1]} reward points.");
+
+            for (int i = 0; i < costs.Length; i++)
+            {
+                if (track.Points < costs[i] || (track.Claimed & (1u << i)) != 0u)
+                    continue;
+
+                track.Claimed |= 1u << i;
+                uint itemId = ChallengeGear.Pick(player, rewardTrackId, i);
+                if (itemId != 0u)
+                    player.Inventory.ItemCreate(InventoryLocation.Inventory, itemId, 1u, ItemUpdateReason.RewardTrack);
+            }
         }
 
         public void Update(double lastTick)

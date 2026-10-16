@@ -1,10 +1,11 @@
 ﻿using NexusForever.Game.Static.Challenges;
+using NexusForever.Database.Character;
 using NexusForever.GameTable.Model;
 using NexusForever.Shared;
 
 namespace NexusForever.Game.Abstract.Entity
 {
-    public interface IChallengeManager : IUpdate
+    public interface IChallengeManager : IDatabaseCharacter, IUpdate
     {
         void SendInitialPackets();
 
