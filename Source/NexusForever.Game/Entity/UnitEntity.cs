@@ -10,6 +10,7 @@ using NexusForever.Game.Abstract.Combat;
 using NexusForever.Game.Abstract.Entity;
 using NexusForever.Game.Abstract.Entity.Movement;
 using NexusForever.Game.Abstract.Entity.Stat;
+using NexusForever.Game.Abstract.Group;
 using NexusForever.Game.Abstract.Spell;
 using NexusForever.Game.Abstract.Spell.Info;
 using NexusForever.Game.Abstract.Spell.Proc;
@@ -779,9 +780,34 @@ namespace NexusForever.Game.Entity
                     rewarded.Add(petOwner);
             }
 
+            // group members close by share the kill (quest credit and XP)
+            IGroupManager groupManager = LegacyServiceProvider.Provider.GetService<IGroupManager>();
+            foreach (IPlayer player in rewarded.ToList())
+            {
+                if (player.GroupAssociation == 0ul || groupManager == null)
+                    continue;
+
+                IGroup group = groupManager.GetGroup(player.GroupAssociation);
+                if (group == null)
+                    continue;
+
+                foreach (IGroupMember member in group)
+                {
+                    IPlayer memberPlayer = PlayerManager.Instance.GetPlayer(member.Identity);
+                    if (memberPlayer != null && memberPlayer.Map == Map && memberPlayer.IsAlive
+                        && Vector3.Distance(memberPlayer.Position, Position) <= GroupRewardRange)
+                        rewarded.Add(memberPlayer);
+                }
+            }
+
             foreach (IPlayer player in rewarded)
                 RewardKiller(player);
         }
+
+        /// <summary>
+        /// Group members within this distance of a kill share its credit.
+        /// </summary>
+        private const float GroupRewardRange = 100f;
 
         protected virtual void RewardKiller(IPlayer player)
         {
