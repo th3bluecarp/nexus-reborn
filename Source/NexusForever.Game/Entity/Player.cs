@@ -244,6 +244,7 @@ namespace NexusForever.Game.Entity
         public ICharacterKeybindingManager KeybindingManager { get; private set; }
         public IDatacubeManager DatacubeManager { get; private set; }
         public IPathMissionManager PathMissionManager { get; private set; }
+        public IChallengeManager ChallengeManager { get; private set; }
         public IMailManager MailManager { get; private set; }
         public IZoneMapManager ZoneMapManager { get; private set; }
         public IQuestManager QuestManager { get; private set; }
@@ -383,6 +384,7 @@ namespace NexusForever.Game.Entity
             KeybindingManager       = new CharacterKeybindingManager(this, model);
             DatacubeManager         = new DatacubeManager(this, model);
             PathMissionManager      = new PathMissionManager(this, model);
+            ChallengeManager        = new ChallengeManager(this);
             MailManager             = new MailManager(this, model);
             ZoneMapManager          = new ZoneMapManager(this, model);
             QuestManager.Initialise(this, model);
@@ -462,6 +464,7 @@ namespace NexusForever.Game.Entity
             Inventory.Update(lastTick);
             QuestManager.Update(lastTick);
             PathMissionManager.Update(lastTick);
+            ChallengeManager.Update(lastTick);
             ResurrectionManager.Update(lastTick);
 
             relocationTimer.Update(lastTick);
@@ -826,6 +829,7 @@ namespace NexusForever.Game.Entity
 
                 QuestManager.ObjectiveUpdate(QuestObjectiveType.EnterZone, Zone.Id, 1);
                 PathMissionManager.OnZoneUpdate(Zone);
+                ChallengeManager.OnZoneUpdate(Zone);
             }
 
             ZoneMapManager.OnZoneUpdate();
@@ -907,6 +911,7 @@ namespace NexusForever.Game.Entity
             PetCustomisationManager.SendInitialPackets();
             DatacubeManager.SendInitialPackets();
             PathMissionManager.SendInitialPackets();
+            ChallengeManager.SendInitialPackets();
             MailManager.SendInitialPackets();
             ZoneMapManager.SendInitialPackets();
             Account.CurrencyManager.SendInitialPackets();

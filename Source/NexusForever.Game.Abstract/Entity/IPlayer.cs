@@ -82,6 +82,7 @@ namespace NexusForever.Game.Abstract.Entity
         ICharacterKeybindingManager KeybindingManager { get; }
         IDatacubeManager DatacubeManager { get; }
         IPathMissionManager PathMissionManager { get; }
+        IChallengeManager ChallengeManager { get; }
         IMailManager MailManager { get; }
         IZoneMapManager ZoneMapManager { get; }
         IQuestManager QuestManager { get; }
