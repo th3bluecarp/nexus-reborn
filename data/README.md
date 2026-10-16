@@ -8,10 +8,10 @@ Thanks to Jabbithole and the players whose uploads built it.
 
 | File | What it adds |
 |---|---|
-| spawns.sql | 751 spawns of 329 NPCs and quest objects that quests need but the NexusForever world database does not spawn, mostly quest givers and turn-in NPCs. Entity ids 900000 to 999999. |
+| spawns.sql | 874 spawns of 489 NPCs and quest objects that quests need but the NexusForever world database does not spawn, mostly quest givers and turn-in NPCs. Entity ids 900000 to 999999. |
 | loot.sql | Loot tables for 115 creatures, from the drop percentages Jabbithole recorded per kill. Loot group ids from 1000000. |
 | vendors.sql | Stock for 115 vendors, 4,050 items. Vendors are matched by creature and world. |
-| creature_spells.json | Combat spells seen on 1,169 creatures. Instant spells become auto attacks, spells with a cast time are used every 8 to 14 seconds. |
+| creature_spells.json | Combat spells seen on 1,188 creatures. Instant spells become auto attacks, spells with a cast time are used every 8 to 14 seconds. |
 
 All of it is approximate. NPC positions are player reported map pins with the ground height taken from nearby spawns, drop chances are what players happened to see, and creature abilities are the spells recorded, not the real rotation or conditions. See the "World data from Jabbithole" section of [docs/reborn/SEMANTICS.md](../docs/reborn/SEMANTICS.md).
 

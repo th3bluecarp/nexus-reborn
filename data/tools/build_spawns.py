@@ -49,7 +49,10 @@ for q in Q.values():
         elif o['Type']==32: ids=mem(o['TargetGroupIdRewardPane'])
         ids={i for i in ids if i in cr}
         if ids and any(any(w2==w for w2,_ in bycre[i]) for i in ids): continue   # some target already in the zone
-        for i in ids: need[(i,z)]['roles'].add('target'); need[(i,z)]['quests'].add(q['Id'])
+        for i in ids:
+            need[(i,z)]['roles'].add('target'); need[(i,z)]['quests'].add(q['Id'])
+            # a kill or use count of 1 means a single (often named) creature
+            need[(i,z)]['count']=max(need[(i,z)].get('count',0), o.get('Count',0) or 1)
 # drop givers/turn-ins already spawned in their zone world
 todo={k:v for k,v in need.items() if not any(w==ZONES[k[1]][1] for w,_ in bycre[k[0]])}
 def clusters(pins, r=8.0):
@@ -77,7 +80,8 @@ for (cid,z),info in sorted(todo.items()):
     samepos=[(rec[0],rec[2]) for o,lst in bycre.items() if o!=cid and T(cr[o]['LocalizedTextIdName'])==name for (w2,rec) in lst if w2==w]
     free=[c2 for c2 in cl if all(math.hypot(c2['x']-a,c2['z']-b)>15 for a,b in samepos)]
     if free: cl=free
-    take=cl[:1] if info['roles']-{'target'} else cl[:12]
+    # givers and turn-ins once; targets as many times as their quests ask for, up to 12 pin clusters
+    take=cl[:1] if info['roles']-{'target'} else cl[:max(1,min(12,info.get('count',12)))]
     # display / outfit: copy from a same-name spawn, else from the creature's groups
     same=[rec for (w2,rec) in sum((bycre[o] for o in cr if T(cr[o]['LocalizedTextIdName'])==name and bycre[o]),[]) ] if False else []
     disp=0; outfit=0
