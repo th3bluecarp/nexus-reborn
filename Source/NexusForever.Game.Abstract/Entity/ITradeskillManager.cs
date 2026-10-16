@@ -21,5 +21,10 @@ namespace NexusForever.Game.Abstract.Entity
         /// Craft a schematic count times, consuming materials from the supply satchel and bags.
         /// </summary>
         void Craft(uint tradeskillSchematic2Id, uint count);
+
+        /// <summary>
+        /// Learn a schematic from a recipe item (GiveSchematic).
+        /// </summary>
+        void LearnSchematic(uint tradeskillSchematic2Id);
     }
 }

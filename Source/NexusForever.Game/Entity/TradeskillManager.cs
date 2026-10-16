@@ -35,16 +35,24 @@ namespace NexusForever.Game.Entity
 
         private readonly IPlayer player;
         private readonly Dictionary<TradeskillType, Tradeskill> tradeskills = [];
+        private readonly HashSet<uint> learnedSchematics = [];
+        private readonly HashSet<uint> newSchematics = [];
 
         public TradeskillManager(IPlayer owner, CharacterModel model)
         {
             player = owner;
             foreach (CharacterTradeskillModel tradeskillModel in model.Tradeskill)
                 tradeskills[(TradeskillType)tradeskillModel.TradeskillId] = new Tradeskill { Xp = tradeskillModel.Xp, Active = tradeskillModel.Active };
+            foreach (CharacterTradeskillSchematicModel schematicModel in model.TradeskillSchematic)
+                learnedSchematics.Add(schematicModel.SchematicId);
         }
 
         public void Save(CharacterContext context)
         {
+            foreach (uint schematicId in newSchematics)
+                context.Add(new CharacterTradeskillSchematicModel { Id = player.CharacterId, SchematicId = schematicId });
+            newSchematics.Clear();
+
             foreach ((TradeskillType type, Tradeskill tradeskill) in tradeskills)
             {
                 if (!tradeskill.IsDirty)
@@ -186,7 +194,7 @@ namespace NexusForever.Game.Entity
             if (!tradeskills.TryGetValue(type, out Tradeskill tradeskill) || !tradeskill.Active)
                 return false;
 
-            return (schematic.Flags & 1u) != 0u && schematic.Tier <= CurrentTier(type);
+            return learnedSchematics.Contains(schematic.Id) || ((schematic.Flags & 1u) != 0u && schematic.Tier <= CurrentTier(type));
         }
 
         private IEnumerable<uint> KnownSchematics()
@@ -194,6 +202,20 @@ namespace NexusForever.Game.Entity
             return GameTableManager.Instance.TradeskillSchematic2.Entries
                 .Where(KnowsSchematic)
                 .Select(s => s.Id);
+        }
+
+        public void LearnSchematic(uint tradeskillSchematic2Id)
+        {
+            TradeskillSchematic2Entry schematic = GameTableManager.Instance.TradeskillSchematic2.GetEntry(tradeskillSchematic2Id);
+            if (schematic == null || !learnedSchematics.Add(tradeskillSchematic2Id))
+                return;
+
+            newSchematics.Add(tradeskillSchematic2Id);
+            player.Session.EnqueueMessageEncrypted(new ServerSchematicAddLearned
+            {
+                TradeskillId           = (TradeskillType)schematic.TradeSkillId,
+                TradeskillSchematic2Id = tradeskillSchematic2Id
+            });
         }
 
         public void Craft(uint tradeskillSchematic2Id, uint count)

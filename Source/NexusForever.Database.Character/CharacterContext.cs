@@ -30,6 +30,7 @@ namespace NexusForever.Database.Character
         public DbSet<CharacterPetFlairModel> CharacterPetFlair { get; set; }
         public DbSet<CharacterRewardTrackModel> CharacterRewardTrack { get; set; }
         public DbSet<CharacterTradeskillModel> CharacterTradeskill { get; set; }
+        public DbSet<CharacterTradeskillSchematicModel> CharacterTradeskillSchematic { get; set; }
         public DbSet<CharacterQuestModel> CharacterQuest { get; set; }
         public DbSet<CharacterQuestObjectiveModel> CharacterQuestObjective { get; set; }
         public DbSet<CharacterReputation> CharacterReputation { get; set; }
@@ -1396,6 +1397,29 @@ namespace NexusForever.Database.Character
                     .WithMany(p => p.Tradeskill)
                     .HasForeignKey(d => d.Id)
                     .HasConstraintName("FK__character_tradeskill_id__character_id");
+            });
+
+            modelBuilder.Entity<CharacterTradeskillSchematicModel>(entity =>
+            {
+                entity.ToTable("character_tradeskill_schematic");
+
+                entity.HasKey(e => new { e.Id, e.SchematicId })
+                    .HasName("PRIMARY");
+
+                entity.Property(e => e.Id)
+                    .HasColumnName("id")
+                    .HasColumnType("bigint(20) unsigned")
+                    .HasDefaultValue(0);
+
+                entity.Property(e => e.SchematicId)
+                    .HasColumnName("schematicId")
+                    .HasColumnType("int(10) unsigned")
+                    .HasDefaultValue(0);
+
+                entity.HasOne(d => d.Character)
+                    .WithMany(p => p.TradeskillSchematic)
+                    .HasForeignKey(d => d.Id)
+                    .HasConstraintName("FK__character_tradeskill_schematic_id__character_id");
             });
 
             modelBuilder.Entity<CharacterPetCustomisationModel>(entity =>
