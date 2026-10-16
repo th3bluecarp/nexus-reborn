@@ -385,6 +385,8 @@ namespace NexusForever.Game.Entity
                     ChallengeId         = c.Entry.Id,
                     Type                = (ChallengeType)c.Entry.ChallengeTypeEnum,
                     TargetGroupId       = c.Entry.Target,
+                    QualifyCount        = c.Count,
+                    QualityTotal        = c.Goal,
                     CurrentCount        = c.Count,
                     GoalCount           = c.Goal,
                     ObjectiveCompletion = c.Count,
