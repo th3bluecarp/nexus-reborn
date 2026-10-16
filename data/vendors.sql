@@ -1337,6 +1337,38 @@ INSERT INTO `entity_vendor_item` (`id`,`index`,`categoryIndex`,`itemId`) SELECT 
 INSERT INTO `entity_vendor_item` (`id`,`index`,`categoryIndex`,`itemId`) SELECT `Id`,3,0,20791 FROM `entity` WHERE `Creature`=26346 AND `World`=22;
 INSERT INTO `entity_vendor_item` (`id`,`index`,`categoryIndex`,`itemId`) SELECT `Id`,4,0,12046 FROM `entity` WHERE `Creature`=26346 AND `World`=22;
 INSERT INTO `entity_vendor_item` (`id`,`index`,`categoryIndex`,`itemId`) SELECT `Id`,5,0,49146 FROM `entity` WHERE `Creature`=26346 AND `World`=22;
+-- ICI Agent (creature 41253, world 22)
+DELETE FROM `entity_vendor_item` WHERE `id` IN (SELECT `Id` FROM `entity` WHERE `Creature`=41253 AND `World`=22);
+DELETE FROM `entity_vendor_category` WHERE `id` IN (SELECT `Id` FROM `entity` WHERE `Creature`=41253 AND `World`=22);
+DELETE FROM `entity_vendor` WHERE `id` IN (SELECT `Id` FROM `entity` WHERE `Creature`=41253 AND `World`=22);
+INSERT INTO `entity_vendor` (`id`,`buyPriceMultiplier`,`sellPriceMultiplier`) SELECT `Id`,1,1 FROM `entity` WHERE `Creature`=41253 AND `World`=22;
+INSERT INTO `entity_vendor_category` (`id`,`index`,`localisedTextId`) SELECT `Id`,0,235 FROM `entity` WHERE `Creature`=41253 AND `World`=22;
+INSERT INTO `entity_vendor_item` (`id`,`index`,`categoryIndex`,`itemId`) SELECT `Id`,0,0,12049 FROM `entity` WHERE `Creature`=41253 AND `World`=22;
+INSERT INTO `entity_vendor_category` (`id`,`index`,`localisedTextId`) SELECT `Id`,1,15120 FROM `entity` WHERE `Creature`=41253 AND `World`=22;
+INSERT INTO `entity_vendor_item` (`id`,`index`,`categoryIndex`,`itemId`) SELECT `Id`,1,1,40819 FROM `entity` WHERE `Creature`=41253 AND `World`=22;
+INSERT INTO `entity_vendor_item` (`id`,`index`,`categoryIndex`,`itemId`) SELECT `Id`,2,1,40820 FROM `entity` WHERE `Creature`=41253 AND `World`=22;
+INSERT INTO `entity_vendor_category` (`id`,`index`,`localisedTextId`) SELECT `Id`,2,15119 FROM `entity` WHERE `Creature`=41253 AND `World`=22;
+INSERT INTO `entity_vendor_item` (`id`,`index`,`categoryIndex`,`itemId`) SELECT `Id`,3,2,40817 FROM `entity` WHERE `Creature`=41253 AND `World`=22;
+INSERT INTO `entity_vendor_item` (`id`,`index`,`categoryIndex`,`itemId`) SELECT `Id`,4,2,40818 FROM `entity` WHERE `Creature`=41253 AND `World`=22;
+INSERT INTO `entity_vendor_category` (`id`,`index`,`localisedTextId`) SELECT `Id`,3,15118 FROM `entity` WHERE `Creature`=41253 AND `World`=22;
+INSERT INTO `entity_vendor_item` (`id`,`index`,`categoryIndex`,`itemId`) SELECT `Id`,5,3,40815 FROM `entity` WHERE `Creature`=41253 AND `World`=22;
+INSERT INTO `entity_vendor_item` (`id`,`index`,`categoryIndex`,`itemId`) SELECT `Id`,6,3,40816 FROM `entity` WHERE `Creature`=41253 AND `World`=22;
+-- ICI Agent (creature 41254, world 22)
+DELETE FROM `entity_vendor_item` WHERE `id` IN (SELECT `Id` FROM `entity` WHERE `Creature`=41254 AND `World`=22);
+DELETE FROM `entity_vendor_category` WHERE `id` IN (SELECT `Id` FROM `entity` WHERE `Creature`=41254 AND `World`=22);
+DELETE FROM `entity_vendor` WHERE `id` IN (SELECT `Id` FROM `entity` WHERE `Creature`=41254 AND `World`=22);
+INSERT INTO `entity_vendor` (`id`,`buyPriceMultiplier`,`sellPriceMultiplier`) SELECT `Id`,1,1 FROM `entity` WHERE `Creature`=41254 AND `World`=22;
+INSERT INTO `entity_vendor_category` (`id`,`index`,`localisedTextId`) SELECT `Id`,0,235 FROM `entity` WHERE `Creature`=41254 AND `World`=22;
+INSERT INTO `entity_vendor_item` (`id`,`index`,`categoryIndex`,`itemId`) SELECT `Id`,0,0,12049 FROM `entity` WHERE `Creature`=41254 AND `World`=22;
+INSERT INTO `entity_vendor_category` (`id`,`index`,`localisedTextId`) SELECT `Id`,1,15120 FROM `entity` WHERE `Creature`=41254 AND `World`=22;
+INSERT INTO `entity_vendor_item` (`id`,`index`,`categoryIndex`,`itemId`) SELECT `Id`,1,1,40819 FROM `entity` WHERE `Creature`=41254 AND `World`=22;
+INSERT INTO `entity_vendor_item` (`id`,`index`,`categoryIndex`,`itemId`) SELECT `Id`,2,1,40820 FROM `entity` WHERE `Creature`=41254 AND `World`=22;
+INSERT INTO `entity_vendor_category` (`id`,`index`,`localisedTextId`) SELECT `Id`,2,15119 FROM `entity` WHERE `Creature`=41254 AND `World`=22;
+INSERT INTO `entity_vendor_item` (`id`,`index`,`categoryIndex`,`itemId`) SELECT `Id`,3,2,40817 FROM `entity` WHERE `Creature`=41254 AND `World`=22;
+INSERT INTO `entity_vendor_item` (`id`,`index`,`categoryIndex`,`itemId`) SELECT `Id`,4,2,40818 FROM `entity` WHERE `Creature`=41254 AND `World`=22;
+INSERT INTO `entity_vendor_category` (`id`,`index`,`localisedTextId`) SELECT `Id`,3,15118 FROM `entity` WHERE `Creature`=41254 AND `World`=22;
+INSERT INTO `entity_vendor_item` (`id`,`index`,`categoryIndex`,`itemId`) SELECT `Id`,5,3,40815 FROM `entity` WHERE `Creature`=41254 AND `World`=22;
+INSERT INTO `entity_vendor_item` (`id`,`index`,`categoryIndex`,`itemId`) SELECT `Id`,6,3,40816 FROM `entity` WHERE `Creature`=41254 AND `World`=22;
 -- Icy Kess (creature 54716, world 51)
 DELETE FROM `entity_vendor_item` WHERE `id` IN (SELECT `Id` FROM `entity` WHERE `Creature`=54716 AND `World`=51);
 DELETE FROM `entity_vendor_category` WHERE `id` IN (SELECT `Id` FROM `entity` WHERE `Creature`=54716 AND `World`=51);
@@ -3013,6 +3045,36 @@ INSERT INTO `entity_vendor_item` (`id`,`index`,`categoryIndex`,`itemId`) SELECT 
 INSERT INTO `entity_vendor_item` (`id`,`index`,`categoryIndex`,`itemId`) SELECT `Id`,16,4,27878 FROM `entity` WHERE `Creature`=34493 AND `World`=51;
 INSERT INTO `entity_vendor_item` (`id`,`index`,`categoryIndex`,`itemId`) SELECT `Id`,17,4,27879 FROM `entity` WHERE `Creature`=34493 AND `World`=51;
 INSERT INTO `entity_vendor_item` (`id`,`index`,`categoryIndex`,`itemId`) SELECT `Id`,18,4,27880 FROM `entity` WHERE `Creature`=34493 AND `World`=51;
+-- Quartermaster Hillary (creature 21639, world 51)
+DELETE FROM `entity_vendor_item` WHERE `id` IN (SELECT `Id` FROM `entity` WHERE `Creature`=21639 AND `World`=51);
+DELETE FROM `entity_vendor_category` WHERE `id` IN (SELECT `Id` FROM `entity` WHERE `Creature`=21639 AND `World`=51);
+DELETE FROM `entity_vendor` WHERE `id` IN (SELECT `Id` FROM `entity` WHERE `Creature`=21639 AND `World`=51);
+INSERT INTO `entity_vendor` (`id`,`buyPriceMultiplier`,`sellPriceMultiplier`) SELECT `Id`,1,1 FROM `entity` WHERE `Creature`=21639 AND `World`=51;
+INSERT INTO `entity_vendor_category` (`id`,`index`,`localisedTextId`) SELECT `Id`,0,484133 FROM `entity` WHERE `Creature`=21639 AND `World`=51;
+INSERT INTO `entity_vendor_item` (`id`,`index`,`categoryIndex`,`itemId`) SELECT `Id`,0,0,17558 FROM `entity` WHERE `Creature`=21639 AND `World`=51;
+INSERT INTO `entity_vendor_item` (`id`,`index`,`categoryIndex`,`itemId`) SELECT `Id`,1,0,17556 FROM `entity` WHERE `Creature`=21639 AND `World`=51;
+INSERT INTO `entity_vendor_item` (`id`,`index`,`categoryIndex`,`itemId`) SELECT `Id`,2,0,17555 FROM `entity` WHERE `Creature`=21639 AND `World`=51;
+INSERT INTO `entity_vendor_item` (`id`,`index`,`categoryIndex`,`itemId`) SELECT `Id`,3,0,17554 FROM `entity` WHERE `Creature`=21639 AND `World`=51;
+INSERT INTO `entity_vendor_item` (`id`,`index`,`categoryIndex`,`itemId`) SELECT `Id`,4,0,17557 FROM `entity` WHERE `Creature`=21639 AND `World`=51;
+INSERT INTO `entity_vendor_item` (`id`,`index`,`categoryIndex`,`itemId`) SELECT `Id`,5,0,17553 FROM `entity` WHERE `Creature`=21639 AND `World`=51;
+INSERT INTO `entity_vendor_category` (`id`,`index`,`localisedTextId`) SELECT `Id`,1,15120 FROM `entity` WHERE `Creature`=21639 AND `World`=51;
+INSERT INTO `entity_vendor_item` (`id`,`index`,`categoryIndex`,`itemId`) SELECT `Id`,6,1,17579 FROM `entity` WHERE `Creature`=21639 AND `World`=51;
+INSERT INTO `entity_vendor_item` (`id`,`index`,`categoryIndex`,`itemId`) SELECT `Id`,7,1,17580 FROM `entity` WHERE `Creature`=21639 AND `World`=51;
+INSERT INTO `entity_vendor_item` (`id`,`index`,`categoryIndex`,`itemId`) SELECT `Id`,8,1,17581 FROM `entity` WHERE `Creature`=21639 AND `World`=51;
+INSERT INTO `entity_vendor_item` (`id`,`index`,`categoryIndex`,`itemId`) SELECT `Id`,9,1,17582 FROM `entity` WHERE `Creature`=21639 AND `World`=51;
+INSERT INTO `entity_vendor_item` (`id`,`index`,`categoryIndex`,`itemId`) SELECT `Id`,10,1,17583 FROM `entity` WHERE `Creature`=21639 AND `World`=51;
+INSERT INTO `entity_vendor_category` (`id`,`index`,`localisedTextId`) SELECT `Id`,2,15119 FROM `entity` WHERE `Creature`=21639 AND `World`=51;
+INSERT INTO `entity_vendor_item` (`id`,`index`,`categoryIndex`,`itemId`) SELECT `Id`,11,2,17578 FROM `entity` WHERE `Creature`=21639 AND `World`=51;
+INSERT INTO `entity_vendor_item` (`id`,`index`,`categoryIndex`,`itemId`) SELECT `Id`,12,2,17575 FROM `entity` WHERE `Creature`=21639 AND `World`=51;
+INSERT INTO `entity_vendor_item` (`id`,`index`,`categoryIndex`,`itemId`) SELECT `Id`,13,2,17574 FROM `entity` WHERE `Creature`=21639 AND `World`=51;
+INSERT INTO `entity_vendor_item` (`id`,`index`,`categoryIndex`,`itemId`) SELECT `Id`,14,2,17576 FROM `entity` WHERE `Creature`=21639 AND `World`=51;
+INSERT INTO `entity_vendor_item` (`id`,`index`,`categoryIndex`,`itemId`) SELECT `Id`,15,2,17577 FROM `entity` WHERE `Creature`=21639 AND `World`=51;
+INSERT INTO `entity_vendor_category` (`id`,`index`,`localisedTextId`) SELECT `Id`,3,15118 FROM `entity` WHERE `Creature`=21639 AND `World`=51;
+INSERT INTO `entity_vendor_item` (`id`,`index`,`categoryIndex`,`itemId`) SELECT `Id`,16,3,27885 FROM `entity` WHERE `Creature`=21639 AND `World`=51;
+INSERT INTO `entity_vendor_item` (`id`,`index`,`categoryIndex`,`itemId`) SELECT `Id`,17,3,27886 FROM `entity` WHERE `Creature`=21639 AND `World`=51;
+INSERT INTO `entity_vendor_item` (`id`,`index`,`categoryIndex`,`itemId`) SELECT `Id`,18,3,27887 FROM `entity` WHERE `Creature`=21639 AND `World`=51;
+INSERT INTO `entity_vendor_item` (`id`,`index`,`categoryIndex`,`itemId`) SELECT `Id`,19,3,27888 FROM `entity` WHERE `Creature`=21639 AND `World`=51;
+INSERT INTO `entity_vendor_item` (`id`,`index`,`categoryIndex`,`itemId`) SELECT `Id`,20,3,27889 FROM `entity` WHERE `Creature`=21639 AND `World`=51;
 -- Quartermaster Rylos (creature 31332, world 22)
 DELETE FROM `entity_vendor_item` WHERE `id` IN (SELECT `Id` FROM `entity` WHERE `Creature`=31332 AND `World`=22);
 DELETE FROM `entity_vendor_category` WHERE `id` IN (SELECT `Id` FROM `entity` WHERE `Creature`=31332 AND `World`=22);
