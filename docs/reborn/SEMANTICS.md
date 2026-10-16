@@ -136,3 +136,4 @@ These fix a visible symptom without knowing the real rule, the kind of patch tha
 - **Holocrypts are the nearest transmat.** Holocrypt locations are not in the client data, so the holocrypt respawn goes to the nearest non-hostile transmat terminal at full health (BaseMap.OnResurrectHolocrypt).
 - **Open world events start by proximity.** Retail started them from lost server scripts.
 - **Creature abilities from Jabbithole.** Observed spells, not the creature's real rotation or conditions.
+- **Vistas count from the ground.** Explorer vista points sit on cliff tops and the climb routes are hard to find, so standing within 45 m of the point on the ground completes it, at any height (PathMissionManager.VistaRadius).

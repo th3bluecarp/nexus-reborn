@@ -10,6 +10,7 @@ Newest first. "Live" means running on our test server.
 
 ## 2026-10-15
 
+- Challenge tracker now shows kill progress and the timer: the client wants time remaining and a 0 to 100 percent, the server sent elapsed time and the raw count (430b9a6c). Explorer vistas complete within 45 m of the point on the ground, at any height.
 - - **From the first play session** (179b369c, live). Exploration XP was too small to notice and now scales with zone size, the '[System] New Zone' debug message is gone, freed survivors climb out of the wreckage and run off, challenges send their kill count and goal to the window, and Explorer reveals give path xp.
 - - **Gathering xp** (3086050e, live). Breaking a harvest node with the matching gathering skill now raises that skill. The amount is a guess, the data has no harvest xp.
 - - **Recipe items** (9d897732, live). Using a recipe now teaches its schematic, saved with your character, and you can then craft it. 385 recipes point at schematics that still exist.
