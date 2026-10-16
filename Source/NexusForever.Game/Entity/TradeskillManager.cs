@@ -107,8 +107,41 @@ namespace NexusForever.Game.Entity
             existing.IsDirty = true;
             SendUpdate(toLearn, existing);
 
+            GrantHarvestSpells(toLearn);
+
             // "Learn two tradeskills from the trainer" quests (LearnTradeskill, Data 0)
             player.QuestManager.ObjectiveUpdate(QuestObjectiveType.LearnTradeskill, 0u, 1u);
+        }
+
+        // harvesting abilities by tradeskill, Spell4Base ids: Mining (24762, spell 40546 does 100000 damage to the node),
+        // Survivalist (49162 Harvesting, 25204), Relic Hunter (54180); the pairing is read from the spell names
+        private static readonly Dictionary<TradeskillType, uint[]> HarvestSpells = new()
+        {
+            { TradeskillType.Mining,       [24762u] },
+            { TradeskillType.Survivalist,  [49162u, 25204u] },
+            { TradeskillType.Relic_Hunter, [54180u] }
+        };
+
+        private void GrantHarvestSpells(TradeskillType type)
+        {
+            if (!HarvestSpells.TryGetValue(type, out uint[] spellBaseIds))
+                return;
+
+            foreach (uint spellBaseId in spellBaseIds)
+            {
+                try
+                {
+                    player.SpellManager.AddSpell(spellBaseId);
+                }
+                catch (InvalidOperationException)
+                {
+                    // already known
+                }
+                catch (ArgumentOutOfRangeException)
+                {
+                    // no spell info for this base
+                }
+            }
         }
 
         public bool HasReachedTier(uint tradeskillTierId)
