@@ -1616,6 +1616,38 @@ namespace NexusForever.Database.Character.Migrations
                     b.ToTable("character_tradeskill_materials", (string)null);
                 });
 
+            modelBuilder.Entity("NexusForever.Database.Character.Model.CharacterTradeskillModel", b =>
+                {
+                    b.Property<ulong>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint(20) unsigned")
+                        .HasDefaultValue(0ul)
+                        .HasColumnName("id");
+
+                    b.Property<uint>("TradeskillId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int(10) unsigned")
+                        .HasDefaultValue(0u)
+                        .HasColumnName("tradeskillId");
+
+                    b.Property<bool>("Active")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("tinyint(1)")
+                        .HasDefaultValue(false)
+                        .HasColumnName("active");
+
+                    b.Property<uint>("Xp")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int(10) unsigned")
+                        .HasDefaultValue(0u)
+                        .HasColumnName("xp");
+
+                    b.HasKey("Id", "TradeskillId")
+                        .HasName("PRIMARY");
+
+                    b.ToTable("character_tradeskill", (string)null);
+                });
+
             modelBuilder.Entity("NexusForever.Database.Character.Model.CharacterZonemapHexgroupModel", b =>
                 {
                     b.Property<ulong>("Id")
@@ -2922,6 +2954,18 @@ namespace NexusForever.Database.Character.Migrations
                     b.Navigation("Character");
                 });
 
+            modelBuilder.Entity("NexusForever.Database.Character.Model.CharacterTradeskillModel", b =>
+                {
+                    b.HasOne("NexusForever.Database.Character.Model.CharacterModel", "Character")
+                        .WithMany("Tradeskill")
+                        .HasForeignKey("Id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("FK__character_tradeskill_id__character_id");
+
+                    b.Navigation("Character");
+                });
+
             modelBuilder.Entity("NexusForever.Database.Character.Model.CharacterZonemapHexgroupModel", b =>
                 {
                     b.HasOne("NexusForever.Database.Character.Model.CharacterModel", "Character")
@@ -3107,6 +3151,8 @@ namespace NexusForever.Database.Character.Migrations
                     b.Navigation("Spell");
 
                     b.Navigation("Stat");
+
+                    b.Navigation("Tradeskill");
 
                     b.Navigation("TradeskillMaterials");
 
