@@ -8,12 +8,12 @@ Thanks to Jabbithole and the players whose uploads built it.
 
 | File | What it adds |
 |---|---|
-| spawns.sql | 970 spawns of 533 NPCs, quest objects and Explorer mission objects that quests need but the NexusForever world database does not spawn, mostly quest givers and turn-in NPCs. Entity ids 900000 to 999999. |
+| spawns.sql | 1,149 spawns of 652 NPCs, quest objects and Explorer mission objects that quests need but the NexusForever world database does not spawn, mostly quest givers and turn-in NPCs. Entity ids 900000 to 999999. |
 | loot.sql | Loot tables for 885 creatures, from the drops Jabbithole recorded per kill, as drops divided by kills plus 5 so creatures seen only a few times do not always drop rare items. Loot group ids from 1000000. Quest items drop only for players with the matching collect objective open, which needs the QuestObjectiveActive loot condition in this fork. |
 | vendors.sql | Stock for 115 vendors, 4,050 items. Vendors are matched by creature and world. |
 | creature_spells.json | Combat spells seen on 1,188 creatures. Instant spells become auto attacks, spells with a cast time are used every 8 to 14 seconds. |
 
-All of it is approximate. NPC positions are player reported map pins with the ground height taken from nearby spawns, or from the terrain in the server map files when no spawn is near (not in Illium and Thayd), drop chances are what players happened to see, and creature abilities are the spells recorded, not the real rotation or conditions. See the "World data from Jabbithole" section of [docs/reborn/SEMANTICS.md](../docs/reborn/SEMANTICS.md).
+All of it is approximate. NPC positions are player reported map pins with the ground height taken from nearby spawns, or from the terrain in the server map files when no spawn is near (not in Illium and Thayd); quest targets with no page stand at their objective's map marker, drop chances are what players happened to see, and creature abilities are the spells recorded, not the real rotation or conditions. See the "World data from Jabbithole" section of [docs/reborn/SEMANTICS.md](../docs/reborn/SEMANTICS.md).
 
 ## Loading it
 

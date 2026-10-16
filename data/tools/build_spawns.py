@@ -1,3 +1,4 @@
+import re
 # Build world-database spawns for creatures the starting-zone quests need but the world lacks,
 # placed at Jabbithole map pins. Output: SQL + CSV report.
 import json, csv, collections, math, sys
@@ -46,6 +47,9 @@ for q in Q.values():
         ids=set()
         if o['Type'] in (2,3,5,9,12,15,21): ids={o['Data']}
         elif o['Type'] in (8,14,16,18,23): ids=mem(o['Data'])
+        if o['Type'] in (2,5,12) and o['Data']==0:
+            named=set(int(x) for x in re.findall(r'creature=(\d+)',T(o['LocalizedTextIdFull'])))
+            ids=named if len(named)==1 else set()
         elif o['Type']==32: ids=mem(o['TargetGroupIdRewardPane'])
         ids={i for i in ids if i in cr}
         if ids and any(any(w2==w for w2,_ in bycre[i]) for i in ids): continue   # some target already in the zone
@@ -53,8 +57,11 @@ for q in Q.values():
             need[(i,z)]['roles'].add('target'); need[(i,z)]['quests'].add(q['Id'])
             # a kill or use count of 1 means a single (often named) creature
             need[(i,z)]['count']=max(need[(i,z)].get('count',0), o.get('Count',0) or 1)
+            # the objective's map marker, a fallback position when no Jabbithole page has pins
+            need[(i,z)].setdefault('locs',set()).update(l for l in (o['WorldLocationsIdIndicator0%d'%k] for k in range(4)) if l)
 # path mission objects to activate (Explorer operations), placed like quest targets, once each
 episodes={e['Id']:e for e in ld('PathEpisode')}
+wloc={x['Id']:x for x in ld('WorldLocation2')}
 for kind,table in ((17,'PathExplorerActivate'),):
     rows={r['Id']:r for r in ld(table)}
     for m in ld('PathMission'):
@@ -99,6 +106,9 @@ for (cid,z),info in sorted(todo.items()):
     page=None; conf=''
     if scored and ev(scored[0])>0: page=scored[0]; conf='quest-linked'
     elif len(cands)==1 and cands[0]['pins']: page=cands[0]; conf='name-only'
+    if (not page or not page['pins']) and 'target' in info['roles'] and info.get('locs'):
+        marks=[[wloc[l]['Position0'],wloc[l]['Position2']] for l in info['locs'] if l in wloc and wloc[l]['WorldId']==w]
+        if marks: page={'pins':marks,'file':'(objective marker)'}; conf='objective marker'
     if not page or not page['pins']:
         report.append([cid,name,mp,'/'.join(sorted(info['roles'])),' '.join(map(str,sorted(info['quests']))),'SKIP', 'no Jabbithole page' if not cands else f'{len(cands)} pages, none quest-linked','',''])
         continue
