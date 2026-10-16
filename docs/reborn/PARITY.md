@@ -16,7 +16,7 @@ Columns in parity.csv:
 |---|---|---|
 | Implemented | 66 | 50 |
 | Partial | 55 | 44 |
-| Missing | 31 | 53 |
+| Missing | 31 | 55 |
 | Only on a side branch | 0 | 3 |
 | Features where we are ahead | 33 | |
 
