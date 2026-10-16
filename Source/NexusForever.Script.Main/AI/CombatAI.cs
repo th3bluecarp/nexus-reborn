@@ -177,11 +177,15 @@ namespace NexusForever.Script.Main.AI
             foreach (uint guid in watchedInRange.ToList())
             {
                 IUnitEntity unit = entity.GetVisible<IUnitEntity>(guid);
-                if (unit == null || !unit.IsAlive || entity.Position.GetDistance(unit.Position) > 15f || entity.InCombat)
+                if (unit == null || !unit.IsAlive || entity.Position.GetDistance(unit.Position) > 15f)
                 {
                     watchedInRange.Remove(guid);
                     continue;
                 }
+
+                // keep watching while busy with someone else, they may still pull once the fight ends
+                if (entity.InCombat)
+                    continue;
 
                 if (unit.IsStealthed || evadingUntil.HasValue || entity.Position.GetDistance(unit.Position) > AggroRange(unit))
                     continue;
@@ -405,7 +409,8 @@ namespace NexusForever.Script.Main.AI
         /// </summary>
         public virtual void OnEnterCombat()
         {
-            pullPosition = entity.Position;
+            // pulled again while walking home after a leash: keep measuring from home, so a creature cannot be dragged 50 m at a time
+            pullPosition = evadingUntil.HasValue ? entity.LeashPosition : entity.Position;
             CallForHelp();
         }
 

@@ -307,6 +307,13 @@ namespace NexusForever.Game.Entity
                 if (track.Points < costs[i] || (track.Claimed & (1u << i)) != 0u)
                     continue;
 
+                // a full bag leaves the reward unclaimed, it is paid when the next challenge finishes
+                if (player.Inventory.IsInventoryFull(InventoryLocation.Inventory))
+                {
+                    player.SendSystemMessage("Your bags are full, challenge gear will be given after your next challenge.");
+                    break;
+                }
+
                 track.Claimed |= 1u << i;
                 uint itemId = ChallengeGear.Pick(player, rewardTrackId, i);
                 if (itemId != 0u)

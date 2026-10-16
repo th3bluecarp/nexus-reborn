@@ -11,6 +11,7 @@ using NexusForever.Game.Abstract.Map;
 using NexusForever.Game.Abstract.Map.Instance;
 using NexusForever.Game.Abstract.Map.Search;
 using NexusForever.Game.Abstract.PublicEvent;
+using NexusForever.Game.Reputation;
 using NexusForever.Game.Configuration.Model;
 using NexusForever.Game.Static.Entity;
 using NexusForever.Game.Static.Map;
@@ -665,6 +666,8 @@ namespace NexusForever.Game.Map
         {
             return holocrypts ??= entityCache?.GetEntities()
                 .Where(m => GameTableManager.Instance.Creature2.GetEntry(m.Creature)?.BindPointId is uint id && id != 0u)
+                // disposition lookups throw for factions missing from Faction2
+                .Where(m => m.Faction1 != 0 && FactionManager.Instance.GetFaction((Faction)m.Faction1) != null)
                 .ToList() ?? [];
         }
 
@@ -692,11 +695,16 @@ namespace NexusForever.Game.Map
                 .OrderBy(m => Vector3.DistanceSquared(player.Position, new Vector3(m.X, m.Y, m.Z)))
                 .FirstOrDefault();
 
+            // no usable transmat (or offered only because wake here was unaffordable): an ordinary resurrection in place
+            if (holocrypt == null)
+            {
+                OnResurrect(player);
+                return;
+            }
+
             player.ModifyHealth(player.MaxHealth, DamageType.Heal, null);
             player.Shield = 0;
-
-            if (holocrypt != null)
-                player.TeleportToLocal(new Vector3(holocrypt.X, holocrypt.Y, holocrypt.Z));
+            player.TeleportToLocal(new Vector3(holocrypt.X, holocrypt.Y, holocrypt.Z));
         }
 
         private void OnResurrect(IPlayer player)
