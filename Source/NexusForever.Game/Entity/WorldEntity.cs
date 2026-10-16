@@ -668,7 +668,11 @@ namespace NexusForever.Game.Entity
             // is turned in to Deadeye Brightland at WorldLocation2IdReceiver 12354 (world 51)
             { 27196u, 12354u },
             // Navigation Controls in Levian Bay: A Daring Escape (5866) is turned in at WorldLocation2IdReceiver 45329 (world 22)
-            { 46980u, 45329u }
+            { 46980u, 45329u },
+            // Portal to Celestion in Everstar Grove: The Path to Celestion (6844) is turned in at 23560 (world 51)
+            { 32269u, 23560u },
+            // Transport to Everstar Grove in Northern Wilds: Treasures within Treasures (10101) is turned in at 41641 (world 990)
+            { 70172u, 41641u }
         };
 
         private static readonly System.Collections.Concurrent.ConcurrentDictionary<uint, bool> activateSpellHandlesUse = new();
