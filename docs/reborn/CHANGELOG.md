@@ -4,6 +4,7 @@ Newest first. "Live" means running on the desktop server.
 
 ## 2026-10-15
 
+- **Challenges** (d5741402, not deployed). Kill challenges like Cavern Clearing and Tremor Ridge Defender now unlock in their area, start on your first kill or from the challenge window, count through bronze, silver and gold, and time out or fail if you leave. No rewards yet.
 - **Bank and dye windows** (46cc9d88, not deployed, untested). Talking to a banker or dye vendor now sends the message that should open their window.
 - **Stuck menu** (834e88cd, not deployed). The stuck options work: recall to your bind point, recall to your house, or a free suicide.
 - **Bind points and Recall** (d497a029, not deployed). Using a transmat terminal now binds you there and Recall - Transmat takes you back. The recall tooltip may not show the location name yet.
