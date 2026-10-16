@@ -74,7 +74,7 @@ Quests,Quest objective prerequisites,"NPCs, objects and spells gated on objectiv
 Quests,Quest timers,Timed quests and objective timers,Partial,Partial,,,,Quest.InitialiseTimers,Quest timer only; objective timers TODO
 Quests,Pushed and virtual items,Quest grants items on accept,Partial,Partial,,,,Quest.InitialiseItems,Pushed items yes; virtual items TODO
 Quests,Zone story scripting,"Scripted quest events (escorts, cinematics, phasing)",Partial,Partial,,,high,"Alizar/NorthernWilds, EverstarGrove, Olyssia/CrimsonIsle, LevianBay map scripts","Only arrival cinematics; Algoroc, Celestion, Deradune, Ellevar have no scripts"
-Quests,Episodes,Episode progress tracking,Missing,Missing,,,high,PrerequisiteType.EpisodeState unhandled,
+Quests,Episodes,Episode progress tracking,Partial (not deployed),Missing,yes,1667b3b6,high,PrerequisiteType.EpisodeState unhandled,EpisodeState prerequisite derived from EpisodeQuest completion. Not done: episode progress messages for the client journal.
 Public Events,Instance public events,"Event objectives, voting, stats, teams",Implemented,Implemented,,,,"Game/PublicEvent (14 files), ClientPublicEventVote",Objective timers fixed on reborn/loot (fc0ac370)
 Public Events,Open world public events,Zone events auto start (e.g. starting zone events),Missing,Missing,,,high,CreateEvent only called from instance map scripts,
 Public Events,Event scoreboard,Request scoreboard,Missing,Missing,,,,ClientPublicEventRequestScoreboard unhandled,
