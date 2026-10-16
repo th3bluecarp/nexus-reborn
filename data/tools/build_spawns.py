@@ -66,6 +66,11 @@ out=[]; report=[]; nid=900000
 for (cid,z),info in sorted(todo.items()):
     c=cr[cid]; name=T(c['LocalizedTextIdName']); mp,w=ZONES[z]
     cands=jhby.get((name,mp),[])
+    # an NPC for this zone's quests may stand in another zone of the same world (a Whitevale quest giver in Thayd):
+    # also accept quest-linked pages from those maps, their pins are in the same world coordinates
+    other=[p for m2,w2 in ZONES.values() if w2==w and m2!=mp for p in jhby.get((name,m2),[])
+           if (set(p['starts'])|set(p['completes'])|set(p['objective_of'])) & info['quests']]
+    cands=cands+other
     def ev(p): return len(set(p['starts'])|set(p['completes'])|set(p['objective_of']) & info['quests']) if False else len((set(p['starts'])|set(p['completes'])|set(p['objective_of'])) & info['quests'])
     scored=sorted(cands,key=lambda p:(-ev(p),-len(p['pins'])))
     page=None; conf=''
