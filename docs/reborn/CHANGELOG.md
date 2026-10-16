@@ -4,6 +4,7 @@ Newest first. "Live" means running on the desktop server.
 
 ## 2026-10-15
 
+- **Merge build deployed to the desktop server** (c40c3f72, 18:56). Database backup D:\NexusForever\backup\pre-merge-20261015-1856.sql (13 MB). All 8 pending migrations applied, 101 custom spawns kept, all 9 server processes up with no errors (Auth, Sts, CharacterAPI, World, Group, Chat, AccountAPI, CharacterServer, FriendshipServer). Rollback: delete D:\NexusForever\active-source.txt and restart. Everything marked not deployed below is now live.
 - **Code review fixes** (7eb306cf on the merge build; the despawn guard also live as 3001f002 on reborn/loot). A review of the new systems found traps that never fired, possible duplicate respawns, combo sequences with wrong timing, timed pets removing their replacement, dispels stripping area auras from everyone, stuck item visuals and challenge message spam. All fixed. Still open: mobs do not notice a Stalker who unstealths beside them until hit, overlapping scale effects reset early.
 - **Collect and checklist challenges** (f8600371, not deployed). Collect challenges (kill or activate) and checklist challenges (activate) work like kill challenges.
 - **Challenges** (d5741402, not deployed). Kill challenges like Cavern Clearing and Tremor Ridge Defender now unlock in their area, start on your first kill or from the challenge window, count through bronze, silver and gold, and time out or fail if you leave. No rewards yet.
