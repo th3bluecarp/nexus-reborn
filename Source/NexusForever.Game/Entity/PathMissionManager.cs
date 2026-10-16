@@ -117,6 +117,7 @@ namespace NexusForever.Game.Entity
                 case (Path.Explorer, 3u):
                 case (Path.Explorer, 12u):
                 case (Path.Explorer, 15u):
+                case (Path.Explorer, 18u): // tracking: retail followed a creature or trail (PathExplorerPowerMap), here reaching its locations completes it
                 case (Path.Settler, 27u):
                 {
                     uint[] locations = new[] { entry.WorldLocation2Id00, entry.WorldLocation2Id01, entry.WorldLocation2Id02, entry.WorldLocation2Id03 }
