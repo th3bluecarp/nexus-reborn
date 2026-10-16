@@ -8,6 +8,7 @@ Newest first. "Live" means running on our test server.
 
 ## 2026-10-15
 
+- - **Loot for 885 creatures** (39a3223d, live, published in data/). Newer Jabbithole pages label their drop table differently and my loot builder only read the older label, so most of the drop data was being ignored. Creatures with loot went from 115 to 885. Quest items only drop for players who have the matching collect objective open, through a new QuestObjectiveActive loot condition, and items that start a quest drop for everyone.
 - - **NPCs placed with real terrain height** (7e806faa, live, published in data/). NPCs whose map pins were far from any known spawn were skipped because their ground height was unknown. A small tool now reads the height and area from the server's map files, which come from the game client. It matches existing NPCs to within 0.19 m on median. 44 more creatures placed, 965 extra spawns in total, 275 quest givers and turn-ins. Not used in Illium and Thayd, where NPCs stand on buildings the terrain does not include.
 - - **Defensive pet stance** (4d78731f, live). Pets on Defensive now protect you, going after whatever is attacking you instead of copying your target, which is what Assist does.
 - - **Exploration XP** (08a64f7d, live). Revealing a new part of the zone map now gives a little XP, about a fifth of a quest's base XP for your level. Retail had exploration XP but the amount is a guess.
