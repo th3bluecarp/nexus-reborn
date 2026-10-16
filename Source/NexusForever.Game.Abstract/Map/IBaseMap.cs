@@ -33,6 +33,11 @@ namespace NexusForever.Game.Abstract.Map
         void EnqueueAdd(IGridEntity entity, Vector3 position, TimeSpan delay);
 
         /// <summary>
+        /// Invoke the supplied callback on the map update every interval until it returns false.
+        /// </summary>
+        void AddTimer(TimeSpan interval, Func<bool> tick);
+
+        /// <summary>
         /// Enqueue <see cref="IPlayer"/> to be added to <see cref="IBaseMap"/>.
         /// </summary>
         /// <remarks>

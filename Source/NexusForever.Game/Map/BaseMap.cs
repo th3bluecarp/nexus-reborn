@@ -104,6 +104,7 @@ namespace NexusForever.Game.Map
         public virtual void Update(double lastTick)
         {
             UpdateDelayedAdds(lastTick);
+            UpdateTimers(lastTick);
             ProcessGridActions();
             UpdateGrids(lastTick);
 
@@ -211,6 +212,43 @@ namespace NexusForever.Game.Map
         public void EnqueueAdd(IGridEntity entity, Vector3 position, TimeSpan delay)
         {
             delayedAdds.Add((new UpdateTimer(delay), entity, position));
+        }
+
+        private readonly List<(UpdateTimer Timer, Func<bool> Tick)> timers = [];
+
+        /// <summary>
+        /// Invoke the supplied callback on the map update every interval until it returns false.
+        /// </summary>
+        public void AddTimer(TimeSpan interval, Func<bool> tick)
+        {
+            timers.Add((new UpdateTimer(interval), tick));
+        }
+
+        private void UpdateTimers(double lastTick)
+        {
+            for (int i = timers.Count - 1; i >= 0; i--)
+            {
+                (UpdateTimer timer, Func<bool> tick) = timers[i];
+                timer.Update(lastTick);
+                if (!timer.HasElapsed)
+                    continue;
+
+                bool keep;
+                try
+                {
+                    keep = tick();
+                }
+                catch (Exception exception)
+                {
+                    log.Error(exception, "Map timer failed and was removed.");
+                    keep = false;
+                }
+
+                if (keep)
+                    timer.Reset();
+                else
+                    timers.RemoveAt(i);
+            }
         }
 
         private void UpdateDelayedAdds(double lastTick)
