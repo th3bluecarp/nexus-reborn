@@ -140,6 +140,11 @@ namespace NexusForever.Game.Entity
 
         public void SendInitialPackets()
         {
+            // the message layout comes from upstream and is untested against the client, it is only sent once there is
+            // something to send so characters without tradeskills log in exactly as before
+            if (tradeskills.Count == 0)
+                return;
+
             player.Session.EnqueueMessageEncrypted(new ServerProfessionsLoad
             {
                 Tradeskills = tradeskills.Select(t => BuildInfo(t.Key, t.Value)).ToList()
