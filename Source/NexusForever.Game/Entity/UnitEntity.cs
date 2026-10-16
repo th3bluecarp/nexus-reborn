@@ -339,6 +339,11 @@ namespace NexusForever.Game.Entity
         private readonly HashSet<uint> stealthSources = [];
 
         /// <summary>
+        /// Stance used by the creature AI when this unit is a combat pet.
+        /// </summary>
+        public NexusForever.Game.Static.Pet.PetStance PetStance { get; set; } = NexusForever.Game.Static.Pet.PetStance.Assist;
+
+        /// <summary>
         /// Returns if the unit is stealthed by at least one active stealth effect.
         /// </summary>
         public bool IsStealthed => stealthSources.Count > 0;

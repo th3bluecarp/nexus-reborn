@@ -5,6 +5,7 @@ using NexusForever.Game.Abstract.Entity.Movement.Command;
 using NexusForever.Game.Abstract.Entity.Movement.Command.Position;
 using NexusForever.Game.Abstract.Spell;
 using NexusForever.Game.Static.Entity;
+using NexusForever.Game.Static.Pet;
 using NexusForever.Game.Static.Entity.Movement.Spline;
 using NexusForever.Game.Static.Reputation;
 using NexusForever.Game.Static.Spell;
@@ -166,14 +167,14 @@ namespace NexusForever.Script.Main.AI
 
             petTimer.Reset();
 
-            if (owner.InCombat && owner.TargetGuid is uint ownerTargetGuid && ownerTargetGuid != entity.TargetGuid)
+            if (entity.PetStance != PetStance.Passive && owner.InCombat && owner.TargetGuid is uint ownerTargetGuid && ownerTargetGuid != entity.TargetGuid)
             {
                 IUnitEntity target = entity.Map.GetEntity<IUnitEntity>(ownerTargetGuid);
                 if (target != null && target.IsAlive && entity.CanAttack(target))
                     entity.ThreatManager.UpdateThreat(target, 100);
             }
 
-            if (!entity.TargetGuid.HasValue && entity.Position.GetDistance(owner.Position) > 6f)
+            if (entity.PetStance != PetStance.Stay && !entity.TargetGuid.HasValue && entity.Position.GetDistance(owner.Position) > 6f)
                 entity.MovementManager.Chase(owner, 3f);
         }
 
@@ -244,8 +245,8 @@ namespace NexusForever.Script.Main.AI
             if (entity is IUnitEntity { IsStealthed: true })
                 return;
 
-            // pets only fight what their owner fights (Assist stance)
-            if (GetPetOwner() != null)
+            // pets only pull on their own in the Aggressive stance, otherwise they fight what their owner fights
+            if (GetPetOwner() != null && this.entity.PetStance != PetStance.Aggressive)
                 return;
 
             AggroEntity(entity);

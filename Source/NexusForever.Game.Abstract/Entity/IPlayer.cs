@@ -113,6 +113,11 @@ namespace NexusForever.Game.Abstract.Entity
         void AddCombatPet(uint guid);
 
         /// <summary>
+        /// Guids of the combat pets currently summoned by the player.
+        /// </summary>
+        IReadOnlyCollection<uint> GetCombatPets();
+
+        /// <summary>
         /// Save <see cref="IPlayer"/> to database.
         /// </summary>
         /// <remarks>

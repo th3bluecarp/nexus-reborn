@@ -418,6 +418,14 @@ namespace NexusForever.Game.Entity
             combatPets.Add(guid);
         }
 
+        /// <summary>
+        /// Guids of the combat pets currently summoned by the player.
+        /// </summary>
+        public IReadOnlyCollection<uint> GetCombatPets()
+        {
+            return combatPets;
+        }
+
         public override void OnUnsummon(IWorldEntity entity)
         {
             base.OnUnsummon(entity);

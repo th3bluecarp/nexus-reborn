@@ -191,6 +191,11 @@ namespace NexusForever.Game.Abstract.Entity
         void BreakStealth();
 
         /// <summary>
+        /// Stance used by the creature AI when this unit is a combat pet.
+        /// </summary>
+        NexusForever.Game.Static.Pet.PetStance PetStance { get; set; }
+
+        /// <summary>
         /// Set target to supplied target guid.
         /// </summary>
         /// <remarks>
