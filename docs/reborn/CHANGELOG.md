@@ -4,6 +4,7 @@ Newest first. "Live" means running on the desktop server.
 
 ## 2026-10-15
 
+- **Creature abilities** (dc6f14a3, not deployed). 136 starting zone creatures now fight with the spells players saw them use on retail (archived Jabbithole ability lists), including telegraphed specials like the yeti Claw Slam, instead of a generic punch and jab.
 - **Quest creatures despawn once used** (live as 1ef1295d on reborn/loot, 7271a206 on the merge build). A tester could click the same Trapped Survivor over and over to finish the quest in seconds. Creatures that progress your quest when activated now despawn and come back on the respawn timer. DespawnUnit effects went live with it.
 - **Episode prerequisites** (1667b3b6, not deployed). Content gated on finishing a zone storyline now unlocks when its quests are done.
 - **Combat pets** (pets 65cc0119 and the commit before it, not deployed). Engineer bots, Esper Geist and Phantoms and Settler reinforcements now spawn, follow you, attack your target, use their ability buttons, and their kills count for you.
