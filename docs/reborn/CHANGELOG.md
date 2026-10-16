@@ -10,6 +10,7 @@ Newest first. "Live" means running on our test server.
 
 ## 2026-10-15
 
+- - **Two more prerequisite types** (d640a68a, live). The only unhandled prerequisites in the live logs were type 50 (a target under a buff, such as Exhausted: Combat Stealth) and type 71 (a health, shield or resource percentage). Unhandled types count as failed, which hides quests and dialogue options. Both now work. Meanings inferred from the data, logged in the ledger.
 - - **Quest creatures at their map markers** (630cf85a, live, published in data/). Quest creatures that Jabbithole never recorded are now placed at their objective's map marker, with ground height from the terrain files. 121 more creatures, 1,149 extra spawns in total, including the Spatial Anomaly you follow in Northern Wilds.
 - - **Equip quests** (1ac8fd84, live). 14 quest steps that say 'Equip the X' could never complete. Equipping the named item now counts, for example in Algoroc Survivalist Expedition and Hunting for Eldan Relics.
 - - **More Northern Wilds quests finishable** (13339687, live). Empowered Tower (follow the power cables), Spatial Anomaly (investigate the wreckage) and Contact with Thayd (the hidden step after lighting the flares) had steps that only a lost script could finish. Steps with a place to go now complete when you get there (261 such steps), and hidden steps with nothing to do complete once the rest of the quest is done (27 at first, 341 game wide once empty texts and Hidden-flagged notes are counted).
