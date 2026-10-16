@@ -332,6 +332,13 @@ namespace NexusForever.Game.Entity
             race              = (Race)model.Race;
             Class             = (Class)model.Class;
             path              = (Path)model.ActivePath;
+            if (model.Bind != null)
+            {
+                bindPointId   = model.Bind.BindPointId;
+                bindWorldId   = model.Bind.WorldId;
+                bindPosition  = new Vector3(model.Bind.X, model.Bind.Y, model.Bind.Z);
+                bindExists    = true;
+            }
             PathActivatedTime = model.PathActivatedTimestamp;
             InputKeySet       = (InputSets)model.InputKeySet;
             Faction1          = (Faction)model.FactionId;
@@ -545,8 +552,68 @@ namespace NexusForever.Game.Entity
         /// <summary>
         /// Save database changes for <see cref="Player"/> to <see cref="CharacterContext"/>.
         /// </summary>
+        private ushort bindPointId;
+        private ushort bindWorldId;
+        private Vector3 bindPosition;
+        private bool bindExists;
+        private bool bindDirty;
+
+        /// <summary>
+        /// Bind the player to the transmat terminal at the supplied position, Recall returns here.
+        /// </summary>
+        public void SetBindPoint(ushort bindPointId, ushort worldId, Vector3 position)
+        {
+            this.bindPointId = bindPointId;
+            bindWorldId      = worldId;
+            bindPosition     = position;
+            bindDirty        = true;
+        }
+
+        /// <summary>
+        /// Return the bound world and position, false when the player never bound.
+        /// </summary>
+        public bool TryGetBindPoint(out ushort worldId, out Vector3 position)
+        {
+            worldId  = bindWorldId;
+            position = bindPosition;
+            return bindExists || bindDirty;
+        }
+
+        private void SaveBind(CharacterContext context)
+        {
+            if (!bindDirty)
+                return;
+
+            var bind = new CharacterBindModel
+            {
+                Id          = CharacterId,
+                BindPointId = bindPointId,
+                WorldId     = bindWorldId,
+                X           = bindPosition.X,
+                Y           = bindPosition.Y,
+                Z           = bindPosition.Z
+            };
+
+            if (!bindExists)
+                context.Add(bind);
+            else
+            {
+                EntityEntry<CharacterBindModel> bindEntity = context.Attach(bind);
+                bindEntity.Property(p => p.BindPointId).IsModified = true;
+                bindEntity.Property(p => p.WorldId).IsModified     = true;
+                bindEntity.Property(p => p.X).IsModified           = true;
+                bindEntity.Property(p => p.Y).IsModified           = true;
+                bindEntity.Property(p => p.Z).IsModified           = true;
+            }
+
+            bindExists = true;
+            bindDirty  = false;
+        }
+
         public void Save(CharacterContext context)
         {
+            SaveBind(context);
+
             var model = new CharacterModel
             {
                 Id = CharacterId

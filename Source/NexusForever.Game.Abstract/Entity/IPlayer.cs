@@ -114,6 +114,16 @@ namespace NexusForever.Game.Abstract.Entity
         void AddCombatPet(uint guid);
 
         /// <summary>
+        /// Bind the player to the transmat terminal at the supplied position, Recall returns here.
+        /// </summary>
+        void SetBindPoint(ushort bindPointId, ushort worldId, System.Numerics.Vector3 position);
+
+        /// <summary>
+        /// Return the bound world and position, false when the player never bound.
+        /// </summary>
+        bool TryGetBindPoint(out ushort worldId, out System.Numerics.Vector3 position);
+
+        /// <summary>
         /// Guids of the combat pets currently summoned by the player.
         /// </summary>
         IReadOnlyCollection<uint> GetCombatPets();

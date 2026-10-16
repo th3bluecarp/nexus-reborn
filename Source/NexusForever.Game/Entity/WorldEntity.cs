@@ -603,6 +603,10 @@ namespace NexusForever.Game.Entity
             // checked before the updates below complete the objective
             bool questTarget = IsActiveQuestActivateTarget(activator);
 
+            // transmat terminals bind the player, Recall - Transmat returns here
+            if (CreatureInfo?.Entry != null && CreatureInfo.Entry.BindPointId != 0u && Map != null)
+                activator.SetBindPoint((ushort)CreatureInfo.Entry.BindPointId, (ushort)Map.Entry.Id, activator.Position);
+
             if (CreatureInfo.Entry != null)
             {
                 activator.PathMissionManager.OnActivate(CreatureInfo.Entry.Id, AssetManager.Instance.GetTargetGroupsForCreatureId(CreatureInfo.Entry.Id));

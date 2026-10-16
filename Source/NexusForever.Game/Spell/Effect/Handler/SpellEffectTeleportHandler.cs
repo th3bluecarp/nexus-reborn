@@ -43,6 +43,14 @@ namespace NexusForever.Game.Spell.Effect.Handler
             if (target is not IPlayer player)
                 return SpellEffectExecutionResult.Ok;
 
+            // a teleport without a location is Recall - Transmat, it goes to the player's bind point
+            if (data.WorldLocationId == 0u)
+            {
+                if (player.TryGetBindPoint(out ushort bindWorldId, out Vector3 bindPosition) && player.CanTeleport())
+                    player.TeleportTo(bindWorldId, bindPosition.X, bindPosition.Y, bindPosition.Z);
+                return SpellEffectExecutionResult.Ok;
+            }
+
             WorldLocation2Entry locationEntry = gameTableManager.WorldLocation2.GetEntry(data.WorldLocationId);
             if (locationEntry == null)
                 return SpellEffectExecutionResult.Ok;
