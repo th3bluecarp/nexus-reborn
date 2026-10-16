@@ -4,6 +4,7 @@ Newest first. "Live" means running on the desktop server.
 
 ## 2026-10-15
 
+- **Item visual swaps** (581acdcc, not deployed). 1,542 ItemVisualSwap effects now show the carried or wielded item model (quest objects, weapon visuals) and restore the old one afterwards.
 - **Logout fix** (live as 0fff3356 on reborn/loot, dfa9ed7a on the merge build). Logging out at the end of the countdown failed with an error and only finished when the game disconnected. The confirm is now accepted.
 - **Random proxy spells** (7c5fe043, not deployed). 195 ProxyRandomExclusive effects now cast one of their weighted spell choices.
 - **Pet stances** (1cd8fc5c, not deployed). The pet bar stance buttons work: passive, stay, assist and aggressive.
