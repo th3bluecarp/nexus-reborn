@@ -4,6 +4,7 @@ Newest first. "Live" means running on the desktop server.
 
 ## 2026-10-15
 
+- **Open world public events** (338e3e3b, not deployed). Zone events like Pikefall Expedition and Security Avatar Shutdown now start when you walk up to them, and kills and activations count toward them. Events that relied on special script spawns still can't finish.
 - **Path XP** (5d7a68db, not deployed). Finished path missions now give path XP (25 + 5 per character level, a tunable guess since retail values are unknown), so path levels and their rewards move.
 - **Explorer scavenger hunts** (65ac695b, not deployed). Relic hunts now track each clue: activate the relic or reach the dig spot.
 - **Explorer cartography** (b16868f7, not deployed). Survey missions like Northern Wilds Survey now fill in as you explore the zone map.
