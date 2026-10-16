@@ -1,4 +1,4 @@
-using NexusForever.Game.Abstract.Entity;
+﻿using NexusForever.Game.Abstract.Entity;
 using NexusForever.Game.Abstract.Spell;
 using NexusForever.Game.Abstract.Spell.Effect;
 using NexusForever.Game.Abstract.Spell.Effect.Data;
@@ -17,6 +17,9 @@ namespace NexusForever.Game.Spell.Effect.Handler
     [SpellEffectHandler(SpellEffectType.Scale)]
     public class SpellEffectScaleHandler : ISpellEffectApplyHandler<ISpellEffectDefaultData>, ISpellEffectRemoveHandler<ISpellEffectDefaultData>
     {
+        // active timed scales per unit in apply order, the newest one shows
+        private static readonly System.Collections.Concurrent.ConcurrentDictionary<uint, List<(uint EffectId, float Scale)>> active = new();
+
         /// <summary>
         /// Handle <see cref="ISpell"/> effect apply on <see cref="IUnitEntity"/> target.
         /// </summary>
@@ -25,6 +28,13 @@ namespace NexusForever.Game.Spell.Effect.Handler
             float scale = BitConverter.UInt32BitsToSingle(data.DataBits00);
             if (!float.IsFinite(scale) || scale <= 0f || scale > 20f)
                 return SpellEffectExecutionResult.PreventEffect;
+
+            if (info.Entry.DurationTime != 0u)
+            {
+                List<(uint EffectId, float Scale)> list = active.GetOrAdd(target.Guid, _ => []);
+                lock (list)
+                    list.Add((info.EffectId, scale));
+            }
 
             target.MovementManager.SetScale(scale);
             return SpellEffectExecutionResult.Ok;
@@ -39,7 +49,20 @@ namespace NexusForever.Game.Spell.Effect.Handler
             if (info.Entry.DurationTime == 0u)
                 return;
 
-            target.MovementManager.SetScale(1f);
+            float scale = 1f;
+            if (active.TryGetValue(target.Guid, out List<(uint EffectId, float Scale)> list))
+            {
+                lock (list)
+                {
+                    list.RemoveAll(e => e.EffectId == info.EffectId);
+                    if (list.Count > 0)
+                        scale = list[^1].Scale;
+                    else
+                        active.TryRemove(target.Guid, out _);
+                }
+            }
+
+            target.MovementManager.SetScale(scale);
         }
     }
 }
