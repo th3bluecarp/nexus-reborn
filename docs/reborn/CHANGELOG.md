@@ -10,6 +10,7 @@ Newest first. "Live" means running on our test server.
 
 ## 2026-10-15
 
+- - **Gathering xp** (3086050e, live). Breaking a harvest node with the matching gathering skill now raises that skill. The amount is a guess, the data has no harvest xp.
 - - **Recipe items** (9d897732, live). Using a recipe now teaches its schematic, saved with your character, and you can then craft it. 385 recipes point at schematics that still exist.
 - - **Crafting, first part** (70bdc14d, live). Simple crafting works on the server: a known schematic uses its materials from your satchel or bags, gives the item and tradeskill xp, and counts for crafting quests and work orders (2,735 such quest steps). Untested with the client, more complex crafting with additives not done.
 - - **Harvest node loot** (124a996d, live, published in data/). A download of 411 harvest node pages gives 59 node types real drop tables (up from 23), ready for when harvesting works.

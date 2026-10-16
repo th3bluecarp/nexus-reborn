@@ -68,6 +68,8 @@ Confidence: **High** = consistent across all the data we checked and no counter 
 |---|---|---|---|
 | Tradeskill.Flags | 2 gathering, 4 equipment crafting, 8 other crafting, 1 hobby (Cooking, Fishing, Farmer), 16 Runecrafting | Medium | from the names |
 | active limit | two crafting tradeskills, gathering and hobbies free | Medium | late retail rule |
+| gathering xp | the current tier CraftXp per node destroyed | Invented | TradeskillTier has no harvest xp column |
+| known schematics | flag 1 schematics up to the current tier, plus recipe items | Medium | flag 1 schematics are never taught by an item |
 | messages | ServerProfessionsLoad, ServerProfessionUpdate and ClientTradeskillLearn layouts come from upstream and are untested with the client | | professions list only sent once something is learned |
 
 ## Path missions
