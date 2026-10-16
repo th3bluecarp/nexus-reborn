@@ -47,6 +47,7 @@ Confidence: **High** = consistent across all the data we checked and no counter 
 | ProxyChannelVariableTime (94) | (spell, delay ms) pairs | High | delays sum to the effect duration | |
 | ProxyLinearAE (19) | sub spell cast at the target | Low | DataBits01/02 are an angle and distance we ignore | needs positioned casts |
 | DistributedDamage, DistanceDependentDamage | plain damage | Low | calculator reads them like Damage | no split or falloff |
+| SetBusy (107) | DataBits00 1 busy, 0 free; busy objects refuse activation; 60 s fallback clear | High (meaning), Invented (fallback) | 352 of 508 spells are activate spells on the object; 62 spells set at 0 ms and clear after 2 to 60 s; 0 used by PSI Recharging and Failed | DataBits01 (a creature id on 6 rows) unknown; 275 set-only spells relied on lost scripts |
 | Teleport with no location | recall to bind point | Medium | Recall - Transmat (8568) is the only such spell | |
 
 ## Path missions
@@ -85,6 +86,6 @@ Confidence: **High** = consistent across all the data we checked and no counter 
 
 These fix a visible symptom without knowing the real rule, the kind of patch that piles up. Each should be replaced when the mechanism is understood.
 
-- **Quest creatures despawn after activation** (WorldEntity.OnActivateSuccess). Retail most likely used SetBusy (571 effects on spells like Free Hostage, Clearing Weeds) and server scripts. We never decoded SetBusy.
+- **Quest creatures despawn after activation** (WorldEntity.OnActivateSuccess). Narrowed in 2da48e44 after decoding SetBusy: it now only applies when the activate spell has neither a DespawnUnit nor a timed SetBusy clear, the cases retail finished with server scripts (the Trapped Survivor spell 1817 has only Activate).
 - **Open world events start by proximity.** Retail started them from lost server scripts.
 - **Creature abilities from Jabbithole.** Observed spells, not the creature's real rotation or conditions.
