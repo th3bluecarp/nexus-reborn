@@ -40,5 +40,13 @@ namespace NexusForever.Game.Map
         {
             return entities.TryGetValue((gridX, gridZ), out HashSet<EntityModel> cellEntities) ? cellEntities : Enumerable.Empty<EntityModel>();
         }
+
+        /// <summary>
+        /// Return every <see cref="EntityModel"/> of the world, regardless of grid.
+        /// </summary>
+        public IEnumerable<EntityModel> GetEntities()
+        {
+            return entities.Values.SelectMany(e => e);
+        }
     }
 }

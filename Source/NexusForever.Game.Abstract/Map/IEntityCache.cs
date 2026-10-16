@@ -16,5 +16,10 @@ namespace NexusForever.Game.Abstract.Map
         /// Return all <see cref="EntityModel"/>'s to be spawned for parent <see cref="IMapGrid"/>.
         /// </summary>
         IEnumerable<EntityModel> GetEntities(uint gridX, uint gridZ);
+
+        /// <summary>
+        /// Return every <see cref="EntityModel"/> of the world, regardless of grid.
+        /// </summary>
+        IEnumerable<EntityModel> GetEntities();
     }
 }

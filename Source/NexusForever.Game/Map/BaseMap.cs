@@ -14,7 +14,9 @@ using NexusForever.Game.Abstract.PublicEvent;
 using NexusForever.Game.Configuration.Model;
 using NexusForever.Game.Static.Entity;
 using NexusForever.Game.Static.Map;
+using NexusForever.Game.Static.Reputation;
 using NexusForever.Game.Static.Spell;
+using NexusForever.GameTable;
 using NexusForever.GameTable.Model;
 using NexusForever.IO.Map;
 using NexusForever.Network.Message;
@@ -647,8 +649,23 @@ namespace NexusForever.Game.Map
         /// </summary>
         public virtual ResurrectionType GetResurrectionType()
         {
-            // TODO: add support for Holocrypts
-            return ResurrectionType.WakeHere | ResurrectionType.WakeHereServiceToken;
+            ResurrectionType type = ResurrectionType.WakeHere | ResurrectionType.WakeHereServiceToken;
+            if (GetHolocrypts().Count > 0)
+                type |= ResurrectionType.Holocrypt;
+            return type;
+        }
+
+        private List<EntityModel> holocrypts;
+
+        /// <summary>
+        /// Stand in for retail holocrypts, whose locations are not in the client data: the transmat terminals of this world
+        /// (creatures with a bind point), which sit at the same settlements.
+        /// </summary>
+        private List<EntityModel> GetHolocrypts()
+        {
+            return holocrypts ??= entityCache?.GetEntities()
+                .Where(m => GameTableManager.Instance.Creature2.GetEntry(m.Creature)?.BindPointId is uint id && id != 0u)
+                .ToList() ?? [];
         }
 
         /// <summary>
@@ -658,9 +675,9 @@ namespace NexusForever.Game.Map
         {
             switch (type)
             {
-                /*case ResurrectionType.Holocrypt:
+                case ResurrectionType.Holocrypt:
                     OnResurrectHolocrypt(player);
-                    break;*/
+                    break;
                 default:
                     OnResurrect(player);
                     break;
@@ -669,8 +686,17 @@ namespace NexusForever.Game.Map
 
         private void OnResurrectHolocrypt(IPlayer player)
         {
-            // TODO: add support for Holocrypts
-            throw new NotImplementedException();
+            // nearest transmat that is not hostile to the player, full health as a free respawn
+            EntityModel holocrypt = GetHolocrypts()
+                .Where(m => player.GetDispositionTo((Faction)m.Faction1) != Disposition.Hostile)
+                .OrderBy(m => Vector3.DistanceSquared(player.Position, new Vector3(m.X, m.Y, m.Z)))
+                .FirstOrDefault();
+
+            player.ModifyHealth(player.MaxHealth, DamageType.Heal, null);
+            player.Shield = 0;
+
+            if (holocrypt != null)
+                player.TeleportToLocal(new Vector3(holocrypt.X, holocrypt.Y, holocrypt.Z));
         }
 
         private void OnResurrect(IPlayer player)
