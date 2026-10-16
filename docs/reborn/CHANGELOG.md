@@ -4,6 +4,7 @@ Newest first. "Live" means running on the desktop server.
 
 ## 2026-10-15
 
+- **Stalker and Esper damage** (dcdae4ad, not deployed). DistributedDamage and DistanceDependentDamage effects did no damage, which broke Stalker Shred and Eviscerate and Esper Telekinetic Field. They now hit like normal damage.
 - **Invulnerability** (011c687e, not deployed). Invulnerability and energy shield spells (UnitStateSet state 6) now block all damage while they last.
 - **Item visual swaps** (581acdcc, not deployed). 1,542 ItemVisualSwap effects now show the carried or wielded item model (quest objects, weapon visuals) and restore the old one afterwards.
 - **Logout fix** (live as 0fff3356 on reborn/loot, dfa9ed7a on the merge build). Logging out at the end of the countdown failed with an error and only finished when the game disconnected. The confirm is now accepted.
