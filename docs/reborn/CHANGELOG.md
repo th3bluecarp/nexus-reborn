@@ -4,6 +4,7 @@ Newest first. "Live" means running on the desktop server.
 
 ## 2026-10-15
 
+- **Explorer scavenger hunts** (65ac695b, not deployed). Relic hunts now track each clue: activate the relic or reach the dig spot.
 - **Explorer cartography** (b16868f7, not deployed). Survey missions like Northern Wilds Survey now fill in as you explore the zone map.
 - **Path missions** (dab0aafd, not deployed). Your path's missions for each zone now show up and progress: Soldier assassinations, demolitions and rescues, Explorer vistas, claims, exploration and activations, Settler scout, mayor and sheriff missions. Progress is saved. Scientist scans, Settler building and Soldier holdouts are next.
 - **World phases** (acd6d27b, not deployed). ChangePhase effects (portals, rituals) now move you into the other world phase.
