@@ -12,7 +12,7 @@ namespace NexusForever.Game.Spell.Effect.Handler
     /// Makes the caster's pets of a creature cast a spell, used by the Engineer bot ability buttons.
     /// </summary>
     /// <remarks>
-    /// DataBits00 is the pet Creature2 id and DataBits01 the Spell4 the pet casts, at the owner's target when it has one.
+    /// DataBits00 is the pet Creature2 id and DataBits01 the Spell4 the pet casts, at the owner's target, else the pet's own target, else the pet itself.
     /// </remarks>
     [SpellEffectHandler(SpellEffectType.PetCastSpell)]
     public class SpellEffectPetCastSpellHandler : ISpellEffectApplyHandler<ISpellEffectDefaultData>
@@ -31,7 +31,7 @@ namespace NexusForever.Game.Spell.Effect.Handler
 
                 pet.CastSpell(data.DataBits01, new SpellParameters
                 {
-                    PrimaryTargetId        = caster.TargetGuid ?? pet.Guid,
+                    PrimaryTargetId        = caster.TargetGuid ?? pet.TargetGuid ?? pet.Guid,
                     UserInitiatedSpellCast = false
                 });
                 cast = true;
