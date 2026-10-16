@@ -24,7 +24,7 @@ Columns in parity.csv:
 
 | | Ours | Upstream | Total in client data |
 |---|---|---|---|
-| Spell effect types with a handler | 52 | 16 | 136 |
+| Spell effect types with a handler | 53 | 16 | 136 |
 | Prerequisite types checked | 48 | 17 | 273 |
 | Quest objective types that progress | 22 | 9 | 40 |
 

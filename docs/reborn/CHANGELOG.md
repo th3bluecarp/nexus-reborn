@@ -10,6 +10,7 @@ Newest first. "Live" means running on our test server.
 
 ## 2026-10-15
 
+- - **Recipe items** (9d897732, live). Using a recipe now teaches its schematic, saved with your character, and you can then craft it. 385 recipes point at schematics that still exist.
 - - **Crafting, first part** (70bdc14d, live). Simple crafting works on the server: a known schematic uses its materials from your satchel or bags, gives the item and tradeskill xp, and counts for crafting quests and work orders (2,735 such quest steps). Untested with the client, more complex crafting with additives not done.
 - - **Harvest node loot** (124a996d, live, published in data/). A download of 411 harvest node pages gives 59 node types real drop tables (up from 23), ready for when harvesting works.
 - - **Tradeskills, first part** (8ede3472, live). Upstream added the tradeskill message formats, so I built on them: you can learn tradeskills from a trainer (two crafting skills at once, gathering free), they are saved, 'Learn two tradeskills' quests count, and the 400-odd crafting quest checks on a tradeskill tier now work. Untested with the client: whether the trainer window opens and whether the profession messages are right. Harvesting and crafting come next.
