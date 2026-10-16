@@ -1,4 +1,5 @@
-﻿using System.Numerics;
+﻿using NexusForever.Game.Abstract.Quest;
+using System.Numerics;
 using Newtonsoft.Json.Linq;
 using NexusForever.Database.World.Model;
 using NexusForever.Game.Abstract.Chat;
@@ -599,6 +600,9 @@ namespace NexusForever.Game.Entity
         /// </summary>
         public virtual void OnActivateSuccess(IPlayer activator)
         {
+            // checked before the updates below complete the objective
+            bool questTarget = IsActiveQuestActivateTarget(activator);
+
             if (CreatureInfo.Entry != null)
             {
                 activator.QuestManager.ObjectiveUpdate(QuestObjectiveType.ActivateEntity, CreatureInfo.Entry.Id, 1u);
@@ -618,6 +622,58 @@ namespace NexusForever.Game.Entity
             }
 
             scriptCollection?.Invoke<IWorldEntityScript>(s => s.OnActivateSuccess(activator));
+
+            // Quest creatures (trapped survivors, cages, cannons) go away once used and come back on the respawn timer.
+            // Their activate spells only carry an Activate effect, retail removed them server side.
+            if (questTarget && this is IUnitEntity unit && unit is not IPlayer)
+                unit.Despawn();
+        }
+
+        /// <summary>
+        /// Returns if activating this entity progresses an unfinished objective of one of the activator's accepted quests.
+        /// </summary>
+        private bool IsActiveQuestActivateTarget(IPlayer activator)
+        {
+            if (CreatureInfo?.Entry == null)
+                return false;
+
+            uint creatureId = CreatureInfo.Entry.Id;
+            var targetGroups = AssetManager.Instance.GetTargetGroupsForCreatureId(creatureId);
+
+            foreach (IQuest quest in activator.QuestManager.GetActiveQuests())
+            {
+                if (quest.State != QuestState.Accepted)
+                    continue;
+
+                foreach (IQuestObjective objective in quest)
+                {
+                    if (objective.IsComplete())
+                        continue;
+
+                    QuestObjectiveEntry entry = objective.ObjectiveInfo.Entry;
+                    switch (objective.ObjectiveInfo.Type)
+                    {
+                        case QuestObjectiveType.ActivateEntity:
+                        case QuestObjectiveType.ActivateEntity2:
+                        case QuestObjectiveType.SucceedCSI:
+                            if (entry.Data == creatureId)
+                                return true;
+                            break;
+                        case QuestObjectiveType.ActivateTargetGroup:
+                        case QuestObjectiveType.ActivateTargetGroupChecklist:
+                        case QuestObjectiveType.Unknown10:
+                            if (targetGroups.Contains(entry.Data))
+                                return true;
+                            break;
+                        case QuestObjectiveType.VirtualCollect:
+                            if (targetGroups.Contains(entry.TargetGroupIdRewardPane))
+                                return true;
+                            break;
+                    }
+                }
+            }
+
+            return false;
         }
 
         /// <summary>
