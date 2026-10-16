@@ -3,11 +3,13 @@ using NexusForever.Database.Character;
 using NexusForever.Database.Character.Model;
 using NexusForever.Game.Abstract.Entity;
 using NexusForever.Game.Static.Crafting;
+using NexusForever.Game.Static.Entity;
 using NexusForever.Game.Static.Quest;
 using NexusForever.GameTable;
 using NexusForever.GameTable.Model;
 using NexusForever.Network.World.Message.Model.Crafting;
 using NexusForever.Network.World.Message.Model.Shared;
+using NexusForever.Network.World.Message.Static;
 
 namespace NexusForever.Game.Entity
 {
@@ -153,6 +155,127 @@ namespace NexusForever.Game.Entity
             return tradeskill.Xp >= tier.RequiredXp;
         }
 
+        /// <summary>
+        /// Highest TradeskillTier.Tier reached by xp, 0 when the tradeskill is not known.
+        /// </summary>
+        private uint CurrentTier(TradeskillType type)
+        {
+            if (!tradeskills.TryGetValue(type, out Tradeskill tradeskill))
+                return 0u;
+
+            return GameTableManager.Instance.TradeskillTier.Entries
+                .Where(t => t.TradeSkillId == (uint)type && tradeskill.Xp >= t.RequiredXp)
+                .Select(t => t.Tier)
+                .DefaultIfEmpty(1u)
+                .Max();
+        }
+
+        private TradeskillTierEntry CurrentTierEntry(TradeskillType type)
+        {
+            uint tier = CurrentTier(type);
+            return GameTableManager.Instance.TradeskillTier.Entries.FirstOrDefault(t => t.TradeSkillId == (uint)type && t.Tier == tier);
+        }
+
+        /// <summary>
+        /// Schematics known without an item: flag 1 (1,253 schematics, none of them taught by a GiveSchematic item) of an
+        /// active tradeskill at or below its current tier.
+        /// </summary>
+        private bool KnowsSchematic(TradeskillSchematic2Entry schematic)
+        {
+            var type = (TradeskillType)schematic.TradeSkillId;
+            if (!tradeskills.TryGetValue(type, out Tradeskill tradeskill) || !tradeskill.Active)
+                return false;
+
+            return (schematic.Flags & 1u) != 0u && schematic.Tier <= CurrentTier(type);
+        }
+
+        private IEnumerable<uint> KnownSchematics()
+        {
+            return GameTableManager.Instance.TradeskillSchematic2.Entries
+                .Where(KnowsSchematic)
+                .Select(s => s.Id);
+        }
+
+        public void Craft(uint tradeskillSchematic2Id, uint count)
+        {
+            TradeskillSchematic2Entry schematic = GameTableManager.Instance.TradeskillSchematic2.GetEntry(tradeskillSchematic2Id);
+            if (schematic == null || !KnowsSchematic(schematic))
+            {
+                SendCraftFinish(tradeskillSchematic2Id, 0u, 0u, false);
+                return;
+            }
+
+            var materials = new[]
+            {
+                (schematic.Item2IdMaterial00, schematic.MaterialCost00), (schematic.Item2IdMaterial01, schematic.MaterialCost01),
+                (schematic.Item2IdMaterial02, schematic.MaterialCost02), (schematic.Item2IdMaterial03, schematic.MaterialCost03),
+                (schematic.Item2IdMaterial04, schematic.MaterialCost04)
+            }.Where(m => m.Item1 != 0u && m.Item2 != 0u).ToArray();
+
+            for (uint i = 0u; i < Math.Max(count, 1u); i++)
+            {
+                if (!materials.All(m => HasMaterial(m.Item1, m.Item2)))
+                {
+                    if (i == 0u)
+                        SendCraftFinish(tradeskillSchematic2Id, 0u, 0u, false);
+                    break;
+                }
+
+                foreach ((uint itemId, uint cost) in materials)
+                    TakeMaterial(itemId, cost);
+
+                var type = (TradeskillType)schematic.TradeSkillId;
+                TradeskillTierEntry tier = CurrentTierEntry(type);
+                uint xp = tier?.CraftXp ?? 0u;
+                Tradeskill tradeskill = tradeskills[type];
+                tradeskill.Xp    += xp;
+                tradeskill.IsDirty = true;
+
+                if (schematic.Item2IdOutput != 0u)
+                    player.Inventory.ItemCreate(InventoryLocation.Inventory, schematic.Item2IdOutput, Math.Max(schematic.OutputCount, 1u), ItemUpdateReason.Crafting);
+
+                SendCraftFinish(tradeskillSchematic2Id, schematic.Item2IdOutput, xp, true);
+                SendUpdate(type, tradeskill);
+
+                // work orders and crafting quests name the schematic
+                player.QuestManager.ObjectiveUpdate(QuestObjectiveType.CraftSchematic, tradeskillSchematic2Id, 1u);
+                player.QuestManager.ObjectiveUpdate(QuestObjectiveType.ObtainSchematic, tradeskillSchematic2Id, 1u);
+            }
+        }
+
+        private static ushort? MaterialId(uint itemId)
+        {
+            TradeskillMaterialEntry entry = GameTableManager.Instance.TradeskillMaterial.Entries.FirstOrDefault(m => m.Item2IdStatRevolution == itemId);
+            return entry != null ? (ushort)entry.Id : null;
+        }
+
+        private bool HasMaterial(uint itemId, uint cost)
+        {
+            ushort? materialId = MaterialId(itemId);
+            return (materialId != null && player.SupplySatchelManager.CanAfford(materialId.Value, cost))
+                || player.Inventory.GetItemCount(itemId) >= cost;
+        }
+
+        private void TakeMaterial(uint itemId, uint cost)
+        {
+            ushort? materialId = MaterialId(itemId);
+            if (materialId != null && player.SupplySatchelManager.CanAfford(materialId.Value, cost))
+                player.SupplySatchelManager.RemoveAmount(materialId.Value, cost);
+            else
+                player.Inventory.ItemDelete(itemId, cost, ItemUpdateReason.Crafting);
+        }
+
+        private void SendCraftFinish(uint schematicId, uint itemId, uint xp, bool pass)
+        {
+            player.Session.EnqueueMessageEncrypted(new ServerCraftingFinish
+            {
+                Pass                          = pass,
+                TradeskillSchematic2IdCrafted = schematicId,
+                Item2IdCrafted                = itemId,
+                EarnedXp                      = xp
+            });
+        }
+
         private static TradeskillInfo BuildInfo(TradeskillType type, Tradeskill tradeskill)
         {
             return new TradeskillInfo
@@ -180,7 +303,8 @@ namespace NexusForever.Game.Entity
 
             player.Session.EnqueueMessageEncrypted(new ServerProfessionsLoad
             {
-                Tradeskills = tradeskills.Select(t => BuildInfo(t.Key, t.Value)).ToList()
+                Tradeskills       = tradeskills.Select(t => BuildInfo(t.Key, t.Value)).ToList(),
+                LearnedSchematics = KnownSchematics().ToList()
             });
         }
     }

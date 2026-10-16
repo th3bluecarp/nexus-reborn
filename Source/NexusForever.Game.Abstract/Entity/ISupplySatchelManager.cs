@@ -41,5 +41,10 @@ namespace NexusForever.Game.Abstract.Entity
         /// Returns whether there is enough of the given material
         /// </summary>
         bool CanAfford(ushort materialId, uint amount);
+
+        /// <summary>
+        /// Remove an amount of a tradeskill material from the satchel.
+        /// </summary>
+        void RemoveAmount(ushort materialId, uint amount);
     }
 }

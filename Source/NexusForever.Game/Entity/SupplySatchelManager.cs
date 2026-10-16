@@ -136,7 +136,7 @@ namespace NexusForever.Game.Entity
             RemoveAmount(materialId, amount);
         }
 
-        private void RemoveAmount(ushort materialId, uint amount)
+        public void RemoveAmount(ushort materialId, uint amount)
         {
             if (amount > tradeskillMaterials[materialId].Amount)
                 throw new ArgumentOutOfRangeException(nameof(amount));

@@ -16,5 +16,10 @@ namespace NexusForever.Game.Abstract.Entity
         /// Returns if the player knows the tradeskill of the supplied TradeskillTier and has reached that tier.
         /// </summary>
         bool HasReachedTier(uint tradeskillTierId);
+
+        /// <summary>
+        /// Craft a schematic count times, consuming materials from the supply satchel and bags.
+        /// </summary>
+        void Craft(uint tradeskillSchematic2Id, uint count);
     }
 }
