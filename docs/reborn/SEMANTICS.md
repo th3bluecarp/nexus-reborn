@@ -60,6 +60,7 @@ Confidence: **High** = consistent across all the data we checked and no counter 
 | DistributedDamage, DistanceDependentDamage | plain damage | Low | calculator reads them like Damage | no split or falloff |
 | SetBusy (107) | DataBits00 1 busy, 0 free; busy objects refuse activation; 60 s fallback clear | High (meaning), Invented (fallback) | 352 of 508 spells are activate spells on the object; 62 spells set at 0 ms and clear after 2 to 60 s; 0 used by PSI Recharging and Failed | DataBits01 (a creature id on 6 rows) unknown; 275 set-only spells relied on lost scripts |
 | NpcExecutionDelay (35) | the casting creature does nothing for the effect duration, a recovery window | Medium | 3,288 effects, 94 percent with no data and 1 to 4 s durations, all on creature spells | DataBits on the other 6 percent unknown |
+| PathXpModify (93) | DataBits00 x 10 path xp | Invented | 5 effects, values 1, 10, 30 | |
 | Teleport with no location | recall to bind point | Medium | Recall - Transmat (8568) is the only such spell | |
 
 ## Tradeskills
@@ -111,7 +112,7 @@ Confidence: **High** = consistent across all the data we checked and no counter 
 | Value | Ours | Where |
 |---|---|---|
 | kill XP formula | tunable | KillExperience |
-| exploration XP | 20 percent of the level base quest XP per newly revealed zone map hex group | ZoneMapManager |
+| exploration XP | a whole zone map is worth 10 times the level base quest XP, split over its hex groups | ZoneMapManager |
 | respawn delay | 60 s for everything | Realm:Respawn |
 | challenge timer, leave-area grace, cooldown | 5 min, 10 s, 30 min | ChallengeManager |
 | challenge auto start | flag 0x20 | ChallengeManager (Medium: present on most kill challenges) |
@@ -131,6 +132,7 @@ These fix a visible symptom without knowing the real rule, the kind of patch tha
 - **Hidden script steps complete themselves.** Activate steps with no target or location and either no text (341 game wide) or the Hidden flag with a designer note as text (last step of Contact with Thayd) were finished by lost scripts; they complete once every other step is done (QuestManager.UpdateAreaObjectives).
 - **Gather objectives count killing or using the node.** GatheResource objectives (10, such as the Fallen Trees in A Fiery Escape) name a harvest node; real harvesting needs tradeskills, so destroying or activating the creature counts (UnitEntity kill credit, WorldEntity.OnActivateSuccess).
 - **Starting zone transports teleport.** The Ship Controls in Northern Wilds and the Navigation Controls in Levian Bay only carry an Activate effect; retail flew the player with a lost script. Using them teleports to the receiver location of the quest that ends on the continent (WorldEntity.ScriptedTransports). The Portal to Celestion (Everstar Grove), the Transport to Everstar Grove (Northern Wilds) and the Crimson Isle Ship Controls (to Artemis Zin in Ellevar, where the next quest starts) work the same way.
+- **Survivors climb out of the wreckage.** Freeing a Trapped Survivor (11070) spawns one of the never placed Crash Survivors, which runs 15 m away and is removed (Script.Main NorthernWilds/TrappedSurvivorEntityScript).
 - **Holocrypts are the nearest transmat.** Holocrypt locations are not in the client data, so the holocrypt respawn goes to the nearest non-hostile transmat terminal at full health (BaseMap.OnResurrectHolocrypt).
 - **Open world events start by proximity.** Retail started them from lost server scripts.
 - **Creature abilities from Jabbithole.** Observed spells, not the creature's real rotation or conditions.
