@@ -188,7 +188,7 @@ namespace NexusForever.Game.Entity
 
                     // a hidden step with no text, target or place (the last step of Contact with Thayd) was finished by a lost
                     // script once the other steps were done
-                    else if (targetless && !HasIndicator(entry) && entry.LocalizedTextIdFull == 0u
+                    else if (targetless && !HasIndicator(entry) && HasNoText(entry)
                         && quest.Where(o => o != objective).All(o => o.IsComplete() || o.ObjectiveInfo.IsOptional()))
                         updates.Add((quest, objective.ObjectiveInfo.Id));
                 }
@@ -196,6 +196,11 @@ namespace NexusForever.Game.Entity
 
             foreach ((IQuest quest, uint objectiveId) in updates)
                 quest.ObjectiveUpdate(objectiveId, 1u);
+        }
+
+        private static bool HasNoText(QuestObjectiveEntry entry)
+        {
+            return entry.LocalizedTextIdFull == 0u || string.IsNullOrWhiteSpace(GameTableManager.Instance.TextEnglish?.GetEntry(entry.LocalizedTextIdFull));
         }
 
         private static bool HasIndicator(QuestObjectiveEntry entry)
