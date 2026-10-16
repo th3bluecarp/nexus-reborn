@@ -89,6 +89,11 @@ namespace NexusForever.Game.Abstract.Quest
         void RewardPaneObjectiveUpdate(QuestObjectiveType type, uint targetGroupId, uint progress);
 
         /// <summary>
+        /// Update objectives that ask the player to equip the supplied item.
+        /// </summary>
+        void EquipObjectiveUpdate(uint itemId);
+
+        /// <summary>
         /// Set any <see cref="IQuestObjective"/>'s with supplied <see cref="QuestObjectiveType"/> and data to an absolute progress value.
         /// </summary>
         /// <remarks>

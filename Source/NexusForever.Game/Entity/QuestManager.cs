@@ -177,7 +177,8 @@ namespace NexusForever.Game.Entity
 
                     QuestObjectiveEntry entry = objective.ObjectiveInfo.Entry;
                     bool targetless = objective.ObjectiveInfo.Type == QuestObjectiveType.ActivateEntity
-                        && objective.ObjectiveInfo.Data == 0u && entry.TargetGroupIdRewardPane == 0u;
+                        && objective.ObjectiveInfo.Data == 0u && entry.TargetGroupIdRewardPane == 0u
+                        && objective.ObjectiveInfo.EquipItemId == 0u;
 
                     // EnterArea, and activate objectives with nothing to activate but a place to go (Follow the power cables,
                     // Investigate ship wreckage), complete inside the indicator location
@@ -829,6 +830,12 @@ namespace NexusForever.Game.Entity
         /// <summary>
         /// Update any active quest <see cref="IQuestObjective"/>'s with supplied <see cref="QuestObjectiveType"/> whose reward pane target group matches with progress.
         /// </summary>
+        public void EquipObjectiveUpdate(uint itemId)
+        {
+            foreach (IQuest quest in activeQuests.Values.ToList())
+                quest.EquipObjectiveUpdate(itemId);
+        }
+
         public void RewardPaneObjectiveUpdate(QuestObjectiveType type, uint targetGroupId, uint progress)
         {
             foreach (IQuest quest in activeQuests.Values.ToList())

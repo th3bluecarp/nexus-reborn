@@ -17,6 +17,7 @@ namespace NexusForever.Game.Quest
         /// Create a new <see cref="QuestObjectiveInfo"/> with supplied <see cref="QuestObjectiveEntry"/>.
         /// </summary>
         public uint Data { get; }
+        public uint EquipItemId { get; }
 
         public QuestObjectiveInfo(QuestObjectiveEntry entry)
         {
@@ -24,9 +25,25 @@ namespace NexusForever.Game.Quest
             Data  = entry.Data == 0u && Type is QuestObjectiveType.ActivateEntity or QuestObjectiveType.SucceedCSI or QuestObjectiveType.KillCreature
                 ? CreatureFromText(entry.LocalizedTextIdFull)
                 : entry.Data;
+            if (Type == QuestObjectiveType.ActivateEntity && entry.Data == 0u)
+                EquipItemId = EquipItemFromText(entry.LocalizedTextIdFull);
         }
 
         // objectives with Data 0 that name exactly one creature in their text, as $(creature=27196): 274 ActivateEntity, 15 SucceedCSI, 1 KillCreature
+        // 14 ActivateEntity objectives with Data 0 read Equip the $(item=N)
+        private static uint EquipItemFromText(uint textId)
+        {
+            string text = GameTableManager.Instance.TextEnglish?.GetEntry(textId);
+            if (string.IsNullOrEmpty(text) || !text.TrimStart().StartsWith("Equip"))
+                return 0u;
+
+            uint[] ids = Regex.Matches(text, @"item=(\d+)")
+                .Select(m => uint.Parse(m.Groups[1].Value))
+                .Distinct()
+                .ToArray();
+            return ids.Length == 1 ? ids[0] : 0u;
+        }
+
         private static uint CreatureFromText(uint textId)
         {
             string text = GameTableManager.Instance.TextEnglish?.GetEntry(textId);

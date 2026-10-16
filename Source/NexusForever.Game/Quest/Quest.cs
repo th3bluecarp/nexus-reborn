@@ -559,6 +559,17 @@ namespace NexusForever.Game.Quest
             }
         }
 
+        /// <summary>
+        /// Update objectives that ask the player to equip the supplied item.
+        /// </summary>
+        public void EquipObjectiveUpdate(uint itemId)
+        {
+            if (itemId == 0u)
+                return;
+
+            ObjectiveUpdate(o => o.ObjectiveInfo.EquipItemId == itemId, 1u);
+        }
+
         private void ObjectiveUpdate(Func<IQuestObjective, bool> predicate, uint progress)
         {
             if (PendingDelete)

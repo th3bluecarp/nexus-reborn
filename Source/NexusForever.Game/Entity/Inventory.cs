@@ -688,7 +688,10 @@ namespace NexusForever.Game.Entity
             countChangedItems.Add(item.Id);
 
             if (location == InventoryLocation.Equipped && player != null)
+            {
                 ApplyProperties(item);
+                player.QuestManager?.EquipObjectiveUpdate(item.Info.Id);
+            }
 
             if (IsVisualItemSlot(item.Location, item.BagIndex) && player != null)
                 player.AddVisual((ItemSlot)item.Info.TypeEntry.ItemSlotId, item.Info.GetDisplayId());
