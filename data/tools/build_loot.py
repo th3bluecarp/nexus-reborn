@@ -32,6 +32,8 @@ for (w,name),(kills,p,rows) in sorted(best.items()):
     gid+=1
     sql.append(f"INSERT INTO `loot_group` (`id`,`parentId`,`probability`,`minCount`,`maxCount`,`conditionType`,`condition`,`comment`) VALUES ({gid},NULL,100,0,0,0,0,'{esc(name)} ({p['map']}, {kills} kills observed)');")
     seen={}
+    # small samples: count 5 extra kills without the drop, so 1 drop in 1 kill reads about 17 percent, not 100
+    rows=[dict(d, chance=round(100.0*d['n']/(d['of']+5),2)) if d.get('n') is not None and d.get('of') else d for d in rows]
     for d in rows:
         if d['item_id'] not in seen or d['chance']>seen[d['item_id']]['chance']: seen[d['item_id']]=d
     root=gid; plain=[]
