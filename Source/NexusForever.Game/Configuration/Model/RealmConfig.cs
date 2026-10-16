@@ -12,7 +12,7 @@ namespace NexusForever.Game.Configuration.Model
         public PathMissionXpConfig PathMissionXp { get; set; } = new();
 
         /// <summary>
-        /// JSON file of observed creature combat spells (wildstar-archive creature_spells.json), optional.
+        /// JSON file of observed creature combat spells (see CreatureSpellCatalog for the format), optional.
         /// </summary>
         public string CreatureSpellsPath { get; set; }
         public ushort RealmId { get; set; }

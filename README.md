@@ -35,7 +35,13 @@ Optional settings in WorldServer.json under Realm:
 * CreatureSpellsPath: a JSON file of combat spells per creature. Without it creatures use their generic attacks.
 * PathMissionXp: base and per level path XP per mission (defaults 25 and 5).
 
-The world spawn, loot and vendor data used on the test server is not part of this repository.
+The world spawn, loot and vendor data used on the test server is not part of this repository, see World data below.
+
+## World data
+
+Some of what makes the test server playable is not in the client data at all: where missing quest NPCs stood, what creatures dropped and how often, what vendors sold and which abilities creatures used. For that the test server uses data gathered from archived pages of Jabbithole, the WildStar community database, retrieved through the Internet Archive's Wayback Machine. Drop chances are the percentages players reported there, NPC positions come from its map pins, and creature abilities are the spells it recorded, not the real rotations. All of that is approximate and is described in the "World data from Jabbithole" section of [docs/reborn/SEMANTICS.md](docs/reborn/SEMANTICS.md).
+
+That data and the pages it came from are not part of this repository. Jabbithole's content belongs to its creators, and none of it is redistributed here. The server runs without it, with fewer NPCs, generic loot and generic creature attacks.
 
 ## License
 

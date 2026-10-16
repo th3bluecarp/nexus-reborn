@@ -10,7 +10,7 @@ namespace NexusForever.Game.Entity.Creature
     /// Combat spells observed for creatures on retail, loaded from the file named by Realm:CreatureSpellsPath.
     /// </summary>
     /// <remarks>
-    /// The file is built by wildstar-archive tools/build_abilities.py from archived Jabbithole ability tabs:
+    /// The test server builds this file from the ability tabs of archived Jabbithole creature pages, in this format:
     /// { "creatureId": { "name": "...", "auto": [spell4Id], "special": [spell4Id] } }.
     /// </remarks>
     public class CreatureSpellCatalog : ICreatureSpellCatalog
