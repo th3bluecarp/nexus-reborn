@@ -4,6 +4,7 @@ Newest first. "Live" means running on the desktop server.
 
 ## 2026-10-15
 
+- **Combat pets** (pets 65cc0119 and the commit before it, not deployed). Engineer bots, Esper Geist and Phantoms and Settler reinforcements now spawn, follow you, attack your target, use their ability buttons, and their kills count for you.
 - **Stealth** (fed7c120, not deployed). Stealth and reveal effects work, Stalker attacks break stealth, creatures don't aggro on a stealthed player walking past.
 - **Dispels and cleanses** (c14b1967, not deployed). 168 SpellDispel effects (Purge, Cleanse, Buff Strip) now remove dispellable buffs or debuffs from the target.
 - **Innate passives** (2031daa9, not deployed). The stance half of each class innate (Warrior Onslaught or Juggernaut, Engineer modes, Stalker Nano Skins) was never applied. Now cast on login and swapped when the innate changes.
