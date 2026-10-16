@@ -15,16 +15,16 @@ Columns in parity.csv:
 | | Ours | Upstream |
 |---|---|---|
 | Implemented | 64 | 50 |
-| Partial | 46 | 44 |
-| Missing | 40 | 53 |
+| Partial | 47 | 44 |
+| Missing | 39 | 53 |
 | Only on a side branch | 0 | 3 |
-| Features where we are ahead | 24 | |
+| Features where we are ahead | 25 | |
 
 ## Coverage counts
 
 | | Ours | Upstream | Total in client data |
 |---|---|---|---|
-| Spell effect types with a handler | 33 | 16 | 136 |
+| Spell effect types with a handler | 35 | 16 | 136 |
 | Prerequisite types checked | 41 | 17 | 273 |
 | Quest objective types that progress | 22 | 9 | 40 |
 
