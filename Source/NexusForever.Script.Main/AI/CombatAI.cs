@@ -86,8 +86,8 @@ namespace NexusForever.Script.Main.AI
             if (petOwner != null)
                 UpdatePet(petOwner, lastTick);
 
-            if (stealthedInRange.Count > 0)
-                UpdateStealthed(lastTick);
+            if (watchedInRange.Count > 0)
+                UpdateWatched(lastTick);
 
             if (evadingUntil.HasValue && (DateTime.UtcNow >= evadingUntil || entity.Position.GetDistance(entity.LeashPosition) < 2f))
                 evadingUntil = null;
@@ -160,34 +160,51 @@ namespace NexusForever.Script.Main.AI
 
         private readonly UpdateTimer petTimer = new(TimeSpan.FromSeconds(1d));
 
-        private readonly HashSet<uint> stealthedInRange = [];
+        private readonly HashSet<uint> watchedInRange = [];
         private readonly UpdateTimer stealthTimer = new(TimeSpan.FromSeconds(1d));
 
         /// <summary>
-        /// Aggro on units that came into range stealthed and have since dropped stealth while still in range.
+        /// Aggro on units that came into range but did not pull straight away: stealthed, further than the level based aggro range,
+        /// or passed while the creature walked home, once that no longer holds while they are still in range.
         /// </summary>
-        private void UpdateStealthed(double lastTick)
+        private void UpdateWatched(double lastTick)
         {
             stealthTimer.Update(lastTick);
             if (!stealthTimer.HasElapsed)
                 return;
 
             stealthTimer.Reset();
-            foreach (uint guid in stealthedInRange.ToList())
+            foreach (uint guid in watchedInRange.ToList())
             {
                 IUnitEntity unit = entity.GetVisible<IUnitEntity>(guid);
-                if (unit == null || !unit.IsAlive || entity.Position.GetDistance(unit.Position) > 15f)
+                if (unit == null || !unit.IsAlive || entity.Position.GetDistance(unit.Position) > 15f || entity.InCombat)
                 {
-                    stealthedInRange.Remove(guid);
+                    watchedInRange.Remove(guid);
                     continue;
                 }
 
-                if (unit.IsStealthed)
+                if (unit.IsStealthed || evadingUntil.HasValue || entity.Position.GetDistance(unit.Position) > AggroRange(unit))
                     continue;
 
-                stealthedInRange.Remove(guid);
+                watchedInRange.Remove(guid);
                 AggroEntity(unit);
             }
+        }
+
+        /// <summary>
+        /// Proximity aggro range against a unit: 15 m, 2 m less per level the player is above the creature down to 5 m,
+        /// players 8 or more levels above are ignored. Retail used a level based range, the numbers here are invented.
+        /// </summary>
+        private float AggroRange(IUnitEntity unit)
+        {
+            if (unit is not IPlayer)
+                return 15f;
+
+            int diff = (int)unit.Level - (int)entity.Level;
+            if (diff >= 8)
+                return 0f;
+
+            return Math.Clamp(15f - 2f * diff, 5f, 15f);
         }
 
         /// <summary>
@@ -297,17 +314,20 @@ namespace NexusForever.Script.Main.AI
             // stealthed units walk past, damage still pulls through OnHealthChange; they are re-checked in case stealth ends nearby
             if (entity is IUnitEntity { IsStealthed: true })
             {
-                stealthedInRange.Add(entity.Guid);
+                watchedInRange.Add(entity.Guid);
                 return;
             }
-
-            // a creature walking home after leashing ignores what it passes, damage still pulls it back
-            if (evadingUntil.HasValue)
-                return;
 
             // pets only pull on their own in the Aggressive stance, otherwise they fight what their owner fights
             if (GetPetOwner() != null && this.entity.PetStance != PetStance.Aggressive)
                 return;
+
+            // walking home after leashing, or the unit is further than the level based range: watch it and pull later if that changes
+            if (entity is IUnitEntity unit && (evadingUntil.HasValue || this.entity.Position.GetDistance(unit.Position) > AggroRange(unit)))
+            {
+                watchedInRange.Add(entity.Guid);
+                return;
+            }
 
             AggroEntity(entity);
         }
@@ -365,6 +385,46 @@ namespace NexusForever.Script.Main.AI
         public virtual void OnEnterCombat()
         {
             pullPosition = entity.Position;
+            CallForHelp();
+        }
+
+        // creatures pulled in by a call for help do not call for help themselves, so a call reaches one ring of neighbours
+        [ThreadStatic]
+        private static bool answeringCall;
+
+        /// <summary>
+        /// Idle creatures of the same faction within 10 m join the fight against the same target. Retail had social aggro,
+        /// the range and rules here are invented.
+        /// </summary>
+        private void CallForHelp()
+        {
+            if (answeringCall || GetPetOwner() != null || entity.Faction1 == 0)
+                return;
+
+            IHostileEntity hostile = entity.ThreatManager.GetTopHostile();
+            IUnitEntity target = hostile != null ? entity.GetVisible<IUnitEntity>(hostile.HatedUnitId) : null;
+            if (target == null)
+                return;
+
+            answeringCall = true;
+            try
+            {
+                foreach (ICreatureEntity ally in entity.GetVisible().OfType<ICreatureEntity>().ToList())
+                {
+                    if (ally == entity || !ally.IsAlive || ally.InCombat || ally.SummonerGuid.HasValue || ally.Faction1 != entity.Faction1)
+                        continue;
+                    if (ally.Position.GetDistance(entity.Position) > 10f)
+                        continue;
+                    if (ally.GetDispositionTo(target.Faction1) != Disposition.Hostile)
+                        continue;
+
+                    ally.ThreatManager.UpdateThreat(target, 1);
+                }
+            }
+            finally
+            {
+                answeringCall = false;
+            }
         }
 
         /// <summary>
