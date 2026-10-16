@@ -18,6 +18,7 @@ using NexusForever.Game.Static.Entity;
 using NexusForever.Game.Static.Entity.Movement.Command.Mode;
 using NexusForever.Game.Static.Entity.Movement.Command.State;
 using NexusForever.Game.Static.Entity.Movement.Spline;
+using NexusForever.Game.Static.Spell;
 using NexusForever.Game.Static.Spell.Proc;
 using NexusForever.Network.Session;
 using NexusForever.Network.World.Entity;
@@ -305,6 +306,48 @@ namespace NexusForever.Game.Entity.Movement
                         break;
                 }
             }
+
+            UpdateFalling(commands);
+        }
+
+        // fall damage, retail values unknown: falls under SafeFallHeight are free, then FallDamagePerMetre of max health per metre
+        private const float SafeFallHeight     = 25f;
+        private const float FallDamagePerMetre = 0.03f;
+        private bool falling;
+        private float fallPeakY;
+
+        /// <summary>
+        /// Track the client's Fall state flag on a player on foot and apply fall damage on landing, unless they land swimming.
+        /// </summary>
+        private void UpdateFalling(IEnumerable<INetworkEntityCommand> commands)
+        {
+            if (Owner is not IPlayer player || !player.IsAlive)
+            {
+                falling = false;
+                return;
+            }
+
+            float y = commands.Select(c => c.Model).OfType<SetPositionCommand>().LastOrDefault()?.Position.Y ?? player.Position.Y;
+            bool nowFalling = (GetState() & StateFlags.Fall) != 0;
+
+            if (nowFalling)
+            {
+                fallPeakY = falling ? Math.Max(fallPeakY, y) : y;
+                falling   = true;
+                return;
+            }
+
+            if (!falling)
+                return;
+
+            falling = false;
+            float drop = fallPeakY - y;
+            if (drop <= SafeFallHeight || GetMode() == ModeType.Swim)
+                return;
+
+            uint damage = (uint)Math.Min(player.MaxHealth, player.MaxHealth * FallDamagePerMetre * (drop - SafeFallHeight));
+            if (damage > 0u)
+                player.ModifyHealth(damage, DamageType.Fall, null);
         }
 
         /// <summary>
