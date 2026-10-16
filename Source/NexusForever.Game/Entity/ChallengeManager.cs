@@ -375,6 +375,18 @@ namespace NexusForever.Game.Entity
             });
         }
 
+        /// <summary>
+        /// Milliseconds left until the end time, the client adds its own clock to the timer fields.
+        /// </summary>
+        private static uint Remaining(DateTime end, DateTime now)
+        {
+            return end > now ? (uint)(end - now).TotalMilliseconds : 0u;
+        }
+
+        /// <remarks>
+        /// The client copies each challenge straight into its state and adds its clock to TimeActivatedDt, TimeCooldownDt and TimeAreaFailDt,
+        /// so they are time remaining. Combat challenges show a percent worked out from ObjectiveCompletion (0 to 100 of the goal).
+        /// </remarks>
         private void SendUpdate()
         {
             DateTime now = DateTime.UtcNow;
@@ -389,7 +401,7 @@ namespace NexusForever.Game.Entity
                     QualityTotal        = c.Goal,
                     CurrentCount        = c.Count,
                     GoalCount           = c.Goal,
-                    ObjectiveCompletion = c.Count,
+                    ObjectiveCompletion = c.Goal > 0u ? Math.Min(c.Count * 100u / c.Goal, 100u) : 0u,
                     CurrentTier         = c.CurrentTier,
                     LastRewardTier      = c.CurrentTier,
                     CompletionCount     = c.CompletionCount,
@@ -397,11 +409,11 @@ namespace NexusForever.Game.Entity
                     Activated           = c.Activated,
                     OnCooldown          = now < c.CooldownUntil,
                     LeftArea            = c.LeftAreaAt != null,
-                    TimeActivatedDt     = c.Activated ? (uint)(now - c.ActivatedAt).TotalMilliseconds : 0u,
+                    TimeActivatedDt     = c.Activated ? Remaining(c.ActivatedAt + ActiveTime, now) : 0u,
                     TimeTotalActive     = (uint)ActiveTime.TotalMilliseconds,
-                    TimeCooldownDt      = now < c.CooldownUntil ? (uint)(CooldownTime - (c.CooldownUntil - now)).TotalMilliseconds : 0u,
+                    TimeCooldownDt      = Remaining(c.CooldownUntil, now),
                     TimeTotalCooldown   = (uint)CooldownTime.TotalMilliseconds,
-                    TimeAreaFailDt      = c.LeftAreaAt != null ? (uint)(now - c.LeftAreaAt.Value).TotalMilliseconds : 0u,
+                    TimeAreaFailDt      = c.LeftAreaAt != null ? Remaining(c.LeftAreaAt.Value + AreaFailTime, now) : 0u,
                     TimeTotalAreaFail   = (uint)AreaFailTime.TotalMilliseconds,
                     TierGoalCount       = [c.Tiers.ElementAtOrDefault(0), c.Tiers.ElementAtOrDefault(1), c.Tiers.ElementAtOrDefault(2)]
                 }).ToList()
