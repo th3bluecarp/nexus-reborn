@@ -18,7 +18,7 @@ Columns in parity.csv:
 | Partial | 55 | 44 |
 | Missing | 31 | 53 |
 | Only on a side branch | 0 | 3 |
-| Features where we are ahead | 35 | |
+| Features where we are ahead | 33 | |
 
 ## Coverage counts
 
@@ -30,24 +30,30 @@ Columns in parity.csv:
 
 ## What we have that upstream does not
 
-- Kill XP, open world respawn, creature visibility prerequisites, VirtualCollect quest objectives.
-- The maintainers' loot rework (only on their side branch upstream), with the inverted drop roll fixed.
-- Spell effects: Heal, HealShields, Absorption (absorb shields), SummonCreature, QuestAdvanceObjective, DespawnUnit, Scale, SpellDispel.
-- Quest objectives: CollectItem (from bag counts), SpellSuccess 1 to 4 (use item or ability, target group aware), CompleteQuest, CompleteEvent, Unknown10 target group activations, EnterArea from map marker locations. Reputation and account currency quest rewards.
-- 18 more prerequisite types, led by IsObjectiveActive and QuestObjective (5,763 uses between them), plus objective progress, health, faction, reputation, item, zone and target checks.
-- Class innate passives (Warrior and Engineer stances, Stalker Nano Skin) applied on login and on change.
-- Combat fixes: both creature auto attacks used, physical mitigation offset, corpses no longer heal and slide home.
-- Veteran start fix (Bon Voyage completed for Nexus start characters).
-- Starting zone content from Jabbithole: 101 spawns, 7 vendors with 150 items, 63 loot tables (see the wildstar-archive repo).
+Generated from parity.csv (rows marked ahead), 33 features.
+
+- **Character:** Levelling and XP.
+- **Movement:** Bind point and Recall (transmat to bindpoint), Stuck command.
+- **Spells:** Healing spells, Absorb and shield spells, Innate abilities and passives, Class pets (Engineer bots, Esper), Stealth (Stalker), Traps, mines and probes, Despawn and scale effects, Dispels and cleanses.
+- **Spawns:** Open world respawn, Visibility by prerequisite, World phases.
+- **Quests:** Quest turn-in and rewards, Collect item objectives, Virtual collect (loot pane) objectives, Use item / ability objectives, Enter area / zone objectives, Other objective types, Quest objective prerequisites, Episodes.
+- **Public Events:** Open world public events.
+- **Loot:** Creature loot generation, Group loot rules, Loot bags and boxes.
+- **Items/Inventory:** Use consumables, Bank.
+- **Paths:** Path missions.
+- **Social (chat/friends/guild/group):** Group XP and quest sharing.
+- **Achievements:** Challenges.
+- **Reputation:** Reputation standings, Reputation and faction prerequisites.
+- Starting zone content from Jabbithole: 101 spawns, 7 vendors with 150 items, 64 loot tables, observed creature abilities for 136 creatures (see the wildstar-archive repo).
 
 ## Biggest gaps for levelling 1 to 15
 
-1. Several quest objective types still never progress (EnterArea outside scripts, CompleteEvent, GatheResource, tradeskill ones).
-2. Quest rewards still skip tradeskill XP and account items.
-3. Creature AI is generic: two auto attacks, fixed 15 m aggro, straight line chase, no leash distance.
-4. No taxis, shuttles, bind points, Recall or /stuck.
-5. Paths, tradeskills and harvest nodes do nothing.
-6. No zone scripting past the arrival cinematics, and open world public events never start.
-7. Death resurrects in place instead of at a holocrypt.
+1. Nothing on the merge build has been played yet. It passed a startup smoke test on database copies but needs a tester to deploy and test in game.
+2. Taxis and shuttles need packet research (no message layout for the flight path window).
+3. Tradeskills, gathering and crafting are missing (data for auto-learned schematics and XP is unclear).
+4. Creature AI still has a fixed 15 m aggro, straight line chase and no distance leash; per creature abilities only cover 136 starting zone creatures until the level 1 to 15 Jabbithole pass finishes.
+5. Path missions miss Scientist scans, Settler building, Soldier holdouts and Explorer tracking.
+6. Challenges give no rewards, and open world events that need script-spawned creatures cannot finish.
+7. Death resurrects in place instead of at a holocrypt (no holocrypt locations in the data).
 
 The [CHANGELOG](CHANGELOG.md) lists every change we have made.
