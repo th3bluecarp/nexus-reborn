@@ -4,6 +4,7 @@ Newest first. "Live" means running on the desktop server.
 
 ## 2026-10-15
 
+- **Logout fix** (live as 0fff3356 on reborn/loot, dfa9ed7a on the merge build). Logging out at the end of the countdown failed with an error and only finished when the game disconnected. The confirm is now accepted.
 - **Random proxy spells** (7c5fe043, not deployed). 195 ProxyRandomExclusive effects now cast one of their weighted spell choices.
 - **Pet stances** (1cd8fc5c, not deployed). The pet bar stance buttons work: passive, stay, assist and aggressive.
 - **Group kill credit** (27811a61, not deployed). Group members near a kill now get the quest credit and XP too, not only those who hit the creature.
