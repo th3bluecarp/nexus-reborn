@@ -87,6 +87,7 @@ Confidence: **High** = consistent across all the data we checked and no counter 
 | Value | Ours | Where |
 |---|---|---|
 | kill XP formula | tunable | KillExperience |
+| exploration XP | 20 percent of the level base quest XP per newly revealed zone map hex group | ZoneMapManager |
 | respawn delay | 60 s for everything | Realm:Respawn |
 | challenge timer, leave-area grace, cooldown | 5 min, 10 s, 30 min | ChallengeManager |
 | challenge auto start | flag 0x20 | ChallengeManager (Medium: present on most kill challenges) |
