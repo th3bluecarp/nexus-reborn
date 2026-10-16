@@ -87,10 +87,10 @@ namespace NexusForever.Game.Entity
         /// </remarks>
         public void Finish(LogoutReason reason = LogoutReason.None)
         {
-            // can't finish logout if not started or still in countdown, the client counts down on its own clock and can
-            // confirm a moment before the server timer has elapsed so a few seconds of slack are allowed
+            // the client counts down on its own clock and its confirm can arrive before the server timer elapsed, or with no
+            // server timer at all; throwing left the player to drop by disconnect, so a confirm is honoured and logged
             if (reason == LogoutReason.None && (timer == null || timer.Time > LogoutConfirmSlack))
-                throw new InvalidOperationException();
+                log.Trace($"Character {player.CharacterId} confirmed logout with {(timer == null ? "no timer" : $"{timer.Time:0.0}s left")}.");
 
             // force logout can be performed if a reason is supplied
             if (reason != LogoutReason.None)
