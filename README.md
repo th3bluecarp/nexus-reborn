@@ -41,7 +41,7 @@ The world spawn, loot and vendor data used on the test server is not part of thi
 
 Some of what makes the test server playable is not in the client data at all: where missing quest NPCs stood, what creatures dropped and how often, what vendors sold and which abilities creatures used. For that the test server uses data gathered from archived pages of Jabbithole, the WildStar community database, retrieved through the Internet Archive's Wayback Machine. Drop chances are the percentages players reported there, NPC positions come from its map pins, and creature abilities are the spells it recorded, not the real rotations. All of that is approximate and is described in the "World data from Jabbithole" section of [docs/reborn/SEMANTICS.md](docs/reborn/SEMANTICS.md).
 
-That data and the pages it came from are not part of this repository. Jabbithole's content belongs to its creators, and none of it is redistributed here. The server runs without it, with fewer NPCs, generic loot and generic creature attacks.
+That data and the pages it came from are not part of this repository. Jabbithole's content belongs to its creators, and none of it is redistributed here. The server still runs without it, but with only the spawns in the NexusForever world database (so some quest givers are missing), most creatures dropping no loot, vendors that sell only what that database lists, and creatures using only their basic attacks.
 
 ## License
 
