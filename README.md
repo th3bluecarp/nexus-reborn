@@ -35,13 +35,13 @@ Optional settings in WorldServer.json under Realm:
 * CreatureSpellsPath: a JSON file of combat spells per creature. Without it creatures use their generic attacks.
 * PathMissionXp: base and per level path XP per mission (defaults 25 and 5).
 
-The world spawn, loot, vendor and creature ability data used on the test server is described under World data below.
+The world spawn, loot, vendor and creature ability data is optional, see World data below and [data/README.md](data/README.md).
 
 ## World data
 
 Some of what makes the test server playable is not in the client data at all: where missing quest NPCs stood, what creatures dropped and how often, what vendors sold and which abilities creatures used. For that the test server uses data gathered from archived pages of Jabbithole, the WildStar community database, retrieved through the Internet Archive's Wayback Machine. Drop chances are the percentages players reported there, NPC positions come from its map pins, and creature abilities are the spells it recorded, not the real rotations. All of that is approximate and is described in the "World data from Jabbithole" section of [docs/reborn/SEMANTICS.md](docs/reborn/SEMANTICS.md).
 
-The data will be published in the [data](data) folder once it is checked against a fresh NexusForever database. The archived pages themselves are not included, only the facts drawn from them. Until then the server runs without it, with only the spawns in the NexusForever world database (so some quest givers are missing), most creatures dropping no loot, vendors that sell only what that database lists, and creatures using only their basic attacks.
+The data is in the [data](data) folder with instructions for loading it. The archived pages themselves are not included, only the facts drawn from them. Without it the server still runs, but with only the spawns in the NexusForever world database (so some quest givers are missing), most creatures dropping no loot, vendors that sell only what that database lists, and creatures using only their basic attacks.
 
 Thanks to Jabbithole and the players whose uploads built it. It kept a record of WildStar that would otherwise be gone.
 

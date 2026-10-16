@@ -1,0 +1,11555 @@
+{
+ "10106": {
+  "auto": [
+   32773,
+   32774,
+   33919,
+   48089,
+   48147,
+   71001
+  ],
+  "name": "Ook",
+  "special": [
+   46895,
+   48086
+  ]
+ },
+ "10107": {
+  "auto": [
+   34062,
+   56073,
+   56075,
+   56442
+  ],
+  "name": "Witch Doctor Shami",
+  "special": [
+   56078,
+   56081
+  ]
+ },
+ "10108": {
+  "auto": [
+   6275,
+   6276,
+   32493,
+   54600,
+   54731,
+   58633,
+   58641
+  ],
+  "name": "Yihwa",
+  "special": []
+ },
+ "10356": {
+  "auto": [
+   6263,
+   6267,
+   52536
+  ],
+  "name": "Mursu",
+  "special": [
+   52473,
+   52474
+  ]
+ },
+ "10440": {
+  "auto": [
+   4012,
+   4013,
+   57287,
+   57289,
+   57311,
+   57420
+  ],
+  "name": "Bloodcoast Sand King",
+  "special": []
+ },
+ "10442": {
+  "auto": [
+   4012,
+   4013,
+   57287,
+   57311
+  ],
+  "name": "Bloodcoast Skuttling",
+  "special": []
+ },
+ "10443": {
+  "auto": [
+   4012,
+   4013,
+   57287,
+   57311
+  ],
+  "name": "Bloodcoast Spikeling",
+  "special": []
+ },
+ "10444": {
+  "auto": [
+   4012,
+   4013,
+   57287,
+   57311
+  ],
+  "name": "Bloodcoast Burrower",
+  "special": []
+ },
+ "10445": {
+  "auto": [
+   4012,
+   4013,
+   57287,
+   57311
+  ],
+  "name": "Bloodcoast Pincher",
+  "special": []
+ },
+ "10529": {
+  "auto": [
+   34062,
+   53430,
+   56073,
+   56075,
+   56442
+  ],
+  "name": "Deadwind Witchdoctor",
+  "special": [
+   56078,
+   56081
+  ]
+ },
+ "11071": {
+  "auto": [
+   372,
+   1616
+  ],
+  "name": "Dagun Scavenger",
+  "special": [
+   55292
+  ]
+ },
+ "11117": {
+  "auto": [
+   6146,
+   6147,
+   43759,
+   57765,
+   57766,
+   57767
+  ],
+  "name": "Boneclaw Rotbeak",
+  "special": [
+   57768
+  ]
+ },
+ "11907": {
+  "auto": [
+   30756
+  ],
+  "name": "Skeech Diviner",
+  "special": [
+   55840,
+   55841
+  ]
+ },
+ "11910": {
+  "auto": [
+   5649,
+   5652
+  ],
+  "name": "Skeech Scratcher",
+  "special": [
+   55843,
+   55844
+  ]
+ },
+ "11912": {
+  "auto": [
+   30756
+  ],
+  "name": "Skeech Shaman",
+  "special": [
+   55840,
+   55841
+  ]
+ },
+ "11925": {
+  "auto": [
+   7267,
+   7270
+  ],
+  "name": "Crystal Guardian",
+  "special": [
+   55305
+  ]
+ },
+ "11945": {
+  "auto": [
+   33251,
+   33252
+  ],
+  "name": "Yeti Snowstalker",
+  "special": [
+   55635
+  ]
+ },
+ "11948": {
+  "auto": [
+   33251,
+   33252
+  ],
+  "name": "Yeti Frostclaw",
+  "special": [
+   55632,
+   55633
+  ]
+ },
+ "11950": {
+  "auto": [
+   27545,
+   27546
+  ],
+  "name": "Dominion Engineer",
+  "special": [
+   55763
+  ]
+ },
+ "11953": {
+  "auto": [
+   2764
+  ],
+  "name": "Dominion Gunner",
+  "special": [
+   55766
+  ]
+ },
+ "12212": {
+  "auto": [
+   33247,
+   33248,
+   47154
+  ],
+  "name": "Rootbrute Grimspore",
+  "special": [
+   55317,
+   55318
+  ]
+ },
+ "12213": {
+  "auto": [
+   33247,
+   33248
+  ],
+  "name": "Rootbrute Deathcap",
+  "special": [
+   55320,
+   55321
+  ]
+ },
+ "12347": {
+  "auto": [
+   8093,
+   8094,
+   57129,
+   70150
+  ],
+  "name": "Oozing Sludgeon",
+  "special": [
+   38501,
+   56818,
+   57008,
+   57744,
+   57878,
+   58263
+  ]
+ },
+ "12507": {
+  "auto": [
+   32867,
+   32868,
+   49792,
+   49928
+  ],
+  "name": "Risen Draken Warrior",
+  "special": [
+   49879
+  ]
+ },
+ "12516": {
+  "auto": [
+   2605,
+   2607
+  ],
+  "name": "Dominion Scout",
+  "special": [
+   55426
+  ]
+ },
+ "12518": {
+  "auto": [
+   372,
+   1616
+  ],
+  "name": "Dagun Tracker",
+  "special": [
+   55292
+  ]
+ },
+ "12525": {
+  "auto": [
+   4537,
+   70379
+  ],
+  "name": "Dominion Blasterbot",
+  "special": [
+   55656
+  ]
+ },
+ "12526": {
+  "auto": [
+   24626,
+   24627,
+   57877,
+   57880
+  ],
+  "name": "Dominion Ultrabot",
+  "special": [
+   55366,
+   57881,
+   57882
+  ]
+ },
+ "12655": {
+  "auto": [
+   2605,
+   2607
+  ],
+  "name": "Firewalker Jarrok",
+  "special": [
+   54241,
+   54299
+  ]
+ },
+ "12748": {
+  "auto": [
+   5649,
+   5652,
+   69792
+  ],
+  "name": "Duskfall Flailer",
+  "special": [
+   38918
+  ]
+ },
+ "12751": {
+  "auto": [
+   30756,
+   56986
+  ],
+  "name": "Duskfall Warden",
+  "special": [
+   55683,
+   55700,
+   55702,
+   56683,
+   56990,
+   56993
+  ]
+ },
+ "12752": {
+  "auto": [
+   30756,
+   56986
+  ],
+  "name": "Duskfall Squawker",
+  "special": [
+   56683
+  ]
+ },
+ "12754": {
+  "auto": [
+   7031,
+   7032,
+   57056,
+   57094
+  ],
+  "name": "Irradiated Snoglug",
+  "special": [
+   55331,
+   57054,
+   57057
+  ]
+ },
+ "12807": {
+  "auto": [
+   6961,
+   6962
+  ],
+  "name": "Coldscale Stunpike",
+  "special": []
+ },
+ "12808": {
+  "auto": [
+   6961,
+   6962
+  ],
+  "name": "Coldscale Ravener",
+  "special": []
+ },
+ "12844": {
+  "auto": [
+   33251,
+   33252
+  ],
+  "name": "Yeti Frostclaw",
+  "special": [
+   55632,
+   55633
+  ]
+ },
+ "13081": {
+  "auto": [
+   2764,
+   51899,
+   65459
+  ],
+  "name": "Inventor Hoom",
+  "special": [
+   51828
+  ]
+ },
+ "13116": {
+  "auto": [
+   33251,
+   33252
+  ],
+  "name": "Yeti Frostclaw",
+  "special": [
+   55632,
+   55633
+  ]
+ },
+ "13118": {
+  "auto": [
+   33247,
+   33248,
+   47154
+  ],
+  "name": "Rootbrute Grimspore",
+  "special": [
+   55317,
+   55318
+  ]
+ },
+ "13398": {
+  "auto": [],
+  "name": "Trapped Miner Guard",
+  "special": [
+   34552,
+   52448
+  ]
+ },
+ "13549": {
+  "auto": [
+   33247,
+   33248,
+   47154
+  ],
+  "name": "Rootbrute Grimspore",
+  "special": [
+   55317,
+   55318
+  ]
+ },
+ "13639": {
+  "auto": [
+   32734,
+   32735,
+   34262,
+   69483
+  ],
+  "name": "Demonclaw",
+  "special": [
+   45335
+  ]
+ },
+ "13669": {
+  "auto": [
+   32867,
+   32868
+  ],
+  "name": "Lieutenant Pragg",
+  "special": [
+   55434
+  ]
+ },
+ "13759": {
+  "auto": [
+   372,
+   1616,
+   34564
+  ],
+  "name": "Swiftpaw Savager",
+  "special": []
+ },
+ "13760": {
+  "auto": [
+   372,
+   1616,
+   43611,
+   43759
+  ],
+  "name": "Swiftpaw Growler",
+  "special": [
+   43687
+  ]
+ },
+ "13761": {
+  "auto": [
+   372,
+   1616,
+   43611,
+   43759
+  ],
+  "name": "Swiftpaw Stalker",
+  "special": [
+   34565,
+   43687
+  ]
+ },
+ "13763": {
+  "auto": [
+   6916,
+   6917,
+   52760,
+   53868,
+   60894
+  ],
+  "name": "Pinewrath Logchomper",
+  "special": [
+   35400,
+   35417
+  ]
+ },
+ "13768": {
+  "auto": [
+   33244,
+   33245,
+   34227
+  ],
+  "name": "Longhorn Steer",
+  "special": []
+ },
+ "13803": {
+  "auto": [
+   372,
+   1616,
+   43759,
+   44189
+  ],
+  "name": "Blackpaw",
+  "special": [
+   37316,
+   43687,
+   44146
+  ]
+ },
+ "13981": {
+  "auto": [
+   32867,
+   32868,
+   48766,
+   49411
+  ],
+  "name": "Morek Throg",
+  "special": []
+ },
+ "14136": {
+  "auto": [
+   6916,
+   6917,
+   52760,
+   53868,
+   60894
+  ],
+  "name": "The Lurking Terror",
+  "special": [
+   35400,
+   35417
+  ]
+ },
+ "14424": {
+  "auto": [
+   32867,
+   32868
+  ],
+  "name": "Dominion Soldier",
+  "special": []
+ },
+ "14863": {
+  "auto": [
+   7267,
+   7270,
+   35343,
+   51993,
+   52475
+  ],
+  "name": "Troka' Ra",
+  "special": [
+   52531
+  ]
+ },
+ "15518": {
+  "auto": [
+   6432,
+   6433
+  ],
+  "name": "Highloft Shocker",
+  "special": [
+   69660,
+   69753
+  ]
+ },
+ "15519": {
+  "auto": [
+   6432,
+   6433
+  ],
+  "name": "Highloft Skimmer",
+  "special": [
+   69660,
+   69753
+  ]
+ },
+ "15600": {
+  "auto": [
+   6323,
+   6324,
+   55151,
+   55153,
+   55154
+  ],
+  "name": "Stonetusk Trampler",
+  "special": [
+   55152
+  ]
+ },
+ "15615": {
+  "auto": [
+   26298
+  ],
+  "name": "Avalanche",
+  "special": []
+ },
+ "15640": {
+  "auto": [
+   33244,
+   33245,
+   34227
+  ],
+  "name": "Elderly Longhorn",
+  "special": [
+   53418,
+   53423
+  ]
+ },
+ "15728": {
+  "auto": [
+   4495,
+   4496
+  ],
+  "name": "Xenobite",
+  "special": []
+ },
+ "15756": {
+  "auto": [
+   27545,
+   27546,
+   54827,
+   55150,
+   69505,
+   74447
+  ],
+  "name": "Savannah Tracker",
+  "special": [
+   55119,
+   55383,
+   55763
+  ]
+ },
+ "16632": {
+  "auto": [
+   33251,
+   33252,
+   52968,
+   53034
+  ],
+  "name": "Icemaw Frostclaw",
+  "special": []
+ },
+ "16680": {
+  "auto": [],
+  "name": "Dominion Research Equipment",
+  "special": [
+   28443
+  ]
+ },
+ "16718": {
+  "auto": [
+   26440
+  ],
+  "name": "Marauder Mine",
+  "special": [
+   26443
+  ]
+ },
+ "16728": {
+  "auto": [
+   27783,
+   40540
+  ],
+  "name": "Invisible Unit",
+  "special": []
+ },
+ "16801": {
+  "auto": [
+   7267,
+   7270,
+   51827,
+   51993
+  ],
+  "name": "Stonefist Devastator",
+  "special": []
+ },
+ "16802": {
+  "auto": [
+   7267,
+   7270,
+   51827,
+   51993,
+   52080,
+   52235
+  ],
+  "name": "Stonefist Slammer",
+  "special": []
+ },
+ "16937": {
+  "auto": [
+   27783,
+   40540
+  ],
+  "name": "Invisible Unit",
+  "special": []
+ },
+ "17075": {
+  "auto": [
+   23121
+  ],
+  "name": "Dominion Turret",
+  "special": []
+ },
+ "17278": {
+  "auto": [
+   32867,
+   32868,
+   43759,
+   49350
+  ],
+  "name": "Enforcer Aakdoom",
+  "special": [
+   34131,
+   35727,
+   49410
+  ]
+ },
+ "17286": {
+  "auto": [
+   32768,
+   32769
+  ],
+  "name": "Irradiated Icetail Leaper",
+  "special": [
+   35192,
+   45494
+  ]
+ },
+ "17287": {
+  "auto": [
+   32768,
+   32769,
+   33810,
+   43759
+  ],
+  "name": "Irradiated Icetail Pouncer",
+  "special": [
+   33969,
+   35192
+  ]
+ },
+ "17288": {
+  "auto": [
+   32768,
+   32769,
+   33810,
+   43759
+  ],
+  "name": "Irradiated Icetail Slayer",
+  "special": [
+   33969
+  ]
+ },
+ "17303": {
+  "auto": [
+   33249,
+   33250
+  ],
+  "name": "Duskfall Gnasher",
+  "special": [
+   38992,
+   38993
+  ]
+ },
+ "17409": {
+  "auto": [],
+  "name": "Musty Spore",
+  "special": [
+   26686,
+   72745
+  ]
+ },
+ "17429": {
+  "auto": [
+   27545,
+   27546
+  ],
+  "name": "Cartel Outlaw",
+  "special": []
+ },
+ "17444": {
+  "auto": [
+   32867,
+   32868,
+   43759,
+   49350
+  ],
+  "name": "Throg Breaker",
+  "special": [
+   34131
+  ]
+ },
+ "17447": {
+  "auto": [
+   5649,
+   5652,
+   27545,
+   27546,
+   54827,
+   55150,
+   69505,
+   74447
+  ],
+  "name": "Throg Pounder",
+  "special": [
+   34552,
+   52448
+  ]
+ },
+ "17550": {
+  "auto": [
+   23121,
+   71422
+  ],
+  "name": "Dominion Turret",
+  "special": [
+   52772
+  ]
+ },
+ "17692": {
+  "auto": [
+   7267,
+   7270,
+   51827,
+   51993
+  ],
+  "name": "Slateface Slammer",
+  "special": []
+ },
+ "17693": {
+  "auto": [
+   7267,
+   7270,
+   51827,
+   52080,
+   52235
+  ],
+  "name": "Slateface Devastator",
+  "special": []
+ },
+ "17931": {
+  "auto": [
+   28491
+  ],
+  "name": "Energy Field",
+  "special": []
+ },
+ "18088": {
+  "auto": [
+   4012,
+   4013,
+   57287,
+   57311
+  ],
+  "name": "Stonemite Spitter",
+  "special": []
+ },
+ "18458": {
+  "auto": [
+   27783,
+   40540
+  ],
+  "name": "Invisible Unit",
+  "special": []
+ },
+ "18628": {
+  "auto": [
+   5413,
+   5414,
+   28869,
+   40173
+  ],
+  "name": "Stalagmight",
+  "special": [
+   36486,
+   53268,
+   53272,
+   53274
+  ]
+ },
+ "18630": {
+  "auto": [
+   35002,
+   44739
+  ],
+  "name": "The Dredger",
+  "special": [
+   39598,
+   70403
+  ]
+ },
+ "18726": {
+  "auto": [
+   2764,
+   65459
+  ],
+  "name": "Exile Gunner",
+  "special": [
+   51828
+  ]
+ },
+ "18902": {
+  "auto": [
+   32734,
+   32735,
+   34262
+  ],
+  "name": "Enraged Grimstone Mangler",
+  "special": []
+ },
+ "18957": {
+  "auto": [
+   2764,
+   52150,
+   52151,
+   52568,
+   52587,
+   52639
+  ],
+  "name": "Lead Scientist Pizbo",
+  "special": [
+   52567
+  ]
+ },
+ "18958": {
+  "auto": [
+   2764,
+   52150,
+   52151,
+   52568,
+   52587,
+   52639
+  ],
+  "name": "Lead Scientist Pazbo",
+  "special": [
+   52567
+  ]
+ },
+ "19015": {
+  "auto": [
+   32867,
+   32868,
+   43759,
+   49350
+  ],
+  "name": "Exile Trooper",
+  "special": [
+   34131,
+   35727
+  ]
+ },
+ "19030": {
+  "auto": [
+   2764,
+   65459
+  ],
+  "name": "Exile Gunner",
+  "special": [
+   51828
+  ]
+ },
+ "19167": {
+  "auto": [
+   7267,
+   7270,
+   35343,
+   51993,
+   52475
+  ],
+  "name": "Stonefist",
+  "special": [
+   52531
+  ]
+ },
+ "19193": {
+  "auto": [
+   26781,
+   45399
+  ],
+  "name": "Fungal Spore",
+  "special": [
+   26686
+  ]
+ },
+ "19303": {
+  "auto": [],
+  "name": "Annihilator",
+  "special": [
+   27709
+  ]
+ },
+ "19304": {
+  "auto": [],
+  "name": "Annihilator",
+  "special": [
+   27709
+  ]
+ },
+ "19308": {
+  "auto": [
+   8180
+  ],
+  "name": "Eldan Repair Construct",
+  "special": []
+ },
+ "19321": {
+  "auto": [
+   29668
+  ],
+  "name": "Augmented Slateform Bombardier",
+  "special": []
+ },
+ "19322": {
+  "auto": [
+   27783,
+   40540
+  ],
+  "name": "Invisible Unit",
+  "special": []
+ },
+ "19326": {
+  "auto": [
+   32867,
+   32868,
+   43759,
+   49350
+  ],
+  "name": "Exile Trooper",
+  "special": [
+   34131,
+   35727
+  ]
+ },
+ "19327": {
+  "auto": [
+   32867,
+   32868,
+   43759,
+   49350
+  ],
+  "name": "Exile Trooper",
+  "special": [
+   34131,
+   35727
+  ]
+ },
+ "19377": {
+  "auto": [
+   7267,
+   7270,
+   29668,
+   51827,
+   70633,
+   70664
+  ],
+  "name": "Stonemore",
+  "special": []
+ },
+ "19492": {
+  "auto": [
+   29126,
+   29127,
+   39003,
+   44739
+  ],
+  "name": "Eldan Augmentor",
+  "special": [
+   39001,
+   44448
+  ]
+ },
+ "19547": {
+  "auto": [],
+  "name": "Eldan Energy Rod",
+  "special": [
+   27884
+  ]
+ },
+ "19560": {
+  "auto": [
+   40516
+  ],
+  "name": "Fiera Flower",
+  "special": []
+ },
+ "19590": {
+  "auto": [
+   29126,
+   29127,
+   39003,
+   44739
+  ],
+  "name": "Eldan Augmentor",
+  "special": [
+   39001,
+   44448
+  ]
+ },
+ "19638": {
+  "auto": [],
+  "name": "Eldan Fuel Rod",
+  "special": [
+   27884
+  ]
+ },
+ "19701": {
+  "auto": [
+   27783,
+   40540
+  ],
+  "name": "Invisible Unit",
+  "special": []
+ },
+ "19755": {
+  "auto": [
+   39625
+  ],
+  "name": "Munitions Cache",
+  "special": []
+ },
+ "19809": {
+  "auto": [
+   32734,
+   32735,
+   34262,
+   58752
+  ],
+  "name": "Rockridge Ripper",
+  "special": [
+   35556
+  ]
+ },
+ "19824": {
+  "auto": [
+   65459
+  ],
+  "name": "XAS Researcher",
+  "special": [
+   51828
+  ]
+ },
+ "19826": {
+  "auto": [
+   65459
+  ],
+  "name": "XAS Researcher",
+  "special": [
+   51828
+  ]
+ },
+ "20072": {
+  "auto": [
+   65459
+  ],
+  "name": "XAS Researcher",
+  "special": [
+   51828
+  ]
+ },
+ "20073": {
+  "auto": [
+   65459
+  ],
+  "name": "XAS Researcher",
+  "special": [
+   51828
+  ]
+ },
+ "20215": {
+  "auto": [
+   32734,
+   32735,
+   34262,
+   58752
+  ],
+  "name": "Grimstone Mangler",
+  "special": [
+   35556
+  ]
+ },
+ "20216": {
+  "auto": [
+   32768,
+   32769,
+   45685
+  ],
+  "name": "Icetail Slayer",
+  "special": [
+   45732
+  ]
+ },
+ "20234": {
+  "auto": [
+   27545,
+   27546
+  ],
+  "name": "Exile Soldier",
+  "special": []
+ },
+ "20453": {
+  "auto": [
+   44254,
+   44255
+  ],
+  "name": "Tremor Ridge Guard",
+  "special": []
+ },
+ "20792": {
+  "auto": [
+   5649,
+   5652
+  ],
+  "name": "Deadstar Brawler",
+  "special": [
+   34552,
+   52448
+  ]
+ },
+ "20794": {
+  "auto": [
+   2764,
+   52010,
+   65459
+  ],
+  "name": "Dominion Researcher",
+  "special": [
+   51828
+  ]
+ },
+ "20795": {
+  "auto": [
+   5649,
+   5652
+  ],
+  "name": "Dominion Analyst",
+  "special": [
+   34552
+  ]
+ },
+ "20796": {
+  "auto": [
+   32867,
+   32868,
+   48766,
+   49411
+  ],
+  "name": "Dominion Brute",
+  "special": []
+ },
+ "20797": {
+  "auto": [
+   2605,
+   2607
+  ],
+  "name": "Dominion Basher",
+  "special": [
+   54241,
+   54299,
+   54327,
+   54675
+  ]
+ },
+ "20798": {
+  "auto": [
+   2764,
+   52150,
+   52151
+  ],
+  "name": "Dominion Scientist",
+  "special": []
+ },
+ "20806": {
+  "auto": [
+   5649,
+   5652
+  ],
+  "name": "Deadstar Scrapper",
+  "special": [
+   34552,
+   52448,
+   52504
+  ]
+ },
+ "20818": {
+  "auto": [
+   5649,
+   5652,
+   54595,
+   69792
+  ],
+  "name": "Duskfall Fiend",
+  "special": [
+   38918
+  ]
+ },
+ "20898": {
+  "auto": [
+   27545,
+   27546,
+   54827,
+   55150,
+   69505,
+   74447
+  ],
+  "name": "Grim Handler",
+  "special": [
+   55119,
+   55383
+  ]
+ },
+ "20899": {
+  "auto": [
+   2605,
+   2607,
+   27545,
+   27546,
+   34062,
+   54827,
+   55150,
+   69505,
+   74447
+  ],
+  "name": "Grim Watcher",
+  "special": [
+   54241,
+   54299,
+   55383,
+   55848,
+   55849,
+   55851
+  ]
+ },
+ "20900": {
+  "auto": [
+   5649,
+   5652,
+   32867,
+   32868,
+   43759,
+   49350
+  ],
+  "name": "Grim Slaver",
+  "special": [
+   34131,
+   34552,
+   52448,
+   55383
+  ]
+ },
+ "20901": {
+  "auto": [
+   27545,
+   27546,
+   32867,
+   32868,
+   43759,
+   49350,
+   54827,
+   55150,
+   69505,
+   74447
+  ],
+  "name": "Grim Overseer",
+  "special": [
+   34131,
+   35727,
+   49410,
+   55119
+  ]
+ },
+ "20902": {
+  "auto": [
+   2605,
+   2607
+  ],
+  "name": "Headmistress Hilda Grim",
+  "special": [
+   54742,
+   55044,
+   56425
+  ]
+ },
+ "20905": {
+  "auto": [
+   5649,
+   5652
+  ],
+  "name": "Darkspur Thug",
+  "special": [
+   34552,
+   52448
+  ]
+ },
+ "20906": {
+  "auto": [
+   5649,
+   5652
+  ],
+  "name": "Darkspur Pummeler",
+  "special": [
+   34552,
+   52448
+  ]
+ },
+ "20908": {
+  "auto": [
+   2764,
+   65459
+  ],
+  "name": "Darkspur Grifter",
+  "special": [
+   51828,
+   55383
+  ]
+ },
+ "20909": {
+  "auto": [
+   27545,
+   27546,
+   54827,
+   55150,
+   69505,
+   74447
+  ],
+  "name": "Darkspur Quickdraw",
+  "special": [
+   55383
+  ]
+ },
+ "20910": {
+  "auto": [
+   32867,
+   32868,
+   43759,
+   48766,
+   49350,
+   49411
+  ],
+  "name": "Darkspur Butcher",
+  "special": [
+   34131,
+   35727,
+   49410
+  ]
+ },
+ "20931": {
+  "auto": [
+   6916,
+   6917,
+   53868
+  ],
+  "name": "Pinewrath Barktooth",
+  "special": [
+   35400,
+   35417
+  ]
+ },
+ "20932": {
+  "auto": [
+   6916,
+   6917,
+   53868
+  ],
+  "name": "Pinewrath Trunksplitter",
+  "special": [
+   35400,
+   35417
+  ]
+ },
+ "20936": {
+  "auto": [
+   27545,
+   27546
+  ],
+  "name": "Exile Soldier",
+  "special": []
+ },
+ "20937": {
+  "auto": [
+   32734,
+   32735,
+   34262
+  ],
+  "name": "Grimstone Ruffian",
+  "special": []
+ },
+ "20952": {
+  "auto": [
+   2764,
+   65459
+  ],
+  "name": "Crowe Marksman",
+  "special": [
+   51828
+  ]
+ },
+ "20955": {
+  "auto": [
+   32867,
+   32868,
+   49792,
+   49928,
+   58543
+  ],
+  "name": "Crowe Blademaster",
+  "special": []
+ },
+ "20957": {
+  "auto": [
+   2605,
+   2607,
+   56423
+  ],
+  "name": "Agnes Crowe",
+  "special": [
+   56037,
+   56358,
+   56390
+  ]
+ },
+ "20969": {
+  "auto": [
+   33244,
+   33245,
+   34227
+  ],
+  "name": "Longhorn Bull",
+  "special": [
+   53418,
+   53423
+  ]
+ },
+ "20970": {
+  "auto": [
+   372,
+   1616,
+   43611,
+   43759
+  ],
+  "name": "Swiftpaw Stalker",
+  "special": [
+   34565,
+   43687
+  ]
+ },
+ "20978": {
+  "auto": [
+   5649,
+   5652,
+   69792
+  ],
+  "name": "Duskfall Scratcher",
+  "special": [
+   38918
+  ]
+ },
+ "20979": {
+  "auto": [
+   30756,
+   56986
+  ],
+  "name": "Duskfall Shaman",
+  "special": [
+   55683,
+   55700,
+   56683
+  ]
+ },
+ "20980": {
+  "auto": [
+   33249,
+   33250
+  ],
+  "name": "Duskfall Creeper",
+  "special": [
+   38992,
+   38993
+  ]
+ },
+ "20981": {
+  "auto": [
+   6817,
+   6818
+  ],
+  "name": "Rockhound Guardian",
+  "special": [
+   56664,
+   56684
+  ]
+ },
+ "20982": {
+  "auto": [
+   6817,
+   6818,
+   56494
+  ],
+  "name": "Rockhound Slasher",
+  "special": [
+   56498
+  ]
+ },
+ "20983": {
+  "auto": [
+   6817,
+   6818,
+   56494
+  ],
+  "name": "Rockhound Burrower",
+  "special": [
+   56498
+  ]
+ },
+ "20992": {
+  "auto": [
+   6146,
+   6147,
+   43759,
+   57765,
+   57766
+  ],
+  "name": "Skytalon Rotbeak",
+  "special": []
+ },
+ "20995": {
+  "auto": [
+   28690,
+   28691
+  ],
+  "name": "Site 14 Mender",
+  "special": [
+   41187
+  ]
+ },
+ "20997": {
+  "auto": [
+   28693,
+   28694
+  ],
+  "name": "Site 14 Protector",
+  "special": [
+   39430,
+   46006,
+   46405
+  ]
+ },
+ "21001": {
+  "auto": [
+   7267,
+   7270,
+   51827,
+   70633,
+   70664
+  ],
+  "name": "Augmented Slateform Slammer",
+  "special": []
+ },
+ "21003": {
+  "auto": [
+   6817,
+   6818,
+   56494
+  ],
+  "name": "Augmented Rockhound Slasher",
+  "special": [
+   56899
+  ]
+ },
+ "21004": {
+  "auto": [
+   6817,
+   6818,
+   56494
+  ],
+  "name": "Augmented Rockhound Burrower",
+  "special": [
+   56899
+  ]
+ },
+ "21218": {
+  "auto": [
+   2605,
+   2607
+  ],
+  "name": "Dominion Scout",
+  "special": [
+   54241,
+   54299
+  ]
+ },
+ "21278": {
+  "auto": [
+   4616,
+   4617,
+   35287,
+   72730
+  ],
+  "name": "Security Drone",
+  "special": [
+   40714,
+   72728
+  ]
+ },
+ "21526": {
+  "auto": [
+   4012,
+   4013,
+   57287,
+   57311
+  ],
+  "name": "Stonemite Runt",
+  "special": []
+ },
+ "21527": {
+  "auto": [
+   4012,
+   4013,
+   57287,
+   57311
+  ],
+  "name": "Stonemite Brute",
+  "special": []
+ },
+ "21528": {
+  "auto": [
+   4012,
+   4013,
+   57287,
+   57311
+  ],
+  "name": "Stonemite Cutter",
+  "special": []
+ },
+ "21534": {
+  "auto": [
+   29126,
+   29127,
+   39003,
+   44739
+  ],
+  "name": "Site 14 Augmentor",
+  "special": [
+   39001,
+   44448
+  ]
+ },
+ "21558": {
+  "auto": [
+   5649,
+   5652,
+   52740
+  ],
+  "name": "Augmented XAS Scientist",
+  "special": [
+   52658
+  ]
+ },
+ "21559": {
+  "auto": [
+   5649,
+   5652,
+   52740
+  ],
+  "name": "Augmented XAS Scientist",
+  "special": [
+   52658
+  ]
+ },
+ "21560": {
+  "auto": [
+   5649,
+   5652,
+   52740
+  ],
+  "name": "Augmented XAS Scientist",
+  "special": [
+   52658
+  ]
+ },
+ "21656": {
+  "auto": [
+   29126,
+   29127,
+   39003,
+   44739
+  ],
+  "name": "Eldan Augmentor",
+  "special": [
+   39001,
+   44448
+  ]
+ },
+ "21893": {
+  "auto": [
+   2605,
+   2607
+  ],
+  "name": "Gurtha Crowe",
+  "special": [
+   54241,
+   54299,
+   54327,
+   54675
+  ]
+ },
+ "21955": {
+  "auto": [
+   7267,
+   7270,
+   51827,
+   70633,
+   70664
+  ],
+  "name": "Augmented Slateform Charger",
+  "special": []
+ },
+ "21991": {
+  "auto": [
+   27545,
+   27546
+  ],
+  "name": "Exile Soldier",
+  "special": []
+ },
+ "22025": {
+  "auto": [
+   65459
+  ],
+  "name": "XAS Researcher",
+  "special": [
+   51828
+  ]
+ },
+ "22026": {
+  "auto": [
+   65459
+  ],
+  "name": "XAS Researcher",
+  "special": [
+   51828
+  ]
+ },
+ "22027": {
+  "auto": [
+   65459
+  ],
+  "name": "XAS Researcher",
+  "special": [
+   51828
+  ]
+ },
+ "22028": {
+  "auto": [
+   65459
+  ],
+  "name": "XAS Researcher",
+  "special": [
+   51828
+  ]
+ },
+ "22519": {
+  "auto": [
+   2764,
+   65459
+  ],
+  "name": "Exile Gunner",
+  "special": [
+   51828
+  ]
+ },
+ "22594": {
+  "auto": [
+   32867,
+   32868,
+   43759,
+   49350
+  ],
+  "name": "Exile Trooper",
+  "special": [
+   34131,
+   35727
+  ]
+ },
+ "22667": {
+  "auto": [
+   32867,
+   32868,
+   43759,
+   49350
+  ],
+  "name": "Exile Trooper",
+  "special": [
+   34131,
+   35727
+  ]
+ },
+ "22689": {
+  "auto": [
+   27545,
+   27546,
+   32867,
+   32868,
+   44254,
+   44255
+  ],
+  "name": "XAS Camp Guard",
+  "special": []
+ },
+ "22690": {
+  "auto": [
+   27545,
+   27546,
+   32867,
+   32868,
+   44254,
+   44255
+  ],
+  "name": "XAS Camp Guard",
+  "special": []
+ },
+ "22759": {
+  "auto": [
+   27545,
+   27546,
+   54827,
+   69505,
+   74447
+  ],
+  "name": "Justice Alastair",
+  "special": []
+ },
+ "22821": {
+  "auto": [
+   32867,
+   32868,
+   43759,
+   49350
+  ],
+  "name": "Jagged Rock Mechanic",
+  "special": [
+   34131,
+   35727,
+   49410
+  ]
+ },
+ "22953": {
+  "auto": [
+   32768,
+   32769,
+   33810,
+   43759,
+   46024
+  ],
+  "name": "Kelfa",
+  "special": []
+ },
+ "23138": {
+  "auto": [
+   16926,
+   16927
+  ],
+  "name": "Sacrificial Warpig",
+  "special": []
+ },
+ "23155": {
+  "auto": [],
+  "name": "Cactoid",
+  "special": [
+   29862
+  ]
+ },
+ "23177": {
+  "auto": [
+   28936,
+   28937,
+   36414,
+   43759
+  ],
+  "name": "Darkspur Chompacabra",
+  "special": [
+   34264
+  ]
+ },
+ "23319": {
+  "auto": [
+   32773,
+   32774,
+   33919,
+   77490
+  ],
+  "name": "Gnarlfoot Screecher",
+  "special": [
+   43366,
+   46895
+  ]
+ },
+ "23387": {
+  "auto": [],
+  "name": "Fuel Barrel",
+  "special": [
+   30457
+  ]
+ },
+ "23415": {
+  "auto": [
+   33979
+  ],
+  "name": "Exile Patrolship",
+  "special": []
+ },
+ "23416": {
+  "auto": [
+   32726,
+   32727,
+   53505
+  ],
+  "name": "Swifthart Grazer",
+  "special": [
+   53506,
+   55297
+  ]
+ },
+ "23417": {
+  "auto": [
+   33979
+  ],
+  "name": "Exile Patrolship",
+  "special": []
+ },
+ "23427": {
+  "auto": [
+   372,
+   1616,
+   34564
+  ],
+  "name": "Tracking Beast",
+  "special": [
+   55383
+  ]
+ },
+ "23428": {
+  "auto": [
+   28936,
+   28937,
+   36414,
+   43759
+  ],
+  "name": "Chompy the Devourer",
+  "special": [
+   34264
+  ]
+ },
+ "23450": {
+  "auto": [
+   5960,
+   5961,
+   53430
+  ],
+  "name": "Deadwind Jackal",
+  "special": [
+   34054,
+   34055,
+   53431
+  ]
+ },
+ "23456": {
+  "auto": [
+   34062,
+   53430,
+   56073,
+   56075,
+   56442
+  ],
+  "name": "Deadwind Caster",
+  "special": []
+ },
+ "23469": {
+  "auto": [
+   6146,
+   6147,
+   43759,
+   57765,
+   57766,
+   57767
+  ],
+  "name": "Zomclaw Scavenger",
+  "special": [
+   57768
+  ]
+ },
+ "23488": {
+  "auto": [
+   32845
+  ],
+  "name": "Exile Stinger",
+  "special": []
+ },
+ "23489": {
+  "auto": [
+   2764
+  ],
+  "name": "Exile Pilot",
+  "special": []
+ },
+ "23588": {
+  "auto": [
+   32867,
+   32868,
+   43759,
+   49350
+  ],
+  "name": "Savannah Skinner",
+  "special": [
+   34050,
+   34131,
+   34285,
+   35727
+  ]
+ },
+ "23589": {
+  "auto": [
+   27545,
+   27546,
+   54827,
+   55150,
+   69505,
+   74447
+  ],
+  "name": "Savannah Gunner",
+  "special": []
+ },
+ "23605": {
+  "auto": [
+   34062
+  ],
+  "name": "Shadeleaf Windtalker",
+  "special": [
+   55371,
+   55401,
+   55402,
+   55421,
+   55531,
+   55796
+  ]
+ },
+ "23606": {
+  "auto": [
+   2605,
+   2607
+  ],
+  "name": "Shadeleaf Windchaser",
+  "special": [
+   54742,
+   54817
+  ]
+ },
+ "23638": {
+  "auto": [
+   24626,
+   24627,
+   38625,
+   53364,
+   53868,
+   58547,
+   58550,
+   58593,
+   58603,
+   65779,
+   65780
+  ],
+  "name": "Exile Warbot",
+  "special": [
+   38727,
+   38738,
+   58548
+  ]
+ },
+ "23681": {
+  "auto": [
+   65459
+  ],
+  "name": "XAS Researcher",
+  "special": [
+   51828
+  ]
+ },
+ "23753": {
+  "auto": [
+   27783,
+   40540
+  ],
+  "name": "Invisible Unit",
+  "special": []
+ },
+ "23774": {
+  "auto": [
+   5960,
+   5961,
+   43759,
+   74514
+  ],
+  "name": "Bloodtalon Horncaller",
+  "special": [
+   35841,
+   35862,
+   74512
+  ]
+ },
+ "23787": {
+  "auto": [
+   5960,
+   5961,
+   43759,
+   74514
+  ],
+  "name": "Bloodtalon Scrapper",
+  "special": [
+   35841,
+   35862,
+   74512
+  ]
+ },
+ "23792": {
+  "auto": [
+   5960,
+   5961,
+   43759,
+   74514
+  ],
+  "name": "Bloodtalon Warden",
+  "special": [
+   35841,
+   35862,
+   35871,
+   74512
+  ]
+ },
+ "23795": {
+  "auto": [
+   5968,
+   5969
+  ],
+  "name": "Bloodtalon Ravager",
+  "special": [
+   55044,
+   55185
+  ]
+ },
+ "23834": {
+  "auto": [
+   2605,
+   2607,
+   2764,
+   32867,
+   32868,
+   43759,
+   49350,
+   65743,
+   65744
+  ],
+  "name": "Dominion Soldier",
+  "special": [
+   34131,
+   66053,
+   66285
+  ]
+ },
+ "23884": {
+  "auto": [
+   32965,
+   32966,
+   35963
+  ],
+  "name": "Augmented Buzzbing",
+  "special": [
+   44638
+  ]
+ },
+ "23885": {
+  "auto": [
+   6146,
+   6147,
+   43759,
+   57765,
+   57766,
+   57767
+  ],
+  "name": "Zomclaw Buzzard",
+  "special": [
+   57768
+  ]
+ },
+ "23918": {
+  "auto": [
+   5649,
+   5652
+  ],
+  "name": "Jagged Rock Brawler",
+  "special": [
+   34552
+  ]
+ },
+ "23923": {
+  "auto": [
+   46797,
+   46984,
+   57364,
+   57365
+  ],
+  "name": "Jagged Rock Enforcer",
+  "special": [
+   47033
+  ]
+ },
+ "23925": {
+  "auto": [
+   2764,
+   51899,
+   65459
+  ],
+  "name": "Jagged Rock Longshot",
+  "special": [
+   51828
+  ]
+ },
+ "23926": {
+  "auto": [
+   5649,
+   5652
+  ],
+  "name": "Jagged Rock Brawler",
+  "special": [
+   34552
+  ]
+ },
+ "23927": {
+  "auto": [
+   32867,
+   32868,
+   43759,
+   49350
+  ],
+  "name": "Jagged Rock Slasher",
+  "special": [
+   34131
+  ]
+ },
+ "23931": {
+  "auto": [
+   48381
+  ],
+  "name": "Jagged Rock Miner",
+  "special": []
+ },
+ "23975": {
+  "auto": [
+   34062
+  ],
+  "name": "Bloodtalon Protector",
+  "special": [
+   55848,
+   55849
+  ]
+ },
+ "23977": {
+  "auto": [
+   34062
+  ],
+  "name": "Keeper Akhin",
+  "special": [
+   55371,
+   55401,
+   55402,
+   55421,
+   55531
+  ]
+ },
+ "23978": {
+  "auto": [
+   5960,
+   5961,
+   43759,
+   74514
+  ],
+  "name": "Warmonger Murali",
+  "special": [
+   35841,
+   35862,
+   35871,
+   74512
+  ]
+ },
+ "23979": {
+  "auto": [
+   5649,
+   5652
+  ],
+  "name": "Crusher Zhong",
+  "special": [
+   55539,
+   55541
+  ]
+ },
+ "23982": {
+  "auto": [
+   29126,
+   29127,
+   39003,
+   44739
+  ],
+  "name": "Eldan Augmentor",
+  "special": [
+   39001,
+   44448
+  ]
+ },
+ "24029": {
+  "auto": [
+   32867,
+   32868
+  ],
+  "name": "Megatech Trooper",
+  "special": [
+   55434
+  ]
+ },
+ "24030": {
+  "auto": [
+   2764
+  ],
+  "name": "Megatech Gunner",
+  "special": [
+   55766
+  ]
+ },
+ "24046": {
+  "auto": [
+   2605,
+   2607
+  ],
+  "name": "Megatech Scientist",
+  "special": [
+   55426
+  ]
+ },
+ "24051": {
+  "auto": [
+   6651,
+   6652
+  ],
+  "name": "Venombite Hatchling",
+  "special": [
+   55327
+  ]
+ },
+ "24054": {
+  "auto": [
+   25870,
+   25871
+  ],
+  "name": "Scrab Striker",
+  "special": [
+   55324
+  ]
+ },
+ "24056": {
+  "auto": [
+   25870,
+   25871
+  ],
+  "name": "Scarhide Scrab",
+  "special": [
+   55324,
+   55325
+  ]
+ },
+ "24057": {
+  "auto": [
+   6651,
+   6652
+  ],
+  "name": "Venombite Spider",
+  "special": [
+   55327
+  ]
+ },
+ "24059": {
+  "auto": [
+   6651,
+   6652,
+   32493
+  ],
+  "name": "Venombite Spider Queen",
+  "special": [
+   39582,
+   55327
+  ]
+ },
+ "24077": {
+  "auto": [
+   2605,
+   2607
+  ],
+  "name": "Megatech Scientist",
+  "special": [
+   55426
+  ]
+ },
+ "24078": {
+  "auto": [
+   32867,
+   32868
+  ],
+  "name": "Megatech Trooper",
+  "special": [
+   55434
+  ]
+ },
+ "2409": {
+  "auto": [
+   5413,
+   5414
+  ],
+  "name": "Shoveljaw Boulderback",
+  "special": [
+   53268,
+   53272,
+   53274,
+   53275
+  ]
+ },
+ "24099": {
+  "auto": [
+   4537,
+   70378,
+   70379
+  ],
+  "name": "Megatech Battlebot",
+  "special": []
+ },
+ "24140": {
+  "auto": [
+   32867,
+   32868
+  ],
+  "name": "Scarhide Raider",
+  "special": [
+   55433,
+   55434
+  ]
+ },
+ "24141": {
+  "auto": [
+   2605,
+   2607
+  ],
+  "name": "Scarhide Beastmaster",
+  "special": [
+   55425,
+   55426
+  ]
+ },
+ "24144": {
+  "auto": [
+   34062
+  ],
+  "name": "Wildwood Weaver",
+  "special": [
+   55371,
+   55401
+  ]
+ },
+ "24145": {
+  "auto": [
+   34062
+  ],
+  "name": "Wildwood Whisperer",
+  "special": [
+   55371,
+   55401
+  ]
+ },
+ "24146": {
+  "auto": [
+   2605,
+   2607,
+   54895
+  ],
+  "name": "Wildwood Protector",
+  "special": [
+   54742,
+   54817,
+   54838
+  ]
+ },
+ "24147": {
+  "auto": [
+   32726,
+   32727,
+   53505
+  ],
+  "name": "Swiftwood Elder",
+  "special": [
+   53506
+  ]
+ },
+ "24149": {
+  "auto": [
+   32726,
+   32727,
+   53505
+  ],
+  "name": "Swiftwood Stag",
+  "special": [
+   53506,
+   53508
+  ]
+ },
+ "24150": {
+  "auto": [
+   32726,
+   32727,
+   53505
+  ],
+  "name": "Swiftwood Grazer",
+  "special": [
+   53506
+  ]
+ },
+ "24156": {
+  "auto": [
+   2605,
+   2607
+  ],
+  "name": "Megatech Scientist",
+  "special": [
+   55426
+  ]
+ },
+ "24168": {
+  "auto": [
+   33247,
+   33248,
+   35304
+  ],
+  "name": "Grove Strangler",
+  "special": [
+   35323,
+   37550,
+   52869
+  ]
+ },
+ "24216": {
+  "auto": [
+   2764
+  ],
+  "name": "Scarhide Farstriker",
+  "special": [
+   55765,
+   55766
+  ]
+ },
+ "24229": {
+  "auto": [
+   6750,
+   6751,
+   43759,
+   52768,
+   52769
+  ],
+  "name": "Hillscourge Rumbler",
+  "special": [
+   35234,
+   39434
+  ]
+ },
+ "24230": {
+  "auto": [
+   6750,
+   6751
+  ],
+  "name": "Hillscourge Biter",
+  "special": [
+   35234,
+   39434
+  ]
+ },
+ "24233": {
+  "auto": [
+   6651,
+   6652
+  ],
+  "name": "Deathmite Feeder",
+  "special": [
+   39582,
+   39598
+  ]
+ },
+ "24234": {
+  "auto": [
+   6651,
+   6652
+  ],
+  "name": "Deathmite Biter",
+  "special": [
+   39582,
+   39598,
+   52756
+  ]
+ },
+ "24235": {
+  "auto": [
+   6651,
+   6652
+  ],
+  "name": "Deathmite Crawler",
+  "special": [
+   39582,
+   39598
+  ]
+ },
+ "24236": {
+  "auto": [
+   6651,
+   6652
+  ],
+  "name": "Deathmite Queen",
+  "special": [
+   39582,
+   39598,
+   52756
+  ]
+ },
+ "24238": {
+  "auto": [
+   32761,
+   32762
+  ],
+  "name": "Ironcleft Bellower",
+  "special": [
+   53434,
+   53435
+  ]
+ },
+ "24244": {
+  "auto": [
+   4040,
+   4041,
+   54823,
+   54923
+  ],
+  "name": "Dreg Abomination",
+  "special": [
+   54822
+  ]
+ },
+ "24248": {
+  "auto": [
+   32726,
+   32727,
+   53505
+  ],
+  "name": "Gentle Dawngrazer",
+  "special": [
+   53506,
+   53508
+  ]
+ },
+ "24249": {
+  "auto": [
+   32773,
+   32774,
+   47711,
+   58717,
+   70015,
+   70255,
+   77490
+  ],
+  "name": "Enhanced Razortail",
+  "special": [
+   43366
+  ]
+ },
+ "24251": {
+  "auto": [
+   30674
+  ],
+  "name": "Exile Mine",
+  "special": [
+   30675
+  ]
+ },
+ "24364": {
+  "auto": [
+   25870,
+   25871
+  ],
+  "name": "Scrab Impaler",
+  "special": [
+   55324
+  ]
+ },
+ "24388": {
+  "auto": [],
+  "name": "Terminite Egg",
+  "special": [
+   60739
+  ]
+ },
+ "24425": {
+  "auto": [
+   5649,
+   5652
+  ],
+  "name": "Scarhide Chief",
+  "special": [
+   55439,
+   55440
+  ]
+ },
+ "24452": {
+  "auto": [
+   69800
+  ],
+  "name": "Vindicator Tank",
+  "special": []
+ },
+ "24521": {
+  "auto": [
+   32388,
+   32389,
+   53387
+  ],
+  "name": "Yirian",
+  "special": []
+ },
+ "24552": {
+  "auto": [
+   30852
+  ],
+  "name": "Falling Rock",
+  "special": []
+ },
+ "24697": {
+  "auto": [
+   28936,
+   28937,
+   36414,
+   43759
+  ],
+  "name": "Experiment 878",
+  "special": [
+   34264
+  ]
+ },
+ "24857": {
+  "auto": [
+   6750,
+   6751
+  ],
+  "name": "Hillscourge Scratcher",
+  "special": [
+   35234,
+   39434
+  ]
+ },
+ "25029": {
+  "auto": [
+   25870,
+   25871
+  ],
+  "name": "Scrab Corpse Feeder",
+  "special": [
+   55324
+  ]
+ },
+ "25071": {
+  "auto": [
+   23121,
+   44283
+  ],
+  "name": "Dominion Turret",
+  "special": []
+ },
+ "25089": {
+  "auto": [
+   32773,
+   32774,
+   33919,
+   48089,
+   48147,
+   71001
+  ],
+  "name": "Tumbili",
+  "special": [
+   43366,
+   46895,
+   48086
+  ]
+ },
+ "25094": {
+  "auto": [
+   2605,
+   2607
+  ],
+  "name": "Firewalker Jarrok",
+  "special": [
+   54241,
+   54299
+  ]
+ },
+ "25169": {
+  "auto": [
+   32768,
+   32769
+  ],
+  "name": "Chori",
+  "special": []
+ },
+ "25236": {
+  "auto": [
+   5968,
+   5969
+  ],
+  "name": "Bloodtalon Slicer",
+  "special": [
+   55044,
+   55185
+  ]
+ },
+ "25302": {
+  "auto": [
+   6750,
+   6751,
+   43759,
+   52768,
+   52769
+  ],
+  "name": "Hillscourge Horror",
+  "special": [
+   35234,
+   39434
+  ]
+ },
+ "25359": {
+  "auto": [
+   39902
+  ],
+  "name": "Toxic Container",
+  "special": []
+ },
+ "25578": {
+  "auto": [
+   4012,
+   4013,
+   57287,
+   57311
+  ],
+  "name": "Rockhorde Scuttling",
+  "special": []
+ },
+ "25675": {
+  "auto": [
+   32867,
+   32868
+  ],
+  "name": "Dominion Soldier",
+  "special": []
+ },
+ "25676": {
+  "auto": [
+   372,
+   1616
+  ],
+  "name": "Megatech Hound",
+  "special": [
+   55292
+  ]
+ },
+ "25677": {
+  "auto": [
+   32867,
+   32868
+  ],
+  "name": "Megatech Houndmaster",
+  "special": [
+   55433
+  ]
+ },
+ "25683": {
+  "auto": [
+   63495
+  ],
+  "name": "Exile Mortar",
+  "special": []
+ },
+ "25685": {
+  "auto": [
+   63495
+  ],
+  "name": "Exile Mortar",
+  "special": []
+ },
+ "25762": {
+  "auto": [
+   32867,
+   32868
+  ],
+  "name": "Dominion Soldier",
+  "special": []
+ },
+ "25804": {
+  "auto": [
+   4537,
+   70378,
+   70379
+  ],
+  "name": "Megatech Battlebot",
+  "special": []
+ },
+ "25805": {
+  "auto": [
+   32867,
+   32868
+  ],
+  "name": "Megatech Trooper",
+  "special": [
+   55434
+  ]
+ },
+ "25806": {
+  "auto": [
+   2605,
+   2607
+  ],
+  "name": "Megatech Scientist",
+  "special": [
+   55426
+  ]
+ },
+ "25936": {
+  "auto": [
+   4537,
+   70378,
+   70379
+  ],
+  "name": "Megatech Battlebot",
+  "special": []
+ },
+ "25979": {
+  "auto": [
+   7031,
+   7032
+  ],
+  "name": "Saltwater Snoglug",
+  "special": [
+   55330
+  ]
+ },
+ "25986": {
+  "auto": [
+   28690,
+   28691
+  ],
+  "name": "Eldan Security Construct",
+  "special": []
+ },
+ "25990": {
+  "auto": [
+   2605,
+   2607,
+   32867,
+   32868
+  ],
+  "name": "Exile Trooper",
+  "special": [
+   55434
+  ]
+ },
+ "25991": {
+  "auto": [
+   27545,
+   27546
+  ],
+  "name": "Exile Gunner",
+  "special": [
+   55763
+  ]
+ },
+ "25992": {
+  "auto": [
+   24626,
+   24627,
+   46670,
+   53868,
+   58547,
+   58550,
+   58593,
+   58603
+  ],
+  "name": "Exile Warbot",
+  "special": [
+   58548
+  ]
+ },
+ "25993": {
+  "auto": [
+   23121
+  ],
+  "name": "Exile Turret",
+  "special": []
+ },
+ "26021": {
+  "auto": [
+   28690,
+   28691
+  ],
+  "name": "Scout Drone",
+  "special": [
+   55846
+  ]
+ },
+ "26026": {
+  "auto": [
+   6616,
+   6617
+  ],
+  "name": "Malverine Stalker",
+  "special": [
+   55283
+  ]
+ },
+ "26073": {
+  "auto": [
+   32773,
+   32774,
+   33919,
+   77490
+  ],
+  "name": "Plumclaw Prowler",
+  "special": [
+   43366,
+   46459,
+   46895
+  ]
+ },
+ "26076": {
+  "auto": [
+   32773,
+   32774,
+   77490
+  ],
+  "name": "Plumclaw Howler",
+  "special": [
+   43366,
+   46933
+  ]
+ },
+ "26080": {
+  "auto": [
+   32773,
+   32774,
+   33919,
+   48089,
+   48147,
+   71001,
+   77490
+  ],
+  "name": "Plumclaw Ripper",
+  "special": [
+   43366,
+   46895,
+   48086
+  ]
+ },
+ "26082": {
+  "auto": [
+   32773,
+   32774,
+   77490
+  ],
+  "name": "Plumclaw Screecher",
+  "special": [
+   43366,
+   46933
+  ]
+ },
+ "26083": {
+  "auto": [
+   32773,
+   32774,
+   33919,
+   77490
+  ],
+  "name": "Plumclaw Gasher",
+  "special": [
+   43366,
+   46895
+  ]
+ },
+ "26087": {
+  "auto": [
+   32920,
+   32921,
+   46670,
+   59523
+  ],
+  "name": "Grimvoid Enforcer",
+  "special": [
+   34050,
+   46579
+  ]
+ },
+ "26090": {
+  "auto": [
+   27545,
+   27546,
+   46670,
+   56503,
+   70367,
+   72197
+  ],
+  "name": "Grimvoid Gunner",
+  "special": []
+ },
+ "26092": {
+  "auto": [
+   32867,
+   32868,
+   49792,
+   49928
+  ],
+  "name": "Grimvoid Knave",
+  "special": []
+ },
+ "26093": {
+  "auto": [
+   2764,
+   52150,
+   52151,
+   65455,
+   65459
+  ],
+  "name": "Grimvoid Boomer",
+  "special": []
+ },
+ "26094": {
+  "auto": [
+   2764,
+   51899,
+   65459
+  ],
+  "name": "Grimvoid Lookout",
+  "special": [
+   51828
+  ]
+ },
+ "26096": {
+  "auto": [
+   5649,
+   5652
+  ],
+  "name": "Grimvoid Pirate",
+  "special": [
+   34552,
+   52448
+  ]
+ },
+ "26098": {
+  "auto": [
+   6323,
+   6324,
+   55151,
+   55153,
+   55154
+  ],
+  "name": "Bloodhorn Stomper",
+  "special": [
+   55152
+  ]
+ },
+ "26099": {
+  "auto": [
+   6323,
+   6324,
+   55151,
+   55153,
+   55154
+  ],
+  "name": "Razorhorn",
+  "special": [
+   55152
+  ]
+ },
+ "26100": {
+  "auto": [
+   6275,
+   6276,
+   32493,
+   54600,
+   54731,
+   58633,
+   58641
+  ],
+  "name": "Ripjaw Thrasher",
+  "special": []
+ },
+ "26101": {
+  "auto": [
+   32726,
+   32727,
+   53505
+  ],
+  "name": "Dusktail Hart",
+  "special": [
+   53506,
+   53508
+  ]
+ },
+ "26102": {
+  "auto": [
+   32761,
+   32762
+  ],
+  "name": "Rusthoof Bull",
+  "special": [
+   53416,
+   53434,
+   53435,
+   53436
+  ]
+ },
+ "26103": {
+  "auto": [
+   32768,
+   32769,
+   33810,
+   43759
+  ],
+  "name": "Goldfang Stalker",
+  "special": [
+   33969,
+   35192
+  ]
+ },
+ "26124": {
+  "auto": [
+   27545,
+   27546,
+   44739,
+   54827,
+   56021,
+   56912,
+   69505
+  ],
+  "name": "Lord Venator",
+  "special": [
+   56911
+  ]
+ },
+ "26147": {
+  "auto": [
+   5960,
+   5961,
+   53430
+  ],
+  "name": "Witchwake Cutter",
+  "special": [
+   34054,
+   34055
+  ]
+ },
+ "26148": {
+  "auto": [
+   34062,
+   53430,
+   56073,
+   56075,
+   56442
+  ],
+  "name": "Witchwake Finder",
+  "special": []
+ },
+ "26150": {
+  "auto": [
+   34062,
+   56073,
+   56075,
+   56442
+  ],
+  "name": "Witchwake Necromancer",
+  "special": [
+   56078,
+   56081
+  ]
+ },
+ "26159": {
+  "auto": [
+   5649,
+   5652,
+   53430,
+   60653
+  ],
+  "name": "Newly Risen Draken",
+  "special": [
+   34552,
+   52448
+  ]
+ },
+ "26160": {
+  "auto": [
+   32867,
+   32868,
+   49792,
+   49928,
+   53430
+  ],
+  "name": "Risen Draken Huntress",
+  "special": [
+   49879
+  ]
+ },
+ "26174": {
+  "auto": [
+   6146,
+   6147,
+   43759,
+   57765,
+   57766,
+   57767
+  ],
+  "name": "Boneclaw Buzzard",
+  "special": [
+   57768
+  ]
+ },
+ "26182": {
+  "auto": [
+   5960,
+   5961,
+   53430
+  ],
+  "name": "Witchwake Risen",
+  "special": [
+   34054,
+   34055,
+   53431
+  ]
+ },
+ "26193": {
+  "auto": [
+   5649,
+   5652,
+   52740
+  ],
+  "name": "Skeledroid Defiler",
+  "special": [
+   52658,
+   52789
+  ]
+ },
+ "26194": {
+  "auto": [
+   29126,
+   29127,
+   39003,
+   44739
+  ],
+  "name": "A37 Augmentor",
+  "special": [
+   39001,
+   44448
+  ]
+ },
+ "26197": {
+  "auto": [
+   5649,
+   5652,
+   52740
+  ],
+  "name": "Skeledroid Ambusher",
+  "special": [
+   52658,
+   52789
+  ]
+ },
+ "26201": {
+  "auto": [
+   32734,
+   32735,
+   34262,
+   70156
+  ],
+  "name": "Skeledroid Ravager",
+  "special": [
+   45770
+  ]
+ },
+ "26202": {
+  "auto": [
+   5649,
+   5652,
+   52740
+  ],
+  "name": "Skeledroid Scrapper",
+  "special": [
+   52658
+  ]
+ },
+ "26304": {
+  "auto": [
+   25929,
+   25930
+  ],
+  "name": "Rockhorde Savager",
+  "special": [
+   55314
+  ]
+ },
+ "26307": {
+  "auto": [
+   32734,
+   32735,
+   34262,
+   69483
+  ],
+  "name": "Stoneback the Troglodyte",
+  "special": []
+ },
+ "26326": {
+  "auto": [
+   5649,
+   5652,
+   52740
+  ],
+  "name": "Skeledroid Scrapper",
+  "special": [
+   52658
+  ]
+ },
+ "26327": {
+  "auto": [
+   32734,
+   32735,
+   34262,
+   70156
+  ],
+  "name": "Skeledroid Ravager",
+  "special": [
+   45770
+  ]
+ },
+ "26441": {
+  "auto": [
+   32726,
+   32727,
+   53505
+  ],
+  "name": "Dusktail Grazer",
+  "special": [
+   53506
+  ]
+ },
+ "26444": {
+  "auto": [
+   32867,
+   32868,
+   50103,
+   50289
+  ],
+  "name": "High Clanlord Zhur the Risen",
+  "special": [
+   50007,
+   51329
+  ]
+ },
+ "26446": {
+  "auto": [
+   5649,
+   5652,
+   52740
+  ],
+  "name": "Skeledroid Ambusher",
+  "special": [
+   52658,
+   52789
+  ]
+ },
+ "26524": {
+  "auto": [
+   23121,
+   71422,
+   77485,
+   77515,
+   77589
+  ],
+  "name": "Grimvoid Trigun",
+  "special": [
+   52772,
+   52777,
+   52853
+  ]
+ },
+ "26549": {
+  "auto": [
+   28693,
+   28694
+  ],
+  "name": "A37 Securitybot",
+  "special": [
+   39430,
+   46006,
+   46405
+  ]
+ },
+ "26621": {
+  "auto": [
+   26298
+  ],
+  "name": "Avalanche",
+  "special": []
+ },
+ "26630": {
+  "auto": [
+   5649,
+   5652,
+   52740
+  ],
+  "name": "Skeledroid Slicer",
+  "special": [
+   52658,
+   52789
+  ]
+ },
+ "26700": {
+  "auto": [
+   5960,
+   5961,
+   53430
+  ],
+  "name": "Moruk the Wormeaten",
+  "special": [
+   34054,
+   34055,
+   53431
+  ]
+ },
+ "26716": {
+  "auto": [
+   2764,
+   32867,
+   32868
+  ],
+  "name": "Exile Soldier",
+  "special": [
+   55434,
+   55766
+  ]
+ },
+ "26805": {
+  "auto": [
+   5649,
+   5652,
+   52740
+  ],
+  "name": "Skeledroid Stalker",
+  "special": [
+   52658
+  ]
+ },
+ "26806": {
+  "auto": [
+   5649,
+   5652,
+   52740
+  ],
+  "name": "Skeledroid Scrapper",
+  "special": [
+   52658
+  ]
+ },
+ "26808": {
+  "auto": [
+   5649,
+   5652,
+   52740
+  ],
+  "name": "Skeledroid Ambusher",
+  "special": [
+   52658,
+   52789
+  ]
+ },
+ "26809": {
+  "auto": [
+   32734,
+   32735,
+   34262,
+   70156
+  ],
+  "name": "Skeledroid Ravager",
+  "special": [
+   45770
+  ]
+ },
+ "26810": {
+  "auto": [
+   28693,
+   28694
+  ],
+  "name": "A37 Protector",
+  "special": [
+   39430,
+   46006,
+   46405
+  ]
+ },
+ "26813": {
+  "auto": [
+   28690,
+   28691
+  ],
+  "name": "A37 Mender",
+  "special": [
+   41187
+  ]
+ },
+ "26862": {
+  "auto": [
+   32214
+  ],
+  "name": "Water Spray",
+  "special": []
+ },
+ "26974": {
+  "auto": [
+   32965,
+   32966,
+   35963
+  ],
+  "name": "Augmented Buzzbing",
+  "special": [
+   44638
+  ]
+ },
+ "26979": {
+  "auto": [
+   32920,
+   32921,
+   46670,
+   46797,
+   46984
+  ],
+  "name": "Mercenary Arkos",
+  "special": [
+   46579,
+   46692,
+   47033
+  ]
+ },
+ "26994": {
+  "auto": [],
+  "name": "Levian Expedition Soldier",
+  "special": [
+   55766
+  ]
+ },
+ "26995": {
+  "auto": [],
+  "name": "Levian Expedition Soldier",
+  "special": [
+   55766
+  ]
+ },
+ "27011": {
+  "auto": [
+   47669,
+   48399
+  ],
+  "name": "External Memory Core",
+  "special": [
+   47747,
+   47789
+  ]
+ },
+ "27038": {
+  "auto": [
+   32768,
+   32769
+  ],
+  "name": "Savannah Stalker",
+  "special": [
+   35192,
+   45494
+  ]
+ },
+ "27040": {
+  "auto": [
+   6323,
+   6324,
+   55151,
+   55153,
+   55154
+  ],
+  "name": "Savannah Trampler",
+  "special": [
+   55152
+  ]
+ },
+ "27043": {
+  "auto": [
+   32773,
+   32774,
+   33919,
+   77490
+  ],
+  "name": "Savannah Ringtail",
+  "special": [
+   43366,
+   46459,
+   46895
+  ]
+ },
+ "27059": {
+  "auto": [
+   2605,
+   2607,
+   32867,
+   32868
+  ],
+  "name": "Exile Trooper",
+  "special": [
+   55434
+  ]
+ },
+ "27061": {
+  "auto": [
+   27545,
+   27546
+  ],
+  "name": "Exile Gunner",
+  "special": [
+   55763
+  ]
+ },
+ "27135": {
+  "auto": [
+   34062
+  ],
+  "name": "Wildvine Watcher",
+  "special": [
+   55371,
+   55401,
+   55402,
+   55421,
+   55531
+  ]
+ },
+ "27136": {
+  "auto": [
+   27545,
+   27546,
+   54827,
+   69505
+  ],
+  "name": "Wildvine Hunter",
+  "special": []
+ },
+ "27149": {
+  "auto": [
+   32768,
+   32769,
+   33810,
+   43759
+  ],
+  "name": "Savannah Firefang",
+  "special": [
+   33969,
+   35192
+  ]
+ },
+ "27184": {
+  "auto": [
+   34062,
+   56073,
+   56075,
+   56442
+  ],
+  "name": "Wildvine Settler",
+  "special": []
+ },
+ "27186": {
+  "auto": [
+   372,
+   1616,
+   43611,
+   43759
+  ],
+  "name": "Wildvine Howler",
+  "special": [
+   43687
+  ]
+ },
+ "27216": {
+  "auto": [
+   6651,
+   6652
+  ],
+  "name": "Deathmite Spiderling",
+  "special": []
+ },
+ "27358": {
+  "auto": [
+   2605,
+   2607
+  ],
+  "name": "Arvin Wildvine",
+  "special": [
+   54742,
+   55044,
+   56425
+  ]
+ },
+ "27397": {
+  "auto": [
+   6616,
+   6617
+  ],
+  "name": "Malverine Stalker",
+  "special": [
+   55283
+  ]
+ },
+ "27399": {
+  "auto": [
+   28690,
+   28691
+  ],
+  "name": "Eldan Security Construct",
+  "special": []
+ },
+ "27402": {
+  "auto": [
+   2764
+  ],
+  "name": "Firestorm Bomber",
+  "special": [
+   55766
+  ]
+ },
+ "27403": {
+  "auto": [
+   2605,
+   2607
+  ],
+  "name": "Firestorm Berserker",
+  "special": [
+   55426
+  ]
+ },
+ "27449": {
+  "auto": [
+   6750,
+   6751
+  ],
+  "name": "Barkblight Feeder",
+  "special": [
+   55286,
+   55287
+  ]
+ },
+ "27451": {
+  "auto": [
+   33249,
+   33250
+  ],
+  "name": "Barkblight Biter",
+  "special": [
+   55721,
+   55722
+  ]
+ },
+ "27452": {
+  "auto": [
+   8093,
+   8094,
+   70150
+  ],
+  "name": "Barkblight Horror",
+  "special": [
+   56818,
+   58263
+  ]
+ },
+ "27453": {
+  "auto": [
+   5532,
+   5536
+  ],
+  "name": "Barkblight Queen",
+  "special": [
+   55757
+  ]
+ },
+ "27548": {
+  "auto": [
+   32867,
+   32868
+  ],
+  "name": "Toric Antevian",
+  "special": [
+   42082
+  ]
+ },
+ "27575": {
+  "auto": [
+   35171,
+   39607
+  ],
+  "name": "Firestorm Tank",
+  "special": [
+   34967,
+   34981,
+   35716
+  ]
+ },
+ "27579": {
+  "auto": [
+   32867,
+   32868
+  ],
+  "name": "Firestorm Guardian",
+  "special": [
+   55434
+  ]
+ },
+ "27687": {
+  "auto": [
+   32726,
+   32727
+  ],
+  "name": "Mysthoof Trampler",
+  "special": [
+   55296
+  ]
+ },
+ "27876": {
+  "auto": [
+   28704,
+   28705
+  ],
+  "name": "Mystwing Shredder",
+  "special": [
+   55311
+  ]
+ },
+ "27878": {
+  "auto": [
+   372,
+   1616
+  ],
+  "name": "Mystpaw Thrasher",
+  "special": [
+   55289,
+   55290
+  ]
+ },
+ "28002": {
+  "auto": [
+   7267,
+   7270,
+   51993,
+   52080,
+   52235
+  ],
+  "name": "Grove Guardian",
+  "special": [
+   55305
+  ]
+ },
+ "28163": {
+  "auto": [
+   6616,
+   6617,
+   34252,
+   48121
+  ],
+  "name": "Airdropped Malverine",
+  "special": [
+   47997
+  ]
+ },
+ "28313": {
+  "auto": [
+   28690,
+   28691,
+   39039
+  ],
+  "name": "Malfunctioning Scout Drone",
+  "special": [
+   55846
+  ]
+ },
+ "28317": {
+  "auto": [
+   70406
+  ],
+  "name": "Barkblight Egg",
+  "special": []
+ },
+ "28318": {
+  "auto": [
+   34566
+  ],
+  "name": "Thrasher Fern",
+  "special": [
+   33013,
+   33021,
+   33022
+  ]
+ },
+ "28541": {
+  "auto": [],
+  "name": "Levian Expedition Soldier",
+  "special": [
+   55766
+  ]
+ },
+ "28551": {
+  "auto": [],
+  "name": "Levian Expedition Soldier",
+  "special": [
+   55766
+  ]
+ },
+ "28623": {
+  "auto": [
+   32726,
+   32727
+  ],
+  "name": "Mysthoof Doe",
+  "special": [
+   55296
+  ]
+ },
+ "28883": {
+  "auto": [
+   28693,
+   28694
+  ],
+  "name": "Eldan Defender",
+  "special": [
+   55299,
+   55300
+  ]
+ },
+ "29125": {
+  "auto": [
+   42802
+  ],
+  "name": "Stinging Defender",
+  "special": []
+ },
+ "29441": {
+  "auto": [
+   32761,
+   32762
+  ],
+  "name": "Coarsehair Buck",
+  "special": [
+   53434,
+   53435,
+   55309
+  ]
+ },
+ "29451": {
+  "auto": [
+   2764,
+   52796
+  ],
+  "name": "Jagged Rock Grenadier",
+  "special": [
+   51828
+  ]
+ },
+ "29639": {
+  "auto": [
+   27545,
+   27546,
+   54827,
+   55150,
+   69505,
+   74447
+  ],
+  "name": "Savannah Gunner",
+  "special": []
+ },
+ "29856": {
+  "auto": [
+   2764
+  ],
+  "name": "Exile Pilot",
+  "special": []
+ },
+ "29857": {
+  "auto": [
+   2764
+  ],
+  "name": "Exile Pilot",
+  "special": []
+ },
+ "29870": {
+  "auto": [
+   56073
+  ],
+  "name": "Bloodbloom Avenger",
+  "special": []
+ },
+ "29873": {
+  "auto": [
+   56073
+  ],
+  "name": "Bloodbloom Avenger",
+  "special": []
+ },
+ "29919": {
+  "auto": [
+   372,
+   1616
+  ],
+  "name": "Mystpaw Dasher",
+  "special": [
+   55292
+  ]
+ },
+ "29976": {
+  "auto": [
+   28704,
+   28705
+  ],
+  "name": "Mystwing Boomer",
+  "special": [
+   55311
+  ]
+ },
+ "30055": {
+  "auto": [
+   28693,
+   28694
+  ],
+  "name": "Eldan Protector",
+  "special": [
+   39430,
+   46006,
+   46405
+  ]
+ },
+ "30142": {
+  "auto": [
+   28704,
+   28705,
+   54839
+  ],
+  "name": "Bleakwing Razorbeak",
+  "special": [
+   55137
+  ]
+ },
+ "30143": {
+  "auto": [
+   28704,
+   28705,
+   34455,
+   54839
+  ],
+  "name": "Bleakwing Charger",
+  "special": []
+ },
+ "30144": {
+  "auto": [
+   33244,
+   33245,
+   34227
+  ],
+  "name": "Oakback Roan",
+  "special": [
+   53418,
+   53423
+  ]
+ },
+ "30146": {
+  "auto": [
+   372,
+   1616,
+   43611,
+   43759
+  ],
+  "name": "Longsnout Scavenger",
+  "special": [
+   43687
+  ]
+ },
+ "30148": {
+  "auto": [
+   372,
+   1616,
+   34564,
+   43507
+  ],
+  "name": "Longsnout Prowler",
+  "special": [
+   34565
+  ]
+ },
+ "30149": {
+  "auto": [
+   4012,
+   4013
+  ],
+  "name": "Tideborn Shellback",
+  "special": []
+ },
+ "30154": {
+  "auto": [
+   2605,
+   2607
+  ],
+  "name": "Tideborn Wavefin",
+  "special": [
+   54241,
+   54299
+  ]
+ },
+ "30155": {
+  "auto": [
+   2764,
+   51899,
+   65459
+  ],
+  "name": "Tideborn Techflipper",
+  "special": [
+   51828
+  ]
+ },
+ "30156": {
+  "auto": [
+   27545,
+   27546,
+   54827,
+   55150,
+   69505,
+   74447
+  ],
+  "name": "Tideborn Researcher",
+  "special": [
+   55119
+  ]
+ },
+ "30182": {
+  "auto": [],
+  "name": "Eldan Fuel Rod",
+  "special": [
+   27884
+  ]
+ },
+ "30217": {
+  "auto": [
+   30756,
+   56986
+  ],
+  "name": "Stormseeker Wave-Caller",
+  "special": [
+   56683
+  ]
+ },
+ "30226": {
+  "auto": [
+   5960,
+   5961,
+   75357
+  ],
+  "name": "Stormseeker Mist-Dancer",
+  "special": [
+   35379,
+   35661,
+   75599
+  ]
+ },
+ "30233": {
+  "auto": [
+   5960,
+   5961,
+   53430
+  ],
+  "name": "Darkloam Gatherer",
+  "special": [
+   34054,
+   34055
+  ]
+ },
+ "30238": {
+  "auto": [
+   32867,
+   32868
+  ],
+  "name": "Toric Antevian",
+  "special": [
+   42082
+  ]
+ },
+ "30242": {
+  "auto": [
+   5960,
+   5961,
+   53430
+  ],
+  "name": "Darkloam Bonecaller",
+  "special": [
+   34054,
+   34055
+  ]
+ },
+ "30252": {
+  "auto": [
+   5960,
+   5961,
+   53430
+  ],
+  "name": "Darkloam Spirit Kin",
+  "special": [
+   34054,
+   34055,
+   53431
+  ]
+ },
+ "30256": {
+  "auto": [
+   34062
+  ],
+  "name": "Pyrius Octavian",
+  "special": [
+   55848,
+   55849,
+   55851
+  ]
+ },
+ "30259": {
+  "auto": [
+   372,
+   1616,
+   34564,
+   43507
+  ],
+  "name": "Highland Howler",
+  "special": [
+   34565,
+   55294
+  ]
+ },
+ "30262": {
+  "auto": [
+   34062,
+   53430,
+   56073,
+   56075,
+   56442
+  ],
+  "name": "Darkloam Painbringer",
+  "special": [
+   56078,
+   56081
+  ]
+ },
+ "30263": {
+  "auto": [
+   372,
+   1616,
+   43611,
+   43759
+  ],
+  "name": "Highland Stalker",
+  "special": [
+   43687,
+   55290,
+   55294
+  ]
+ },
+ "30266": {
+  "auto": [
+   372,
+   1616,
+   34564,
+   43611,
+   43759
+  ],
+  "name": "Darkfang Prowler",
+  "special": [
+   43687
+  ]
+ },
+ "30267": {
+  "auto": [
+   7267,
+   7270,
+   51827,
+   51993,
+   52080,
+   52235
+  ],
+  "name": "Stoneridge Boulder",
+  "special": [
+   55306
+  ]
+ },
+ "30268": {
+  "auto": [
+   7031,
+   7032,
+   57094
+  ],
+  "name": "Marshpond Snoglug",
+  "special": [
+   55331,
+   57054
+  ]
+ },
+ "30269": {
+  "auto": [
+   33242,
+   33243,
+   53868
+  ],
+  "name": "Darkwood Fester",
+  "special": [
+   69550
+  ]
+ },
+ "30270": {
+  "auto": [
+   372,
+   1616,
+   34564,
+   43507
+  ],
+  "name": "Darkfang Hunter",
+  "special": [
+   34565
+  ]
+ },
+ "30273": {
+  "auto": [
+   6651,
+   6652
+  ],
+  "name": "Shadowstalker Crawler",
+  "special": [
+   39582,
+   39598
+  ]
+ },
+ "30274": {
+  "auto": [
+   6651,
+   6652
+  ],
+  "name": "Shadowstalker Spitter",
+  "special": [
+   39582,
+   39598,
+   52756
+  ]
+ },
+ "30280": {
+  "auto": [
+   7504
+  ],
+  "name": "Radiant Sharpshot",
+  "special": []
+ },
+ "30281": {
+  "auto": [
+   32867,
+   32868
+  ],
+  "name": "Radiant Templar",
+  "special": []
+ },
+ "30282": {
+  "auto": [
+   6616,
+   6617,
+   34252,
+   48121
+  ],
+  "name": "Frenzyclaw Malverine",
+  "special": [
+   47997
+  ]
+ },
+ "30283": {
+  "auto": [
+   5649,
+   5652,
+   5655,
+   5656
+  ],
+  "name": "Vigilant Acolyte",
+  "special": []
+ },
+ "30284": {
+  "auto": [
+   5649,
+   5652,
+   5655,
+   5656
+  ],
+  "name": "Vigilant Acolyte",
+  "special": []
+ },
+ "30285": {
+  "auto": [
+   33242,
+   33243,
+   53868,
+   69570
+  ],
+  "name": "Ferocious Darkspire Slank",
+  "special": [
+   69550
+  ]
+ },
+ "30286": {
+  "auto": [
+   34062
+  ],
+  "name": "Lightreach High Priest",
+  "special": [
+   55371,
+   55401
+  ]
+ },
+ "30295": {
+  "auto": [
+   32867,
+   32868,
+   43759,
+   49350
+  ],
+  "name": "Viralist Zarkin",
+  "special": [
+   34131,
+   35727,
+   49410
+  ]
+ },
+ "30296": {
+  "auto": [
+   2605,
+   2607
+  ],
+  "name": "Darkpool Alchemist",
+  "special": [
+   54241,
+   54299
+  ]
+ },
+ "30300": {
+  "auto": [
+   6916,
+   6917,
+   52760,
+   53868,
+   60894
+  ],
+  "name": "Darkloam Shadowroot",
+  "special": [
+   35400,
+   35417
+  ]
+ },
+ "30321": {
+  "auto": [
+   32965,
+   32966,
+   71203
+  ],
+  "name": "Doomsting",
+  "special": [
+   44714
+  ]
+ },
+ "30322": {
+  "auto": [
+   44650,
+   44770,
+   59759
+  ],
+  "name": "Dazeroot Hiveguard",
+  "special": [
+   44714
+  ]
+ },
+ "30325": {
+  "auto": [
+   33251,
+   33252,
+   52968,
+   53034
+  ],
+  "name": "Needlebrook Brute",
+  "special": []
+ },
+ "30326": {
+  "auto": [
+   33251,
+   33252,
+   70383
+  ],
+  "name": "Needlebrook Shambler",
+  "special": [
+   35275
+  ]
+ },
+ "30327": {
+  "auto": [
+   32726,
+   32727,
+   53505
+  ],
+  "name": "Sunhorn Roamer",
+  "special": [
+   53506
+  ]
+ },
+ "30328": {
+  "auto": [
+   32726,
+   32727,
+   53505
+  ],
+  "name": "Sunhorn Gildrunner",
+  "special": [
+   53506,
+   53508
+  ]
+ },
+ "30330": {
+  "auto": [
+   6146,
+   6147
+  ],
+  "name": "Mossbeak Shredder",
+  "special": [
+   52717,
+   52718,
+   52719,
+   52720
+  ]
+ },
+ "30331": {
+  "auto": [
+   32867,
+   32868,
+   49792
+  ],
+  "name": "Razen the Preyfinder",
+  "special": [
+   51383
+  ]
+ },
+ "30332": {
+  "auto": [
+   32867,
+   32868,
+   49792,
+   49928
+  ],
+  "name": "Bonerazer Bloodspiller",
+  "special": [
+   49879
+  ]
+ },
+ "30333": {
+  "auto": [
+   2605,
+   2607
+  ],
+  "name": "Bonerazer Bloodmauler",
+  "special": [
+   54742,
+   54817
+  ]
+ },
+ "30334": {
+  "auto": [
+   34062
+  ],
+  "name": "Bonerazer Huntstalker",
+  "special": [
+   55595
+  ]
+ },
+ "30389": {
+  "auto": [
+   32867,
+   32868,
+   46670,
+   49792,
+   49928
+  ],
+  "name": "Firestorm Firethrasher",
+  "special": []
+ },
+ "30396": {
+  "auto": [
+   46670,
+   48381,
+   53223,
+   53415
+  ],
+  "name": "Firestorm Embermancer",
+  "special": []
+ },
+ "30400": {
+  "auto": [
+   2764,
+   46670
+  ],
+  "name": "Firestorm Pyroslinger",
+  "special": [
+   55918
+  ]
+ },
+ "30408": {
+  "auto": [
+   2764,
+   46670
+  ],
+  "name": "Firestorm Pyroamper",
+  "special": [
+   55918
+  ]
+ },
+ "30414": {
+  "auto": [
+   32867,
+   32868,
+   46670,
+   49792,
+   49928
+  ],
+  "name": "Firestorm Incinerator",
+  "special": [
+   49879
+  ]
+ },
+ "30416": {
+  "auto": [
+   6916,
+   6917,
+   53868
+  ],
+  "name": "Frenzied Ashthorn",
+  "special": [
+   35400,
+   35417
+  ]
+ },
+ "30417": {
+  "auto": [
+   6916,
+   6917,
+   52760,
+   53868
+  ],
+  "name": "Scorched Ashthorn",
+  "special": [
+   35400,
+   35417
+  ]
+ },
+ "30437": {
+  "auto": [
+   33247,
+   33248
+  ],
+  "name": "Scorched Tangleroot",
+  "special": [
+   55318
+  ]
+ },
+ "30446": {
+  "auto": [
+   32726,
+   32727,
+   53505
+  ],
+  "name": "Greenbough Stag",
+  "special": [
+   53506,
+   53508,
+   55297
+  ]
+ },
+ "30447": {
+  "auto": [
+   32726,
+   32727,
+   53505
+  ],
+  "name": "Greenbough Grazer",
+  "special": [
+   53506,
+   55297
+  ]
+ },
+ "30449": {
+  "auto": [
+   32726,
+   32727
+  ],
+  "name": "Greenbough Calf",
+  "special": [
+   55297
+  ]
+ },
+ "30450": {
+  "auto": [
+   30756,
+   56986
+  ],
+  "name": "Stormseeker Tome-Binder",
+  "special": [
+   56683,
+   56990,
+   56993
+  ]
+ },
+ "30452": {
+  "auto": [
+   33247,
+   33248,
+   35304
+  ],
+  "name": "Underbrush Creeper",
+  "special": [
+   35323
+  ]
+ },
+ "30454": {
+  "auto": [
+   34062,
+   56536
+  ],
+  "name": "Stormseeker Acolyte",
+  "special": [
+   56538
+  ]
+ },
+ "30459": {
+  "auto": [
+   34062
+  ],
+  "name": "Stormseeker Seer",
+  "special": [
+   55595
+  ]
+ },
+ "30461": {
+  "auto": [
+   5960,
+   5961,
+   43759,
+   75357,
+   75625
+  ],
+  "name": "Stormseeker Rain-Warrior",
+  "special": [
+   35379,
+   35661,
+   35707,
+   75599
+  ]
+ },
+ "30462": {
+  "auto": [
+   30756,
+   56986
+  ],
+  "name": "Stormseeker High Priest",
+  "special": [
+   56683,
+   56990,
+   56993
+  ]
+ },
+ "30464": {
+  "auto": [
+   5649,
+   5652,
+   50027
+  ],
+  "name": "Stormseeker Villager",
+  "special": []
+ },
+ "30466": {
+  "auto": [
+   32726,
+   32727
+  ],
+  "name": "Cinderfoot Stag",
+  "special": [
+   35187,
+   55297
+  ]
+ },
+ "30467": {
+  "auto": [
+   32726,
+   32727
+  ],
+  "name": "Cinderfoot Runner",
+  "special": [
+   55297
+  ]
+ },
+ "30468": {
+  "auto": [
+   33247,
+   33248,
+   35304
+  ],
+  "name": "Underbrush Rootling",
+  "special": [
+   35323
+  ]
+ },
+ "30470": {
+  "auto": [
+   23121
+  ],
+  "name": "Lightreach Defense Turret",
+  "special": []
+ },
+ "30479": {
+  "auto": [
+   5960,
+   5961,
+   43759,
+   75357,
+   75625
+  ],
+  "name": "Stormseeker Ice-Heart",
+  "special": [
+   35379,
+   35661,
+   35707,
+   75599
+  ]
+ },
+ "30488": {
+  "auto": [
+   6561,
+   6562,
+   57625,
+   57659
+  ],
+  "name": "Greenbark Lasher",
+  "special": [
+   55760,
+   57624,
+   57627
+  ]
+ },
+ "30490": {
+  "auto": [
+   2605,
+   2607,
+   56423
+  ],
+  "name": "Slenderskin Abductor",
+  "special": [
+   56037,
+   56358,
+   56390
+  ]
+ },
+ "30492": {
+  "auto": [
+   6275,
+   6276,
+   46670,
+   54600,
+   54731
+  ],
+  "name": "Firestorm Embersnapper",
+  "special": []
+ },
+ "30506": {
+  "auto": [
+   4616,
+   4617,
+   30999
+  ],
+  "name": "Stormseeker Drone",
+  "special": [
+   41840
+  ]
+ },
+ "30507": {
+  "auto": [
+   30756,
+   56986
+  ],
+  "name": "Stormseeker Arcanist",
+  "special": [
+   56683
+  ]
+ },
+ "30538": {
+  "auto": [
+   27545,
+   27546,
+   54827,
+   55150,
+   69505,
+   74447
+  ],
+  "name": "Slenderskin Implementer",
+  "special": [
+   55119
+  ]
+ },
+ "30541": {
+  "auto": [
+   4012,
+   4013,
+   57287,
+   57311
+  ],
+  "name": "Slenderskin Crawler",
+  "special": []
+ },
+ "30550": {
+  "auto": [
+   32867,
+   32868,
+   43759,
+   49350
+  ],
+  "name": "Vigilant Heart Defender",
+  "special": [
+   34131,
+   35727
+  ]
+ },
+ "30551": {
+  "auto": [
+   32867,
+   32868,
+   43759,
+   49350
+  ],
+  "name": "Vigilant Heart Defender",
+  "special": [
+   34131,
+   35727
+  ]
+ },
+ "30553": {
+  "auto": [
+   2605,
+   2607
+  ],
+  "name": "Slenderskin Slicer",
+  "special": [
+   54241,
+   54299
+  ]
+ },
+ "30672": {
+  "auto": [
+   7031,
+   7032,
+   57056,
+   57094
+  ],
+  "name": "Greenbark Spewer",
+  "special": [
+   55331,
+   57054,
+   57057
+  ]
+ },
+ "30755": {
+  "auto": [
+   32867,
+   32868
+  ],
+  "name": "Toric Antevian",
+  "special": [
+   42082
+  ]
+ },
+ "30839": {
+  "auto": [],
+  "name": "Primal Phylax Jar",
+  "special": [
+   34866
+  ]
+ },
+ "30902": {
+  "auto": [
+   32867,
+   32868
+  ],
+  "name": "Kezrek Warbringer",
+  "special": []
+ },
+ "30925": {
+  "auto": [
+   5960,
+   5961,
+   53430
+  ],
+  "name": "Darkloam Cook",
+  "special": [
+   34054,
+   34055,
+   53431
+  ]
+ },
+ "30928": {
+  "auto": [
+   372,
+   1616,
+   43759,
+   44189,
+   44290,
+   44311
+  ],
+  "name": "Mistclaw",
+  "special": [
+   43687
+  ]
+ },
+ "31007": {
+  "auto": [
+   32867,
+   32868
+  ],
+  "name": "Cadet Catian",
+  "special": []
+ },
+ "31023": {
+  "auto": [
+   6651,
+   6652
+  ],
+  "name": "Tunnelweb Creepling",
+  "special": [
+   39582,
+   39598,
+   55328
+  ]
+ },
+ "31024": {
+  "auto": [
+   6651,
+   6652
+  ],
+  "name": "Tunnelweb Widow",
+  "special": [
+   39582,
+   39598,
+   55328
+  ]
+ },
+ "31045": {
+  "auto": [
+   34959
+  ],
+  "name": "Poison Canisters",
+  "special": []
+ },
+ "31085": {
+  "auto": [
+   6916,
+   6917,
+   52760,
+   53868,
+   60894
+  ],
+  "name": "Highland Stumpkin",
+  "special": [
+   35400,
+   35417
+  ]
+ },
+ "31120": {
+  "auto": [
+   6616,
+   6617,
+   34252,
+   48641,
+   58666
+  ],
+  "name": "Duskfang",
+  "special": [
+   48433
+  ]
+ },
+ "31144": {
+  "auto": [
+   5960,
+   5961,
+   53430
+  ],
+  "name": "Chief Umballah",
+  "special": [
+   34054,
+   34055,
+   53431
+  ]
+ },
+ "31171": {
+  "auto": [
+   34062
+  ],
+  "name": "Bloodtalon Windweaver",
+  "special": [
+   55371,
+   55401
+  ]
+ },
+ "31225": {
+  "auto": [
+   5649,
+   5652
+  ],
+  "name": "Crimson Hook Cannibal",
+  "special": [
+   55539,
+   55541
+  ]
+ },
+ "31249": {
+  "auto": [
+   32388,
+   32389,
+   53387
+  ],
+  "name": "Greenbough Guardian",
+  "special": []
+ },
+ "31299": {
+  "auto": [
+   32867,
+   32868
+  ],
+  "name": "Toric Antevian",
+  "special": [
+   42082
+  ]
+ },
+ "31349": {
+  "auto": [
+   32734,
+   32735,
+   34262
+  ],
+  "name": "Stonepaw Mangler",
+  "special": [
+   35556
+  ]
+ },
+ "31353": {
+  "auto": [
+   32726,
+   32727,
+   53505
+  ],
+  "name": "Lightkeeper",
+  "special": [
+   53506,
+   53508
+  ]
+ },
+ "31361": {
+  "auto": [
+   2605,
+   2607
+  ],
+  "name": "Darkpool Shadowdagger",
+  "special": [
+   54241,
+   54299
+  ]
+ },
+ "31421": {
+  "auto": [
+   2605,
+   2607
+  ],
+  "name": "Elder Marok",
+  "special": [
+   54241,
+   54299,
+   54327,
+   54675
+  ]
+ },
+ "31422": {
+  "auto": [
+   2605,
+   2607
+  ],
+  "name": "Elder Dakkar",
+  "special": [
+   54241,
+   54299,
+   54327,
+   54675
+  ]
+ },
+ "31471": {
+  "auto": [],
+  "name": "Levian Expedition Soldier",
+  "special": [
+   55766
+  ]
+ },
+ "31474": {
+  "auto": [
+   47669
+  ],
+  "name": "Hijacked Eldan Probe",
+  "special": [
+   47747,
+   47789
+  ]
+ },
+ "31507": {
+  "auto": [
+   46537
+  ],
+  "name": "Snap Trap",
+  "special": []
+ },
+ "31508": {
+  "auto": [
+   34062,
+   56509,
+   56510
+  ],
+  "name": "Calidor Antevian",
+  "special": [
+   56504
+  ]
+ },
+ "31533": {
+  "auto": [
+   33242,
+   33243,
+   53868,
+   69570
+  ],
+  "name": "Darkspire Hoarder Slank",
+  "special": [
+   69550
+  ]
+ },
+ "31583": {
+  "auto": [
+   32761,
+   32762
+  ],
+  "name": "Highland Calf",
+  "special": [
+   53434,
+   53435
+  ]
+ },
+ "31585": {
+  "auto": [
+   32761,
+   32762
+  ],
+  "name": "Highland Bull",
+  "special": [
+   53416,
+   53434,
+   53435,
+   53436
+  ]
+ },
+ "31586": {
+  "auto": [
+   32761,
+   32762
+  ],
+  "name": "Stormhoof",
+  "special": [
+   53416,
+   53434,
+   53435,
+   53436
+  ]
+ },
+ "31654": {
+  "auto": [
+   7267,
+   7270,
+   51827,
+   70633,
+   70664
+  ],
+  "name": "Augmented Behemoth",
+  "special": []
+ },
+ "31703": {
+  "auto": [
+   7031,
+   7032
+  ],
+  "name": "Greenbark Slurper",
+  "special": [
+   55331
+  ]
+ },
+ "31738": {
+  "auto": [
+   32965,
+   32966
+  ],
+  "name": "Dazeroot Stinger",
+  "special": []
+ },
+ "31778": {
+  "auto": [
+   6916,
+   6917,
+   53868
+  ],
+  "name": "Toxic Stumpkin",
+  "special": [
+   35400,
+   35417
+  ]
+ },
+ "31792": {
+  "auto": [
+   24626,
+   24627,
+   46670,
+   53868,
+   58547,
+   58550,
+   58593,
+   58603
+  ],
+  "name": "Megatech Warbot",
+  "special": [
+   58548
+  ]
+ },
+ "31820": {
+  "auto": [
+   6275,
+   6276,
+   54600,
+   54731
+  ],
+  "name": "Bonerazer Snaptooth",
+  "special": []
+ },
+ "31846": {
+  "auto": [
+   6275,
+   6276,
+   32493,
+   54600,
+   54731,
+   58633,
+   58641
+  ],
+  "name": "Muddybrook Ripjaw",
+  "special": []
+ },
+ "31865": {
+  "auto": [
+   32734,
+   32735,
+   34262
+  ],
+  "name": "Risen Stalker",
+  "special": [
+   35556
+  ]
+ },
+ "31868": {
+  "auto": [
+   44264,
+   44265
+  ],
+  "name": "Glenview Guard",
+  "special": []
+ },
+ "31908": {
+  "auto": [
+   5649,
+   5652
+  ],
+  "name": "Dominion Bio-Weaponizer",
+  "special": [
+   34552,
+   52448
+  ]
+ },
+ "31921": {
+  "auto": [
+   30756,
+   34062
+  ],
+  "name": "Ashenna Brightsun",
+  "special": []
+ },
+ "31929": {
+  "auto": [
+   33247,
+   33248,
+   35304
+  ],
+  "name": "Augmented Creeper",
+  "special": [
+   35323
+  ]
+ },
+ "31973": {
+  "auto": [
+   44264,
+   44265
+  ],
+  "name": "Woodhaven Guard",
+  "special": []
+ },
+ "31981": {
+  "auto": [
+   44256,
+   44257
+  ],
+  "name": "Grimveil Guard",
+  "special": []
+ },
+ "32096": {
+  "auto": [
+   4012,
+   4013,
+   57287,
+   57289,
+   57311,
+   57420
+  ],
+  "name": "Shaleshell Spineclaw",
+  "special": [
+   57290
+  ]
+ },
+ "32101": {
+  "auto": [
+   44256,
+   44257
+  ],
+  "name": "Grimveil Guard",
+  "special": []
+ },
+ "32213": {
+  "auto": [
+   6616,
+   6617,
+   47806,
+   47853,
+   58775,
+   70151,
+   70152,
+   70154
+  ],
+  "name": "Augmented Malverine",
+  "special": []
+ },
+ "32214": {
+  "auto": [
+   33247,
+   33248,
+   35304
+  ],
+  "name": "Augmented Rootling",
+  "special": [
+   35323
+  ]
+ },
+ "32379": {
+  "auto": [
+   44264,
+   44265
+  ],
+  "name": "Glenview Guard",
+  "special": []
+ },
+ "32380": {
+  "auto": [
+   44264,
+   44265
+  ],
+  "name": "Glenview Guard",
+  "special": []
+ },
+ "32386": {
+  "auto": [
+   44264,
+   44265
+  ],
+  "name": "Glenview Guard",
+  "special": []
+ },
+ "32477": {
+  "auto": [
+   6275,
+   6276,
+   32493,
+   54600,
+   54731,
+   58633,
+   58641
+  ],
+  "name": "Steelscale Gnasher",
+  "special": []
+ },
+ "32478": {
+  "auto": [
+   32768,
+   32769
+  ],
+  "name": "Vicious Manstalker",
+  "special": [
+   35192,
+   45494
+  ]
+ },
+ "32479": {
+  "auto": [
+   33247,
+   33248,
+   35304
+  ],
+  "name": "Mossy Vinecreeper",
+  "special": [
+   35323
+  ]
+ },
+ "32488": {
+  "auto": [
+   2605,
+   2607
+  ],
+  "name": "Torine Huntress",
+  "special": [
+   54241,
+   54299
+  ]
+ },
+ "32491": {
+  "auto": [
+   35002,
+   44739
+  ],
+  "name": "Webwood Queen",
+  "special": [
+   39598,
+   70403
+  ]
+ },
+ "32492": {
+  "auto": [
+   35002,
+   44739
+  ],
+  "name": "Webwood Spitter",
+  "special": [
+   39598,
+   70403
+  ]
+ },
+ "32493": {
+  "auto": [
+   6651,
+   6652,
+   44739
+  ],
+  "name": "Webwood Pincher",
+  "special": [
+   39582,
+   39598
+  ]
+ },
+ "32497": {
+  "auto": [
+   5649,
+   5652
+  ],
+  "name": "Ravenous Ripper",
+  "special": [
+   34552,
+   52448
+  ]
+ },
+ "32498": {
+  "auto": [
+   32726,
+   32727,
+   53505
+  ],
+  "name": "Defiant Dawngrazer",
+  "special": [
+   53506,
+   53508
+  ]
+ },
+ "32502": {
+  "auto": [
+   2605,
+   2607
+  ],
+  "name": "Ravenous Reaver",
+  "special": [
+   54241,
+   54299
+  ]
+ },
+ "32504": {
+  "auto": [
+   32734,
+   32735,
+   34262
+  ],
+  "name": "Rockside Mangler",
+  "special": []
+ },
+ "32505": {
+  "auto": [
+   4012,
+   4013,
+   57287,
+   57311
+  ],
+  "name": "Rockside Prickler",
+  "special": []
+ },
+ "32508": {
+  "auto": [
+   6916,
+   6917,
+   52760,
+   53868,
+   60894
+  ],
+  "name": "Infused Lifesplinter",
+  "special": [
+   35400,
+   35417
+  ]
+ },
+ "32509": {
+  "auto": [
+   34062,
+   56509,
+   56510
+  ],
+  "name": "Calidor Antevian",
+  "special": [
+   56504
+  ]
+ },
+ "32521": {
+  "auto": [
+   29126,
+   29127,
+   39003,
+   44739
+  ],
+  "name": "AH47 Augmentor",
+  "special": [
+   39001,
+   44448
+  ]
+ },
+ "32522": {
+  "auto": [
+   28693,
+   28694
+  ],
+  "name": "AH47 Protector",
+  "special": [
+   39430,
+   46006,
+   46405
+  ]
+ },
+ "32523": {
+  "auto": [
+   32867,
+   32868,
+   43759,
+   49350
+  ],
+  "name": "Torine Battlemaiden",
+  "special": [
+   34131,
+   35727,
+   49410
+  ]
+ },
+ "32524": {
+  "auto": [
+   6817,
+   6818,
+   56494
+  ],
+  "name": "Augmented Rockside Digclaw",
+  "special": [
+   56899
+  ]
+ },
+ "32526": {
+  "auto": [
+   6817,
+   6818
+  ],
+  "name": "Stray Rockside Digger",
+  "special": [
+   56664,
+   56684
+  ]
+ },
+ "32553": {
+  "auto": [
+   6432,
+   6433,
+   69758
+  ],
+  "name": "Treebound Protector",
+  "special": [
+   69660,
+   69753
+  ]
+ },
+ "32554": {
+  "auto": [
+   32867,
+   32868,
+   43759,
+   49350
+  ],
+  "name": "Sanctum Blademaster",
+  "special": [
+   34131,
+   35727,
+   49410
+  ]
+ },
+ "32572": {
+  "auto": [
+   36374
+  ],
+  "name": "EDP Station 1",
+  "special": []
+ },
+ "32582": {
+  "auto": [
+   4616,
+   4617,
+   35287,
+   72730
+  ],
+  "name": "Zeta Core Courier",
+  "special": [
+   40714,
+   72728
+  ]
+ },
+ "32583": {
+  "auto": [
+   24626,
+   24627,
+   46670,
+   57877,
+   57880,
+   58388,
+   58447
+  ],
+  "name": "Zeta Warbot",
+  "special": [
+   57881,
+   57882
+  ]
+ },
+ "32585": {
+  "auto": [
+   4537,
+   69803
+  ],
+  "name": "Zeta Terminalbot",
+  "special": [
+   39474,
+   52788,
+   54212
+  ]
+ },
+ "32586": {
+  "auto": [
+   2764,
+   46670,
+   48381,
+   53223,
+   53415,
+   65459
+  ],
+  "name": "Zeta Agent",
+  "special": [
+   51828
+  ]
+ },
+ "32587": {
+  "auto": [
+   32867,
+   32868,
+   43759,
+   46670,
+   49350,
+   49888,
+   50103
+  ],
+  "name": "Zeta Equalizer",
+  "special": [
+   34131,
+   35717,
+   50007
+  ]
+ },
+ "32588": {
+  "auto": [
+   2764,
+   46670,
+   52796,
+   52996,
+   65459
+  ],
+  "name": "Zeta Sharpshooter",
+  "special": [
+   51828
+  ]
+ },
+ "32589": {
+  "auto": [
+   2605,
+   2607
+  ],
+  "name": "Zeta Cycler",
+  "special": [
+   54241,
+   54299
+  ]
+ },
+ "32590": {
+  "auto": [
+   32867,
+   32868,
+   50103,
+   50289
+  ],
+  "name": "Axis Vonotron",
+  "special": [
+   50007,
+   51329
+  ]
+ },
+ "32602": {
+  "auto": [
+   35998
+  ],
+  "name": "Eldan Security Beam Laser",
+  "special": []
+ },
+ "32661": {
+  "auto": [
+   6916,
+   6917,
+   53868
+  ],
+  "name": "Glenroot Sapling",
+  "special": [
+   35400,
+   35417
+  ]
+ },
+ "32665": {
+  "auto": [
+   47669
+  ],
+  "name": "Bio-Mech Warder",
+  "special": [
+   47747,
+   47789
+  ]
+ },
+ "32680": {
+  "auto": [
+   32773,
+   32774,
+   33919,
+   77490
+  ],
+  "name": "Shadetail Scrambler",
+  "special": [
+   43366,
+   46895
+  ]
+ },
+ "32681": {
+  "auto": [
+   6651,
+   6652
+  ],
+  "name": "Nightfang Weaver",
+  "special": [
+   39582,
+   39598
+  ]
+ },
+ "32682": {
+  "auto": [
+   6651,
+   6652
+  ],
+  "name": "Nightfang Widow",
+  "special": [
+   39582,
+   39598,
+   52756
+  ]
+ },
+ "32683": {
+  "auto": [
+   28693,
+   28694
+  ],
+  "name": "N22 Protector",
+  "special": [
+   39430,
+   46006,
+   46405
+  ]
+ },
+ "32684": {
+  "auto": [
+   29126,
+   29127,
+   39003,
+   44739
+  ],
+  "name": "N22 Augmentor",
+  "special": [
+   39001,
+   44448
+  ]
+ },
+ "32685": {
+  "auto": [
+   56980,
+   56981,
+   69768
+  ],
+  "name": "Glitchbyte Leecher",
+  "special": [
+   53985
+  ]
+ },
+ "32686": {
+  "auto": [
+   6909,
+   6910,
+   54565,
+   54566
+  ],
+  "name": "Glitchbyte Thrasher",
+  "special": [
+   54381,
+   54563
+  ]
+ },
+ "32688": {
+  "auto": [
+   28690,
+   28691,
+   74369
+  ],
+  "name": "Bio-Mech Sentry",
+  "special": [
+   41187
+  ]
+ },
+ "32689": {
+  "auto": [
+   5649,
+   5652,
+   60653
+  ],
+  "name": "Drugaur the Rotted",
+  "special": [
+   34552,
+   52448
+  ]
+ },
+ "32698": {
+  "auto": [
+   28690,
+   28691
+  ],
+  "name": "Bio-Mech Enhancer",
+  "special": [
+   41187
+  ]
+ },
+ "32744": {
+  "auto": [
+   36374
+  ],
+  "name": "EDP Station 2",
+  "special": []
+ },
+ "32745": {
+  "auto": [
+   36374
+  ],
+  "name": "EDP Station 3",
+  "special": []
+ },
+ "32746": {
+  "auto": [
+   36374
+  ],
+  "name": "EDP Station 4",
+  "special": []
+ },
+ "32747": {
+  "auto": [
+   36374
+  ],
+  "name": "EDP Station 5",
+  "special": []
+ },
+ "32754": {
+  "auto": [
+   32734,
+   32735,
+   34262
+  ],
+  "name": "Shadetree Growler",
+  "special": []
+ },
+ "32755": {
+  "auto": [
+   32493,
+   35321,
+   35322,
+   42609,
+   50097,
+   50201,
+   51334,
+   58523
+  ],
+  "name": "Lirawn the Lifewalker",
+  "special": []
+ },
+ "32756": {
+  "auto": [
+   6432,
+   6433,
+   69758
+  ],
+  "name": "Lifeglade Glider",
+  "special": [
+   69660,
+   69753
+  ]
+ },
+ "32764": {
+  "auto": [
+   35002
+  ],
+  "name": "Augmented Nightfang Weaver",
+  "special": [
+   39598,
+   70403
+  ]
+ },
+ "32789": {
+  "auto": [
+   2605,
+   2607
+  ],
+  "name": "Augmented Explorer Clone",
+  "special": [
+   54817,
+   55185
+  ]
+ },
+ "32790": {
+  "auto": [
+   2605,
+   2607
+  ],
+  "name": "Augmented Researcher Clone",
+  "special": [
+   54817,
+   55185
+  ]
+ },
+ "32791": {
+  "auto": [
+   5649,
+   5652,
+   52740
+  ],
+  "name": "Augmented Scientist Clone",
+  "special": [
+   52658,
+   52789
+  ]
+ },
+ "32792": {
+  "auto": [
+   5649,
+   5652,
+   52740
+  ],
+  "name": "Augmented Archaeologist Clone",
+  "special": [
+   52658,
+   52789
+  ]
+ },
+ "32807": {
+  "auto": [
+   29126,
+   29127,
+   39003,
+   44739
+  ],
+  "name": "MAU 9000",
+  "special": [
+   44468,
+   44482
+  ]
+ },
+ "32814": {
+  "auto": [
+   2605,
+   2607,
+   57396
+  ],
+  "name": "Ravenous Deadrot",
+  "special": [
+   54241,
+   54299,
+   54327,
+   54675
+  ]
+ },
+ "32835": {
+  "auto": [
+   28936,
+   28937
+  ],
+  "name": "Tanglemore Munchkin",
+  "special": []
+ },
+ "32837": {
+  "auto": [
+   28936,
+   28937,
+   36414,
+   43759
+  ],
+  "name": "Tanglemore Chomper",
+  "special": [
+   34264
+  ]
+ },
+ "32843": {
+  "auto": [
+   5649,
+   5652,
+   57396
+  ],
+  "name": "Ravenous Freak",
+  "special": [
+   34552,
+   52448
+  ]
+ },
+ "32844": {
+  "auto": [
+   2605,
+   2607,
+   57396
+  ],
+  "name": "Ravenous Stalker",
+  "special": [
+   54241,
+   54299,
+   54327,
+   54675
+  ]
+ },
+ "32845": {
+  "auto": [
+   5649,
+   5652,
+   57396,
+   60653
+  ],
+  "name": "Ravenous Brute",
+  "special": [
+   34552,
+   52448
+  ]
+ },
+ "32849": {
+  "auto": [
+   32773,
+   32774,
+   77490
+  ],
+  "name": "Bushtail Screecher",
+  "special": [
+   43366,
+   46933
+  ]
+ },
+ "32858": {
+  "auto": [
+   28693,
+   28694,
+   47284,
+   58390
+  ],
+  "name": "Bio-Mech Guardian",
+  "special": [
+   46006
+  ]
+ },
+ "32866": {
+  "auto": [
+   6817,
+   6818
+  ],
+  "name": "Lowland Burrower",
+  "special": [
+   56664,
+   56684
+  ]
+ },
+ "32867": {
+  "auto": [
+   28704,
+   28705,
+   54839
+  ],
+  "name": "Lowland Darkwing",
+  "special": [
+   55137,
+   58612
+  ]
+ },
+ "32868": {
+  "auto": [
+   6916,
+   6917,
+   53868
+  ],
+  "name": "Lowland Stumpkin",
+  "special": [
+   35400,
+   35417
+  ]
+ },
+ "32890": {
+  "auto": [
+   32768,
+   32769
+  ],
+  "name": "Tangleclaw Stalker",
+  "special": [
+   35192,
+   45494
+  ]
+ },
+ "32894": {
+  "auto": [
+   4040,
+   4041,
+   54823,
+   54923
+  ],
+  "name": "Gormash the Lopp-Crusher",
+  "special": [
+   54822
+  ]
+ },
+ "32897": {
+  "auto": [
+   32867,
+   32868,
+   43759,
+   49350
+  ],
+  "name": "Torine Bladesister",
+  "special": [
+   34131
+  ]
+ },
+ "32901": {
+  "auto": [
+   28690,
+   28691
+  ],
+  "name": "AH47 Probe",
+  "special": [
+   41187
+  ]
+ },
+ "32912": {
+  "auto": [
+   28936,
+   28937,
+   36414,
+   43759
+  ],
+  "name": "Tanglemore Gobbler",
+  "special": [
+   34264
+  ]
+ },
+ "32983": {
+  "auto": [
+   6651,
+   6652
+  ],
+  "name": "Augmented Spider",
+  "special": [
+   39582,
+   39598,
+   52756
+  ]
+ },
+ "33059": {
+  "auto": [
+   2605,
+   2607
+  ],
+  "name": "Ravenous Otokar Vosmara",
+  "special": [
+   54241,
+   54299,
+   54327,
+   54675
+  ]
+ },
+ "33080": {
+  "auto": [
+   35002
+  ],
+  "name": "Augmented Nightfang Widow",
+  "special": [
+   39598,
+   70403
+  ]
+ },
+ "33083": {
+  "auto": [
+   6750,
+   6751,
+   52768,
+   52769
+  ],
+  "name": "Energized Hillscourge Rumbler",
+  "special": [
+   35234,
+   39434
+  ]
+ },
+ "33137": {
+  "auto": [
+   6651,
+   6652,
+   44739
+  ],
+  "name": "Webwood Skitter",
+  "special": []
+ },
+ "33162": {
+  "auto": [
+   34062,
+   56509,
+   56510
+  ],
+  "name": "Calidor Antevian",
+  "special": [
+   56504
+  ]
+ },
+ "33213": {
+  "auto": [
+   32867,
+   32868,
+   50103,
+   50289
+  ],
+  "name": "Deathbringer Cordemia",
+  "special": [
+   50007,
+   51329
+  ]
+ },
+ "33233": {
+  "auto": [
+   2605,
+   2607
+  ],
+  "name": "Ravenous Erzebet Vosmara",
+  "special": [
+   54241,
+   54299
+  ]
+ },
+ "33234": {
+  "auto": [
+   5649,
+   5652
+  ],
+  "name": "Ravenous Arnost Vosmara",
+  "special": [
+   34552,
+   52448
+  ]
+ },
+ "33340": {
+  "auto": [
+   6146,
+   6147,
+   43759,
+   57765,
+   57766
+  ],
+  "name": "Crimson Bonepicker",
+  "special": []
+ },
+ "33367": {
+  "auto": [
+   32920,
+   32921,
+   46797
+  ],
+  "name": "Ravenous Malignant",
+  "special": [
+   46692
+  ]
+ },
+ "33422": {
+  "auto": [
+   28704,
+   28705,
+   34454
+  ],
+  "name": "Blacktalon",
+  "special": [
+   55137,
+   58483
+  ]
+ },
+ "33434": {
+  "auto": [
+   28704,
+   28705,
+   34455,
+   54839
+  ],
+  "name": "Lowland Nester",
+  "special": []
+ },
+ "33435": {
+  "auto": [
+   28704,
+   28705
+  ],
+  "name": "Lowland Hatchling",
+  "special": []
+ },
+ "33538": {
+  "auto": [
+   33242,
+   33243
+  ],
+  "name": "Slank Scavenger",
+  "special": []
+ },
+ "33548": {
+  "auto": [
+   36808
+  ],
+  "name": "Eldan Security Mine",
+  "special": []
+ },
+ "33551": {
+  "auto": [
+   32773,
+   32774,
+   33919,
+   77490
+  ],
+  "name": "Grimvoid Razortail",
+  "special": [
+   43366,
+   46895
+  ]
+ },
+ "33577": {
+  "auto": [
+   32920,
+   32921
+  ],
+  "name": "Grimvoid Thug",
+  "special": [
+   46692
+  ]
+ },
+ "33670": {
+  "auto": [
+   44267
+  ],
+  "name": "Expedition Guard",
+  "special": []
+ },
+ "33767": {
+  "auto": [
+   32920,
+   32921,
+   46670,
+   46797,
+   46984
+  ],
+  "name": "Mercenary Arkos",
+  "special": [
+   46579,
+   46692,
+   47033
+  ]
+ },
+ "33772": {
+  "auto": [
+   7031,
+   7032,
+   57056,
+   57094
+  ],
+  "name": "Mistymurk Snoglug",
+  "special": [
+   57054,
+   57057
+  ]
+ },
+ "33787": {
+  "auto": [
+   28690,
+   28691
+  ],
+  "name": "N22 Blaster",
+  "special": []
+ },
+ "33817": {
+  "auto": [
+   35998,
+   39498
+  ],
+  "name": "Eldan Security Beam",
+  "special": []
+ },
+ "33821": {
+  "auto": [
+   28693,
+   28694
+  ],
+  "name": "A37 Securitybot",
+  "special": [
+   39430,
+   46006,
+   46405
+  ]
+ },
+ "33830": {
+  "auto": [
+   2605,
+   2607,
+   54895
+  ],
+  "name": "Wildvine Protector",
+  "special": [
+   54742,
+   54817,
+   54838
+  ]
+ },
+ "33831": {
+  "auto": [
+   55713,
+   57382,
+   57383,
+   70885
+  ],
+  "name": "Wildvine Lookout",
+  "special": [
+   55628
+  ]
+ },
+ "33835": {
+  "auto": [
+   372,
+   1616
+  ],
+  "name": "Spirit Stalker",
+  "special": []
+ },
+ "33850": {
+  "auto": [
+   6651,
+   6652,
+   32493,
+   77508
+  ],
+  "name": "Darkbite",
+  "special": [
+   39582,
+   39598,
+   52756
+  ]
+ },
+ "33873": {
+  "auto": [
+   35998
+  ],
+  "name": "Eldan Security Beam",
+  "special": []
+ },
+ "33874": {
+  "auto": [
+   35998
+  ],
+  "name": "Eldan Security Beam",
+  "special": []
+ },
+ "33921": {
+  "auto": [
+   32768,
+   32769,
+   33810,
+   43759
+  ],
+  "name": "Tangleclaw Slasher",
+  "special": [
+   33969,
+   35192
+  ]
+ },
+ "33951": {
+  "auto": [
+   6263,
+   6267,
+   52536
+  ],
+  "name": "Celestial Razortusk",
+  "special": [
+   52473,
+   52474
+  ]
+ },
+ "33968": {
+  "auto": [
+   28690,
+   28691
+  ],
+  "name": "N22 Sentinel",
+  "special": [
+   41187
+  ]
+ },
+ "33969": {
+  "auto": [
+   28690,
+   28691,
+   39039
+  ],
+  "name": "Malfunctioning N22 Blaster",
+  "special": []
+ },
+ "34099": {
+  "auto": [
+   32965,
+   32966,
+   35963
+  ],
+  "name": "Augmented Buzzbing",
+  "special": [
+   44638
+  ]
+ },
+ "34100": {
+  "auto": [
+   6651,
+   6652
+  ],
+  "name": "Augmented Spider",
+  "special": [
+   39582,
+   39598
+  ]
+ },
+ "34214": {
+  "auto": [
+   44254,
+   44255,
+   44256,
+   44257
+  ],
+  "name": "Shroud Gloom Guard",
+  "special": []
+ },
+ "34215": {
+  "auto": [
+   44254,
+   44255,
+   44256,
+   44257
+  ],
+  "name": "Shroud Gloom Guard",
+  "special": []
+ },
+ "34262": {
+  "auto": [
+   6432,
+   6433,
+   69758
+  ],
+  "name": "Mistborn Lifeglider",
+  "special": [
+   69660,
+   69753
+  ]
+ },
+ "34274": {
+  "auto": [
+   44256,
+   44257
+  ],
+  "name": "Sylvan Glade Guard",
+  "special": []
+ },
+ "34275": {
+  "auto": [
+   44264,
+   44265
+  ],
+  "name": "Viridian Guard",
+  "special": []
+ },
+ "34276": {
+  "auto": [
+   44264,
+   44265
+  ],
+  "name": "Viridian Guard",
+  "special": []
+ },
+ "34278": {
+  "auto": [
+   65459
+  ],
+  "name": "XAS Researcher",
+  "special": [
+   51828
+  ]
+ },
+ "34281": {
+  "auto": [
+   65459
+  ],
+  "name": "XAS Researcher",
+  "special": [
+   51828
+  ]
+ },
+ "34385": {
+  "auto": [
+   35002,
+   44739
+  ],
+  "name": "Webwood Spitter",
+  "special": [
+   39598,
+   70403
+  ]
+ },
+ "34386": {
+  "auto": [
+   6651,
+   6652,
+   44739
+  ],
+  "name": "Webwood Pincher",
+  "special": [
+   39582,
+   39598
+  ]
+ },
+ "34387": {
+  "auto": [
+   6651,
+   6652,
+   44739
+  ],
+  "name": "Webwood Skitter",
+  "special": []
+ },
+ "34474": {
+  "auto": [
+   30756,
+   34062
+  ],
+  "name": "Torine Lifecaller",
+  "special": [
+   55595
+  ]
+ },
+ "34475": {
+  "auto": [
+   32867,
+   32868,
+   43759,
+   49350
+  ],
+  "name": "Torine Sentinel",
+  "special": [
+   34131,
+   35727,
+   49410
+  ]
+ },
+ "34540": {
+  "auto": [
+   44264,
+   44265,
+   44267
+  ],
+  "name": "Grimhold Trooper",
+  "special": []
+ },
+ "34541": {
+  "auto": [
+   44264,
+   44265,
+   44267
+  ],
+  "name": "Grimhold Trooper",
+  "special": []
+ },
+ "34578": {
+  "auto": [
+   30756,
+   34062
+  ],
+  "name": "Torine Lifebringer",
+  "special": [
+   34009,
+   34010,
+   55595
+  ]
+ },
+ "34907": {
+  "auto": [
+   33244,
+   33245,
+   34227
+  ],
+  "name": "Longhorn Cow",
+  "special": []
+ },
+ "34952": {
+  "auto": [
+   2764,
+   65459
+  ],
+  "name": "Slenderskin Sentinel",
+  "special": [
+   51828
+  ]
+ },
+ "34998": {
+  "auto": [
+   46797,
+   46984,
+   57364,
+   57365
+  ],
+  "name": "Throg Smasher",
+  "special": [
+   47033
+  ]
+ },
+ "34999": {
+  "auto": [
+   2605,
+   2607
+  ],
+  "name": "Throg Striker",
+  "special": [
+   54241,
+   54299
+  ]
+ },
+ "35000": {
+  "auto": [
+   2764,
+   27545,
+   27546,
+   54827,
+   55150,
+   65459,
+   69505,
+   74447
+  ],
+  "name": "Throg Gunner",
+  "special": [
+   51828,
+   55119
+  ]
+ },
+ "35003": {
+  "auto": [
+   5649,
+   5652,
+   27545,
+   27546,
+   54827,
+   55150,
+   69505,
+   74447
+  ],
+  "name": "Throg Pounder",
+  "special": [
+   34552,
+   52448
+  ]
+ },
+ "35216": {
+  "auto": [
+   28690,
+   28691,
+   74369
+  ],
+  "name": "Site 14 Probe",
+  "special": [
+   39037,
+   41187
+  ]
+ },
+ "35251": {
+  "auto": [
+   6817,
+   6818,
+   56494
+  ],
+  "name": "Augmented Rockhound Guardian",
+  "special": [
+   56899
+  ]
+ },
+ "35323": {
+  "auto": [
+   39488
+  ],
+  "name": "Flammable Canister",
+  "special": [
+   39129,
+   39512
+  ]
+ },
+ "35397": {
+  "auto": [
+   71422
+  ],
+  "name": "Malfunctioning Tripod",
+  "special": [
+   52772,
+   52777
+  ]
+ },
+ "35608": {
+  "auto": [
+   7504,
+   44262,
+   44263,
+   44267
+  ],
+  "name": "Mistymurk Guard",
+  "special": []
+ },
+ "35609": {
+  "auto": [
+   7504,
+   44262,
+   44263,
+   44267
+  ],
+  "name": "Mistymurk Guard",
+  "special": []
+ },
+ "35621": {
+  "auto": [
+   44264,
+   44265
+  ],
+  "name": "Woodhaven Guard",
+  "special": []
+ },
+ "35623": {
+  "auto": [
+   6817,
+   6818,
+   56494
+  ],
+  "name": "Augmented Canimid",
+  "special": [
+   56899
+  ]
+ },
+ "35632": {
+  "auto": [
+   32761,
+   32762
+  ],
+  "name": "Ironcleft Roamer",
+  "special": [
+   53434,
+   53435
+  ]
+ },
+ "35635": {
+  "auto": [
+   6146,
+   6147,
+   43759,
+   57765,
+   57766,
+   57767
+  ],
+  "name": "Zomclaw Screecher",
+  "special": []
+ },
+ "35715": {
+  "auto": [
+   39488
+  ],
+  "name": "Flammable Canister",
+  "special": [
+   39129,
+   39512
+  ]
+ },
+ "35753": {
+  "auto": [
+   35998,
+   39498
+  ],
+  "name": "Eldan Security Beam",
+  "special": []
+ },
+ "35757": {
+  "auto": [
+   35998,
+   39498
+  ],
+  "name": "Eldan Security Beam",
+  "special": []
+ },
+ "36120": {
+  "auto": [
+   6651,
+   6652,
+   32493,
+   77508
+  ],
+  "name": "Aeacus",
+  "special": [
+   39582,
+   39598,
+   52756
+  ]
+ },
+ "36121": {
+  "auto": [
+   33247,
+   33248,
+   35304
+  ],
+  "name": "Darkspire Tormentor",
+  "special": [
+   35323,
+   37550,
+   52869
+  ]
+ },
+ "36129": {
+  "auto": [
+   33247,
+   33248,
+   35304
+  ],
+  "name": "Deathcap",
+  "special": [
+   35323,
+   37550,
+   52869
+  ]
+ },
+ "36151": {
+  "auto": [],
+  "name": "Poison Steam",
+  "special": [
+   39668
+  ]
+ },
+ "36173": {
+  "auto": [
+   33247,
+   33248
+  ],
+  "name": "Elderoot Deathcap",
+  "special": [
+   55317
+  ]
+ },
+ "36183": {
+  "auto": [],
+  "name": "Black Hoods Trainee",
+  "special": [
+   55434
+  ]
+ },
+ "36197": {
+  "auto": [
+   35998
+  ],
+  "name": "Eldan Security Beam",
+  "special": []
+ },
+ "36198": {
+  "auto": [
+   35998
+  ],
+  "name": "Eldan Security Beam",
+  "special": []
+ },
+ "36729": {
+  "auto": [
+   32867,
+   32868,
+   43759,
+   49350
+  ],
+  "name": "Torine Bladesister",
+  "special": [
+   34131
+  ]
+ },
+ "36787": {
+  "auto": [
+   44264,
+   44265,
+   44267
+  ],
+  "name": "Grimhold Trooper",
+  "special": []
+ },
+ "36925": {
+  "auto": [
+   44256,
+   44257
+  ],
+  "name": "Sylvan Glade Guard",
+  "special": []
+ },
+ "36967": {
+  "auto": [
+   32726,
+   32727,
+   53505
+  ],
+  "name": "Silverhorn",
+  "special": [
+   53506,
+   53508
+  ]
+ },
+ "36968": {
+  "auto": [
+   32726,
+   32727,
+   53505
+  ],
+  "name": "Duskmoon Dawngrazer",
+  "special": [
+   53506
+  ]
+ },
+ "36969": {
+  "auto": [
+   32726,
+   32727
+  ],
+  "name": "Duskmoon Fawn",
+  "special": []
+ },
+ "37155": {
+  "auto": [
+   35998
+  ],
+  "name": "Eldan Security Beam",
+  "special": []
+ },
+ "37195": {
+  "auto": [
+   27545,
+   27546,
+   32867,
+   32868,
+   44254,
+   44255
+  ],
+  "name": "XAS Camp Guard",
+  "special": []
+ },
+ "37213": {
+  "auto": [
+   33251,
+   33252,
+   52968,
+   53034,
+   53054,
+   70383
+  ],
+  "name": "Grevitch the Gruesome",
+  "special": [
+   36569
+  ]
+ },
+ "37314": {
+  "auto": [
+   32734,
+   32735,
+   34262,
+   58752
+  ],
+  "name": "Corrupted Mutilator",
+  "special": [
+   35556
+  ]
+ },
+ "37315": {
+  "auto": [
+   5649,
+   5652
+  ],
+  "name": "Risen Darkspur Brute",
+  "special": [
+   34552,
+   52448
+  ]
+ },
+ "37316": {
+  "auto": [
+   5649,
+   5652
+  ],
+  "name": "Risen Darkspur Raider",
+  "special": [
+   34552,
+   52448
+  ]
+ },
+ "37320": {
+  "auto": [
+   34062
+  ],
+  "name": "Grim Alchemist Nekijel",
+  "special": [
+   55848,
+   55849,
+   55851
+  ]
+ },
+ "37335": {
+  "auto": [
+   2764,
+   46670,
+   70291
+  ],
+  "name": "DRED Scorcher",
+  "special": [
+   34299
+  ]
+ },
+ "37336": {
+  "auto": [
+   2764,
+   52150,
+   52151,
+   52568,
+   52587,
+   52639
+  ],
+  "name": "Arifo the Rascal",
+  "special": [
+   52567
+  ]
+ },
+ "37343": {
+  "auto": [
+   7267,
+   7270,
+   51827,
+   51993,
+   52080,
+   52235
+  ],
+  "name": "Gloomstone the Stranded",
+  "special": [
+   40524
+  ]
+ },
+ "37526": {
+  "auto": [
+   7031,
+   7032,
+   57056,
+   57094
+  ],
+  "name": "Stranded Snoglug",
+  "special": [
+   57054,
+   57057
+  ]
+ },
+ "37577": {
+  "auto": [
+   29126,
+   29127,
+   39003,
+   44739
+  ],
+  "name": "Augmentor Construct",
+  "special": [
+   39001,
+   44448
+  ]
+ },
+ "37640": {
+  "auto": [
+   5649,
+   5652,
+   52740
+  ],
+  "name": "Augmented XAS Scientist",
+  "special": [
+   52658
+  ]
+ },
+ "37641": {
+  "auto": [
+   5649,
+   5652,
+   52740
+  ],
+  "name": "Augmented XAS Scientist",
+  "special": [
+   52658
+  ]
+ },
+ "37642": {
+  "auto": [
+   5649,
+   5652,
+   52740
+  ],
+  "name": "Augmented XAS Scientist",
+  "special": [
+   52658
+  ]
+ },
+ "37643": {
+  "auto": [
+   28693,
+   28694
+  ],
+  "name": "Site 14 Protector",
+  "special": [
+   39430,
+   46006,
+   46405
+  ]
+ },
+ "37648": {
+  "auto": [
+   28690,
+   28691,
+   74369
+  ],
+  "name": "Site 14 Probe",
+  "special": [
+   39037,
+   41187
+  ]
+ },
+ "37649": {
+  "auto": [
+   28690,
+   28691
+  ],
+  "name": "Site 14 Mender",
+  "special": [
+   41187
+  ]
+ },
+ "37657": {
+  "auto": [
+   27783,
+   40540
+  ],
+  "name": "Invisible Unit",
+  "special": []
+ },
+ "37679": {
+  "auto": [],
+  "name": "Slush Barrel",
+  "special": [
+   30457
+  ]
+ },
+ "37745": {
+  "auto": [
+   4012,
+   4013,
+   57287,
+   57311
+  ],
+  "name": "Rockhorde Runt",
+  "special": []
+ },
+ "37747": {
+  "auto": [
+   4012,
+   4013,
+   57287,
+   57311
+  ],
+  "name": "Rockhorde Burrower",
+  "special": []
+ },
+ "37762": {
+  "auto": [
+   32761,
+   32762
+  ],
+  "name": "Ironcleft Bull",
+  "special": [
+   53416,
+   53434,
+   53435,
+   53436
+  ]
+ },
+ "37978": {
+  "auto": [
+   34062
+  ],
+  "name": "Witchwake Cook",
+  "special": [
+   55848,
+   55849,
+   55851
+  ]
+ },
+ "38306": {
+  "auto": [
+   6616,
+   6617
+  ],
+  "name": "Malverine Shredder",
+  "special": [
+   55283
+  ]
+ },
+ "38313": {
+  "auto": [
+   32773,
+   32774,
+   77490
+  ],
+  "name": "Savannah Howler",
+  "special": [
+   43366,
+   46933
+  ]
+ },
+ "38314": {
+  "auto": [
+   32773,
+   32774,
+   33919
+  ],
+  "name": "Savannah Tailwhipper",
+  "special": [
+   43366,
+   46895
+  ]
+ },
+ "38315": {
+  "auto": [
+   32773,
+   32774,
+   33919,
+   77490
+  ],
+  "name": "Savannah Slasher",
+  "special": [
+   43366,
+   46895
+  ]
+ },
+ "38325": {
+  "auto": [
+   32768,
+   32769
+  ],
+  "name": "Savannah Prowler",
+  "special": [
+   35192,
+   45494
+  ]
+ },
+ "38361": {
+  "auto": [
+   6323,
+   6324,
+   55151,
+   55153,
+   55154
+  ],
+  "name": "Savannah Behemoth",
+  "special": [
+   55152
+  ]
+ },
+ "38606": {
+  "auto": [
+   5960,
+   5961,
+   53430
+  ],
+  "name": "Witchwake Cutter",
+  "special": [
+   34054,
+   34055
+  ]
+ },
+ "38608": {
+  "auto": [
+   34062,
+   53430,
+   56073,
+   56075,
+   56442
+  ],
+  "name": "Witchwake Finder",
+  "special": []
+ },
+ "38609": {
+  "auto": [
+   34062,
+   56073,
+   56075,
+   56442
+  ],
+  "name": "Witchwake Necromancer",
+  "special": [
+   56078,
+   56081
+  ]
+ },
+ "38653": {
+  "auto": [
+   35998,
+   39498
+  ],
+  "name": "Eldan Security Beam",
+  "special": []
+ },
+ "38654": {
+  "auto": [
+   35998,
+   39498
+  ],
+  "name": "Eldan Security Beam",
+  "special": []
+ },
+ "38674": {
+  "auto": [
+   41004
+  ],
+  "name": "Lightning Strike",
+  "special": []
+ },
+ "39079": {
+  "auto": [
+   6263,
+   6267,
+   52536
+  ],
+  "name": "Celestial Razortusk",
+  "special": [
+   52473,
+   52474
+  ]
+ },
+ "39598": {
+  "auto": [],
+  "name": "Rock Debris",
+  "special": [
+   38114
+  ]
+ },
+ "39859": {
+  "auto": [
+   32867,
+   32868
+  ],
+  "name": "Kezrek Warbringer",
+  "special": []
+ },
+ "40095": {
+  "auto": [
+   32388,
+   32389,
+   53387
+  ],
+  "name": "Wildvine Guardian",
+  "special": []
+ },
+ "40472": {
+  "auto": [
+   35474,
+   35475
+  ],
+  "name": "Whirlwind",
+  "special": [
+   65456,
+   69072
+  ]
+ },
+ "40532": {
+  "auto": [
+   5649,
+   5652,
+   5655,
+   5656
+  ],
+  "name": "Vigilant Acolyte",
+  "special": []
+ },
+ "40677": {
+  "auto": [
+   5649,
+   5652,
+   5655,
+   5656
+  ],
+  "name": "Vigilant Acolyte",
+  "special": []
+ },
+ "40714": {
+  "auto": [
+   32867,
+   32868
+  ],
+  "name": "Kezrek Warbringer",
+  "special": []
+ },
+ "4148": {
+  "auto": [
+   32734,
+   32735,
+   34262
+  ],
+  "name": "Grimstone Digger",
+  "special": []
+ },
+ "41701": {
+  "auto": [
+   30756,
+   34062
+  ],
+  "name": "Sanctum Seer",
+  "special": [
+   55595
+  ]
+ },
+ "41706": {
+  "auto": [
+   2605,
+   2607
+  ],
+  "name": "Sanctum Slayer",
+  "special": [
+   54241,
+   54299
+  ]
+ },
+ "41732": {
+  "auto": [
+   5649,
+   5652
+  ],
+  "name": "Ravenous Horror",
+  "special": []
+ },
+ "41734": {
+  "auto": [
+   2605,
+   2607,
+   5649,
+   5652
+  ],
+  "name": "Ravenous Ghoul",
+  "special": [
+   54241,
+   54299
+  ]
+ },
+ "41752": {
+  "auto": [
+   32867,
+   32868,
+   43759,
+   49350
+  ],
+  "name": "Ravenous Fiend",
+  "special": [
+   34131,
+   35727,
+   49410
+  ]
+ },
+ "41995": {
+  "auto": [],
+  "name": "Everstar Defender",
+  "special": [
+   55425
+  ]
+ },
+ "41997": {
+  "auto": [],
+  "name": "Everstar Defender",
+  "special": [
+   55425
+  ]
+ },
+ "44716": {
+  "auto": [
+   28704,
+   28705,
+   34455,
+   54839,
+   70078
+  ],
+  "name": "Plum-Necked Strutter",
+  "special": []
+ },
+ "44735": {
+  "auto": [
+   30756,
+   56986
+  ],
+  "name": "Torine Raincaller",
+  "special": [
+   56683
+  ]
+ },
+ "44742": {
+  "auto": [
+   30756,
+   56986
+  ],
+  "name": "Torine Stormcaller",
+  "special": [
+   56683
+  ]
+ },
+ "44877": {
+  "auto": [
+   24628,
+   44280
+  ],
+  "name": "Thayd Warbot Guard",
+  "special": []
+ },
+ "44885": {
+  "auto": [
+   2764,
+   27545,
+   27546,
+   32867,
+   32868,
+   44255,
+   44264,
+   44265,
+   44267
+  ],
+  "name": "Thayd Guardsman",
+  "special": []
+ },
+ "44886": {
+  "auto": [
+   2764,
+   27545,
+   27546,
+   32867,
+   32868,
+   44255,
+   44264,
+   44265,
+   44267
+  ],
+  "name": "Thayd Guardsman",
+  "special": []
+ },
+ "44887": {
+  "auto": [
+   2764,
+   27545,
+   27546,
+   32867,
+   32868,
+   44255,
+   44264,
+   44265,
+   44267
+  ],
+  "name": "Thayd Guardsman",
+  "special": []
+ },
+ "44888": {
+  "auto": [
+   2764,
+   27545,
+   27546,
+   32867,
+   32868,
+   44255,
+   44264,
+   44265,
+   44267
+  ],
+  "name": "Thayd Guardsman",
+  "special": []
+ },
+ "44942": {
+  "auto": [
+   2764,
+   27545,
+   27546,
+   32867,
+   32868,
+   44255,
+   44264,
+   44265,
+   44267
+  ],
+  "name": "Thayd Guardsman",
+  "special": []
+ },
+ "45056": {
+  "auto": [
+   44264,
+   44265
+  ],
+  "name": "Gallow Peacekeeper",
+  "special": []
+ },
+ "45323": {
+  "auto": [
+   29126,
+   29127,
+   39003,
+   44739
+  ],
+  "name": "Augmentor Construct",
+  "special": [
+   39001,
+   44448
+  ]
+ },
+ "45435": {
+  "auto": [
+   44264,
+   44265,
+   44267
+  ],
+  "name": "Grimhold Trooper",
+  "special": []
+ },
+ "45474": {
+  "auto": [
+   5649,
+   5652
+  ],
+  "name": "Ravenous Mordesh",
+  "special": [
+   55439
+  ]
+ },
+ "45477": {
+  "auto": [
+   5649,
+   5652
+  ],
+  "name": "Ravenous Mordesh",
+  "special": [
+   55439
+  ]
+ },
+ "45489": {
+  "auto": [
+   6146,
+   6147
+  ],
+  "name": "Highland Broadwing",
+  "special": [
+   52717,
+   52718,
+   52719,
+   52720
+  ]
+ },
+ "45491": {
+  "auto": [
+   7031,
+   7032
+  ],
+  "name": "Marshgrass Snoglug",
+  "special": [
+   55331
+  ]
+ },
+ "45495": {
+  "auto": [
+   32867,
+   32868
+  ],
+  "name": "Toric Antevian",
+  "special": [
+   42082
+  ]
+ },
+ "45503": {
+  "auto": [
+   5649,
+   5652
+  ],
+  "name": "Ravenous Mordesh",
+  "special": [
+   55439
+  ]
+ },
+ "45578": {
+  "auto": [
+   6561,
+   6562,
+   57625,
+   57659
+  ],
+  "name": "Deadbough",
+  "special": [
+   57624,
+   57627
+  ]
+ },
+ "45580": {
+  "auto": [
+   32734,
+   32735,
+   34262,
+   58752
+  ],
+  "name": "Barebones",
+  "special": [
+   35556
+  ]
+ },
+ "45583": {
+  "auto": [
+   6916,
+   6917,
+   52760,
+   53868,
+   60894
+  ],
+  "name": "Wormwood the Wraithmaker",
+  "special": [
+   35400,
+   35417
+  ]
+ },
+ "45586": {
+  "auto": [
+   34062
+  ],
+  "name": "Wormwood Acolyte",
+  "special": [
+   55848,
+   55849
+  ]
+ },
+ "45596": {
+  "auto": [
+   28704,
+   28705,
+   34454,
+   34455
+  ],
+  "name": "Ashwin the Stormcrested",
+  "special": [
+   55137,
+   58483
+  ]
+ },
+ "45598": {
+  "auto": [
+   4537,
+   46670,
+   69803
+  ],
+  "name": "AG5 Blitzbuster",
+  "special": [
+   39474,
+   52788,
+   54212
+  ]
+ },
+ "45599": {
+  "auto": [
+   32867,
+   32868,
+   50103,
+   50289
+  ],
+  "name": "Nym Maiden of Mercy",
+  "special": [
+   50007,
+   51329
+  ]
+ },
+ "45600": {
+  "auto": [
+   30756,
+   34062
+  ],
+  "name": "Asteria",
+  "special": [
+   55595
+  ]
+ },
+ "45601": {
+  "auto": [
+   32867,
+   32868,
+   43759,
+   49350
+  ],
+  "name": "Acacia",
+  "special": [
+   34131
+  ]
+ },
+ "45602": {
+  "auto": [
+   2605,
+   2607
+  ],
+  "name": "Atethys",
+  "special": [
+   54241,
+   54299
+  ]
+ },
+ "45603": {
+  "auto": [
+   32920,
+   32921,
+   46797
+  ],
+  "name": "Mikolai the Malevolent",
+  "special": [
+   46692
+  ]
+ },
+ "45868": {
+  "auto": [],
+  "name": "Enraged Guardian",
+  "special": [
+   55305
+  ]
+ },
+ "45905": {
+  "auto": [
+   24990,
+   24991,
+   35223
+  ],
+  "name": "Hijacked Drillbot",
+  "special": [
+   34982
+  ]
+ },
+ "45908": {
+  "auto": [
+   33242,
+   33243
+  ],
+  "name": "Mole Slank",
+  "special": []
+ },
+ "45909": {
+  "auto": [
+   5413,
+   5414,
+   28869,
+   40173
+  ],
+  "name": "Crystalback Burrower",
+  "special": [
+   36486
+  ]
+ },
+ "45978": {
+  "auto": [
+   32867,
+   32868,
+   49792
+  ],
+  "name": "Drillmaster Gurren",
+  "special": [
+   51383
+  ]
+ },
+ "46054": {
+  "auto": [
+   7031,
+   7032,
+   57094
+  ],
+  "name": "Murkshore Snoglug",
+  "special": [
+   57054
+  ]
+ },
+ "46096": {
+  "auto": [
+   33247,
+   33248
+  ],
+  "name": "Elderoot Deathcap",
+  "special": [
+   55317
+  ]
+ },
+ "46100": {
+  "auto": [
+   6916,
+   6917,
+   52760,
+   60894
+  ],
+  "name": "Lowland Strongbark",
+  "special": [
+   35417
+  ]
+ },
+ "46252": {
+  "auto": [
+   42802
+  ],
+  "name": "Stinging Attacker",
+  "special": []
+ },
+ "46357": {
+  "auto": [
+   6651,
+   6652
+  ],
+  "name": "The Shadow Queen",
+  "special": [
+   39582,
+   39598,
+   52756
+  ]
+ },
+ "46359": {
+  "auto": [
+   6651,
+   6652
+  ],
+  "name": "Shadow Crawler",
+  "special": [
+   39582,
+   39598
+  ]
+ },
+ "46387": {
+  "auto": [],
+  "name": "Agitated Fungal Growth",
+  "special": [
+   45194
+  ]
+ },
+ "46394": {
+  "auto": [
+   7267,
+   7270,
+   73094
+  ],
+  "name": "Enraged Grove Guardian",
+  "special": [
+   45168,
+   55305
+  ]
+ },
+ "46431": {
+  "auto": [
+   45211
+  ],
+  "name": "Everstar Bee Swarm",
+  "special": []
+ },
+ "46479": {
+  "auto": [
+   2764,
+   51899,
+   65459
+  ],
+  "name": "Darkpool Artillerist",
+  "special": [
+   51828
+  ]
+ },
+ "46481": {
+  "auto": [
+   27545,
+   27546,
+   54827,
+   55150,
+   69505,
+   74447
+  ],
+  "name": "Darkpool Gunslinger",
+  "special": [
+   55119
+  ]
+ },
+ "46487": {
+  "auto": [],
+  "name": "Personal Guard",
+  "special": [
+   55433
+  ]
+ },
+ "46606": {
+  "auto": [],
+  "name": "Enraged Guardian",
+  "special": [
+   55305
+  ]
+ },
+ "46643": {
+  "auto": [
+   6263,
+   6267,
+   52536
+  ],
+  "name": "Augmented Celestial Razortusk",
+  "special": [
+   52473,
+   52474
+  ]
+ },
+ "46698": {
+  "auto": [
+   35002
+  ],
+  "name": "Augmented Nightfang Creeper",
+  "special": []
+ },
+ "46706": {
+  "auto": [
+   35002
+  ],
+  "name": "Augmented Nightfang Flayer",
+  "special": [
+   39598,
+   70403
+  ]
+ },
+ "46708": {
+  "auto": [
+   35002
+  ],
+  "name": "Augmented Nightfang Spitter",
+  "special": [
+   39598,
+   70403
+  ]
+ },
+ "46983": {
+  "auto": [
+   45624
+  ],
+  "name": "Lost Worker",
+  "special": []
+ },
+ "46984": {
+  "auto": [
+   45624
+  ],
+  "name": "Lost Worker",
+  "special": []
+ },
+ "47026": {
+  "auto": [
+   35321,
+   35322,
+   49880,
+   49906,
+   51361
+  ],
+  "name": "Unbound Hydroguard",
+  "special": [
+   51379
+  ]
+ },
+ "47027": {
+  "auto": [
+   28693,
+   28694,
+   46893
+  ],
+  "name": "Larallen Sentinel",
+  "special": [
+   39430,
+   46809
+  ]
+ },
+ "47085": {
+  "auto": [
+   5649,
+   5652
+  ],
+  "name": "Dominion Bio-Weaponizer",
+  "special": [
+   34552,
+   52448
+  ]
+ },
+ "47165": {
+  "auto": [],
+  "name": "Levian Expedition Soldier",
+  "special": [
+   55766
+  ]
+ },
+ "47167": {
+  "auto": [],
+  "name": "Levian Expedition Soldier",
+  "special": [
+   55766
+  ]
+ },
+ "47171": {
+  "auto": [],
+  "name": "Levian Expedition Soldier",
+  "special": [
+   55766
+  ]
+ },
+ "47194": {
+  "auto": [],
+  "name": "Levian Expedition Soldier",
+  "special": [
+   55766
+  ]
+ },
+ "47196": {
+  "auto": [],
+  "name": "Levian Expedition Soldier",
+  "special": [
+   55766
+  ]
+ },
+ "47430": {
+  "auto": [
+   28690,
+   28691
+  ],
+  "name": "Eldan Security Construct",
+  "special": []
+ },
+ "47432": {
+  "auto": [],
+  "name": "Levian Expedition Soldier",
+  "special": [
+   55766
+  ]
+ },
+ "47433": {
+  "auto": [],
+  "name": "Levian Expedition Soldier",
+  "special": [
+   55766
+  ]
+ },
+ "47435": {
+  "auto": [
+   6651,
+   6652
+  ],
+  "name": "Shadow Webwalker",
+  "special": []
+ },
+ "47437": {
+  "auto": [
+   6651,
+   6652
+  ],
+  "name": "Shadow Spinner",
+  "special": [
+   39582,
+   39598
+  ]
+ },
+ "47438": {
+  "auto": [
+   6651,
+   6652
+  ],
+  "name": "Shadow Brute",
+  "special": [
+   39582,
+   39598,
+   52756
+  ]
+ },
+ "47440": {
+  "auto": [
+   6651,
+   6652
+  ],
+  "name": "Shadow Defiler",
+  "special": [
+   39582,
+   39598
+  ]
+ },
+ "47465": {
+  "auto": [
+   6651,
+   6652
+  ],
+  "name": "Shadow Hatchling",
+  "special": []
+ },
+ "47608": {
+  "auto": [
+   2764,
+   27545,
+   27546,
+   32867,
+   32868,
+   44255,
+   44264,
+   44265,
+   44267
+  ],
+  "name": "Thayd Guardsman",
+  "special": []
+ },
+ "47656": {
+  "auto": [
+   70406
+  ],
+  "name": "Spider Egg",
+  "special": []
+ },
+ "47711": {
+  "auto": [
+   32388,
+   32389,
+   44407,
+   44408
+  ],
+  "name": "Arborian Watcher",
+  "special": []
+ },
+ "47777": {
+  "auto": [],
+  "name": "Enraged Guardian",
+  "special": [
+   55305
+  ]
+ },
+ "48592": {
+  "auto": [
+   35385,
+   35386,
+   71972,
+   71977,
+   72036
+  ],
+  "name": "Voresk Venomgill",
+  "special": []
+ },
+ "48598": {
+  "auto": [
+   33247,
+   33248,
+   35304
+  ],
+  "name": "Dreadmorel",
+  "special": [
+   35323,
+   37550,
+   52869
+  ]
+ },
+ "48647": {
+  "auto": [
+   28690,
+   28691
+  ],
+  "name": "Regulator 11",
+  "special": [
+   41187
+  ]
+ },
+ "48648": {
+  "auto": [
+   28690,
+   28691
+  ],
+  "name": "Auxiliary Probe",
+  "special": []
+ },
+ "48650": {
+  "auto": [
+   6961,
+   6962
+  ],
+  "name": "Ghostfin",
+  "special": []
+ },
+ "48651": {
+  "auto": [
+   35471,
+   35472,
+   68533
+  ],
+  "name": "Torrent",
+  "special": [
+   64929
+  ]
+ },
+ "48661": {
+  "auto": [
+   6916,
+   6917
+  ],
+  "name": "Flamekin",
+  "special": []
+ },
+ "48662": {
+  "auto": [
+   35474,
+   35475
+  ],
+  "name": "Whirlwind",
+  "special": [
+   65456,
+   69072
+  ]
+ },
+ "48954": {
+  "auto": [
+   28693,
+   28694
+  ],
+  "name": "Eldan Defender",
+  "special": [
+   55299,
+   55300
+  ]
+ },
+ "49040": {
+  "auto": [
+   7267,
+   7270
+  ],
+  "name": "Crystal Titan",
+  "special": [
+   47149,
+   55305,
+   55306
+  ]
+ },
+ "49555": {
+  "auto": [
+   28690,
+   28691
+  ],
+  "name": "N22 Nanite Recharger",
+  "special": []
+ },
+ "50809": {
+  "auto": [
+   32768,
+   32769,
+   33810,
+   43759,
+   46024
+  ],
+  "name": "The Terror of Bloodstone",
+  "special": []
+ },
+ "50810": {
+  "auto": [
+   34062,
+   53430,
+   56073,
+   56075,
+   56442
+  ],
+  "name": "Zakan the Necroshaman",
+  "special": [
+   56078,
+   56081
+  ]
+ },
+ "50813": {
+  "auto": [
+   32920,
+   32921,
+   46670,
+   46984
+  ],
+  "name": "\"Hotshot\" Braz",
+  "special": [
+   34050,
+   46579,
+   47033
+  ]
+ },
+ "50855": {
+  "auto": [
+   32768,
+   32769,
+   33810,
+   43759,
+   46024
+  ],
+  "name": "Felidax",
+  "special": []
+ },
+ "50859": {
+  "auto": [
+   6323,
+   6324,
+   55151,
+   55153,
+   55154
+  ],
+  "name": "Wrath of Niwha",
+  "special": [
+   55152
+  ]
+ },
+ "50860": {
+  "auto": [
+   34062
+  ],
+  "name": "Gavwyn the Verdant Defender",
+  "special": [
+   55371,
+   55401,
+   55402,
+   55421,
+   55531
+  ]
+ },
+ "50861": {
+  "auto": [
+   6750,
+   6751,
+   43759,
+   52768,
+   52769
+  ],
+  "name": "Terminus Rex",
+  "special": [
+   35234,
+   39434
+  ]
+ },
+ "50875": {
+  "auto": [],
+  "name": "Levian Expedition Soldier",
+  "special": [
+   55766
+  ]
+ },
+ "50887": {
+  "auto": [
+   6275,
+   6276,
+   32493,
+   54600,
+   54731,
+   58633,
+   58641
+  ],
+  "name": "Steel Jaw",
+  "special": []
+ },
+ "50888": {
+  "auto": [
+   5960,
+   5961,
+   53430
+  ],
+  "name": "Nakaz the Deadlord",
+  "special": [
+   34054,
+   34055,
+   53431
+  ]
+ },
+ "50890": {
+  "auto": [
+   32734,
+   32735,
+   34262,
+   58752
+  ],
+  "name": "Subject: Rho",
+  "special": [
+   35556
+  ]
+ },
+ "50892": {
+  "auto": [
+   8093,
+   8094,
+   57129,
+   70150
+  ],
+  "name": "The Endless Hunger",
+  "special": [
+   38501,
+   57008,
+   57744,
+   57878
+  ]
+ },
+ "50893": {
+  "auto": [
+   34062
+  ],
+  "name": "Arianna Wildgrass",
+  "special": [
+   55371,
+   55383,
+   55401,
+   55402,
+   55421,
+   55531
+  ]
+ },
+ "50920": {
+  "auto": [
+   28690,
+   28691
+  ],
+  "name": "Malfunctioning Security Construct",
+  "special": [
+   55847
+  ]
+ },
+ "50943": {
+  "auto": [
+   5649,
+   5652,
+   54595,
+   69792
+  ],
+  "name": "Prodigy",
+  "special": [
+   38918
+  ]
+ },
+ "50945": {
+  "auto": [
+   34062
+  ],
+  "name": "Nomjin",
+  "special": [
+   55371,
+   55401,
+   55402,
+   55796
+  ]
+ },
+ "50946": {
+  "auto": [
+   32768,
+   32769
+  ],
+  "name": "Frostshard",
+  "special": [
+   33969,
+   46128,
+   46149
+  ]
+ },
+ "50947": {
+  "auto": [
+   26440
+  ],
+  "name": "Marauder Mine",
+  "special": [
+   26443
+  ]
+ },
+ "50948": {
+  "auto": [
+   32867,
+   32868,
+   49792
+  ],
+  "name": "Beastmaster Xix",
+  "special": [
+   51383
+  ]
+ },
+ "50950": {
+  "auto": [
+   6275,
+   6276,
+   54600,
+   54731
+  ],
+  "name": "Iiksy",
+  "special": []
+ },
+ "51059": {
+  "auto": [
+   32867,
+   32868
+  ],
+  "name": "Trooper Koren",
+  "special": [
+   55434
+  ]
+ },
+ "51075": {
+  "auto": [
+   51322,
+   56367,
+   56368
+  ],
+  "name": "Engineer - Hostile Invisible - Bruiserbot",
+  "special": []
+ },
+ "51082": {
+  "auto": [
+   4537,
+   46670,
+   69803,
+   70379
+  ],
+  "name": "Firestorm Burnblaster",
+  "special": [
+   39474,
+   52788,
+   54212
+  ]
+ },
+ "51083": {
+  "auto": [
+   4616,
+   4617,
+   35287,
+   46670,
+   72730
+  ],
+  "name": "Firestorm Flamebot",
+  "special": [
+   40714,
+   72728
+  ]
+ },
+ "51126": {
+  "auto": [
+   33251,
+   33252
+  ],
+  "name": "Yeti Snowstalker",
+  "special": [
+   55635
+  ]
+ },
+ "51401": {
+  "auto": [
+   33251,
+   33252,
+   53034
+  ],
+  "name": "Dustden Fracas",
+  "special": []
+ },
+ "51402": {
+  "auto": [
+   33251,
+   33252,
+   70383
+  ],
+  "name": "Dustden Howler",
+  "special": [
+   35275
+  ]
+ },
+ "51403": {
+  "auto": [
+   33251,
+   33252,
+   52968,
+   53034,
+   53054,
+   70383
+  ],
+  "name": "Galegut",
+  "special": [
+   36569
+  ]
+ },
+ "51404": {
+  "auto": [
+   5413,
+   5414
+  ],
+  "name": "Gullyrock Heaver",
+  "special": [
+   53268,
+   53272,
+   53274,
+   53275
+  ]
+ },
+ "51503": {
+  "auto": [
+   6146,
+   6147,
+   43759,
+   57765,
+   57766,
+   57767
+  ],
+  "name": "Shadowfall",
+  "special": [
+   57768
+  ]
+ },
+ "51508": {
+  "auto": [
+   7267,
+   7270,
+   35343,
+   51993,
+   52475
+  ],
+  "name": "Stonepile",
+  "special": [
+   52531
+  ]
+ },
+ "51510": {
+  "auto": [
+   2764,
+   52150,
+   52151,
+   52568,
+   52587,
+   52639
+  ],
+  "name": "Stanch",
+  "special": [
+   52567
+  ]
+ },
+ "51596": {
+  "auto": [
+   6651,
+   6652
+  ],
+  "name": "Fresh Hatchling",
+  "special": []
+ },
+ "51597": {
+  "auto": [
+   35002,
+   44739
+  ],
+  "name": "Augmented Spiderling",
+  "special": [
+   39598,
+   70403
+  ]
+ },
+ "51598": {
+  "auto": [
+   35002,
+   44739
+  ],
+  "name": "Augmented Recluse",
+  "special": [
+   39598,
+   70403
+  ]
+ },
+ "51724": {
+  "auto": [
+   6817,
+   6818,
+   56494
+  ],
+  "name": "Gnawer",
+  "special": [
+   56498,
+   56614
+  ]
+ },
+ "51736": {
+  "auto": [
+   6817,
+   6818
+  ],
+  "name": "Captured Rockside Digger",
+  "special": [
+   56664,
+   56684
+  ]
+ },
+ "51811": {
+  "auto": [
+   32773,
+   32774,
+   77490
+  ],
+  "name": "Feralplain Climber",
+  "special": [
+   43366,
+   46933
+  ]
+ },
+ "51812": {
+  "auto": [
+   32773,
+   32774,
+   33919,
+   77490
+  ],
+  "name": "Feralplain Slasher",
+  "special": [
+   43366,
+   46895
+  ]
+ },
+ "51813": {
+  "auto": [
+   6146,
+   6147,
+   43759,
+   57765,
+   57766,
+   57767
+  ],
+  "name": "Feralplain Scavenger",
+  "special": [
+   57768
+  ]
+ },
+ "51814": {
+  "auto": [
+   6146,
+   6147,
+   43759,
+   57765,
+   57766,
+   57767
+  ],
+  "name": "Feralplain Buzzard",
+  "special": [
+   57768
+  ]
+ },
+ "51948": {
+  "auto": [
+   5649,
+   5652
+  ],
+  "name": "Preyfinder Hunter",
+  "special": []
+ },
+ "52231": {
+  "auto": [
+   6263,
+   6267,
+   52536
+  ],
+  "name": "Celestial Razortusk",
+  "special": [
+   52473,
+   52474
+  ]
+ },
+ "52367": {
+  "auto": [],
+  "name": "Elderoot Tendril",
+  "special": [
+   54518
+  ]
+ },
+ "52391": {
+  "auto": [
+   54557
+  ],
+  "name": "Deactivated Zeta Agent",
+  "special": []
+ },
+ "52441": {
+  "auto": [
+   4537,
+   69803
+  ],
+  "name": "Wiped Supervisorbot",
+  "special": [
+   52788,
+   54212
+  ]
+ },
+ "52474": {
+  "auto": [
+   32867,
+   32868
+  ],
+  "name": "Cadet Eborian",
+  "special": []
+ },
+ "52579": {
+  "auto": [
+   24628,
+   44280
+  ],
+  "name": "Thayd Warbot Guard",
+  "special": []
+ },
+ "52646": {
+  "auto": [
+   28690,
+   28691,
+   39039,
+   74369
+  ],
+  "name": "Malfunctioning A37 Probe",
+  "special": [
+   41187
+  ]
+ },
+ "52680": {
+  "auto": [
+   6146,
+   6147,
+   43759,
+   57765,
+   57766,
+   57767
+  ],
+  "name": "Witchwake Screecher",
+  "special": [
+   57768
+  ]
+ },
+ "52867": {
+  "auto": [
+   5649,
+   5652
+  ],
+  "name": "Dominion Engineer",
+  "special": [
+   34552,
+   52448
+  ]
+ },
+ "52935": {
+  "auto": [
+   2605,
+   2607
+  ],
+  "name": "Bonerazer Bloodmauler",
+  "special": [
+   54742,
+   54817
+  ]
+ },
+ "53063": {
+  "auto": [
+   32867,
+   32868,
+   44254,
+   44255
+  ],
+  "name": "Bloodfire Guard",
+  "special": []
+ },
+ "53066": {
+  "auto": [
+   44262,
+   44263,
+   46039,
+   46040
+  ],
+  "name": "Endless Vigil Guard",
+  "special": []
+ },
+ "53067": {
+  "auto": [
+   44267
+  ],
+  "name": "Feralplain Guard",
+  "special": []
+ },
+ "53194": {
+  "auto": [
+   48381,
+   53223,
+   69467
+  ],
+  "name": "Field Commander Telnetia",
+  "special": []
+ },
+ "53293": {
+  "auto": [
+   5649,
+   5652
+  ],
+  "name": "Bot Saboteur",
+  "special": [
+   52551,
+   53219,
+   53247
+  ]
+ },
+ "53388": {
+  "auto": [
+   32734,
+   32735,
+   34262,
+   45117,
+   45218
+  ],
+  "name": "Frostbite",
+  "special": []
+ },
+ "54022": {
+  "auto": [
+   6916,
+   6917,
+   52760,
+   53868,
+   60894
+  ],
+  "name": "Flamekeeper",
+  "special": [
+   35400,
+   35417
+  ]
+ },
+ "54199": {
+  "auto": [
+   6616,
+   6617,
+   34252,
+   34253,
+   47719
+  ],
+  "name": "Sharpclaw Malverine",
+  "special": []
+ },
+ "54551": {
+  "auto": [
+   6616,
+   6617,
+   34252,
+   48121
+  ],
+  "name": "Frenzyclaw Malverine",
+  "special": [
+   47997
+  ]
+ },
+ "54552": {
+  "auto": [
+   33247,
+   33248,
+   35304
+  ],
+  "name": "Underbrush Rootling",
+  "special": [
+   35323
+  ]
+ },
+ "54553": {
+  "auto": [
+   33247,
+   33248,
+   35304
+  ],
+  "name": "Underbrush Creeper",
+  "special": [
+   35323
+  ]
+ },
+ "56341": {
+  "auto": [
+   32867,
+   32868,
+   43759,
+   49350
+  ],
+  "name": "Exile Trooper",
+  "special": [
+   34131,
+   35727
+  ]
+ },
+ "57148": {
+  "auto": [
+   44650,
+   44770,
+   59759
+  ],
+  "name": "Enhanced Dazeroot Hivestriker",
+  "special": [
+   44714
+  ]
+ },
+ "59214": {
+  "auto": [
+   16926,
+   16927
+  ],
+  "name": "Sacrificial Warpig",
+  "special": []
+ },
+ "61416": {
+  "auto": [
+   44650,
+   44770,
+   59759
+  ],
+  "name": "Dazeroot Impaler",
+  "special": [
+   44714
+  ]
+ },
+ "61418": {
+  "auto": [
+   2605,
+   2607,
+   54895
+  ],
+  "name": "Bonerazer Firewalker",
+  "special": [
+   54742,
+   54817,
+   54838
+  ]
+ },
+ "61425": {
+  "auto": [
+   34062,
+   53430,
+   56073,
+   56075,
+   56442
+  ],
+  "name": "Darkloam Lichkin",
+  "special": [
+   56078,
+   56081
+  ]
+ },
+ "61427": {
+  "auto": [
+   32768,
+   32769,
+   33810,
+   43759
+  ],
+  "name": "Tangleclaw Pridelord",
+  "special": [
+   33969,
+   35192
+  ]
+ },
+ "61429": {
+  "auto": [
+   28704,
+   28705,
+   54839
+  ],
+  "name": "Tangleclaw Thrasher",
+  "special": [
+   55137,
+   58612
+  ]
+ },
+ "61430": {
+  "auto": [
+   32768,
+   32769,
+   33810,
+   43759
+  ],
+  "name": "Tangleclaw Hunter",
+  "special": [
+   33969,
+   35192
+  ]
+ },
+ "61431": {
+  "auto": [
+   35002
+  ],
+  "name": "Augmented Nightfang Lurker",
+  "special": [
+   39598,
+   70403
+  ]
+ },
+ "61432": {
+  "auto": [
+   6651,
+   6652
+  ],
+  "name": "Nightfang Lurker",
+  "special": [
+   39582,
+   39598,
+   52756
+  ]
+ },
+ "61433": {
+  "auto": [
+   6651,
+   6652
+  ],
+  "name": "Shadow Skulker",
+  "special": [
+   39582,
+   39598,
+   52756
+  ]
+ },
+ "61435": {
+  "auto": [
+   32867,
+   32868,
+   46670,
+   49888,
+   50103
+  ],
+  "name": "Zeta Punisher",
+  "special": [
+   35717,
+   50007
+  ]
+ },
+ "61437": {
+  "auto": [
+   28693,
+   28694,
+   47284,
+   58390
+  ],
+  "name": "N22 Executioner",
+  "special": [
+   46006
+  ]
+ },
+ "61438": {
+  "auto": [
+   32734,
+   32735,
+   34262
+  ],
+  "name": "Shadetree Gorepaw",
+  "special": []
+ },
+ "61439": {
+  "auto": [
+   6561,
+   6562,
+   57625,
+   57659
+  ],
+  "name": "Greenbark Deathvine",
+  "special": [
+   55760,
+   57624,
+   57627
+  ]
+ },
+ "61441": {
+  "auto": [
+   32734,
+   32735,
+   34262
+  ],
+  "name": "Stonepaw Fleshrender",
+  "special": []
+ },
+ "61442": {
+  "auto": [
+   28704,
+   28705,
+   34454,
+   34455
+  ],
+  "name": "Verdant Shredder",
+  "special": [
+   55137,
+   58483
+  ]
+ },
+ "61446": {
+  "auto": [
+   32867,
+   32868,
+   43759,
+   49350
+  ],
+  "name": "Torine Liferender",
+  "special": [
+   34131,
+   35727,
+   49410
+  ]
+ },
+ "61447": {
+  "auto": [
+   33251,
+   33252,
+   52968,
+   53034
+  ],
+  "name": "Needlebrook Hulk",
+  "special": []
+ },
+ "61449": {
+  "auto": [
+   32768,
+   32769,
+   33810,
+   43759,
+   46024
+  ],
+  "name": "Vicious Matriarch",
+  "special": []
+ },
+ "61450": {
+  "auto": [
+   32867,
+   32868,
+   43759,
+   49350
+  ],
+  "name": "Torine Warblade",
+  "special": [
+   34131,
+   35727,
+   49410
+  ]
+ },
+ "61452": {
+  "auto": [
+   44650,
+   44770,
+   59759
+  ],
+  "name": "Enhanced Dazeroot Hiveguard",
+  "special": [
+   44714
+  ]
+ },
+ "61453": {
+  "auto": [
+   32867,
+   32868,
+   49792,
+   49928
+  ],
+  "name": "Bonerazer Vanquisher",
+  "special": [
+   49879
+  ]
+ },
+ "61454": {
+  "auto": [
+   6916,
+   6917,
+   52760,
+   53868,
+   60894
+  ],
+  "name": "Infused Lifewood",
+  "special": [
+   35400,
+   35417
+  ]
+ },
+ "61455": {
+  "auto": [
+   6275,
+   6276,
+   32493,
+   54600,
+   54731,
+   58633,
+   58641
+  ],
+  "name": "Muddybrook Razortooth",
+  "special": []
+ },
+ "61456": {
+  "auto": [
+   2605,
+   2607
+  ],
+  "name": "Ravenous Abomination",
+  "special": [
+   54241,
+   54299,
+   54327,
+   54675
+  ]
+ },
+ "61457": {
+  "auto": [
+   34062,
+   53430,
+   56073,
+   56075,
+   56442
+  ],
+  "name": "Darkloam Necroshaman",
+  "special": [
+   56078,
+   56081
+  ]
+ },
+ "61459": {
+  "auto": [
+   32761,
+   32762
+  ],
+  "name": "Highland Longhorn",
+  "special": [
+   53416,
+   53434,
+   53435,
+   53436,
+   55309
+  ]
+ },
+ "61460": {
+  "auto": [
+   6616,
+   6617,
+   34252,
+   48121
+  ],
+  "name": "Furyclaw Malverine",
+  "special": [
+   47997
+  ]
+ },
+ "61472": {
+  "auto": [
+   32734,
+   32735,
+   34262
+  ],
+  "name": "Highland Crusher",
+  "special": []
+ },
+ "61475": {
+  "auto": [
+   372,
+   1616,
+   34564,
+   43507
+  ],
+  "name": "Darkfang Alpha",
+  "special": [
+   34565,
+   37316
+  ]
+ },
+ "61476": {
+  "auto": [
+   33247,
+   33248,
+   35304
+  ],
+  "name": "Darkspire Strangler",
+  "special": [
+   35323,
+   37550,
+   52869
+  ]
+ },
+ "61477": {
+  "auto": [
+   6651,
+   6652
+  ],
+  "name": "Shadowstalker Widower",
+  "special": [
+   39582,
+   39598,
+   52756
+  ]
+ },
+ "61478": {
+  "auto": [
+   6275,
+   6276,
+   32493,
+   54600,
+   54731,
+   58633,
+   58641
+  ],
+  "name": "Fierce Ungala Shocker",
+  "special": []
+ },
+ "61480": {
+  "auto": [
+   32768,
+   32769,
+   33810,
+   43759
+  ],
+  "name": "Whitepaw Pride Guard",
+  "special": [
+   33969,
+   35192
+  ]
+ },
+ "61486": {
+  "auto": [
+   34062,
+   53430,
+   56073,
+   56075,
+   56442
+  ],
+  "name": "Deadwind Doomcaller",
+  "special": [
+   56078,
+   56081
+  ]
+ },
+ "61487": {
+  "auto": [
+   30756,
+   56986
+  ],
+  "name": "Stormseeker Wrath-Wielder",
+  "special": [
+   56683,
+   56990,
+   56993
+  ]
+ },
+ "61489": {
+  "auto": [
+   5960,
+   5961,
+   43759,
+   75357,
+   75625
+  ],
+  "name": "Stormseeker Torrent-Slasher",
+  "special": [
+   35379,
+   35661,
+   35707,
+   75599
+  ]
+ },
+ "61490": {
+  "auto": [
+   6323,
+   6324,
+   55151,
+   55153,
+   55154
+  ],
+  "name": "Stonetusk Behemoth",
+  "special": [
+   55152
+  ]
+ },
+ "61491": {
+  "auto": [
+   33244,
+   33245,
+   34227
+  ],
+  "name": "Oakback Trampler",
+  "special": [
+   53418,
+   53423
+  ]
+ },
+ "61494": {
+  "auto": [
+   32773,
+   32774,
+   70136,
+   77490
+  ],
+  "name": "Gnarlfoot Brute",
+  "special": [
+   43366,
+   46933
+  ]
+ },
+ "61495": {
+  "auto": [
+   372,
+   1616,
+   34564,
+   43507
+  ],
+  "name": "Longsnout Terror",
+  "special": [
+   34565,
+   37316
+  ]
+ },
+ "61496": {
+  "auto": [
+   5960,
+   5961,
+   53430
+  ],
+  "name": "Deadwind Executioner",
+  "special": [
+   34054,
+   34055,
+   53431
+  ]
+ },
+ "61497": {
+  "auto": [
+   6616,
+   6617,
+   34252,
+   34253,
+   47719
+  ],
+  "name": "Razorclaw Malverine",
+  "special": []
+ },
+ "61499": {
+  "auto": [
+   2605,
+   2607,
+   56423
+  ],
+  "name": "Slenderskin Shredder",
+  "special": [
+   56037,
+   56358,
+   56390
+  ]
+ },
+ "61500": {
+  "auto": [
+   2764,
+   51899,
+   65459
+  ],
+  "name": "Darkpool Bombardier",
+  "special": [
+   51828
+  ]
+ },
+ "61503": {
+  "auto": [
+   32768,
+   32769,
+   33810,
+   43759,
+   46024
+  ],
+  "name": "Whitepaw Predator",
+  "special": []
+ },
+ "61508": {
+  "auto": [
+   28693,
+   28694
+  ],
+  "name": "Site 14 Defender",
+  "special": [
+   39430,
+   46006,
+   46405
+  ]
+ },
+ "61509": {
+  "auto": [
+   32734,
+   32735,
+   34262
+  ],
+  "name": "Rockside Ravager",
+  "special": []
+ },
+ "61510": {
+  "auto": [
+   6750,
+   6751,
+   43759,
+   52768,
+   52769
+  ],
+  "name": "Hillscourge Glutton",
+  "special": [
+   35234,
+   39434
+  ]
+ },
+ "61511": {
+  "auto": [
+   7031,
+   7032,
+   57056,
+   57094
+  ],
+  "name": "Mistymurk Slimer",
+  "special": [
+   57054,
+   57057
+  ]
+ },
+ "61518": {
+  "auto": [
+   6750,
+   6751,
+   52768,
+   52769
+  ],
+  "name": "Energized Hillscourge Glutton",
+  "special": [
+   35234,
+   39434
+  ]
+ },
+ "61519": {
+  "auto": [
+   46797,
+   46984,
+   57364,
+   57365
+  ],
+  "name": "Throg Ender",
+  "special": [
+   47033
+  ]
+ },
+ "61520": {
+  "auto": [
+   6817,
+   6818,
+   56494
+  ],
+  "name": "Augmented Rockside Tunnelclaw",
+  "special": [
+   56899
+  ]
+ },
+ "61521": {
+  "auto": [
+   28693,
+   28694
+  ],
+  "name": "AH47 Sentinel",
+  "special": [
+   39430,
+   46006,
+   46405
+  ]
+ },
+ "61522": {
+  "auto": [
+   6651,
+   6652,
+   32493,
+   77508
+  ],
+  "name": "Deathmite Hunter",
+  "special": [
+   39582,
+   39598,
+   52756
+  ]
+ },
+ "61523": {
+  "auto": [
+   5649,
+   5652
+  ],
+  "name": "Deadstar Punisher",
+  "special": [
+   52551,
+   53219,
+   53247,
+   55440
+  ]
+ },
+ "61524": {
+  "auto": [
+   6323,
+   6324,
+   55151,
+   55153,
+   55154
+  ],
+  "name": "Bloodhorn Behemoth",
+  "special": [
+   55152
+  ]
+ },
+ "61526": {
+  "auto": [
+   28693,
+   28694
+  ],
+  "name": "N22 Servitor",
+  "special": [
+   39430,
+   46006,
+   46405
+  ]
+ },
+ "61528": {
+  "auto": [
+   34062,
+   53430,
+   56073,
+   56075,
+   56442
+  ],
+  "name": "Deadwind Elder Witchdoctor",
+  "special": [
+   56078,
+   56081
+  ]
+ },
+ "61529": {
+  "auto": [
+   2764,
+   51899,
+   65459
+  ],
+  "name": "Jagged Rock Officer",
+  "special": [
+   51828
+  ]
+ },
+ "61530": {
+  "auto": [
+   24990,
+   24991,
+   35223
+  ],
+  "name": "Jagged Rock Extractorbot",
+  "special": [
+   34585,
+   34982
+  ]
+ },
+ "61531": {
+  "auto": [
+   6323,
+   6324,
+   55151,
+   55153,
+   55154
+  ],
+  "name": "Stonetusk Flattener",
+  "special": [
+   55152
+  ]
+ },
+ "61532": {
+  "auto": [
+   2764,
+   51899,
+   65459
+  ],
+  "name": "Savannah Sniper",
+  "special": [
+   51828
+  ]
+ },
+ "61533": {
+  "auto": [
+   7031,
+   7032
+  ],
+  "name": "Marshgrass Slimer",
+  "special": [
+   55331
+  ]
+ },
+ "61534": {
+  "auto": [
+   372,
+   1616
+  ],
+  "name": "Highland Hunter",
+  "special": [
+   55294
+  ]
+ },
+ "61535": {
+  "auto": [
+   7267,
+   7270,
+   51827,
+   52080,
+   52235
+  ],
+  "name": "Stoneridge Cragfist",
+  "special": [
+   55306
+  ]
+ },
+ "61542": {
+  "auto": [
+   8093,
+   8094,
+   57129,
+   70150
+  ],
+  "name": "Putrid Oozing Sludgeon",
+  "special": [
+   38501,
+   57008,
+   57744,
+   57878
+  ]
+ },
+ "61545": {
+  "auto": [
+   32734,
+   32735,
+   34262,
+   53430,
+   58752
+  ],
+  "name": "Decrepit Mauler",
+  "special": [
+   35556
+  ]
+ },
+ "61548": {
+  "auto": [
+   32867,
+   32868,
+   48766,
+   49411
+  ],
+  "name": "Dominion Executioner",
+  "special": []
+ },
+ "61549": {
+  "auto": [
+   32768,
+   32769
+  ],
+  "name": "Irradiated Icetail Stalker",
+  "special": [
+   33969,
+   46128,
+   46149
+  ]
+ },
+ "61554": {
+  "auto": [
+   5413,
+   5414
+  ],
+  "name": "Shoveljaw Crusher",
+  "special": [
+   53268,
+   53272,
+   53274,
+   53275
+  ]
+ },
+ "61557": {
+  "auto": [
+   6750,
+   6751,
+   43759,
+   52768,
+   52769
+  ],
+  "name": "Hillscourge Demolisher",
+  "special": [
+   35234,
+   39434
+  ]
+ },
+ "61558": {
+  "auto": [
+   6750,
+   6751,
+   52768,
+   52769
+  ],
+  "name": "Energized Hillscourge Demolisher",
+  "special": [
+   35234,
+   39434
+  ]
+ },
+ "61559": {
+  "auto": [
+   6651,
+   6652
+  ],
+  "name": "Deathmite Predator",
+  "special": [
+   39582,
+   39598,
+   52756
+  ]
+ },
+ "61560": {
+  "auto": [
+   2605,
+   2607,
+   54895
+  ],
+  "name": "Wildwood Bladewarden",
+  "special": [
+   54742,
+   54817,
+   54838
+  ]
+ },
+ "61561": {
+  "auto": [
+   32734,
+   32735,
+   34262
+  ],
+  "name": "Grimstone Ravager",
+  "special": []
+ },
+ "61568": {
+  "auto": [
+   28704,
+   28705,
+   34455,
+   54839,
+   70078
+  ],
+  "name": "Bleakwing Knifetalon",
+  "special": []
+ },
+ "61569": {
+  "auto": [
+   28704,
+   28705,
+   34455,
+   54839,
+   70078
+  ],
+  "name": "Bleakwing Elder",
+  "special": []
+ },
+ "61572": {
+  "auto": [
+   32920,
+   32921,
+   46670,
+   46984
+  ],
+  "name": "Crowe Enforcer",
+  "special": [
+   34050,
+   46579,
+   47033
+  ]
+ },
+ "61573": {
+  "auto": [
+   32920,
+   32921,
+   46670
+  ],
+  "name": "Throg Enforcer",
+  "special": [
+   34050,
+   46579
+  ]
+ },
+ "61574": {
+  "auto": [
+   5413,
+   5414
+  ],
+  "name": "Gullyrock Behemoth",
+  "special": [
+   53268,
+   53272,
+   53274,
+   53275
+  ]
+ },
+ "61575": {
+  "auto": [
+   32734,
+   32735,
+   34262,
+   69483
+  ],
+  "name": "Rockridge Mauler",
+  "special": [
+   45335
+  ]
+ },
+ "61576": {
+  "auto": [
+   6916,
+   6917,
+   52760,
+   53868,
+   60894
+  ],
+  "name": "Pinewrath Branchsnapper",
+  "special": [
+   35400,
+   35417
+  ]
+ },
+ "61577": {
+  "auto": [
+   32920,
+   32921,
+   46670,
+   46984
+  ],
+  "name": "Grim Enforcer",
+  "special": [
+   34050,
+   46579,
+   47033
+  ]
+ },
+ "61579": {
+  "auto": [
+   7267,
+   7270,
+   51827,
+   70633,
+   70664
+  ],
+  "name": "Augmented Slateform Demolisher",
+  "special": []
+ },
+ "61580": {
+  "auto": [
+   6323,
+   6324,
+   55151,
+   55153,
+   55154
+  ],
+  "name": "Stonetusk Earthshaker",
+  "special": [
+   55152
+  ]
+ },
+ "61581": {
+  "auto": [
+   6323,
+   6324,
+   55151,
+   55153,
+   55154
+  ],
+  "name": "Stonetusk Veteran",
+  "special": [
+   55152
+  ]
+ },
+ "61586": {
+  "auto": [
+   6323,
+   6324,
+   55151,
+   55153,
+   55154
+  ],
+  "name": "Bloodhorn Flattener",
+  "special": [
+   55152
+  ]
+ },
+ "61587": {
+  "auto": [
+   6323,
+   6324,
+   55151,
+   55153,
+   55154
+  ],
+  "name": "Savannah Flattener",
+  "special": [
+   55152
+  ]
+ },
+ "61588": {
+  "auto": [
+   32768,
+   32769,
+   33810,
+   43759
+  ],
+  "name": "Savannah Firemane",
+  "special": [
+   33969,
+   35192
+  ]
+ },
+ "61589": {
+  "auto": [
+   32920,
+   32921,
+   46670,
+   59523
+  ],
+  "name": "Grimvoid Strongarm",
+  "special": [
+   34050,
+   46579
+  ]
+ },
+ "61590": {
+  "auto": [
+   34062
+  ],
+  "name": "Wildvine Greenheart",
+  "special": [
+   55371,
+   55401,
+   55402,
+   55421,
+   55531
+  ]
+ },
+ "61591": {
+  "auto": [
+   8093,
+   8094,
+   70150
+  ],
+  "name": "Viscous Oozing Sludgeon",
+  "special": [
+   56818,
+   57878,
+   58263
+  ]
+ },
+ "61592": {
+  "auto": [
+   32734,
+   32735,
+   34262,
+   45795,
+   70156
+  ],
+  "name": "Skeledroid Horror",
+  "special": [
+   45770
+  ]
+ },
+ "61593": {
+  "auto": [
+   5649,
+   5652,
+   52740
+  ],
+  "name": "Skeledroid Terrorizer",
+  "special": [
+   52658,
+   52789
+  ]
+ },
+ "61594": {
+  "auto": [
+   32734,
+   32735,
+   34262,
+   58752
+  ],
+  "name": "Risen Girrok Skullchewer",
+  "special": [
+   35556
+  ]
+ },
+ "61595": {
+  "auto": [
+   5649,
+   5652,
+   53430,
+   60653
+  ],
+  "name": "Vengeful Risen Draken",
+  "special": [
+   34552,
+   52448
+  ]
+ },
+ "61596": {
+  "auto": [
+   34062,
+   56073,
+   56075,
+   56442
+  ],
+  "name": "Witchwake Soulsnatcher",
+  "special": [
+   56078,
+   56081
+  ]
+ },
+ "61598": {
+  "auto": [
+   7267,
+   7270,
+   35343,
+   51993,
+   52475
+  ],
+  "name": "Stoneridge Smasher",
+  "special": [
+   52531
+  ]
+ },
+ "61600": {
+  "auto": [
+   372,
+   1616,
+   43611,
+   43759
+  ],
+  "name": "Highland Predator",
+  "special": [
+   34565,
+   43687,
+   55290
+  ]
+ },
+ "61601": {
+  "auto": [
+   6916,
+   6917,
+   52760,
+   53868,
+   60894
+  ],
+  "name": "Pinewrath Stumpmaker",
+  "special": [
+   35400,
+   35417
+  ]
+ },
+ "61605": {
+  "auto": [
+   27545,
+   27546,
+   54827,
+   55150,
+   69505,
+   74447
+  ],
+  "name": "Grim Controller",
+  "special": []
+ },
+ "61606": {
+  "auto": [
+   32734,
+   32735,
+   34262,
+   69483
+  ],
+  "name": "Highland Mauler",
+  "special": [
+   45335
+  ]
+ },
+ "61609": {
+  "auto": [
+   32734,
+   32735,
+   34262,
+   58752
+  ],
+  "name": "Rockridge Fiend",
+  "special": [
+   35556
+  ]
+ },
+ "61610": {
+  "auto": [
+   5413,
+   5414
+  ],
+  "name": "Gullyrock Gargantuan",
+  "special": [
+   53268,
+   53272,
+   53274,
+   53275
+  ]
+ },
+ "61611": {
+  "auto": [
+   30756,
+   56986
+  ],
+  "name": "Stormseeker Wave-Striker",
+  "special": [
+   56683,
+   56990,
+   56993
+  ]
+ },
+ "61618": {
+  "auto": [
+   32734,
+   32735,
+   34262,
+   69483
+  ],
+  "name": "Rockside Crusher",
+  "special": [
+   45335
+  ]
+ },
+ "61620": {
+  "auto": [
+   33244,
+   33245,
+   34227
+  ],
+  "name": "Fieldhoof Bull",
+  "special": [
+   53418,
+   53423
+  ]
+ },
+ "61621": {
+  "auto": [
+   372,
+   1616,
+   43611,
+   43759
+  ],
+  "name": "Swiftpaw Pouncer",
+  "special": [
+   34565,
+   43687
+  ]
+ },
+ "61624": {
+  "auto": [
+   32734,
+   32735,
+   34262
+  ],
+  "name": "Grimstone Savage",
+  "special": []
+ },
+ "61625": {
+  "auto": [
+   32867,
+   32868,
+   48766,
+   49411
+  ],
+  "name": "Darkspur Hunter",
+  "special": []
+ },
+ "61627": {
+  "auto": [
+   6616,
+   6617,
+   34252,
+   48641,
+   58666
+  ],
+  "name": "Rageclaw Malverine",
+  "special": [
+   48433
+  ]
+ },
+ "61631": {
+  "auto": [
+   372,
+   1616,
+   43611,
+   43759
+  ],
+  "name": "Darkfang Predator",
+  "special": [
+   34565,
+   43687
+  ]
+ },
+ "61633": {
+  "auto": [
+   6651,
+   6652,
+   32493,
+   77508
+  ],
+  "name": "Shadowstalker Ambusher",
+  "special": [
+   39582,
+   39598,
+   52756
+  ]
+ },
+ "61635": {
+  "auto": [
+   24626,
+   24627,
+   28998,
+   28999,
+   35385,
+   35386,
+   71903,
+   71919,
+   71920,
+   71966,
+   71977,
+   72737,
+   72749,
+   72808,
+   72931
+  ],
+  "name": "Slenderskin Crusher",
+  "special": [
+   28930,
+   35376,
+   35526,
+   41647,
+   41648
+  ]
+ },
+ "62379": {
+  "auto": [
+   65459
+  ],
+  "name": "XAS Researcher",
+  "special": [
+   51828
+  ]
+ },
+ "62387": {
+  "auto": [
+   65459
+  ],
+  "name": "XAS Researcher",
+  "special": [
+   51828
+  ]
+ },
+ "62722": {
+  "auto": [
+   65459
+  ],
+  "name": "XAS Researcher",
+  "special": [
+   51828
+  ]
+ },
+ "62723": {
+  "auto": [
+   65459
+  ],
+  "name": "XAS Researcher",
+  "special": [
+   51828
+  ]
+ },
+ "62724": {
+  "auto": [
+   65459
+  ],
+  "name": "XAS Researcher",
+  "special": [
+   51828
+  ]
+ },
+ "62726": {
+  "auto": [
+   65459
+  ],
+  "name": "XAS Researcher",
+  "special": [
+   51828
+  ]
+ },
+ "9570": {
+  "auto": [
+   32773,
+   32774,
+   77490
+  ],
+  "name": "Gnarlfoot Climber",
+  "special": [
+   43366,
+   46933
+  ]
+ },
+ "9573": {
+  "auto": [
+   32773,
+   32774,
+   33919,
+   77490
+  ],
+  "name": "Gnarlfoot Slasher",
+  "special": [
+   43366,
+   46895
+  ]
+ },
+ "9578": {
+  "auto": [
+   6146,
+   6147,
+   43759,
+   57765,
+   57766,
+   57767
+  ],
+  "name": "Zomclaw Buzzard",
+  "special": [
+   57768
+  ]
+ },
+ "9579": {
+  "auto": [
+   6146,
+   6147,
+   43759,
+   57765,
+   57766,
+   57767
+  ],
+  "name": "Zomclaw Scavenger",
+  "special": [
+   57768
+  ]
+ },
+ "9591": {
+  "auto": [
+   32768,
+   32769,
+   33810,
+   43759
+  ],
+  "name": "Whitepaw Slasher",
+  "special": [
+   33969,
+   35192
+  ]
+ },
+ "9592": {
+  "auto": [
+   32768,
+   32769,
+   33810,
+   43759
+  ],
+  "name": "Whitepaw Pouncer",
+  "special": [
+   33969,
+   35192
+  ]
+ },
+ "9593": {
+  "auto": [
+   32768,
+   32769,
+   33810,
+   43759,
+   46024
+  ],
+  "name": "Whitepaw Prowler",
+  "special": [
+   35192,
+   45494
+  ]
+ },
+ "9596": {
+  "auto": [
+   32768,
+   32769
+  ],
+  "name": "Whitepaw Stalker",
+  "special": [
+   35192,
+   45494
+  ]
+ },
+ "9597": {
+  "auto": [
+   34062,
+   56073,
+   56075,
+   56442
+  ],
+  "name": "Deadwind Sleeper",
+  "special": []
+ },
+ "9598": {
+  "auto": [
+   5960,
+   5961,
+   53430
+  ],
+  "name": "Deadwind Lunatic",
+  "special": [
+   34054,
+   34055
+  ]
+ },
+ "9599": {
+  "auto": [
+   5960,
+   5961,
+   53430
+  ],
+  "name": "Deadwind Maniac",
+  "special": [
+   34054,
+   34055
+  ]
+ },
+ "9603": {
+  "auto": [
+   6275,
+   6276,
+   32493,
+   54600,
+   54731,
+   58633,
+   58641
+  ],
+  "name": "Ungala Shocker",
+  "special": []
+ },
+ "9606": {
+  "auto": [
+   6263,
+   6267,
+   52536
+  ],
+  "name": "Coastal Tusker",
+  "special": [
+   52473,
+   52474
+  ]
+ },
+ "9608": {
+  "auto": [
+   6961,
+   6962
+  ],
+  "name": "Coastal Hookjaw",
+  "special": []
+ },
+ "9609": {
+  "auto": [
+   6296,
+   6962
+  ],
+  "name": "Coastal Hunter",
+  "special": []
+ },
+ "9610": {
+  "auto": [
+   6323,
+   6324,
+   55151,
+   55153,
+   55154
+  ],
+  "name": "Stonetusk Charger",
+  "special": [
+   55152
+  ]
+ },
+ "9613": {
+  "auto": [
+   32726,
+   32727
+  ],
+  "name": "Swifthart Elder",
+  "special": [
+   55297
+  ]
+ },
+ "9615": {
+  "auto": [
+   32726,
+   32727,
+   53505
+  ],
+  "name": "Swifthart Stag",
+  "special": [
+   53506,
+   53508,
+   55297
+  ]
+ },
+ "9616": {
+  "auto": [
+   32761,
+   32762
+  ],
+  "name": "Coarsehair Bellower",
+  "special": [
+   53434,
+   53435,
+   55309
+  ]
+ },
+ "9619": {
+  "auto": [
+   32761,
+   32762
+  ],
+  "name": "Coarsehair Wanderer",
+  "special": [
+   53434,
+   55309
+  ]
+ },
+ "9620": {
+  "auto": [
+   32761,
+   32762
+  ],
+  "name": "Coarsehair Bull",
+  "special": [
+   53416,
+   53434,
+   53435,
+   53436,
+   55309
+  ]
+ },
+ "9622": {
+  "auto": [
+   16926,
+   16927,
+   34502
+  ],
+  "name": "Bloodfire Warpig",
+  "special": [
+   34504
+  ]
+ },
+ "9630": {
+  "auto": [
+   24990,
+   24991,
+   35223
+  ],
+  "name": "Jagged Rock Minebot",
+  "special": [
+   34585,
+   34982
+  ]
+ },
+ "9631": {
+  "auto": [
+   24990,
+   24991,
+   35223
+  ],
+  "name": "Jagged Rock Minebot",
+  "special": [
+   34585,
+   34982
+  ]
+ },
+ "9633": {
+  "auto": [
+   5649,
+   5652
+  ],
+  "name": "Savannah Poacher",
+  "special": [
+   34552,
+   52448
+  ]
+ },
+ "9634": {
+  "auto": [
+   2764,
+   51899,
+   65459
+  ],
+  "name": "Savannah Marksman",
+  "special": [
+   51828
+  ]
+ },
+ "9635": {
+  "auto": [
+   4040,
+   4041,
+   54823,
+   54923
+  ],
+  "name": "Zonaga",
+  "special": [
+   54822
+  ]
+ },
+ "9636": {
+  "auto": [
+   34062
+  ],
+  "name": "Shadeleaf Mystic",
+  "special": [
+   55371,
+   55401,
+   55402,
+   55421,
+   55531,
+   55796
+  ]
+ },
+ "9637": {
+  "auto": [
+   34062
+  ],
+  "name": "Shadeleaf Novice",
+  "special": [
+   55371,
+   55401,
+   55796
+  ]
+ },
+ "9751": {
+  "auto": [
+   32768,
+   32769
+  ],
+  "name": "Kivuli",
+  "special": [
+   35192,
+   45494
+  ]
+ },
+ "9752": {
+  "auto": [
+   32768,
+   32769,
+   33810,
+   43759
+  ],
+  "name": "Kifo",
+  "special": [
+   33969
+  ]
+ },
+ "9773": {
+  "auto": [
+   34062
+  ],
+  "name": "Ullana Shadeleaf",
+  "special": [
+   55371,
+   55401,
+   55402,
+   55421,
+   55531
+  ]
+ },
+ "9794": {
+  "auto": [
+   32920,
+   32921,
+   46670,
+   46797,
+   46984
+  ],
+  "name": "Mercenary Arkos",
+  "special": [
+   46579,
+   46692,
+   47033
+  ]
+ },
+ "9800": {
+  "auto": [
+   34062,
+   53430,
+   56073,
+   56075,
+   56442
+  ],
+  "name": "Tamolo",
+  "special": [
+   56078,
+   56081
+  ]
+ },
+ "9898": {
+  "auto": [
+   30756,
+   34062
+  ],
+  "name": "Deadwind Moodie",
+  "special": []
+ }
+}

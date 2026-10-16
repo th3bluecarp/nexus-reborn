@@ -1,0 +1,109 @@
+# Build world-database spawns for creatures the starting-zone quests need but the world lacks,
+# placed at Jabbithole map pins. Output: SQL + CSV report.
+import json, csv, collections, math, sys
+J='/w/json/'; ld=lambda n: json.load(open(J+n+'.json'))
+text={int(k):v for k,v in json.load(open(J+'text.json')).items()}; T=lambda i:(text.get(i) or '')
+cr={c['Id']:c for c in ld('Creature2')}
+Q={q['Id']:q for q in ld('Quest2')}; objs={o['Id']:o for o in ld('QuestObjective')}; tg={t['Id']:t for t in ld('TargetGroup')}
+dgrp=collections.defaultdict(list)
+for e in ld('Creature2DisplayGroupEntry'): dgrp[e['Creature2DisplayGroupId']].append(e)
+ogrp=collections.defaultdict(list)
+for e in ld('Creature2OutfitGroupEntry'): ogrp[e['Creature2OutfitGroupId']].append(e)
+zones={z['Id']:z for z in ld('WorldZone')}
+def top(z):
+    for _ in range(20):
+        if z in zones and zones[z]['ParentZoneId']: z=zones[z]['ParentZoneId']
+        else: break
+    return z
+ZONES={35:('northernwilds',426),1414:('everstargrove',990),622:('crimsonisle',870),1304:('levianbay',1387),
+       13:('algoroc',51),248:('celestion',51),29:('galeras',51),122:('thayd',51),137:('whitevale',51),
+       483:('deradune',22),37:('ellevar',22),36:('auroria',22),2191:('illium',22)}
+spawnpos=collections.defaultdict(list); bycre=collections.defaultdict(list)
+for r in csv.DictReader(open('/w/db/entity.tsv'),delimiter='\t'):
+    w=int(r['world']); c=int(r['creature'])
+    rec=(float(r['x']),float(r['y']),float(r['z']),int(r['area']),c,int(r['displayInfo']))
+    spawnpos[w].append(rec); bycre[c].append((w,rec))
+jh=json.load(open('/a/parsed/jh_npcs.json'))
+jhby=collections.defaultdict(list)
+for p in jh: jhby[(p['name'],p['map'])].append(p)
+def mem(t,d=0):
+    g=tg.get(t); s=set()
+    if not g or d>3: return s
+    for x in g['DataEntries']:
+        if x: s|={x} if g['Type']==1 else mem(x,d+1)
+    return s
+need=collections.defaultdict(lambda: {'roles':set(),'quests':set()})   # (creature, zone) -> info
+for q in Q.values():
+    z=top(q['WorldZoneId'])
+    if z not in ZONES: continue
+    w=ZONES[z][1]
+    for c in cr.values():
+        if q['Id'] in c['QuestIdGiven']: need[(c['Id'],z)]['roles'].add('giver'); need[(c['Id'],z)]['quests'].add(q['Id'])
+        if q['Id'] in c['QuestIdReceive']: need[(c['Id'],z)]['roles'].add('turn-in'); need[(c['Id'],z)]['quests'].add(q['Id'])
+    for oid in q['Objectives']:
+        o=objs.get(oid)
+        if not o: continue
+        ids=set()
+        if o['Type'] in (2,3,5,9,12,15,21): ids={o['Data']}
+        elif o['Type'] in (8,14,16,18,23): ids=mem(o['Data'])
+        elif o['Type']==32: ids=mem(o['TargetGroupIdRewardPane'])
+        ids={i for i in ids if i in cr}
+        if ids and any(any(w2==w for w2,_ in bycre[i]) for i in ids): continue   # some target already in the zone
+        for i in ids: need[(i,z)]['roles'].add('target'); need[(i,z)]['quests'].add(q['Id'])
+# drop givers/turn-ins already spawned in their zone world
+todo={k:v for k,v in need.items() if not any(w==ZONES[k[1]][1] for w,_ in bycre[k[0]])}
+def clusters(pins, r=8.0):
+    cl=[]
+    for x,z in pins:
+        for c in cl:
+            if math.hypot(c['x']-x,c['z']-z)<=r: c['pts'].append((x,z)); n=len(c['pts']); c['x']+= (x-c['x'])/n; c['z']+=(z-c['z'])/n; break
+        else: cl.append({'x':x,'z':z,'pts':[(x,z)]})
+    return sorted(cl,key=lambda c:-len(c['pts']))
+out=[]; report=[]; nid=900000
+for (cid,z),info in sorted(todo.items()):
+    c=cr[cid]; name=T(c['LocalizedTextIdName']); mp,w=ZONES[z]
+    cands=jhby.get((name,mp),[])
+    def ev(p): return len(set(p['starts'])|set(p['completes'])|set(p['objective_of']) & info['quests']) if False else len((set(p['starts'])|set(p['completes'])|set(p['objective_of'])) & info['quests'])
+    scored=sorted(cands,key=lambda p:(-ev(p),-len(p['pins'])))
+    page=None; conf=''
+    if scored and ev(scored[0])>0: page=scored[0]; conf='quest-linked'
+    elif len(cands)==1 and cands[0]['pins']: page=cands[0]; conf='name-only'
+    if not page or not page['pins']:
+        report.append([cid,name,mp,'/'.join(sorted(info['roles'])),' '.join(map(str,sorted(info['quests']))),'SKIP', 'no Jabbithole page' if not cands else f'{len(cands)} pages, none quest-linked','',''])
+        continue
+    cl=clusters(page['pins'])
+    # skip pin clusters where a same-named creature is already spawned (that location is served by another variant),
+    # unless every cluster is such a spot (then it is a same-place phase and the visibility prerequisite separates them)
+    samepos=[(rec[0],rec[2]) for o,lst in bycre.items() if o!=cid and T(cr[o]['LocalizedTextIdName'])==name for (w2,rec) in lst if w2==w]
+    free=[c2 for c2 in cl if all(math.hypot(c2['x']-a,c2['z']-b)>15 for a,b in samepos)]
+    if free: cl=free
+    take=cl[:1] if info['roles']-{'target'} else cl[:12]
+    # display / outfit: copy from a same-name spawn, else from the creature's groups
+    same=[rec for (w2,rec) in sum((bycre[o] for o in cr if T(cr[o]['LocalizedTextIdName'])==name and bycre[o]),[]) ] if False else []
+    disp=0; outfit=0
+    groups=sorted(dgrp.get(c['Creature2DisplayGroupId'],[]), key=lambda e:-e['Weight'])
+    if groups: disp=groups[0]['Creature2DisplayInfoId']
+    og=sorted(ogrp.get(c['Creature2OutfitGroupId'],[]), key=lambda e:-e['Weight'])
+    if og: outfit=og[0]['Creature2OutfitInfoId']
+    placed=0
+    for cc in take:
+        near=sorted(spawnpos[w], key=lambda s: math.hypot(s[0]-cc['x'],s[2]-cc['z']))[:5]
+        near=[s for s in near if math.hypot(s[0]-cc['x'],s[2]-cc['z'])<=40]
+        if not near: continue
+        y=sorted(s[1] for s in near)[len(near)//2]; area=collections.Counter(s[3] for s in near).most_common(1)[0][0]
+        nid+=1; placed+=1
+        lvl=min(max(c['MaxLevel'] or c['MinLevel'] or 1,1),50)
+        out.append((nid, cid, w, area, round(cc['x'],3), round(y,3), round(cc['z'],3), disp, outfit, c['FactionId'], lvl, name, conf, '/'.join(sorted(info['roles']))))
+    report.append([cid,name,mp,'/'.join(sorted(info['roles'])),' '.join(map(str,sorted(info['quests']))),'PLACED' if placed else 'SKIP', f'{conf}, {placed} spawn(s)' if placed else 'pins >40m from any known ground height', page['file'], len(page['pins'])])
+with open('/a/parsed/starting_zone_spawns.sql','w') as f:
+    f.write('-- Spawns for starting-zone quest NPCs and objectives missing from the world database.\n-- Positions from archived Jabbithole map pins, ground height and area from the nearest existing spawns.\n-- Generated by wildstar-archive/tools/build_spawns.py. Remove with: DELETE FROM entity WHERE Id BETWEEN 900000 AND 999999;\n')
+    f.write('DELETE FROM `entity_stats` WHERE `Id` BETWEEN 900000 AND 999999;\nDELETE FROM `entity` WHERE `Id` BETWEEN 900000 AND 999999;\n')
+    for (i,cid,w,area,x,y,z,disp,outfit,fac,lvl,name,conf,roles) in out:
+        f.write(f"-- {name.replace(chr(10),' ')} ({roles}, {conf})\nINSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES ({i},0,{cid},{w},{area},{x},{y},{z},0,0,0,{disp},{outfit},{fac},{fac});\n")
+        f.write(f"INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES ({i},10,{lvl}),({i},15,0);\n")
+with open('/a/parsed/starting_zone_spawns_report.csv','w',newline='') as f:
+    wr=csv.writer(f); wr.writerow(['creature','name','zone','role','quests','result','detail','jabbithole_page','pins']); wr.writerows(report)
+cnt=collections.Counter(r[5] for r in report)
+print('needed creatures',len(todo),'| placed',cnt['PLACED'],'skipped',cnt['SKIP'],'| spawn rows',len(out))
+for z in ZONES: print(ZONES[z][0], 'spawns', sum(1 for o in out if o[2]==ZONES[z][1]))
+print('skip reasons', collections.Counter(r[6].split(',')[0] for r in report if r[5]=='SKIP').most_common())
