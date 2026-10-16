@@ -61,6 +61,7 @@ Confidence: **High** = consistent across all the data we checked and no counter 
 | vista / claim / exploration / tracking | reach the mission world locations (tracking: retail followed a creature or trail) | Low | retail required placing a beacon or exploring a set of points |
 | cartography | zone map explored percent, done at 95 | Invented | retail threshold unknown |
 | scavenger clue types | 0 activate, 1 creature or area, 2 location | Medium | field patterns per type; starting the hunt is skipped |
+| Soldier SWAT | kill the target group Count times (retail used a gadget on them) | Low | stand in |
 | path XP per mission | 25 + 5 x level | Invented | fitted to the PathLevel curve, retail values unknown |
 
 ## Challenge rewards
