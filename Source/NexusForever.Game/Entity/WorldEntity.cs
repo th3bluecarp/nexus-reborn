@@ -638,6 +638,8 @@ namespace NexusForever.Game.Entity
                     activator.QuestManager.RewardPaneObjectiveUpdate(QuestObjectiveType.VirtualCollect, targetGroupId, 1u);
                     // rescue objectives (Unknown28) name the cage to open in their reward pane target group
                     activator.QuestManager.RewardPaneObjectiveUpdate(QuestObjectiveType.Unknown28, targetGroupId, 1u);
+                    // ActivateEntity objectives with no target (Rescue Exile Prisoners) name the creatures to use in the reward pane group
+                    activator.QuestManager.RewardPaneObjectiveUpdate(QuestObjectiveType.ActivateEntity, targetGroupId, 1u);
 
                     Map.PublicEventManager.UpdateObjective(activator, PublicEventObjectiveType.ActivateTargetGroup, targetGroupId, 1);
                     Map.PublicEventManager.UpdateObjective(activator, PublicEventObjectiveType.ActivateTargetGroupChecklist, targetGroupId, QuestChecklistIdx);
@@ -726,6 +728,9 @@ namespace NexusForever.Game.Entity
                         case QuestObjectiveType.ActivateEntity2:
                         case QuestObjectiveType.SucceedCSI:
                             if (objective.ObjectiveInfo.Data == creatureId)
+                                return true;
+                            if (objective.ObjectiveInfo.Type == QuestObjectiveType.ActivateEntity && objective.ObjectiveInfo.Data == 0u
+                                && targetGroups.Contains(entry.TargetGroupIdRewardPane))
                                 return true;
                             break;
                         case QuestObjectiveType.ActivateTargetGroup:
