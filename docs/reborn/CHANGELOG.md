@@ -8,6 +8,7 @@ Newest first. "Live" means running on our test server.
 
 ## 2026-10-15
 
+- - **Leaving Northern Wilds** (fafe1b32, live). The ship out of Northern Wilds was a lost server script, so you would have been stuck there. Using the Ship Controls at the end of More Important Than Revenge now takes you to Deadeye Brightland on the continent to turn it in. The Dominion's Navigation Controls in Levian Bay do the same. Also, 313 quest objectives that say 'Activate the X' but had no target in the data now take the target from their own text, so they can be completed.
 - - **Soldier SWAT missions** (d99f5240, live). The 55 SWAT missions, where retail had you use a gadget like a flashbang on the targets, now count kills of those targets.
 - - **Explorer tracking missions** (ca6eeabd, live). The 25 Explorer TRACKING missions, where retail had you follow a creature or an energy trail, now complete when you reach their locations. Every Explorer mission type now does something.
 - - **Rescue and gather quest objectives** (eeceff6b, live). An audit of the quests ahead of you found two Algoroc rescue quests (Tremor Ridge Kidnappings, Caged Science) whose objective type was never handled: opening the cages now counts. Gather objectives like destroying the Fallen Trees in A Fiery Escape now count when you destroy or use the object, since real harvesting needs tradeskills. Northern Wilds itself has no blockers left on your quest line.

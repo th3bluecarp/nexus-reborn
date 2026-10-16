@@ -15,10 +15,10 @@ Columns in parity.csv:
 | | Ours | Upstream |
 |---|---|---|
 | Implemented | 67 | 50 |
-| Partial | 55 | 44 |
-| Missing | 30 | 55 |
+| Partial | 56 | 44 |
+| Missing | 29 | 55 |
 | Only on a side branch | 0 | 3 |
-| Features where we are ahead | 34 | |
+| Features where we are ahead | 35 | |
 
 ## Coverage counts
 

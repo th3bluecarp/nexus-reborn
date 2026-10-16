@@ -22,6 +22,7 @@ Confidence: **High** = consistent across all the data we checked and no counter 
 | Field | Our meaning | Confidence | Evidence | Alternatives / risks | Code |
 |---|---|---|---|---|---|
 | Unknown10 | Data is a target group; progress when the player activates a creature in it | Low | Shellshock! cannons (TG 1322 = creature 11251, activate spell on it) and the Roll Call Sheet | 52 objectives, some describe kills or challenges; Data is not always a target group (18876, 30840) | WorldEntity.OnActivateSuccess |
+| ActivateEntity (5) with Data 0 | the one creature named in the objective text, $(creature=N) | High | 313 of 1,267 such objectives name exactly one creature, e.g. Activate the $(creature=27196) (Ship Controls) | text naming several creatures is left alone | QuestObjectiveInfo.Data |
 | EnterArea (22) | complete when inside the objective's indicator world location (radius at least 10 m) | Low | 166 of 180 low level objectives have an indicator | retail used trigger volumes (Data); indicator may be the area or just a map hint, so it can complete early or late | QuestManager.UpdateAreaObjectives |
 | Unknown28 (rescue) | progress when the player activates a creature of TargetGroupIdRewardPane, the cage | Medium | all 3 reward pane groups are cages or cage panels with an activate spell; 5 objectives all describe rescuing from cages | Data (17 to 218) unknown | WorldEntity.OnActivateSuccess |
 | CompleteEvent | progress when a public event is won by the player's team | Medium | Data matches PublicEvent ids | partial credit for losing teams unknown | PublicEvent.Finish |
@@ -107,6 +108,7 @@ These fix a visible symptom without knowing the real rule, the kind of patch tha
 
 - **Quest creatures despawn after activation** (WorldEntity.OnActivateSuccess). Narrowed in fbc02afc after decoding SetBusy: it now only applies when the activate spell has neither a DespawnUnit nor a timed SetBusy clear, the cases retail finished with server scripts (the Trapped Survivor spell 1817 has only Activate).
 - **Gather objectives count killing or using the node.** GatheResource objectives (10, such as the Fallen Trees in A Fiery Escape) name a harvest node; real harvesting needs tradeskills, so destroying or activating the creature counts (UnitEntity kill credit, WorldEntity.OnActivateSuccess).
+- **Starting zone transports teleport.** The Ship Controls in Northern Wilds and the Navigation Controls in Levian Bay only carry an Activate effect; retail flew the player with a lost script. Using them teleports to the receiver location of the quest that ends on the continent (WorldEntity.ScriptedTransports). The Aurin portal to Celestion is not done.
 - **Holocrypts are the nearest transmat.** Holocrypt locations are not in the client data, so the holocrypt respawn goes to the nearest non-hostile transmat terminal at full health (BaseMap.OnResurrectHolocrypt).
 - **Open world events start by proximity.** Retail started them from lost server scripts.
 - **Creature abilities from Jabbithole.** Observed spells, not the creature's real rotation or conditions.
