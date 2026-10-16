@@ -4,6 +4,7 @@ Newest first. "Live" means running on our test server.
 
 ## 2026-10-15
 
+- - **Holocrypt respawn** (853ca8ab, live). When you die in the open world you now get the holocrypt option, which brings you back at full health at the nearest friendly transmat. Retail's holocrypt locations were never in the client data, so the transmat stands in for them. Wake here still works as before.
 - - **Aggro by level and calls for help** (37b49d2f, live). Creatures well below your level now notice you from closer, and ones 8 or more levels below leave you alone. Pulling one creature in a camp brings its neighbours within 10 m, but not the whole camp. The numbers are guesses.
 - - **Leashing** (8709f911, live). Creatures no longer chase you across the zone. Past 50 m from where the fight started they give up, heal and walk home, and they ignore players they walk past on the way. The range is a guess.
 - - **Complete Challenges quest objectives** (55bb6a05, live). The two quests that ask you to complete challenges anywhere on Nexus now count them.
