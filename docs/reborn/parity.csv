@@ -117,7 +117,7 @@ Paths,Settler improvements,Build depots and buffs,Missing,Missing,,,,ClientPathS
 Paths,Soldier holdouts,Holdout events,Missing,Missing,,,,ClientPathSoldierImprovementBuild unhandled; Holdout prereqs unhandled,
 Housing,Residence and plot,"Own house, visit, remodel, privacy",Implemented,Implemented,,,,"Housing handlers (19), Game/Housing",Large system; decor placement handled through DecorUpdate
 Housing,"Plugs, harvest plugs, gardens",FABkits and plants,Partial,Partial,,,,"ClientHousingPlugUpdate, HousingPlantEntity",HousingPlantSeed effect unhandled
-Housing,Housing teleport spells,Recall to house,Partial,Partial,,,,ClientHousingVisit/Return handled,HousingTeleport and HousingEscape spell effects unhandled
+Housing,Housing teleport spells,Recall to house,Implemented,Partial,yes,814e43d4,,ClientHousingVisit/Return handled,Recall - House (HousingTeleport) and Housing Escape (HousingEscape) both handled.
 Social (chat/friends/guild/group),Local chat,"Say, yell, emote",Implemented,Implemented,,,,Game/Chat/GlobalChatManager.cs,
 Social (chat/friends/guild/group),Channels,"Nexus, trade, party, guild, custom channels",Implemented,Implemented,,,,Server.ChatServer,
 Social (chat/friends/guild/group),Zone chat and LFG,"Zone, ZonePvP, LFG channels",Missing,Missing,,,,GlobalChatManager replies 'Currently not implemented',
