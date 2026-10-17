@@ -32,6 +32,7 @@ namespace NexusForever.Script.Instance.Expedition
         private readonly HashSet<uint> succeeded = [];
         private readonly Dictionary<uint, HashSet<uint>> alive = [];   // creature id -> guids alive
         private readonly HashSet<uint> seenCreatures = [];
+        private readonly Dictionary<uint, uint> killsNeeded = [];   // kill objective -> deaths still needed
         private readonly Dictionary<uint, double> triggerTimers = [];   // area objective -> seconds left
 
         /// <summary>Seconds after which a reach-the-area objective completes when its trigger volume never fires.</summary>
@@ -90,14 +91,30 @@ namespace NexusForever.Script.Instance.Expedition
             if (unit.IsAlive)
                 return;
 
+            // kill objectives keep their own count: the table count can be larger than what is placed
             foreach ((uint objectiveId, uint[] creatures) in Kills)
-                if (creatures.Contains(unit.CreatureId))
+            {
+                if (!creatures.Contains(unit.CreatureId) || !killsNeeded.TryGetValue(objectiveId, out uint needed))
+                    continue;
+
+                if (needed <= 1u)
+                {
+                    killsNeeded.Remove(objectiveId);
+                    Complete(objectiveId);
+                }
+                else
+                {
+                    killsNeeded[objectiveId] = needed - 1u;
                     publicEvent.UpdateObjective(objectiveId, 1);
+                }
+            }
         }
 
         public void OnPublicEventObjectiveStatus(IPublicEventObjective objective)
         {
-            if (objective.Status != PublicEventStatus.Succeeded || !succeeded.Add(objective.Entry.Id) || advancing)
+            // a failed objective (a timer ran out) does not block the chain
+            if ((objective.Status != PublicEventStatus.Succeeded && objective.Status != PublicEventStatus.Failed)
+                || !succeeded.Add(objective.Entry.Id) || advancing)
                 return;
 
             if (step >= 0 && step < Steps.Length && Steps[step].All(succeeded.Contains))
@@ -126,13 +143,21 @@ namespace NexusForever.Script.Instance.Expedition
                 foreach (PublicEventObjectiveEntry entry in GameTableManager.Instance.PublicEventObjective.Entries
                     .Where(e => e.PublicEventId == publicEvent.Id && e.PublicEventObjectiveCategoryEnum == PublicEventObjectiveCategory.Main && !succeeded.Contains(e.Id)))
                     Complete(entry.Id);
+                publicEvent.Finish(PublicEventTeam.PublicTeam);
                 return;
             }
 
             foreach (uint objectiveId in Steps[step])
             {
                 PublicEventObjectiveEntry entry = GameTableManager.Instance.PublicEventObjective.GetEntry(objectiveId);
-                if (entry == null || Auto.Contains(objectiveId))
+                if (entry == null || entry.PublicEventId != publicEvent.Id)
+                {
+                    // not an objective of this event, nothing will ever report it
+                    succeeded.Add(objectiveId);
+                    continue;
+                }
+
+                if (Auto.Contains(objectiveId))
                 {
                     Complete(objectiveId);
                     continue;
@@ -141,10 +166,15 @@ namespace NexusForever.Script.Instance.Expedition
                 if (Kills.TryGetValue(objectiveId, out uint[] creatures))
                 {
                     uint count = (uint)creatures.Sum(c => alive.TryGetValue(c, out HashSet<uint> g) ? g.Count : 0);
+                    if (entry.Count > 0u)
+                        count = Math.Min(entry.Count, count);
                     if (count == 0u)
                         Complete(objectiveId);
                     else
-                        publicEvent.ActivateObjective(objectiveId, entry.Count > 0u ? Math.Min(entry.Count, count) : count);
+                    {
+                        killsNeeded[objectiveId] = count;
+                        publicEvent.ActivateObjective(objectiveId, count);
+                    }
                     continue;
                 }
 
@@ -202,8 +232,7 @@ namespace NexusForever.Script.Instance.Expedition
 
         private void Complete(uint objectiveId)
         {
-            publicEvent.ActivateObjective(objectiveId, 1u);
-            publicEvent.UpdateObjective(objectiveId, 1);
+            publicEvent.CompleteObjective(objectiveId);
         }
     }
 }

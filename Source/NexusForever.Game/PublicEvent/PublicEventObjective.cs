@@ -172,6 +172,24 @@ namespace NexusForever.Game.PublicEvent
                 SetStatus(PublicEventStatus.Succeeded);
         }
 
+        public void ForceComplete()
+        {
+            if (Status == PublicEventStatus.Succeeded)
+                return;
+
+            if (Status == PublicEventStatus.Inactive)
+                SetStatus(PublicEventStatus.Active);
+
+            uint target = DynamicMax > 0u ? DynamicMax : Math.Max(Entry.Count, 1u);
+            if (Count < target)
+            {
+                Count = target;
+                BroadcastObjectiveUpdate();
+            }
+
+            SetStatus(PublicEventStatus.Succeeded);
+        }
+
         private bool IsComplete()
         {
             if (Entry.PublicEventObjectiveFlags.HasFlag(PublicEventObjectiveFlag.DynamicObjective))

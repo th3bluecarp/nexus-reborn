@@ -101,7 +101,8 @@ namespace NexusForever.Game.Entity
             for (uint i = 0; i <= maxGlobalSpellCooldownEnum; i++)
                 globalSpellCooldowns.Add(i, 0d);
 
-            GrantSpells();
+            // the player is still being built: abilities gated by a prerequisite (AMP unlocks) are granted on the first sync
+            GrantSpells(false);
 
             for (byte i = 0; i < ActionSet.MaxActionSets; i++)
             {
@@ -122,13 +123,18 @@ namespace NexusForever.Game.Entity
 
         public void GrantSpells()
         {
+            GrantSpells(true);
+        }
+
+        private void GrantSpells(bool checkPrerequisites)
+        {
             // TODO: TEMPORARY, this should eventually be used on level up
             foreach (SpellLevelEntry spellLevel in GameTableManager.Instance.SpellLevel.Entries
                 .Where(s => s.ClassId == (byte)player.Class && s.CharacterLevel <= player.Level)
                 .OrderBy(s => s.CharacterLevel))
             {
                 // abilities unlocked by an AMP (EldanAugmentation227) and other gated abilities need their prerequisite met
-                if (spellLevel.PrerequisiteId > 0 && !PrerequisiteManager.Instance.Meets(player, spellLevel.PrerequisiteId))
+                if (spellLevel.PrerequisiteId > 0 && (!checkPrerequisites || !PrerequisiteManager.Instance.Meets(player, spellLevel.PrerequisiteId)))
                     continue;
 
                 Spell4Entry spell4Entry = GameTableManager.Instance.Spell4.GetEntry(spellLevel.Spell4Id);
@@ -657,6 +663,8 @@ namespace NexusForever.Game.Entity
 
         public void SendInitialPackets()
         {
+            // AMP unlocked abilities join the book before it is sent
+            GrantSpells();
             SendServerAbilities();
             SendServerAbilityList();
             SendServerAbilityPoints();

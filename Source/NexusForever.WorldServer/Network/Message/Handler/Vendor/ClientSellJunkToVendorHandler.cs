@@ -1,3 +1,4 @@
+using System.Linq;
 using System.Collections.Generic;
 using NexusForever.Game.Abstract.Entity;
 using NexusForever.Game.Static.Entity;
@@ -14,7 +15,6 @@ namespace NexusForever.WorldServer.Network.Message.Handler.Vendor
     public class ClientSellJunkToVendorHandler : IMessageHandler<IWorldSession, ClientSellJunkToVendor>
     {
         private const uint JunkQuality = 1u;
-        private const uint MaxBagSlots = 256u;
 
         #region Dependency Injection
 
@@ -34,13 +34,12 @@ namespace NexusForever.WorldServer.Network.Message.Handler.Vendor
             if (vendorInfo == null)
                 return;
 
-            var junk = new List<IItem>();
-            for (uint bagIndex = 0u; bagIndex < MaxBagSlots; bagIndex++)
-            {
-                IItem item = session.Player.Inventory.GetItem(InventoryLocation.Inventory, bagIndex);
-                if (item?.Info?.Entry != null && item.Info.Entry.ItemQualityId == JunkQuality)
-                    junk.Add(item);
-            }
+            // collected first, selling removes items from the bag
+            List<IItem> junk = session.Player.Inventory
+                .Where(b => b.Location == InventoryLocation.Inventory)
+                .SelectMany(b => b)
+                .Where(i => i?.Info?.Entry != null && i.Info.Entry.ItemQualityId == JunkQuality)
+                .ToList();
 
             foreach (IItem item in junk)
             {
@@ -67,7 +66,8 @@ namespace NexusForever.WorldServer.Network.Message.Handler.Vendor
                     Location = item.Location,
                     BagIndex = item.BagIndex
                 }, ItemUpdateReason.Vendor);
-                buybackManager.AddItem(session.Player, soldItem, quantity, currencyChange);
+                if (soldItem != null)
+                    buybackManager.AddItem(session.Player, soldItem, quantity, currencyChange);
             }
         }
     }

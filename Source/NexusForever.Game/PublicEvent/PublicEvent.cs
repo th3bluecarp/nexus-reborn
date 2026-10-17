@@ -340,6 +340,21 @@ namespace NexusForever.Game.PublicEvent
                 return;
 
             publicEventTeam.UpdateObjective(entry.Id, count);
+            if (publicEventTeam.IsFinialised)
+                Finish(publicEventTeam.Team);
+        }
+
+        public void CompleteObjective(uint objectiveId)
+        {
+            if (!template.Objectives.TryGetValue(objectiveId, out PublicEventObjectiveEntry entry))
+                return;
+
+            if (!teams.TryGetValue(entry.PublicEventTeamId, out IPublicEventTeam publicEventTeam))
+                return;
+
+            publicEventTeam.CompleteObjective(entry.Id);
+            if (publicEventTeam.IsFinialised)
+                Finish(publicEventTeam.Team);
         }
 
         /// <summary>

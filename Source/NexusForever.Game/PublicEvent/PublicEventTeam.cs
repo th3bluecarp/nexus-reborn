@@ -170,6 +170,16 @@ namespace NexusForever.Game.PublicEvent
                 return;
 
             objective.UpdateObjective(count);
+            IsFinialised = RequiredObjectivesCompleted();
+        }
+
+        public void CompleteObjective(uint objectiveId)
+        {
+            if (!objectives.TryGetValue(objectiveId, out IPublicEventObjective objective))
+                return;
+
+            objective.ForceComplete();
+            IsFinialised = RequiredObjectivesCompleted();
         }
 
         /// <summary>

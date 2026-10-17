@@ -42,6 +42,9 @@ namespace NexusForever.Game.Spell.Effect.Handler
                 return SpellEffectExecutionResult.PreventEffect;
 
             IResidenceEntrance entrance = globalResidenceManager.GetResidenceEntrance(residence.PropertyInfoId);
+            if (entrance == null)
+                return SpellEffectExecutionResult.PreventEffect;
+
             IMapLock mapLock = mapLockManager.GetResidenceLock(residence.Parent ?? residence);
 
             player.Rotation = entrance.Rotation.ToEuler();

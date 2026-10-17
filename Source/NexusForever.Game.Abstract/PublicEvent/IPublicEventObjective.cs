@@ -36,6 +36,11 @@ namespace NexusForever.Game.Abstract.PublicEvent
         void UpdateObjective(int count);
 
         /// <summary>
+        /// Complete the objective whatever its count, activating it first when needed (scripted stand ins for lost event scripts).
+        /// </summary>
+        void ForceComplete();
+
+        /// <summary>
         /// Activate the objective.
         /// </summary>
         /// <remarks>
