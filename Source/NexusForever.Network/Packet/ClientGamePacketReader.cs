@@ -28,6 +28,14 @@ namespace NexusForever.Network.Packet
             return reader.ReadEnum<GameMessageOpcode>(16u);
         }
 
+        /// <summary>
+        /// The whole decrypted message, header included, for logging messages that have no model.
+        /// </summary>
+        public byte[] GetRawData()
+        {
+            return stream.ToArray();
+        }
+
         public uint ReadBody(IReadable message)
         {
             message.Read(reader);

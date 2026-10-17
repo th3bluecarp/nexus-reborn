@@ -198,7 +198,9 @@ namespace NexusForever.Network.Session
                 IReadable message = serviceProvider.GetKeyedService<IReadable>(opcode);
                 if (message == null)
                 {
-                    log.Warn($"Received unknown packet {opcode}(0x{opcode:X}.");
+                    // the payload is logged so client messages without a model can be decoded from play sessions
+                    byte[] raw = reader.GetRawData();
+                    log.Warn($"Received unknown packet {opcode}(0x{opcode:X}), {raw.Length} bytes: {Convert.ToHexString(raw, 0, Math.Min(raw.Length, 128))}");
                     return;
                 }
 
