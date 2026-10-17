@@ -127,8 +127,8 @@ namespace NexusForever.Game.Entity
                 .Where(s => s.ClassId == (byte)player.Class && s.CharacterLevel <= player.Level)
                 .OrderBy(s => s.CharacterLevel))
             {
-                //FIXME
-                if (spellLevel.PrerequisiteId > 0)
+                // abilities unlocked by an AMP (EldanAugmentation227) and other gated abilities need their prerequisite met
+                if (spellLevel.PrerequisiteId > 0 && !PrerequisiteManager.Instance.Meets(player, spellLevel.PrerequisiteId))
                     continue;
 
                 Spell4Entry spell4Entry = GameTableManager.Instance.Spell4.GetEntry(spellLevel.Spell4Id);
@@ -601,6 +601,9 @@ namespace NexusForever.Game.Entity
             IActionSet actionSet = GetActionSet(ActiveActionSet);
             if (actionSet == null)
                 return;
+
+            // AMPs can unlock abilities
+            GrantSpells();
 
             HashSet<uint> wanted = actionSet.Amps
                 .Where(a => !a.PendingDelete && a.Entry.Spell4IdAugment != 0u)
