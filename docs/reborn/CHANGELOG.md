@@ -10,6 +10,7 @@ Newest first. "Live" means running on our test server.
 
 ## 2026-10-15
 
+- Right-clicking an item at the bank now deposits it (08f8c6f2).
 - Logging in no longer replays quest state changes before you are in the world (d298a5b1).
 - Fixed from a code review: expedition chains now finish and cannot stall on large counts, Sell Junk no longer fails, AMP abilities show at login (e097a035).
 - Four dungeons now have their creatures and bosses: Stormtalon's Lair, Ruins of Kel Voreth, Skullcano and Sanctuary of the Swordmaiden (19039580).
