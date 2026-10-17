@@ -30,7 +30,8 @@ namespace NexusForever.Game.Quest
         /// </summary>
         public bool Meets(IPlayer player)
         {
-            if (entry.WorldId != 0u && entry.WorldId != player.Map.Entry.Id)
+            // quests load before the player is on a map (login), the communicator is checked again once in the world
+            if (entry.WorldId != 0u && entry.WorldId != player.Map?.Entry.Id)
                 return false;
 
             // TODO: Skip this check until we have better WorldZoneId tracking
