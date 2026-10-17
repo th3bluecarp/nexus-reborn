@@ -10,6 +10,7 @@ Newest first. "Live" means running on our test server.
 
 ## 2026-10-15
 
+- Creatures now talk in combat: they shout when they engage, die or kill you, using their own lines from the game data (e8b21913).
 - The Gauntlet is chained through its arenas to the Shock King (eb86d348).
 - Deep Space Exploration and Fragment Zero are chained start to finish, and the shiphand bosses are placed once each (a36c3cb6).
 - Space Madness is chained start to finish, and a shared expedition script base keeps steps from stalling (24fea41e).
