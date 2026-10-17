@@ -98,7 +98,7 @@ Items/Inventory,Bank,Personal bank at banker NPC,Partial,Missing,yes,67f79733,,I
 Items/Inventory,Salvage,Salvage items for materials,Missing,Missing,,,,Only an error code reference,
 Items/Inventory,Runes and item crafting upgrades,Rune slots on gear,Missing,Missing,,,,ClientCraftingRune* unhandled,
 Vendors,Buy from vendor,Vendor window and purchases with credits or currencies,Implemented,Implemented,,,,"Vendor/ClientVendorPurchaseHandler, EntityVendor* DB tables",7 starting zone vendors with 150 items from Jabbithole (data). Vendor inventories are DB data
-Vendors,Sell to vendor,Sell items for credits,Partial,Partial,,,,ClientVendorSellHandler,TODO on price calculation; client shows 'You deleted' message
+Vendors,Sell to vendor,Sell items for credits,Partial,Partial,,eb15e376,,ClientVendorSellHandler,Sell Junk (opcode 0x0167) sells all inferior items.
 Vendors,Buyback,Buy back sold items,Implemented,Implemented,,,,"ClientBuybackItemFromVendorHandler, BuybackManager",No bag space check
 Vendors,Vendor price modifiers,Reputation or buff discounts,Missing,Missing,,,,VendorPriceModifier effect unhandled,
 Economy/Currency,Character currencies,"Credits, renown, prestige, elder gems, glory",Implemented,Implemented,,,,Entity/CurrencyManager.cs,
