@@ -110,7 +110,7 @@ Crafting/Tradeskills,Crafting,"Simple and coordinate crafting, schematics, talen
 Crafting/Tradeskills,Work orders and tech trees,Tradeskill progression,Missing,Missing,,,,ClientTradeskillPickTalent/ResetTalents unhandled,
 Paths,"Path select, change, unlock","Soldier, Settler, Scientist, Explorer",Implemented,Implemented,,,,"Path/ClientPathChangeRequest, ClientPathUnlock, PathManager",
 Paths,Path XP and levels,"Path XP from missions, path rewards",Partial,Partial,,,,PathManager.AddXp,Only reachable by GM command; level rewards exist
-Paths,Path missions,Zone missions per path,Partial,Missing,yes,e9827cc3 3965b625 b81f8ee9 582bf849 ca6eeabd d99f5240 eab3ea76 179b369c ae731af7 dc2e2112 c2d7dee4,high,No mission logic; PathMissionIncrement effect unhandled; Path mission prereqs unhandled,"Jump pads (Jumpshrooms, Airbooms) launch the player on contact."
+Paths,Path missions,Zone missions per path,Partial,Missing,yes,e9827cc3 3965b625 b81f8ee9 582bf849 ca6eeabd d99f5240 eab3ea76 179b369c ae731af7 dc2e2112 c2d7dee4 b16adc75,high,No mission logic; PathMissionIncrement effect unhandled; Path mission prereqs unhandled,"Path mission state prerequisites (155, 54) handled, path mission creatures gated on them are visible."
 Paths,Scientist scanbot,Scan creatures and objects,Missing,Missing,,,,ClientPathScientistRequestScanbot/Dismiss unhandled; only scanbot rename handled,
 Paths,Explorer abilities,"Power maps, scavenger hunts, dig",Missing,Missing,,,,ClientPathExplorer* unhandled,
 Paths,Settler improvements,Build depots and buffs,Missing,Missing,,,,ClientPathSettlerImprovementBuildTier unhandled; SettlerCampfire effect unhandled,
