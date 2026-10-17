@@ -10,6 +10,7 @@ Newest first. "Live" means running on our test server.
 
 ## 2026-10-15
 
+- Galeras audit: 165 of 168 clean. Boss Xagg's Due now takes you into the Dust Stalker with Boss Xagg, the bridge controls and the access panel placed (f1f096d0).
 - Starting zone audit: M.A.C. (Ability Training 101) and the Explorers Union, Exile Academy of Science and Pioneering League reps were never placed, now in Settler's Reach, plus 33 more quest NPCs placed at their quest's hub (4d3888ed).
 - Algoroc quest audit: 155 of 168 quests clean, the 12 work orders wait on crafting. Finish Him! now takes you aboard the Skull's Eye with Captain Thokov and the escape pod placed (a3a3dcbb).
 - Challenge tracker now shows kill progress and the timer: the client wants time remaining and a 0 to 100 percent, the server sent elapsed time and the raw count (430b9a6c). Explorer vistas complete within 45 m of the point on the ground, at any height.
