@@ -22,7 +22,8 @@ namespace NexusForever.WorldServer.Network.Message.Handler.Path
 
         public void HandleMessage(IWorldSession session, ClientPathUnlockRequest clientPathUnlockRequest)
         {
-            uint unlockCost = gameTableManager.GameFormula.GetEntry(2365).Dataint0;
+            // Reborn: unlocking a path is free (retail: 60 service tokens from GameFormula 2365)
+            uint unlockCost = 0u;
 
             GenericError CanUnlockPath()
             {

@@ -23,9 +23,10 @@ namespace NexusForever.WorldServer.Network.Message.Handler.Path
 
         public void HandleMessage(IWorldSession session, ClientPathChangeRequest clientPathChangeRequest)
         {
-            uint activateCooldown = gameTableManager.GameFormula.GetEntry(2366).Dataint0;
-            uint bypassCost       = gameTableManager.GameFormula.GetEntry(2366).Dataint01;
-            bool needToUseTokens  = DateTime.UtcNow.Subtract(session.Player.PathActivatedTime).TotalSeconds < activateCooldown;
+            // Reborn: switching paths is free and has no cooldown, so every path can be played on one character
+            // (retail: 30 minute cooldown from GameFormula 2366, skipped for 10 service tokens)
+            bool needToUseTokens  = false;
+            uint bypassCost       = 0u;
 
             GenericError CanActivatePath()
             {
