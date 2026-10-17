@@ -193,7 +193,10 @@ namespace NexusForever.Game.Entity
         /// </summary>
         public void VisibilityUpdate()
         {
-            Debug.Assert(Map != null);
+            // challenge and path mission state can change before the player is added to a map (login), the add does a full update
+            if (Map == null)
+                return;
+
             Map.EnqueueVisibilityUpdate(this, OnVisibilityUpdate);
         }
 

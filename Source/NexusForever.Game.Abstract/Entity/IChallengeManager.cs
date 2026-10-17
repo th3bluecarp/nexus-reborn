@@ -28,5 +28,20 @@ namespace NexusForever.Game.Abstract.Entity
         /// Handle the challenge window buttons.
         /// </summary>
         void HandleChoice(uint challengeId, ChallengeChoice choice);
+
+        /// <summary>
+        /// Returns if the challenge is unlocked for the player (it has been in its area this session).
+        /// </summary>
+        bool IsUnlocked(uint challengeId);
+
+        /// <summary>
+        /// Returns if the challenge is running for the player.
+        /// </summary>
+        bool IsActive(uint challengeId);
+
+        /// <summary>
+        /// Returns how many times the player completed the challenge this session.
+        /// </summary>
+        uint GetCompletionCount(uint challengeId);
     }
 }

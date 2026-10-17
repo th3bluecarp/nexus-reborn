@@ -260,6 +260,7 @@ namespace NexusForever.Game.Entity
 
         private void UnlockEpisodeMissions()
         {
+            bool unlocked = false;
             foreach (PathMissionEntry entry in GameTableManager.Instance.PathMission.Entries.Where(e => e.PathEpisodeId == currentEpisode.Id))
             {
                 if (!IsMissionForPlayer(entry) || missions.ContainsKey((ushort)entry.Id))
@@ -276,7 +277,11 @@ namespace NexusForever.Game.Entity
                 mission.IsNew   = true;
                 mission.IsDirty = true;
                 missions.Add((ushort)entry.Id, mission);
+                unlocked = true;
             }
+
+            if (unlocked)
+                player.VisibilityUpdate();
         }
 
         private NetworkMission Build(PathMission mission)
@@ -475,6 +480,7 @@ namespace NexusForever.Game.Entity
 
         private void Advance(PathMission mission, uint progress)
         {
+            PathMissionState oldState = mission.State;
             mission.Progress = progress;
             mission.IsDirty  = true;
 
@@ -490,6 +496,10 @@ namespace NexusForever.Game.Entity
 
             if (complete)
                 mission.State = PathMissionState.Complete;
+
+            // creatures shown by mission state (PathMission155) appear or go away
+            if (mission.State != oldState)
+                player.VisibilityUpdate();
 
             player.Session.EnqueueMessageEncrypted(new ServerPathMissionUpdate
             {

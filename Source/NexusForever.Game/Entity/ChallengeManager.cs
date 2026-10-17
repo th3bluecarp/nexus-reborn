@@ -133,7 +133,11 @@ namespace NexusForever.Game.Entity
             }
 
             if (changed)
+            {
                 SendUpdate();
+                // challenge objects shown by unlock state (ChallengeLocked) appear
+                player.VisibilityUpdate();
+            }
         }
 
         private static bool IsSupported(ChallengeEntry entry)
@@ -235,6 +239,12 @@ namespace NexusForever.Game.Entity
             }
         }
 
+        public bool IsUnlocked(uint challengeId) => unlocked.ContainsKey(challengeId);
+
+        public bool IsActive(uint challengeId) => unlocked.TryGetValue(challengeId, out Challenge challenge) && challenge.Activated;
+
+        public uint GetCompletionCount(uint challengeId) => unlocked.TryGetValue(challengeId, out Challenge challenge) ? challenge.CompletionCount : 0u;
+
         private bool Activate(Challenge challenge)
         {
             // only one challenge of a type can run at a time
@@ -250,6 +260,8 @@ namespace NexusForever.Game.Entity
             challenge.ActivatedAt = DateTime.UtcNow;
             challenge.LeftAreaAt  = null;
             SendResult(challenge.Entry.Id, ChallengeResult.Activate, 0);
+            // collect objects shown while the challenge runs (ChallengeRequirement) appear
+            player.VisibilityUpdate();
             return true;
         }
 
@@ -258,6 +270,7 @@ namespace NexusForever.Game.Entity
             challenge.Activated  = false;
             challenge.Count      = 0u;
             challenge.LeftAreaAt = null;
+            player.VisibilityUpdate();
         }
 
         private void Finish(Challenge challenge, bool completed)
