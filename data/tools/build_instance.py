@@ -20,7 +20,7 @@ SKIP=re.compile(r'veteran|long agro|unused|holdout', re.I)
 # things players and events brought along when the pages were captured, and adds a boss summons
 NOT_PLACED={"Combat Supply Drop","Crafting Station","Scrap Metal","Settler's Campfire","Mini Vendbot","Vendbot","Settler Mailbox","Engineer - Hostile Invisible - Bruiserbot","Beneficial Invis Unit for fields","First Anniversary Dance-Plosion Device","Spawnling"}
 # named bosses and NPCs stand once
-SINGLE={"Cyclopean Parasite","Ensign Bardlet","Captain Lairdell's Log","Hive Queen","Marauder Ship","Asteroid","Riptide the Stone Serpent","Irontide the Venom Snake","Engineer Clamp","Terramaw"}
+SINGLE={"Cyclopean Parasite","Ensign Bardlet","Captain Lairdell's Log","Hive Queen","Marauder Ship","Asteroid","Riptide the Stone Serpent","Irontide the Venom Snake","Engineer Clamp","Terramaw","Shock King","The Championator","Bash Brother"}
 # named NPCs and bosses (quoted nicknames, titles) stand once
 NAMED=re.compile(r'^(The |Captain|Major|Pilot|Judge|Agent|Foreman|Colonel|Professor|Doctor|Ensign|Chief|Commander|Lieutenant|Overseer|Warden|Lord|Lady|Queen|King)|"|\u201c')
 MAX_PER_PAGE=int(sys.argv[6]) if len(sys.argv)>6 else 25
