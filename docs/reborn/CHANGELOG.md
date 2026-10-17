@@ -10,6 +10,7 @@ Newest first. "Live" means running on our test server.
 
 ## 2026-10-15
 
+- Rage Logic is chained too, so every shiphand mission now runs start to finish (36be73dd).
 - Abilities that refund charges (cooldown resets, recharge procs) now give them back (8ca53fa8).
 - Housing Escape works: it puts you in front of your house when stuck (814e43d4).
 - Creatures now talk in combat: they shout when they engage, die or kill you, using their own lines from the game data (e8b21913).
