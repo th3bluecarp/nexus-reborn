@@ -136,6 +136,13 @@ namespace NexusForever.Game.Entity
                     uint[] locations = new[] { entry.WorldLocation2Id00, entry.WorldLocation2Id01, entry.WorldLocation2Id02, entry.WorldLocation2Id03 }
                         .Where(l => l != 0u)
                         .ToArray();
+                    // some vistas, surveillance and claim missions keep their spots on the nodes of their explorer area (ObjectId)
+                    if (locations.Length == 0 && entry.PathMissionTypeEnum is 3u or 12u or 15u)
+                        locations = GameTableManager.Instance.PathExplorerNode.Entries
+                            .Where(n => n.PathExplorerAreaId == entry.ObjectId && n.WorldLocation2Id != 0u)
+                            .Select(n => n.WorldLocation2Id)
+                            .Take(32)
+                            .ToArray();
                     if (locations.Length == 0)
                         break;
                     return new PathMission { Entry = entry, Kind = MissionKind.Locations, Objects = locations };

@@ -401,6 +401,7 @@ namespace NexusForever.GameTable
         public GameTable<PathExplorerAreaEntry> PathExplorerArea { get; private set; }
         public GameTable<PathExplorerDoorEntry> PathExplorerDoor { get; private set; }
         public GameTable<PathExplorerDoorEntranceEntry> PathExplorerDoorEntrance { get; private set; }
+        [GameData]
         public GameTable<PathExplorerNodeEntry> PathExplorerNode { get; private set; }
         public GameTable<PathExplorerPowerMapEntry> PathExplorerPowerMap { get; private set; }
         [GameData]
