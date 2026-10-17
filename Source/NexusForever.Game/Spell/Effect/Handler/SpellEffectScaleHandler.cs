@@ -54,7 +54,10 @@ namespace NexusForever.Game.Spell.Effect.Handler
             {
                 lock (list)
                 {
-                    list.RemoveAll(e => e.EffectId == info.EffectId);
+                    // the same effect applied twice is listed twice, each removal takes one
+                    int index = list.FindIndex(e => e.EffectId == info.EffectId);
+                    if (index >= 0)
+                        list.RemoveAt(index);
                     if (list.Count > 0)
                         scale = list[^1].Scale;
                     else
