@@ -1,7 +1,11 @@
 using System;
 using System.IO;
+using System.Linq;
+using System.Numerics;
 using Microsoft.Extensions.Logging;
+using NexusForever.Game.Abstract.Entity;
 using NexusForever.Game.Spell;
+using NexusForever.Game.Static.Reputation;
 using NexusForever.GameTable;
 using NexusForever.GameTable.Model;
 using NexusForever.Network;
@@ -20,6 +24,8 @@ namespace NexusForever.WorldServer.Network.Message.Handler.Entity.Player
     /// </remarks>
     public class ClientTaxiFlightHandler : IMessageHandler<IWorldSession, ClientTaxiFlight>
     {
+        private const float KioskRange = 150f;
+
         private static readonly (uint Count, uint Id)[] Layouts = [(32u, 14u), (32u, 32u), (32u, 16u), (16u, 16u), (16u, 14u), (8u, 16u), (8u, 14u), (32u, 15u), (8u, 15u), (5u, 15u), (32u, 12u), (8u, 8u)];
 
         #region Dependency Injection
@@ -48,6 +54,9 @@ namespace NexusForever.WorldServer.Network.Message.Handler.Entity.Player
                 return;
             }
 
+            if (!CanFly(session, route))
+                return;
+
             GameFormulaEntry gameFormulaEntry = gameTableManager.GameFormula.GetEntry(1307);
             if (gameFormulaEntry == null)
                 return;
@@ -61,6 +70,49 @@ namespace NexusForever.WorldServer.Network.Message.Handler.Entity.Player
             {
                 TaxiNode = (ushort)route[^1]
             });
+        }
+
+        /// <summary>
+        /// The player has to be at a taxi kiosk (near a taxi node of their world) and every node of the route has to be neutral or of their faction.
+        /// </summary>
+        private bool CanFly(IWorldSession session, uint[] route)
+        {
+            IPlayer player = session.Player;
+            if (player.Map == null)
+                return false;
+
+            uint faction = player.Faction1 switch
+            {
+                Faction.Exile    => 1u,
+                Faction.Dominion => 2u,
+                _                => 0u
+            };
+
+            uint badNode = route.FirstOrDefault(id =>
+            {
+                uint nodeFaction = gameTableManager.TaxiNode.GetEntry(id).TaxiNodeFactionEnum;
+                return nodeFaction != 0u && faction != 0u && nodeFaction != faction;
+            });
+            if (badNode != 0u)
+            {
+                log.LogWarning($"Taxi request refused, node {badNode} belongs to the other faction.");
+                return false;
+            }
+
+            bool atKiosk = gameTableManager.TaxiNode.Entries.Any(n =>
+            {
+                WorldLocation2Entry location = gameTableManager.WorldLocation2.GetEntry(n.WorldLocation2Id);
+                return location != null
+                    && location.WorldId == player.Map.Entry.Id
+                    && Vector3.Distance(new Vector3(location.Position0, location.Position1, location.Position2), player.Position) <= KioskRange;
+            });
+            if (!atKiosk)
+            {
+                log.LogWarning($"Taxi request refused, no taxi node within {KioskRange} of {player.Position} on world {player.Map.Entry.Id}.");
+                return false;
+            }
+
+            return true;
         }
 
         private uint[] Decode(byte[] payload)
