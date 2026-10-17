@@ -41,7 +41,7 @@ Spells,Buffs and debuffs (stat changes),"UnitPropertyModifier, ModifySpell, Modi
 Spells,Procs,"On-hit, on-crit procs",Implemented,Implemented,,,,"Game/Spell/Proc, SpellEffectProcHandler",Initial proc system
 Spells,Proxy spells,Spells that trigger other spells,Implemented,Implemented,,e4c39097 f21b3db6,,SpellEffectProxyHandler,"Proxy, ProxyRandomExclusive (weighted pick), ProxyChannelVariableTime (timed sequence), ProxyLinearAE (cast at target, positioned casts not supported)."
 Spells,Telegraphs and targeting,Telegraph shapes select targets,Implemented,Implemented,,,,"Spell/Telegraph.cs, Spell/Target",
-Spells,Cooldowns and GCD,Spell and global cooldowns,Partial,Partial,,,,Entity/SpellManager.cs,"ModifySpellCooldown, CooldownReset, ActivateSpellCooldown and ability charges effects missing"
+Spells,Cooldowns and GCD,Spell and global cooldowns,Partial,Partial,,8ca53fa8,,Entity/SpellManager.cs,ModifyAbilityCharges handled (charge refunds).
 Spells,Limited Action Set (LAS) and specs,"8-slot LAS, multiple specs, tiers",Implemented,Implemented,,,,"ClientRequestActionSetChanges, ClientSetSpec, ActionSet.cs",
 Spells,AMPs,Choose and reset AMPs,Partial,Partial,,,,"ActionSetAmp, ClientRespecAmps",No AMP point gating by level; AMP unlock items not tracked
 Spells,Class resources,"Focus, Volatility, Kinetic Energy, Psi Points, Suit Power, Spell Surge",Implemented,Implemented,,,,Entity/Stat/Player/*StatUpdater.cs,From Kirmmin's branch; tuning unverified

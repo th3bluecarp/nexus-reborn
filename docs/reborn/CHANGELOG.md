@@ -10,6 +10,7 @@ Newest first. "Live" means running on our test server.
 
 ## 2026-10-15
 
+- Abilities that refund charges (cooldown resets, recharge procs) now give them back (8ca53fa8).
 - Housing Escape works: it puts you in front of your house when stuck (814e43d4).
 - Creatures now talk in combat: they shout when they engage, die or kill you, using their own lines from the game data (e8b21913).
 - The Gauntlet is chained through its arenas to the Shock King (eb86d348).
