@@ -10,6 +10,7 @@ Newest first. "Live" means running on our test server.
 
 ## 2026-10-15
 
+- Sylvan Glade Jumpshrooms and the Dead Rock Prison Airbooms in Whitevale launch you too (c2d7dee4).
 - Celestion's Jumpshrooms now launch you when you step on them (dc2e2112). Checked Alizar harvest nodes: about 1,900 placed, with loot.
 - The Unusual Rock below the Northern Wilds vista now lifts you to the top, standing in for the lost platform (ae731af7).
 - Galeras audit: 165 of 168 clean. Boss Xagg's Due now takes you into the Dust Stalker with Boss Xagg, the bridge controls and the access panel placed (f1f096d0).
