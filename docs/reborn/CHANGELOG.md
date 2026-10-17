@@ -10,6 +10,7 @@ Newest first. "Live" means running on our test server.
 
 ## 2026-10-15
 
+- Four dungeons now have their creatures and bosses: Stormtalon's Lair, Ruins of Kel Voreth, Skullcano and Sanctuary of the Swordmaiden (19039580).
 - Expedition scoreboards get their stats (1a39ebf2).
 - Rage Logic is chained too, so every shiphand mission now runs start to finish (36be73dd).
 - Abilities that refund charges (cooldown resets, recharge procs) now give them back (8ca53fa8).
