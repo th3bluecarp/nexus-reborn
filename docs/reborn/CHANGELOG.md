@@ -10,6 +10,7 @@ Newest first. "Live" means running on our test server.
 
 ## 2026-10-15
 
+- Quest NPCs placed in Grimvault and more in Murkmire, 2,693 spawns in all (250fa474).
 - Fixed a login failure: a quest whose communicator message names a world crashed character select before the player was on a map (39a36287).
 - Explorer Operations targets placed for Rockridge Recovery, Eyes on the Osun, Ikthian Starcharts, Mementos of a Maiden and Watching the Sisters (457b6334).
 - Five Algoroc and Celestion Explorer missions (three vistas, a surveillance and Staking Claim: Celestion) now have their locations and can complete (214f1da9).
