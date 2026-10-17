@@ -14,12 +14,15 @@ for e in ld('Creature2DisplayGroupEntry'): dgrp[e['Creature2DisplayGroupId']].ap
 ogrp=collections.defaultdict(list)
 for e in ld('Creature2OutfitGroupEntry'): ogrp[e['Creature2OutfitGroupId']].append(e)
 locs=[l for l in ld('WorldLocation2') if l['WorldId']==world]
-pages=[p for p in json.load(open('/a/parsed/jh_npcs.json')) if p.get('map')==mapname]
+MAPS=set(mapname.split(','))
+pages=[p for p in json.load(open('/a/parsed/jh_npcs.json')) if p.get('map') in MAPS]
 SKIP=re.compile(r'veteran|long agro|unused|holdout', re.I)
 # things players and events brought along when the pages were captured, and adds a boss summons
 NOT_PLACED={"Settler's Campfire","Mini Vendbot","Vendbot","Settler Mailbox","Engineer - Hostile Invisible - Bruiserbot","Beneficial Invis Unit for fields","First Anniversary Dance-Plosion Device","Spawnling"}
 # named bosses and NPCs stand once
 SINGLE={"Cyclopean Parasite","Ensign Bardlet","Captain Lairdell's Log"}
+# named NPCs and bosses (quoted nicknames, titles) stand once
+NAMED=re.compile(r'^(The |Captain|Major|Pilot|Judge|Agent|Foreman|Colonel|Professor|Doctor|Ensign|Chief|Commander|Lieutenant|Overseer|Warden|Lord|Lady|Queen|King)|"|\u201c')
 MAX_PER_PAGE=int(sys.argv[6]) if len(sys.argv)>6 else 25
 def pick(name):
     cands=[c for c in byname.get(name,[]) if not SKIP.search(c['Description'] or '')]
@@ -39,7 +42,8 @@ for p in pages:
     if not c: report.append((p['name'],'no creature')); continue
     placed=0
     cl_all=sorted(clusters(p['pins'], 5.0), key=lambda k:-k['n'])
-    for cl in cl_all[:1 if p['name'] in SINGLE else MAX_PER_PAGE]:
+    single = p['name'] in SINGLE or NAMED.search(p['name'])
+    for cl in cl_all[:1 if single else MAX_PER_PAGE]:
         near=sorted(locs, key=lambda l: math.hypot(l['Position0']-cl['x'], l['Position2']-cl['z']))
         if not near or math.hypot(near[0]['Position0']-cl['x'], near[0]['Position2']-cl['z'])>25: continue
         y=near[0]['Position1']; area=near[0]['WorldZoneId']
