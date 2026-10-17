@@ -18,9 +18,9 @@ MAPS=set(mapname.split(','))
 pages=[p for p in json.load(open('/a/parsed/jh_npcs.json')) if p.get('map') in MAPS]
 SKIP=re.compile(r'veteran|long agro|unused|holdout', re.I)
 # things players and events brought along when the pages were captured, and adds a boss summons
-NOT_PLACED={"Settler's Campfire","Mini Vendbot","Vendbot","Settler Mailbox","Engineer - Hostile Invisible - Bruiserbot","Beneficial Invis Unit for fields","First Anniversary Dance-Plosion Device","Spawnling"}
+NOT_PLACED={"Combat Supply Drop","Crafting Station","Scrap Metal","Settler's Campfire","Mini Vendbot","Vendbot","Settler Mailbox","Engineer - Hostile Invisible - Bruiserbot","Beneficial Invis Unit for fields","First Anniversary Dance-Plosion Device","Spawnling"}
 # named bosses and NPCs stand once
-SINGLE={"Cyclopean Parasite","Ensign Bardlet","Captain Lairdell's Log","Hive Queen","Marauder Ship","Asteroid"}
+SINGLE={"Cyclopean Parasite","Ensign Bardlet","Captain Lairdell's Log","Hive Queen","Marauder Ship","Asteroid","Riptide the Stone Serpent","Irontide the Venom Snake","Engineer Clamp","Terramaw"}
 # named NPCs and bosses (quoted nicknames, titles) stand once
 NAMED=re.compile(r'^(The |Captain|Major|Pilot|Judge|Agent|Foreman|Colonel|Professor|Doctor|Ensign|Chief|Commander|Lieutenant|Overseer|Warden|Lord|Lady|Queen|King)|"|\u201c')
 MAX_PER_PAGE=int(sys.argv[6]) if len(sys.argv)>6 else 25
@@ -37,7 +37,7 @@ def clusters(pins, r=2.5):
     return cl
 rows=[]; report=[]; nid=first
 for p in pages:
-    if p['name'] in NOT_PLACED: continue
+    if p['name'] in NOT_PLACED or p['name'].lower().startswith(("invis","hostile invis","beneficial invis")): continue
     c=pick(p['name'])
     if not c: report.append((p['name'],'no creature')); continue
     placed=0
