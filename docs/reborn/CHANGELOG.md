@@ -10,6 +10,7 @@ Newest first. "Live" means running on our test server.
 
 ## 2026-10-15
 
+- Space Madness is chained start to finish, and a shared expedition script base keeps steps from stalling (24fea41e).
 - Outpost M-13 is playable start to finish: Captain Milo, the Novaburn boarders, Foreman Krause, the hive and the Hive Queen (5055e1f7).
 - Outpost M-13, Space Madness, Rage Logic, The Gauntlet, Deep Space and Fragment Zero now have their creatures, 1,216 spawns (db720095).
 - Shiphand: Infestation is playable start to finish: its objectives open in order and the Cyclopean Parasite ends it (a861b5ea).
