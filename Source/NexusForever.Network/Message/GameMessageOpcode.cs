@@ -79,6 +79,7 @@ namespace NexusForever.Network.Message
         ClientPathExplorerPowerMapProgress = 0x00F9,
         ServerPathExplorerPowerMapWaiting = 0x00FA,
         ServerCharacterFlagsUpdated     = 0x00FE,
+        ClientTaxiFlight                = 0x00FF, // read from WildStar64.exe: taxi kiosk route and shuttle, a list of TaxiNode ids
         ServerResurrectionState         = 0x0100,
         ServerResurrectionForced        = 0x0101,
         ServerGalacticArchiveRefresh    = 0x0102,
