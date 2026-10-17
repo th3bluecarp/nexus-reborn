@@ -33,5 +33,10 @@ namespace NexusForever.Game.Abstract.Spell
         void Cast(bool buttonPressed);
 
         void UseCharge();
+
+        /// <summary>
+        /// Give back up to the supplied number of ability charges (ModifyAbilityCharges effects, charge resets).
+        /// </summary>
+        void AddCharges(uint count);
     }
 }

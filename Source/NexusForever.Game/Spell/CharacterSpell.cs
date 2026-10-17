@@ -110,6 +110,16 @@ namespace NexusForever.Game.Spell
             SendChargeUpdate();
         }
 
+        public void AddCharges(uint count)
+        {
+            if (MaxAbilityCharges == 0u || AbilityCharges >= MaxAbilityCharges)
+                return;
+
+            AbilityCharges = Math.Clamp(AbilityCharges + count, 0u, MaxAbilityCharges);
+            SendChargeUpdate();
+            rechargeTimer.Reset(AbilityCharges < MaxAbilityCharges);
+        }
+
         public void Update(double lastTick)
         {
             if (MaxAbilityCharges > 0 && rechargeTimer.IsTicking)
