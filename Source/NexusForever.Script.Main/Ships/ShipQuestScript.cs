@@ -9,33 +9,37 @@ using NexusForever.Game.Static.Quest;
 using NexusForever.GameTable;
 using NexusForever.GameTable.Model;
 using NexusForever.Script.Template;
-using NexusForever.Script.Template.Filter;
 
-namespace NexusForever.Script.Main.Algoroc
+namespace NexusForever.Script.Main.Ships
 {
     /// <summary>
-    /// Finish Him! (3770) in Algoroc: board the Skull's Eye, kill Captain Thokov on the bridge and flee in the escape pod.
+    /// A quest that takes the player aboard a ship whose interior is its own map with nothing placed in the world data.
     /// </summary>
     /// <remarks>
-    /// Stand in for the lost retail script. The ship interior is its own map (The Skull's Eye, world 930) with nothing placed in the
-    /// world data. Meeting the contact at the ship in Algoroc moves the player inside, Captain Thokov (13147) and the escape pod (13306)
-    /// are placed at the quest's own map markers, and using the pod returns the player to the ship's spot in Algoroc.
+    /// Stand in for the lost retail scripts. Reaching the ship's spot in the open world moves the player inside, the quest's creatures
+    /// and objects are placed at its own map markers, and once the last objective is done the player is returned to the ship's spot.
     /// </remarks>
-    [ScriptFilterOwnerId(3770)]
-    public class FinishHimQuestScript : IQuestScript, IOwnedScript<IQuest>
+    public abstract class ShipQuestScript : IQuestScript, IOwnedScript<IQuest>
     {
-        private const ushort AlgorocWorldId     = 51;
-        private const ushort ShipWorldId        = 930;
-        private const uint BoardLocationId      = 9377;  // the Skull's Eye in Algoroc, first objective marker
-        private const uint ShipEntryLocationId  = 9371;
-        private const uint ThokovLocationId     = 9714;
-        private const uint PodLocationId        = 9424;
-        private const uint ThokovCreatureId     = 13147;
-        private const uint PodCreatureId        = 13306;
-        private const float BoardRadius         = 20f;
+        private const float BoardRadius = 20f;
 
-        // ship instances already given Thokov and the pod
-        private static readonly ConditionalWeakTable<IBaseMap, object> populated = new();
+        // ship instances already populated, per script type
+        private static readonly ConditionalWeakTable<IBaseMap, HashSet<Type>> populated = new();
+
+        /// <summary>Open world map the ship is in.</summary>
+        protected abstract ushort WorldId { get; }
+        /// <summary>The ship interior map.</summary>
+        protected abstract ushort ShipWorldId { get; }
+        /// <summary>WorldLocation2 of the ship in the open world, the player boards near it and returns to it.</summary>
+        protected abstract uint BoardLocationId { get; }
+        /// <summary>WorldLocation2 inside the ship where the player arrives.</summary>
+        protected abstract uint EntryLocationId { get; }
+        /// <summary>Objective index that must be done before boarding, or null when reaching the ship is enough.</summary>
+        protected virtual byte? BoardAfterObjective => null;
+        /// <summary>Objective index whose completion sends the player back out.</summary>
+        protected abstract byte LeaveAfterObjective { get; }
+        /// <summary>Creatures placed in the ship, with the WorldLocation2 each stands at.</summary>
+        protected abstract (uint CreatureId, uint LocationId)[] Spawns { get; }
 
         private IQuest owner;
         private double timer;
@@ -46,7 +50,7 @@ namespace NexusForever.Script.Main.Algoroc
         private readonly IEntityFactory entityFactory;
         private readonly ICreatureInfoManager creatureInfoManager;
 
-        public FinishHimQuestScript(
+        protected ShipQuestScript(
             IEntityFactory entityFactory,
             ICreatureInfoManager creatureInfoManager)
         {
@@ -73,25 +77,31 @@ namespace NexusForever.Script.Main.Algoroc
                 return;
 
             ushort worldId = (ushort)player.Map.Entry.Id;
-            if (worldId == AlgorocWorldId)
+            if (worldId == WorldId)
             {
-                if (owner.State != QuestState.Accepted || !(owner.GetQuestObjectiveByIndex(0)?.IsComplete() ?? false))
+                if (owner.State != QuestState.Accepted || IsDone(LeaveAfterObjective))
+                    return;
+                if (BoardAfterObjective is byte board && !IsDone(board))
                     return;
 
-                WorldLocation2Entry board = GameTableManager.Instance.WorldLocation2.GetEntry(BoardLocationId);
-                if (board == null || Vector3.DistanceSquared(player.Position, Position(board)) > BoardRadius * BoardRadius)
+                WorldLocation2Entry location = GameTableManager.Instance.WorldLocation2.GetEntry(BoardLocationId);
+                if (location == null || Vector3.DistanceSquared(player.Position, Position(location)) > BoardRadius * BoardRadius)
                     return;
 
-                Teleport(player, ShipEntryLocationId);
+                Teleport(player, EntryLocationId);
             }
             else if (worldId == ShipWorldId)
             {
                 Populate(player.Map);
 
-                // the escape pod objective is the last one, using the pod finishes the quest
-                if (owner.State != QuestState.Accepted || (owner.GetQuestObjectiveByIndex(3)?.IsComplete() ?? false))
+                if (owner.State != QuestState.Accepted || IsDone(LeaveAfterObjective))
                     Teleport(player, BoardLocationId);
             }
+        }
+
+        private bool IsDone(byte index)
+        {
+            return owner.GetQuestObjectiveByIndex(index)?.IsComplete() ?? false;
         }
 
         private void Teleport(IPlayer player, uint locationId)
@@ -106,12 +116,12 @@ namespace NexusForever.Script.Main.Algoroc
 
         private void Populate(IBaseMap map)
         {
-            if (populated.TryGetValue(map, out _))
+            HashSet<Type> done = populated.GetOrCreateValue(map);
+            if (!done.Add(GetType()))
                 return;
-            populated.Add(map, new object());
 
-            Spawn(map, ThokovCreatureId, ThokovLocationId);
-            Spawn(map, PodCreatureId, PodLocationId);
+            foreach ((uint creatureId, uint locationId) in Spawns)
+                Spawn(map, creatureId, locationId);
         }
 
         private void Spawn(IBaseMap map, uint creatureId, uint locationId)
