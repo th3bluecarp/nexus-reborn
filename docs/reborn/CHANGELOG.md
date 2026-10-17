@@ -10,6 +10,7 @@ Newest first. "Live" means running on our test server.
 
 ## 2026-10-15
 
+- Challenge objects that only show while a challenge runs now appear when it starts, and path mission creatures update when a mission changes (9254c930).
 - Path mission creatures gated on a mission's state now show up, such as the Exile Sniper for Surveillance: Sniper Support (b16adc75).
 - Quests gated on which world you are in (WorldRequirement) can be accepted, such as Learning to Shop (3a0b62ae).
 - Fixed double credit on 57 use, interact and rescue objectives whose object's own spell advances the quest (4da617b0).
