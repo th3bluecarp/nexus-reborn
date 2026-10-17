@@ -64,7 +64,7 @@ namespace NexusForever.WorldServer.Network.Message.Handler.Entity
                 case InteractionType.Bank: // "ShowBank"
                 case InteractionType.SharedRealmBank: // "ShowRealmBank"
                 case InteractionType.Dye: // "ShowDye"
-                case InteractionType.TradeskillTrainer: // "InvokeTradeskillTrainerWindow", untested like the bank
+                case InteractionType.TradeskillTrainer: // "InvokeTradeskillTrainerWindow", the client fires it itself when it sends the interaction (event 43, read from WildStar64.exe)
                     // the client opens the window for the interaction unit it is told about
                     session.EnqueueMessageEncrypted(new ServerInteractionChange
                     {
