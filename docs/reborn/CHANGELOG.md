@@ -10,6 +10,7 @@ Newest first. "Live" means running on our test server.
 
 ## 2026-10-15
 
+- Shiphand: Infestation is no longer an empty ship: 132 creatures and objective objects placed (d5bef6b2).
 - The vendor Sell Junk button works (eb15e376).
 - Taxi kiosks and shuttles take you to your destination (rapid transport stand-in for the flight, cec74ee3).
 - Audited every starting zone of both factions: Crimson Isle, Levian Bay and Auroria are clean, Everstar Grove now has its Explorer, Scientist and Settler union reps (0034fa07).
