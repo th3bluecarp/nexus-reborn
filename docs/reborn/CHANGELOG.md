@@ -10,6 +10,7 @@ Newest first. "Live" means running on our test server.
 
 ## 2026-10-15
 
+- Celestion's Jumpshrooms now launch you when you step on them (dc2e2112). Checked Alizar harvest nodes: about 1,900 placed, with loot.
 - The Unusual Rock below the Northern Wilds vista now lifts you to the top, standing in for the lost platform (ae731af7).
 - Galeras audit: 165 of 168 clean. Boss Xagg's Due now takes you into the Dust Stalker with Boss Xagg, the bridge controls and the access panel placed (f1f096d0).
 - Starting zone audit: M.A.C. (Ability Training 101) and the Explorers Union, Exile Academy of Science and Pioneering League reps were never placed, now in Settler's Reach, plus 33 more quest NPCs placed at their quest's hub (4d3888ed).
