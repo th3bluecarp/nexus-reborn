@@ -458,6 +458,11 @@ namespace NexusForever.Game.Entity
         /// <summary>
         /// Invoked when the player completes a quest.
         /// </summary>
+        public PathMissionState GetMissionState(uint missionId)
+        {
+            return missions.TryGetValue((ushort)missionId, out PathMission mission) ? mission.State : PathMissionState.NoMission;
+        }
+
         public void OnQuestComplete(uint questId)
         {
             foreach (PathMission mission in missions.Values.Where(m => m.Kind == MissionKind.Quests && !m.IsComplete).ToList())

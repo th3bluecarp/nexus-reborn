@@ -1,4 +1,5 @@
 using NexusForever.Database.Character;
+using NexusForever.Game.Static.PlayerPath;
 using NexusForever.GameTable.Model;
 using NexusForever.Shared;
 
@@ -27,5 +28,10 @@ namespace NexusForever.Game.Abstract.Entity
         /// Invoked when the player completes a quest.
         /// </summary>
         void OnQuestComplete(uint questId);
+
+        /// <summary>
+        /// Returns the state of the path mission, <see cref="PathMissionState.NoMission"/> when the player does not have it.
+        /// </summary>
+        PathMissionState GetMissionState(uint missionId);
     }
 }
