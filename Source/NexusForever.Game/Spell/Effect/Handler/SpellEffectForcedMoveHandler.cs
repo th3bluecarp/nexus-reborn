@@ -148,15 +148,15 @@ namespace NexusForever.Game.Spell.Effect.Handler
                 case SpellEffectForcedMoveType.KeyVelocity:
                 case SpellEffectForcedMoveType.Unknown9:
                 case SpellEffectForcedMoveType.Unknown10:
+                // trampolines and jump pads (Jumpshroom 40649, Airboom 41263): a short move with a high arc, Unknown6 is the apex height
+                case SpellEffectForcedMoveType.Unknown11:
+                case SpellEffectForcedMoveType.Unknown12:
                 {
                     //float speed = distance / (float)data.FlightTime.TotalSeconds;
                     float spin = (data.Spin * MathF.PI * 2) / v20;
                     forcedMovementGenerator.ForceMove(mover, position, new Vector3(angle, 0f, 0f), data.FlightTime, gravity, spin);
                     break;
                 }
-                // seems like high jumps?? Trampoline?
-                case SpellEffectForcedMoveType.Unknown11:
-                case SpellEffectForcedMoveType.Unknown12:
                 case SpellEffectForcedMoveType.Unknown13:
                 case SpellEffectForcedMoveType.Unknown14:
                 case SpellEffectForcedMoveType.Unknown15:
