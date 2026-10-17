@@ -109,6 +109,24 @@ namespace NexusForever.Game
                 }
             }
 
+            // groups of groups ("kill Rootbrute Grimspores, Yeti Frostclaws and Yeti Snowstalkers") are what many kill objectives
+            // point at, so a creature also belongs to every group that contains one of its groups
+            var unhandled = new List<TargetGroupType>();
+            foreach (TargetGroupEntry entry in GameTableManager.Instance.TargetGroup.Entries
+                .Where(e => (TargetGroupType)e.Type is TargetGroupType.OtherTargetGroup or TargetGroupType.OtherTargetGroupCreatures))
+            {
+                var creatureIds = new List<uint>();
+                AddToTargets(entry, ref creatureIds, ref unhandled);
+                foreach (uint creatureId in creatureIds.Distinct())
+                {
+                    if (!entries.ContainsKey(creatureId))
+                        entries.Add(creatureId, new List<uint>());
+
+                    if (!entries[creatureId].Contains(entry.Id))
+                        entries[creatureId].Add(entry.Id);
+                }
+            }
+
             creatureAssociatedTargetGroups = entries.ToImmutableDictionary(e => e.Key, e => e.Value.ToImmutableList());
         }
 
