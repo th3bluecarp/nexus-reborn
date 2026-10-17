@@ -30,6 +30,7 @@ namespace NexusForever.Network.Message
         ServerActionSetClearCache       = 0x00B2, // server sends this after a ClientRequestActionSetChanges (0xB1)
         ClientActivateUnit              = 0x00B3,
         ClientLootAssignMaster          = 0x00B5,
+        ClientItemMoveToBank            = 0x00B6, // read from WildStar64.exe: an item clicked while the bank is open, the item guid first
         ClientFriendshipBlock           = 0x00B8,
         ServerBuybackItemUpdated        = 0x00BA,
         ClientBuybackItemFromVendor     = 0x00BB,
