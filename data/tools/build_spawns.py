@@ -125,7 +125,9 @@ for (cid,z),info in sorted(todo.items()):
         if marks: page={'pins':marks,'file':'(objective marker)'}; conf='objective marker'
     if (not page or not page['pins']) and info['roles']-{'target'}:
         # a giver or turn-in with no usable page: the hub its quest text links to (Location:N), or a hand-picked hub in MANUAL
-        lids=[MANUAL[cid]] if cid in MANUAL else [int(x) for q in sorted(info['quests']) for k in QTEXT for x in re.findall(r'Location:(\d+)',T(Q[q][k]))]
+        # the quest's own turn-in location (WorldLocation2IdReceiver) for an NPC that receives it is the most exact
+        recv=[Q[q]['WorldLocation2IdReceiver'] for q in sorted(info['quests']) if q in c['QuestIdReceive'] and Q[q]['WorldLocation2IdReceiver']]
+        lids=[MANUAL[cid]] if cid in MANUAL else recv+[int(x) for q in sorted(info['quests']) for k in QTEXT for x in re.findall(r'Location:(\d+)',T(Q[q][k]))]
         lids=[l for l in lids if l in wloc and wloc[l]['WorldId']==w]
         if lids:
             l=lids[0]; n=hubcount[l]; hubcount[l]+=1
