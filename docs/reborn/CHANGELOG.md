@@ -10,6 +10,7 @@ Newest first. "Live" means running on our test server.
 
 ## 2026-10-15
 
+- Quest NPCs placed in Farside, Wilderrun, Murkmire and Malgrave, 2,144 spawns in all (c958424a). Audits: Wilderrun, Malgrave and Farside are left with mostly crafting work orders, Murkmire still has gaps (no archived pages).
 - Sylvan Glade Jumpshrooms and the Dead Rock Prison Airbooms in Whitevale launch you too (c2d7dee4).
 - Celestion's Jumpshrooms now launch you when you step on them (dc2e2112). Checked Alizar harvest nodes: about 1,900 placed, with loot.
 - The Unusual Rock below the Northern Wilds vista now lifts you to the top, standing in for the lost platform (ae731af7).
