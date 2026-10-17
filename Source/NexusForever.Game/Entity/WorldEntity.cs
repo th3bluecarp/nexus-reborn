@@ -667,6 +667,9 @@ namespace NexusForever.Game.Entity
         /// </summary>
         private static readonly Dictionary<uint, uint> ScriptedTransports = new()
         {
+            // Unusual Rock below the Direct Survivors to Camp vista, Northern Wilds: its Northern Wilds Platform Activate spell raised
+            // a platform up the cliff in retail, the platform is not in the client data, so it lifts the player to the vista point (8912)
+            { 12946u, 8912u },
             // Ship Controls on the Dominion ships at Camp Icefury, Northern Wilds: More Important Than Revenge (3963)
             // is turned in to Deadeye Brightland at WorldLocation2IdReceiver 12354 (world 51)
             { 27196u, 12354u },
