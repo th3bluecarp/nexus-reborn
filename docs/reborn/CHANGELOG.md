@@ -10,6 +10,7 @@ Newest first. "Live" means running on our test server.
 
 ## 2026-10-15
 
+- Ellevar's An Eerie Eldan Glow now has its Recombinated Canimid: quest creatures whose names carry a plural tag are no longer skipped (868908ab).
 - Engineer bot buttons no longer aim attacks at the bot when nothing is targeted, and a repeated size change no longer resets early (db37ea7b).
 - Stack count changes during a loading screen no longer crash the client: they wait until the world has loaded (2edf62f2).
 - Taxi flights now check that the player is at a kiosk and that the route belongs to their faction (bdbf77a7).
