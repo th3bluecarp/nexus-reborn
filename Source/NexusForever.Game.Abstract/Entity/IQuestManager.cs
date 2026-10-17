@@ -136,6 +136,11 @@ namespace NexusForever.Game.Abstract.Entity
         void RewardPaneObjectiveUpdate(QuestObjectiveType type, uint targetGroupId, uint progress);
 
         /// <summary>
+        /// Skip the supplied quests in type based objective updates until disposed, used while an activate spell gives the credit itself.
+        /// </summary>
+        IDisposable SuppressObjectiveUpdates(IEnumerable<ushort> questIds);
+
+        /// <summary>
         /// Invoked when the player equips an item, updates objectives asking for it.
         /// </summary>
         void EquipObjectiveUpdate(uint itemId);

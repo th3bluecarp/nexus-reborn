@@ -623,6 +623,9 @@ namespace NexusForever.Game.Entity
 
             if (CreatureInfo.Entry != null)
             {
+                // activate spells with a QuestAdvanceObjective effect give that quest its credit, the updates below would count it again
+                using IDisposable suppressed = activator.QuestManager.SuppressObjectiveUpdates(ActivateSpellQuests());
+
                 activator.PathMissionManager.OnActivate(CreatureInfo.Entry.Id, AssetManager.Instance.GetTargetGroupsForCreatureId(CreatureInfo.Entry.Id));
                 activator.ChallengeManager.OnActivate(AssetManager.Instance.GetTargetGroupsForCreatureId(CreatureInfo.Entry.Id));
                 activator.QuestManager.ObjectiveUpdate(QuestObjectiveType.ActivateEntity, CreatureInfo.Entry.Id, 1u);
@@ -638,10 +641,8 @@ namespace NexusForever.Game.Entity
                     activator.QuestManager.RewardPaneObjectiveUpdate(QuestObjectiveType.VirtualCollect, targetGroupId, 1u);
                     // rescue objectives (Unknown28) name the cage to open in their reward pane target group
                     activator.QuestManager.RewardPaneObjectiveUpdate(QuestObjectiveType.Unknown28, targetGroupId, 1u);
-                    // ActivateEntity objectives with no target (Rescue Exile Prisoners) name the creatures to use in the reward pane group,
-                    // unless the activate spell advances the objective itself (Imprisoned Survivor), which would count each use twice
-                    if (!ActivateSpellsAdvanceQuest())
-                        activator.QuestManager.RewardPaneObjectiveUpdate(QuestObjectiveType.ActivateEntity, targetGroupId, 1u);
+                    // ActivateEntity objectives with no target (Rescue Exile Prisoners) name the creatures to use in the reward pane group
+                    activator.QuestManager.RewardPaneObjectiveUpdate(QuestObjectiveType.ActivateEntity, targetGroupId, 1u);
 
                     Map.PublicEventManager.UpdateObjective(activator, PublicEventObjectiveType.ActivateTargetGroup, targetGroupId, 1);
                     Map.PublicEventManager.UpdateObjective(activator, PublicEventObjectiveType.ActivateTargetGroupChecklist, targetGroupId, QuestChecklistIdx);
@@ -687,25 +688,23 @@ namespace NexusForever.Game.Entity
         };
 
         private static readonly System.Collections.Concurrent.ConcurrentDictionary<uint, bool> activateSpellHandlesUse = new();
-        private static readonly System.Collections.Concurrent.ConcurrentDictionary<uint, bool> activateSpellAdvancesQuest = new();
+        private static readonly System.Collections.Concurrent.ConcurrentDictionary<uint, ushort[]> activateSpellQuests = new();
 
         /// <summary>
         /// Returns if one of the activate spells removes the object (DespawnUnit) or frees it again later (SetBusy clear).
         /// </summary>
         /// <summary>
-        /// Returns if any activate spell of the creature has a QuestAdvanceObjective effect, the spell gives the quest credit itself.
+        /// Returns the quests the creature's activate spells advance with a QuestAdvanceObjective effect, those spells give the credit themselves.
         /// </summary>
-        private bool ActivateSpellsAdvanceQuest()
+        private IEnumerable<ushort> ActivateSpellQuests()
         {
-            foreach (uint spell4Id in CreatureInfo.Entry.Spell4IdActivate.Where(s => s != 0u))
-            {
-                bool advances = activateSpellAdvancesQuest.GetOrAdd(spell4Id, id => GameTableManager.Instance.Spell4Effects.Entries
-                    .Any(e => e.SpellId == id && e.EffectType == SpellEffectType.QuestAdvanceObjective));
-                if (advances)
-                    return true;
-            }
-
-            return false;
+            return CreatureInfo.Entry.Spell4IdActivate
+                .Where(s => s != 0u)
+                .SelectMany(s => activateSpellQuests.GetOrAdd(s, id => GameTableManager.Instance.Spell4Effects.Entries
+                    .Where(e => e.SpellId == id && e.EffectType == SpellEffectType.QuestAdvanceObjective)
+                    .Select(e => (ushort)e.DataBits00)
+                    .ToArray()))
+                .Distinct();
         }
 
         private bool ActivateSpellsHandleUse()

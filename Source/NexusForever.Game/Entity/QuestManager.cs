@@ -35,6 +35,7 @@ namespace NexusForever.Game.Entity
         private readonly Dictionary<ushort, IQuest> completedQuests = [];
         private readonly Dictionary<ushort, IQuest> inactiveQuests = [];
         private readonly Dictionary<ushort, IQuest> activeQuests = [];
+        private readonly HashSet<ushort> suppressedQuests = [];
 
         #region Dependency Injection
 
@@ -835,7 +836,8 @@ namespace NexusForever.Game.Entity
             // it is possible for an objective update to achieve a quest which has auto complete
             // this may start a new quest right away
             foreach (IQuest quest in activeQuests.Values.ToList())
-                quest.ObjectiveUpdate(type, data, progress);
+                if (!suppressedQuests.Contains(quest.Id))
+                    quest.ObjectiveUpdate(type, data, progress);
         }
 
         /// <summary>
@@ -850,7 +852,19 @@ namespace NexusForever.Game.Entity
         public void RewardPaneObjectiveUpdate(QuestObjectiveType type, uint targetGroupId, uint progress)
         {
             foreach (IQuest quest in activeQuests.Values.ToList())
-                quest.RewardPaneObjectiveUpdate(type, targetGroupId, progress);
+                if (!suppressedQuests.Contains(quest.Id))
+                    quest.RewardPaneObjectiveUpdate(type, targetGroupId, progress);
+        }
+
+        public IDisposable SuppressObjectiveUpdates(IEnumerable<ushort> questIds)
+        {
+            List<ushort> added = questIds.Where(suppressedQuests.Add).ToList();
+            return new SuppressScope(() => suppressedQuests.ExceptWith(added));
+        }
+
+        private sealed class SuppressScope(Action dispose) : IDisposable
+        {
+            public void Dispose() => dispose();
         }
 
         /// <summary>
