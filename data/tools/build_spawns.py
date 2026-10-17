@@ -109,7 +109,8 @@ QTEXT=('LocalizedTextIdCompletionOverride','LocalizedTextIdText','LocalizedTextI
 MANUAL={71088:[19397,41641], 71086:[19397,41641], 71085:[19397,41641]}
 hubcount=collections.Counter()
 for (cid,z),info in sorted(todo.items()):
-    c=cr[cid]; name=T(c['LocalizedTextIdName']); mp,w=ZONES[z]
+    # Creature2 names carry a plural tag ("Shade of Water{p:Shades of Water}"), Jabbithole pages use the bare name
+    c=cr[cid]; name=re.sub(r'\{p:[^}]*\}','',T(c['LocalizedTextIdName'])); mp,w=ZONES[z]
     cands=jhby.get((name,mp),[])
     # an NPC for this zone's quests may stand in another zone of the same world (a Whitevale quest giver in Thayd):
     # also accept quest-linked pages from those maps, their pins are in the same world coordinates
