@@ -80,9 +80,34 @@ namespace NexusForever.Game.Entity
                     player.QuestManager.ItemCountUpdate(itemId, GetItemCount(itemId));
                 countChangedItems.Clear();
             }
+
+            if (pendingStackUpdates.Count > 0 && CanSendStackUpdates())
+            {
+                foreach ((IItem item, ItemUpdateReason reason) in pendingStackUpdates.Values)
+                    SendStackCountUpdate(item, reason);
+                pendingStackUpdates.Clear();
+            }
+        }
+
+        private bool CanSendStackUpdates()
+        {
+            return player != null && !player.IsLoading && player.Map != null;
+        }
+
+        private void SendStackCountUpdate(IItem item, ItemUpdateReason reason)
+        {
+            player.Session.EnqueueMessageEncrypted(new ServerItemStackCountUpdate
+            {
+                Guid       = item.Guid,
+                StackCount = item.StackCount,
+                Reason     = reason
+            });
         }
 
         private readonly HashSet<uint> countChangedItems = [];
+
+        // the client reads its player unit for every stack update it applies, so updates made while it is loading wait for it
+        private readonly Dictionary<ulong, (IItem Item, ItemUpdateReason Reason)> pendingStackUpdates = [];
 
         public void Save(CharacterContext context)
         {
@@ -771,12 +796,14 @@ namespace NexusForever.Game.Entity
             item.StackCount = stackCount;
             countChangedItems.Add(item.Id);
 
-            player.Session.EnqueueMessageEncrypted(new ServerItemStackCountUpdate
+            // a stack update reaching the client without its player unit (loading screen) crashes it (WildStar64 0x1403c0c3d)
+            if (!CanSendStackUpdates())
             {
-                Guid       = item.Guid,
-                StackCount = stackCount,
-                Reason     = reason
-            });
+                pendingStackUpdates[item.Guid] = (item, reason);
+                return;
+            }
+
+            SendStackCountUpdate(item, reason);
         }
 
         /// <summary>
