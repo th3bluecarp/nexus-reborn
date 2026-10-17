@@ -10,6 +10,7 @@ Newest first. "Live" means running on our test server.
 
 ## 2026-10-15
 
+- Taxi flights now check that the player is at a kiosk and that the route belongs to their faction (bdbf77a7).
 - Removing an AMP now takes away the ability it unlocked: the ability cannot be cast and comes off the action bar (e5bee892).
 - You can break out of stuns by mashing the direction keys (98bed0f9).
 - Stuns, roots, silences and disarms now actually hold creatures down instead of being visual only (d43b787e).
