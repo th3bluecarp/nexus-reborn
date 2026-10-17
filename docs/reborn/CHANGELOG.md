@@ -10,6 +10,7 @@ Newest first. "Live" means running on our test server.
 
 ## 2026-10-15
 
+- Fixed double credit on 57 use, interact and rescue objectives whose object's own spell advances the quest (4da617b0).
 - Fixed double credit on rescues like Rescue Exile Prisoners in Coldburrow Cavern, each rescue counted twice (3d2a485f).
 - About 100 more quest targets placed, from use and rescue objectives whose targets are only named by their reward pane group (158b000b).
 - Quest NPCs placed in Farside, Wilderrun, Murkmire and Malgrave, 2,144 spawns in all (c958424a). Audits: Wilderrun, Malgrave and Farside are left with mostly crafting work orders, Murkmire still has gaps (no archived pages).
