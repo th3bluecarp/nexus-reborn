@@ -5,6 +5,6 @@ namespace NexusForever.Script.Instance.Expedition.RageLogic
     [ScriptFilterOwnerId(1627)]
     public class RageLogicMapScript : EventBaseContentMapScript
     {
-        public override uint PublicEventId => 213u;
+        public override uint PublicEventId => 214u;
     }
 }
