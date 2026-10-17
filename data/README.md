@@ -9,6 +9,7 @@ Thanks to Jabbithole and the players whose uploads built it.
 | File | What it adds |
 |---|---|
 | spawns.sql | 2,711 spawns of 1,581 NPCs, quest objects and Explorer mission objects that quests need but the NexusForever world database does not spawn, mostly quest givers and turn-in NPCs. Entity ids 900000 to 999999. |
+| instance_infestation.sql | 132 spawns inside Shiphand: Infestation (world 1232, the X-82 cargo ship) from archived pins of its 2014 version (Salvage Rights), mobs set to level 6. Heights from the map markers. Entity ids 1100000 to 1109999. |
 | loot.sql | Loot tables for 929 creatures, including 59 harvest node types, from the drops Jabbithole recorded per kill, as drops divided by kills plus 5 so creatures seen only a few times do not always drop rare items. Loot group ids from 1000000. Quest items drop only for players with the matching collect objective open, which needs the QuestObjectiveActive loot condition in this fork. |
 | vendors.sql | Stock for 115 vendors, 4,050 items. Vendors are matched by creature and world. |
 | creature_spells.json | Combat spells seen on 1,188 creatures. Instant spells become auto attacks, spells with a cast time are used every 8 to 14 seconds. |
