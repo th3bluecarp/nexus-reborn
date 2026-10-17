@@ -105,7 +105,8 @@ except FileNotFoundError: pass
 out=[]; report=[]; nid=900000
 QTEXT=('LocalizedTextIdCompletionOverride','LocalizedTextIdText','LocalizedTextIdCompletedObjectiveShort')
 # the path union reps stood on the old Exile arkship (Jabbithole 2014), which the final client no longer has: put them in Settler's Reach
-MANUAL={71088:19397, 71086:19397, 71085:19397}
+# Everstar Grove (Aurin start) has the same reps: they stand at the Transport to Everstar Grove arrival spot (41641)
+MANUAL={71088:[19397,41641], 71086:[19397,41641], 71085:[19397,41641]}
 hubcount=collections.Counter()
 for (cid,z),info in sorted(todo.items()):
     c=cr[cid]; name=T(c['LocalizedTextIdName']); mp,w=ZONES[z]
@@ -127,7 +128,7 @@ for (cid,z),info in sorted(todo.items()):
         # a giver or turn-in with no usable page: the hub its quest text links to (Location:N), or a hand-picked hub in MANUAL
         # the quest's own turn-in location (WorldLocation2IdReceiver) for an NPC that receives it is the most exact
         recv=[Q[q]['WorldLocation2IdReceiver'] for q in sorted(info['quests']) if q in c['QuestIdReceive'] and Q[q]['WorldLocation2IdReceiver']]
-        lids=[MANUAL[cid]] if cid in MANUAL else recv+[int(x) for q in sorted(info['quests']) for k in QTEXT for x in re.findall(r'Location:(\d+)',T(Q[q][k]))]
+        lids=list(MANUAL[cid]) if cid in MANUAL else recv+[int(x) for q in sorted(info['quests']) for k in QTEXT for x in re.findall(r'Location:(\d+)',T(Q[q][k]))]
         lids=[l for l in lids if l in wloc and wloc[l]['WorldId']==w]
         if lids:
             l=lids[0]; n=hubcount[l]; hubcount[l]+=1
