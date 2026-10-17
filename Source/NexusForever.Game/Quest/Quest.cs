@@ -131,7 +131,8 @@ namespace NexusForever.Game.Quest
         {
             player = owner;
             Info   = info;
-            State  = (QuestState)model.State;
+            // a stored state is loaded, not changed: no state change packet (the client is not in the world yet) and no communicator trigger
+            state  = (QuestState)model.State;
             flags  = (QuestStateFlags)model.Flags;
             timer  = model.Timer;
             reset  = model.Reset;
