@@ -530,6 +530,7 @@ namespace NexusForever.Game.Entity
             // TODO: handle other errors
 
             ActiveActionSet = value;
+            SyncAmpPassives();
             return SpecError.Ok;
         }
 
@@ -595,6 +596,34 @@ namespace NexusForever.Game.Entity
                 passive.Finish();
         }
 
+        public void SyncAmpPassives()
+        {
+            IActionSet actionSet = GetActionSet(ActiveActionSet);
+            if (actionSet == null)
+                return;
+
+            HashSet<uint> wanted = actionSet.Amps
+                .Where(a => !a.PendingDelete && a.Entry.Spell4IdAugment != 0u)
+                .Select(a => a.Entry.Spell4IdAugment)
+                .ToHashSet();
+
+            foreach (EldanAugmentationEntry entry in GameTableManager.Instance.EldanAugmentation.Entries
+                .Where(e => e.ClassId == (uint)player.Class && e.Spell4IdAugment != 0u && !wanted.Contains(e.Spell4IdAugment)))
+                if (player.HasSpell(entry.Spell4IdAugment, out ISpell removed))
+                    removed.Finish();
+
+            foreach (uint spell4Id in wanted)
+            {
+                if (player.HasSpell(spell4Id, out ISpell _))
+                    continue;
+
+                player.CastSpell(spell4Id, new SpellParameters
+                {
+                    UserInitiatedSpellCast = false
+                });
+            }
+        }
+
         /// <summary>
         /// This uses passive On Start abilities that were caught in sniffs. Provides a lot of Procs and hidden class functionality.
         /// </summary>
@@ -633,6 +662,7 @@ namespace NexusForever.Game.Entity
             SendServerPlayerInnate();
             CastInnatePassive(GameTableManager.Instance.Class.GetEntry((ulong)player.Class), InnateIndex);
             CastClassPassives();
+            SyncAmpPassives();
 
             player.Session.EnqueueMessageEncrypted(new ServerCooldownList
             {

@@ -104,5 +104,10 @@ namespace NexusForever.Game.Abstract.Entity
 
         void SendInitialPackets();
         void SendServerAbilityPoints();
+
+        /// <summary>
+        /// Apply the passive spells of the AMPs in the active action set and remove those of AMPs no longer in it.
+        /// </summary>
+        void SyncAmpPassives();
     }
 }

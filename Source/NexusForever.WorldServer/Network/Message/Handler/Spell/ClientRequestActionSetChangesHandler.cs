@@ -2,6 +2,8 @@
 using System.Linq;
 using NexusForever.Game.Abstract.Spell;
 using NexusForever.Game.Static.Spell;
+using NexusForever.GameTable;
+using NexusForever.GameTable.Model;
 using NexusForever.Network.Message;
 using NexusForever.Network.World.Message.Model.Abilities;
 
@@ -46,12 +48,23 @@ namespace NexusForever.WorldServer.Network.Message.Handler.Spell
 
             if (newAmps.Count > 0)
             {
-                // TODO: Look into AMP Support
+                foreach (ushort id in newAmps)
+                {
+                    // class, point cost and the required AMP are checked, AMPs locked behind an unlock item are not given
+                    EldanAugmentationEntry entry = GameTableManager.Instance.EldanAugmentation.GetEntry(id);
+                    if (entry == null
+                        || entry.ClassId != (uint)session.Player.Class
+                        || entry.PowerCost > actionSet.AmpPoints
+                        || entry.Item2IdUnlock != 0u
+                        || (entry.EldanAugmentationIdRequired != 0u && actionSet.GetAmp((ushort)entry.EldanAugmentationIdRequired) == null))
+                        continue;
 
-                // foreach (ushort id in newAmps)
-                //     actionSet.AddAmp(id);
+                    actionSet.AddAmp(id);
+                }
 
-                //session.EnqueueMessageEncrypted(actionSet.BuildServerAmpList());
+                session.EnqueueMessageEncrypted(actionSet.BuildServerAmpList());
+                if (requestActionSetChanges.ActionSetIndex == session.Player.SpellManager.ActiveActionSet)
+                    session.Player.SpellManager.SyncAmpPassives();
             }
         }
     }

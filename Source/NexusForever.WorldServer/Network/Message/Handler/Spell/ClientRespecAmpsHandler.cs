@@ -14,6 +14,8 @@ namespace NexusForever.WorldServer.Network.Message.Handler.Spell
             IActionSet actionSet = session.Player.SpellManager.GetActionSet(requestAmpReset.SpecIndex);
             actionSet.RemoveAmp(requestAmpReset.RespecType, requestAmpReset.Value);
             session.EnqueueMessageEncrypted(actionSet.BuildServerAmpList());
+            if (requestAmpReset.SpecIndex == session.Player.SpellManager.ActiveActionSet)
+                session.Player.SpellManager.SyncAmpPassives();
         }
     }
 }
