@@ -8,7 +8,7 @@ Thanks to Jabbithole and the players whose uploads built it.
 
 | File | What it adds |
 |---|---|
-| spawns.sql | 1,186 spawns of 682 NPCs, quest objects and Explorer mission objects that quests need but the NexusForever world database does not spawn, mostly quest givers and turn-in NPCs. Entity ids 900000 to 999999. |
+| spawns.sql | 2,144 spawns of 1,238 NPCs, quest objects and Explorer mission objects that quests need but the NexusForever world database does not spawn, mostly quest givers and turn-in NPCs. Entity ids 900000 to 999999. |
 | loot.sql | Loot tables for 929 creatures, including 59 harvest node types, from the drops Jabbithole recorded per kill, as drops divided by kills plus 5 so creatures seen only a few times do not always drop rare items. Loot group ids from 1000000. Quest items drop only for players with the matching collect objective open, which needs the QuestObjectiveActive loot condition in this fork. |
 | vendors.sql | Stock for 115 vendors, 4,050 items. Vendors are matched by creature and world. |
 | creature_spells.json | Combat spells seen on 1,188 creatures. Instant spells become auto attacks, spells with a cast time are used every 8 to 14 seconds. |

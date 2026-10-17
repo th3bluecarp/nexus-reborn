@@ -18,7 +18,8 @@ def top(z):
     return z
 ZONES={35:('northernwilds',426),1414:('everstargrove',990),622:('crimsonisle',870),1304:('levianbay',1387),
        13:('algoroc',51),248:('celestion',51),29:('galeras',51),122:('thayd',51),137:('whitevale',51),
-       483:('deradune',22),37:('ellevar',22),36:('auroria',22),2191:('illium',22)}
+       483:('deradune',22),37:('ellevar',22),36:('auroria',22),2191:('illium',22),
+       207:('murkmire',51),377:('malgrave',1061),936:('farside',1421),1402:('wilderrun',22)}
 spawnpos=collections.defaultdict(list); bycre=collections.defaultdict(list)
 for r in csv.DictReader(open('/w/db/entity.tsv'),delimiter='\t'):
     w=int(r['world']); c=int(r['creature'])
