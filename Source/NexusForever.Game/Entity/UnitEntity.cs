@@ -725,9 +725,49 @@ namespace NexusForever.Game.Entity
                 OnDeath(source);
         }
 
+        private enum CombatLine
+        {
+            EnterCombat,
+            Death,
+            Kill
+        }
+
+        /// <summary>
+        /// Creatures say one of their Creature2ActionText lines when they enter combat, die or kill a player, at the chance the data gives.
+        /// </summary>
+        private void SayCombatLine(CombatLine line)
+        {
+            if (this is IPlayer || CreatureInfo?.Entry == null || CreatureInfo.Entry.Creature2ActionTextId == 0u)
+                return;
+
+            Creature2ActionTextEntry entry = GameTableManager.Instance.Creature2ActionText.GetEntry(CreatureInfo.Entry.Creature2ActionTextId);
+            if (entry == null)
+                return;
+
+            (float chance, uint[] texts) = line switch
+            {
+                CombatLine.EnterCombat => (entry.ChanceToSayOnEnterCombat, new[] { entry.LocalizedTextIdOnEnterCombat00, entry.LocalizedTextIdOnEnterCombat01, entry.LocalizedTextIdOnEnterCombat02, entry.LocalizedTextIdOnEnterCombat03 }),
+                CombatLine.Death       => (entry.ChanceToSayOnDeath, new[] { entry.LocalizedTextIdOnDeath00, entry.LocalizedTextIdOnDeath01, entry.LocalizedTextIdOnDeath02, entry.LocalizedTextIdOnDeath03 }),
+                _                      => (entry.ChanceToSayOnKill, new[] { entry.LocalizedTextIdOnKill00, entry.LocalizedTextIdOnKill01, entry.LocalizedTextIdOnKill02, entry.LocalizedTextIdOnKill03 })
+            };
+
+            uint[] lines = texts.Where(t => t != 0u).ToArray();
+            if (lines.Length == 0 || Random.Shared.NextDouble() * 100d >= chance)
+                return;
+
+            string text = GameTableManager.Instance.TextEnglish.GetEntry(lines[Random.Shared.Next(lines.Length)]);
+            // a few entries hold test labels (OnEnterCombat00) instead of lines
+            if (!string.IsNullOrWhiteSpace(text) && text.Contains(' '))
+                NpcSay(text);
+        }
+
         protected virtual void OnDeath(IUnitEntity killer)
         {
             DeathState = EntityDeathState.JustDied;
+
+            SayCombatLine(CombatLine.Death);
+            if (this is IPlayer && killer is UnitEntity killerUnit && killerUnit is not IPlayer)
+                killerUnit.SayCombatLine(CombatLine.Kill);
 
             foreach (ISpell spell in spells.Values)
             {
@@ -951,7 +991,10 @@ namespace NexusForever.Game.Entity
             InCombat = ThreatManager.IsThreatened;
 
             if (!previousCombatState && InCombat)
+            {
+                SayCombatLine(CombatLine.EnterCombat);
                 scriptCollection?.Invoke<IUnitScript>(s => s.OnEnterCombat());
+            }
             else if (previousCombatState && !InCombat)
                 scriptCollection?.Invoke<IUnitScript>(s => s.OnLeaveCombat());
 
