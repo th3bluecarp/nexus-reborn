@@ -155,6 +155,7 @@ namespace NexusForever.Network.Message
         ClientSetInstanceSettings       = 0x0163,
         ServerShowInstanceGameModeDialog = 0x0164,
         ClientSellItemToVendor          = 0x0166,
+        ClientSellJunkToVendor          = 0x0167, // read from WildStar64.exe: SellJunkToVendor, sent at a vendor, one byte
         ClientMailSend                  = 0x0168,
         ServerAbilityPoints             = 0x0169,
         ClientNonSpellActionSetChanges  = 0x016A,
