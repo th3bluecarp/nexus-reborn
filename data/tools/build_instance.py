@@ -14,6 +14,17 @@ for e in ld('Creature2DisplayGroupEntry'): dgrp[e['Creature2DisplayGroupId']].ap
 ogrp=collections.defaultdict(list)
 for e in ld('Creature2OutfitGroupEntry'): ogrp[e['Creature2OutfitGroupId']].append(e)
 locs=[l for l in ld('WorldLocation2') if l['WorldId']==world]
+# creatures some event objective targets (vents, NPCs to talk to) are always placed
+tgs={g['Id']:g for g in ld('TargetGroup')}
+def tgmem(g,d=0):
+    x=tgs.get(g); out=set()
+    if not x or d>3: return out
+    for e in x['DataEntries']:
+        if e: out|={e} if x['Type']==1 else tgmem(e,d+1)
+    return out
+NEEDED=set()
+for o in ld('PublicEventObjective'):
+    NEEDED|=tgmem(o['ObjectId'])
 MAPS=set(mapname.split(','))
 pages=[p for p in json.load(open('/a/parsed/jh_npcs.json')) if p.get('map') in MAPS]
 SKIP=re.compile(r'veteran|long agro|unused|holdout', re.I)
@@ -40,9 +51,13 @@ for p in pages:
     if p['name'] in NOT_PLACED or p['name'].lower().startswith(("invis","hostile invis","beneficial invis")): continue
     c=pick(p['name'])
     if not c: report.append((p['name'],'no creature')); continue
+    # spell objects (storms, fissures, invisible casters, conjured creatures) come from boss abilities, not placements
+    if c['Id'] not in NEEDED and ((c['Flags'] & 0x1000000 and c['Creature2DifficultyId']>=7) or re.search(r'invisible|summoned', c['Description'] or '', re.I)):
+        report.append((p['name'],'spell object')); continue
     placed=0
     cl_all=sorted(clusters(p['pins'], 5.0), key=lambda k:-k['n'])
-    single = p['name'] in SINGLE or NAMED.search(p['name'])
+    # difficulty 12 is a boss
+    single = p['name'] in SINGLE or NAMED.search(p['name']) or c['Creature2DifficultyId']==12
     for cl in cl_all[:1 if single else MAX_PER_PAGE]:
         near=sorted(locs, key=lambda l: math.hypot(l['Position0']-cl['x'], l['Position2']-cl['z']))
         if not near or math.hypot(near[0]['Position0']-cl['x'], near[0]['Position2']-cl['z'])>25: continue
