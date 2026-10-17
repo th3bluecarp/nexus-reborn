@@ -100,6 +100,9 @@ namespace NexusForever.Game.PublicEvent
 
             foreach (IPublicEventTeam publicEventTeam in teams.Values)
                 publicEventTeam.Update(lastTick);
+
+            // event scripts can keep timers (chained expeditions wait for the map and fall back on area objectives)
+            scriptCollection?.Invoke<IUpdate>(s => s.Update(lastTick));
         }
 
         private void SendServerPublicEventStatsUpdate()
