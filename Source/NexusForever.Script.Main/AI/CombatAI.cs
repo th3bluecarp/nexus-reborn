@@ -5,6 +5,7 @@ using NexusForever.Game.Abstract.Entity.Creature;
 using NexusForever.Game.Abstract.Entity.Movement.Command;
 using NexusForever.Game.Abstract.Entity.Movement.Command.Position;
 using NexusForever.Game.Abstract.Spell;
+using NexusForever.Game.Static.Combat.CrowdControl;
 using NexusForever.Game.Static.Entity;
 using NexusForever.Game.Static.Pet;
 using NexusForever.Game.Static.Entity.Movement.Spline;
@@ -102,26 +103,49 @@ namespace NexusForever.Script.Main.AI
             if (DateTime.UtcNow < entity.ExecutionDelayUntil)
                 return;
 
+            // crowd control: stunned, asleep, held, knocked down, feared or disabled creatures do nothing until it ends
+            HashSet<CCState> ccStates = entity.CrowdControlManager.GetCCStates().ToHashSet();
+            if (ccStates.Overlaps(Incapacitating))
+            {
+                if (!incapacitated)
+                {
+                    entity.MovementManager.Finalise();
+                    incapacitated = true;
+                }
+                return;
+            }
+            incapacitated = false;
+            currentCCStates = ccStates;
+
             UpdateAI(lastTick);
         }
+
+        private static readonly CCState[] Incapacitating = [CCState.Stun, CCState.Sleep, CCState.Hold, CCState.Knockdown, CCState.Fear, CCState.Polymorph, CCState.Disable];
+        private bool incapacitated;
+        private HashSet<CCState> currentCCStates = [];
 
         protected virtual void UpdateAI(double lastTick)
         {
             autoAttackTimer.Update(lastTick);
             if (autoAttackTimer.HasElapsed)
             {
-                DoAutoAttack();
+                // disarmed creatures cannot use their weapon attacks
+                if (!currentCCStates.Contains(CCState.Disarm))
+                    DoAutoAttack();
                 autoAttackTimer.Reset();
             }
 
             chaseDistanceTimer.Update(lastTick);
             if (chaseDistanceTimer.HasElapsed)
             {
-                DoChase();
+                // rooted and tethered creatures stay where they are
+                if (!currentCCStates.Contains(CCState.Root) && !currentCCStates.Contains(CCState.Tether))
+                    DoChase();
                 chaseDistanceTimer.Reset();
             }
 
-            if (specials.Count > 0)
+            // silenced creatures cannot use their abilities
+            if (specials.Count > 0 && !currentCCStates.Contains(CCState.Silence))
             {
                 specialTimer.Update(lastTick);
                 if (specialTimer.HasElapsed)
