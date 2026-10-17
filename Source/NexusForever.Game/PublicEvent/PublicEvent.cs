@@ -105,6 +105,11 @@ namespace NexusForever.Game.PublicEvent
             scriptCollection?.Invoke<IUpdate>(s => s.Update(lastTick));
         }
 
+        public void SendStatsUpdate()
+        {
+            SendServerPublicEventStatsUpdate();
+        }
+
         private void SendServerPublicEventStatsUpdate()
         {
             var publicEventStatsUpdate = new ServerPublicEventStatsUpdate

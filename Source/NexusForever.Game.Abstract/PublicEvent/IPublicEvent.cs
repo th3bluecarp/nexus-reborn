@@ -146,6 +146,11 @@ namespace NexusForever.Game.Abstract.PublicEvent
         void Finish(PublicEventTeam? publicEventTeam);
 
         /// <summary>
+        /// Send the current team and participant stats to the event members (the scoreboard).
+        /// </summary>
+        void SendStatsUpdate();
+
+        /// <summary>
         /// Create a new <see cref="IGridEntity"/> that belongs to the <see cref="IPublicEvent"/>.
         /// </summary>
         /// <remarks>
