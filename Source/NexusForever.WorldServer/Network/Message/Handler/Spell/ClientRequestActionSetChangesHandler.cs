@@ -25,7 +25,7 @@ namespace NexusForever.WorldServer.Network.Message.Handler.Spell
                     actionSet.RemoveShortcut(i);
 
                 uint spell4BaseId = requestActionSetChanges.Actions[(int)i];
-                if (spell4BaseId != 0u)
+                if (spell4BaseId != 0u && session.Player.SpellManager.IsSpellUsable(spell4BaseId))
                 {
                     IActionSetShortcut existingShortcut = shortcuts.SingleOrDefault(s => s.ObjectId == spell4BaseId);
                     byte tier = existingShortcut?.Tier ?? 1;

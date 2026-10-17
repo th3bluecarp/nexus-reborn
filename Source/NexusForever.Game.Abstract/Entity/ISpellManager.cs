@@ -109,5 +109,10 @@ namespace NexusForever.Game.Abstract.Entity
         /// Apply the passive spells of the AMPs in the active action set and remove those of AMPs no longer in it.
         /// </summary>
         void SyncAmpPassives();
+
+        /// <summary>
+        /// Returns false when the ability is unlocked by an AMP that is not in the active action set.
+        /// </summary>
+        bool IsSpellUsable(uint spell4BaseId);
     }
 }

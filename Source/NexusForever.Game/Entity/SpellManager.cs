@@ -631,6 +631,30 @@ namespace NexusForever.Game.Entity
                     UserInitiatedSpellCast = false
                 });
             }
+
+            // abilities whose unlocking AMP was taken out come off the bar
+            bool changed = false;
+            foreach (IActionSetShortcut shortcut in actionSet.Actions
+                .Where(a => a.ShortcutType == ShortcutType.SpellbookItem && !IsSpellUsable(a.ObjectId))
+                .ToList())
+            {
+                actionSet.RemoveShortcut(shortcut.Location);
+                changed = true;
+            }
+
+            if (changed)
+                player.Session.EnqueueMessageEncrypted(actionSet.BuildServerActionSet());
+        }
+
+        public bool IsSpellUsable(uint spell4BaseId)
+        {
+            List<uint> gates = GameTableManager.Instance.SpellLevel.Entries
+                .Where(s => s.ClassId == (byte)player.Class && s.PrerequisiteId > 0
+                    && GameTableManager.Instance.Spell4.GetEntry(s.Spell4Id)?.Spell4BaseIdBaseSpell == spell4BaseId)
+                .Select(s => s.PrerequisiteId)
+                .ToList();
+
+            return gates.Count == 0 || gates.Any(g => PrerequisiteManager.Instance.Meets(player, g));
         }
 
         /// <summary>

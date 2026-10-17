@@ -22,6 +22,10 @@ namespace NexusForever.WorldServer.Network.Message.Handler.Spell
             if (characterSpell == null)
                 throw new InvalidPacketValueException();
 
+            // an AMP unlocked ability stays in the book after the AMP is removed but cannot be used
+            if (!session.Player.SpellManager.IsSpellUsable(characterSpell.BaseInfo.Entry.Id))
+                return;
+
             characterSpell.Cast(castSpell.ButtonPressed);
         }
     }
