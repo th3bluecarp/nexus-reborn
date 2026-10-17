@@ -137,3 +137,4 @@ These fix a visible symptom without knowing the real rule, the kind of patch tha
 - **Open world events start by proximity.** Retail started them from lost server scripts.
 - **Creature abilities from Jabbithole.** Observed spells, not the creature's real rotation or conditions.
 - **Vistas count from the ground.** Explorer vista points sit on cliff tops and the climb routes are hard to find, so standing within 45 m of the point on the ground completes it, at any height (PathMissionManager.VistaRadius).
+- **Finish Him! moves you aboard.** The Skull's Eye interior (world 930) has no placed creatures or entrance. Meeting the contact at the ship in Algoroc teleports you to the ship's entry marker, Captain Thokov and the escape pod are placed at the quest's own markers, and using the pod returns you to the ship's spot in Algoroc (Script.Main Algoroc/FinishHimQuestScript). Thokov's crew is not placed.
