@@ -93,6 +93,10 @@ try:
         k,h,ar=l.rstrip('\n').split('\t'); terrain[k]=(float(h) if h else None, int(ar) if ar else 0)
 except FileNotFoundError: pass
 out=[]; report=[]; nid=900000
+QTEXT=('LocalizedTextIdCompletionOverride','LocalizedTextIdText','LocalizedTextIdCompletedObjectiveShort')
+# the path union reps stood on the old Exile arkship (Jabbithole 2014), which the final client no longer has: put them in Settler's Reach
+MANUAL={71088:19397, 71086:19397, 71085:19397}
+hubcount=collections.Counter()
 for (cid,z),info in sorted(todo.items()):
     c=cr[cid]; name=T(c['LocalizedTextIdName']); mp,w=ZONES[z]
     cands=jhby.get((name,mp),[])
@@ -109,6 +113,14 @@ for (cid,z),info in sorted(todo.items()):
     if (not page or not page['pins']) and 'target' in info['roles'] and info.get('locs'):
         marks=[[wloc[l]['Position0'],wloc[l]['Position2']] for l in info['locs'] if l in wloc and wloc[l]['WorldId']==w]
         if marks: page={'pins':marks,'file':'(objective marker)'}; conf='objective marker'
+    if (not page or not page['pins']) and info['roles']-{'target'}:
+        # a giver or turn-in with no usable page: the hub its quest text links to (Location:N), or a hand-picked hub in MANUAL
+        lids=[MANUAL[cid]] if cid in MANUAL else [int(x) for q in sorted(info['quests']) for k in QTEXT for x in re.findall(r'Location:(\d+)',T(Q[q][k]))]
+        lids=[l for l in lids if l in wloc and wloc[l]['WorldId']==w]
+        if lids:
+            l=lids[0]; n=hubcount[l]; hubcount[l]+=1
+            # stand NPCs sharing a hub 3 m apart
+            page={'pins':[[wloc[l]['Position0']+3*n,wloc[l]['Position2']+3]],'file':f'(quest location {l})'}; conf='location link'
     if not page or not page['pins']:
         report.append([cid,name,mp,'/'.join(sorted(info['roles'])),' '.join(map(str,sorted(info['quests']))),'SKIP', 'no Jabbithole page' if not cands else f'{len(cands)} pages, none quest-linked','',''])
         continue
