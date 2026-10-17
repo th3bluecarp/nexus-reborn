@@ -10,11 +10,11 @@ using NexusForever.Network.World.Message.Static;
 namespace NexusForever.WorldServer.Network.Message.Handler.Vendor
 {
     /// <summary>
-    /// Sell Junk: every inferior (grey, ItemQuality 1) item in the bags is sold to the open vendor, as the single sell does.
+    /// Sell Junk: every item of the Junk category (94) in the bags is sold to the open vendor, as the single sell does.
     /// </summary>
     public class ClientSellJunkToVendorHandler : IMessageHandler<IWorldSession, ClientSellJunkToVendor>
     {
-        private const uint JunkQuality = 1u;
+        private const uint JunkCategory = 94u; // Item2Category "Junk": broken fangs, chipped stones, smashed gears (grey and white)
 
         #region Dependency Injection
 
@@ -38,7 +38,7 @@ namespace NexusForever.WorldServer.Network.Message.Handler.Vendor
             List<IItem> junk = session.Player.Inventory
                 .Where(b => b.Location == InventoryLocation.Inventory)
                 .SelectMany(b => b)
-                .Where(i => i?.Info?.Entry != null && i.Info.Entry.ItemQualityId == JunkQuality)
+                .Where(i => i?.Info?.Entry != null && i.Info.Entry.Item2CategoryId == JunkCategory)
                 .ToList();
 
             foreach (IItem item in junk)
