@@ -51,11 +51,20 @@ for q in Q.values():
         if o['Type'] in (2,5,12) and o['Data']==0:
             named=set(int(x) for x in re.findall(r'creature=(\d+)',T(o['LocalizedTextIdFull'])))
             ids=named if len(named)==1 else set()
+            # rescue and use objectives that name no creature count the reward pane group (Unknown28 style)
+            if not ids and o['TargetGroupIdRewardPane']: ids=mem(o['TargetGroupIdRewardPane'])
         elif o['Type']==32: ids=mem(o['TargetGroupIdRewardPane'])
         ids={i for i in ids if i in cr}
-        if ids and any(any(w2==w for w2,_ in bycre[i]) for i in ids): continue   # some target already in the zone
+        topup=False
+        if ids and any(any(w2==w for w2,_ in bycre[i]) for i in ids):
+            # some target already in the zone: enough for kills, but objects to use or rescue need as many copies as the
+            # objective counts (a reused object only counts again once its busy time is over)
+            have=sum(1 for i in ids for w2,_ in bycre[i] if w2==w)
+            if o['Type'] not in (5,9,12) or len(ids)!=1 or have>=min(12,o.get('Count',0) or 1): continue
+            topup=True
         for i in ids:
             need[(i,z)]['roles'].add('target'); need[(i,z)]['quests'].add(q['Id'])
+            if topup: need[(i,z)]['topup']=True
             # a kill or use count of 1 means a single (often named) creature
             need[(i,z)]['count']=max(need[(i,z)].get('count',0), o.get('Count',0) or 1)
             # the objective's map marker, a fallback position when no Jabbithole page has pins
@@ -78,7 +87,7 @@ for kind,table in ((17,'PathExplorerActivate'),):
         for i in ids:
             need[(i,z)]['roles'].add('target'); need[(i,z)]['count']=max(need[(i,z)].get('count',0), r.get('Count') or 1)
 # drop givers/turn-ins already spawned in their zone world
-todo={k:v for k,v in need.items() if not any(w==ZONES[k[1]][1] for w,_ in bycre[k[0]])}
+todo={k:v for k,v in need.items() if v.get('topup') or not any(w==ZONES[k[1]][1] for w,_ in bycre[k[0]])}
 def clusters(pins, r=8.0):
     cl=[]
     for x,z in pins:
@@ -111,7 +120,7 @@ for (cid,z),info in sorted(todo.items()):
     page=None; conf=''
     if scored and ev(scored[0])>0: page=scored[0]; conf='quest-linked'
     elif len(cands)==1 and cands[0]['pins']: page=cands[0]; conf='name-only'
-    if (not page or not page['pins']) and 'target' in info['roles'] and info.get('locs'):
+    if (not page or not page['pins']) and 'target' in info['roles'] and info.get('locs') and not info.get('topup'):
         marks=[[wloc[l]['Position0'],wloc[l]['Position2']] for l in info['locs'] if l in wloc and wloc[l]['WorldId']==w]
         if marks: page={'pins':marks,'file':'(objective marker)'}; conf='objective marker'
     if (not page or not page['pins']) and info['roles']-{'target'}:
@@ -128,11 +137,14 @@ for (cid,z),info in sorted(todo.items()):
     cl=clusters(page['pins'])
     # skip pin clusters where a same-named creature is already spawned (that location is served by another variant),
     # unless every cluster is such a spot (then it is a same-place phase and the visibility prerequisite separates them)
-    samepos=[(rec[0],rec[2]) for o,lst in bycre.items() if o!=cid and T(cr[o]['LocalizedTextIdName'])==name for (w2,rec) in lst if w2==w]
+    samepos=[(rec[0],rec[2]) for o,lst in bycre.items() if (o!=cid or info.get('topup')) and T(cr[o]['LocalizedTextIdName'])==name for (w2,rec) in lst if w2==w]
     free=[c2 for c2 in cl if all(math.hypot(c2['x']-a,c2['z']-b)>15 for a,b in samepos)]
-    if free: cl=free
+    if free or info.get('topup'): cl=free
+    if info.get('topup'):
+        # only the missing copies, away from the ones already placed
+        info['count']=max(0,info.get('count',1)-sum(1 for w2,_ in bycre[cid] if w2==w))
     # givers and turn-ins once; targets as many times as their quests ask for, up to 12 pin clusters
-    take=cl[:1] if info['roles']-{'target'} else cl[:max(1,min(12,info.get('count',12)))]
+    take=cl[:1] if info['roles']-{'target'} else cl[:min(12,info.get('count',12))] if info.get('topup') else cl[:max(1,min(12,info.get('count',12)))]
     # display / outfit: copy from a same-name spawn, else from the creature's groups
     same=[rec for (w2,rec) in sum((bycre[o] for o in cr if T(cr[o]['LocalizedTextIdName'])==name and bycre[o]),[]) ] if False else []
     disp=0; outfit=0
