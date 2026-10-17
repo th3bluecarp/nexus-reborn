@@ -10,6 +10,7 @@ Newest first. "Live" means running on our test server.
 
 ## 2026-10-15
 
+- Audited every starting zone of both factions: Crimson Isle, Levian Bay and Auroria are clean, Everstar Grove now has its Explorer, Scientist and Settler union reps (0034fa07).
 - Turn-in NPCs with no archived position now stand at the quest's own turn-in location (09e770de).
 - Quest NPCs placed in Grimvault and more in Murkmire, 2,693 spawns in all (250fa474).
 - Fixed a login failure: a quest whose communicator message names a world crashed character select before the player was on a map (39a36287).
