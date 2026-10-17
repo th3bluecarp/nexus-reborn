@@ -79,333 +79,297 @@ INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1110024,10,10),(1110024
 -- Hive Queen
 INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1110025,0,23513,1319,1185,-353,-540.744,428,0,0,0,25476,0,245,245);
 INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1110025,10,10),(1110025,15,0);
--- Hive Queen
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1110026,0,23513,1319,1185,-355,-540.744,419,0,0,0,25476,0,245,245);
+-- Infected Miner
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1110026,0,23500,1319,1185,-366,-534.399,324,0,0,0,24874,9753,513,513);
 INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1110026,10,10),(1110026,15,0);
--- Hive Queen
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1110027,0,23513,1319,1185,-348,-540.744,422,0,0,0,25476,0,245,245);
+-- Infected Miner
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1110027,0,23500,1319,1185,-361,-534.399,331,0,0,0,24874,9753,513,513);
 INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1110027,10,10),(1110027,15,0);
--- Hive Queen
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1110028,0,23513,1319,1185,-353,-540.744,408,0,0,0,25476,0,245,245);
+-- Infected Miner
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1110028,0,23500,1319,1185,-360,-534.399,328,0,0,0,24874,9753,513,513);
 INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1110028,10,10),(1110028,15,0);
--- Hive Queen
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1110029,0,23513,1319,1185,-349,-540.744,414,0,0,0,25476,0,245,245);
+-- Infected Miner
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1110029,0,23500,1319,1185,-362,-540.744,418,0,0,0,24874,9753,513,513);
 INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1110029,10,10),(1110029,15,0);
--- Hive Queen
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1110030,0,23513,1319,1185,-362,-540.744,419,0,0,0,25476,0,245,245);
+-- Infected Miner
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1110030,0,23500,1319,1185,-353,-534.399,329,0,0,0,24874,9753,513,513);
 INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1110030,10,10),(1110030,15,0);
--- Hive Queen
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1110031,0,23513,1319,1185,-361,-540.744,413,0,0,0,25476,0,245,245);
+-- Infector Embryo
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1110031,0,29703,1319,2012,-265,-495.604,77,0,0,0,25456,0,513,513);
 INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1110031,10,10),(1110031,15,0);
--- Hive Queen
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1110032,0,23513,1319,1185,-361,-540.744,427,0,0,0,25476,0,245,245);
+-- Infector Embryo
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1110032,0,29703,1319,2012,-237,-495.604,69,0,0,0,25456,0,513,513);
 INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1110032,10,10),(1110032,15,0);
--- Hive Queen
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1110033,0,23513,1319,1185,-366,-540.744,424,0,0,0,25476,0,245,245);
+-- Infector Embryo
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1110033,0,29703,1319,2012,-252,-495.604,65,0,0,0,25456,0,513,513);
 INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1110033,10,10),(1110033,15,0);
--- Hive Queen
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1110034,0,23513,1319,1185,-373,-540.744,425,0,0,0,25476,0,245,245);
+-- Infector Embryo
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1110034,0,29703,1319,2012,-250,-495.604,107,0,0,0,25456,0,513,513);
 INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1110034,10,10),(1110034,15,0);
--- Hive Queen
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1110035,0,23513,1319,1185,-365,-540.744,437,0,0,0,25476,0,245,245);
+-- Infector Embryo
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1110035,0,29703,1319,2012,-237,-495.604,72,0,0,0,25456,0,513,513);
 INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1110035,10,10),(1110035,15,0);
--- Hive Queen
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1110036,0,23513,1319,1185,-343,-540.721,430,0,0,0,25476,0,245,245);
+-- Infector Embryo
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1110036,0,29703,1319,2012,-254,-495.604,63,0,0,0,25456,0,513,513);
 INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1110036,10,10),(1110036,15,0);
--- Hive Queen
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1110037,0,23513,1319,1185,-348,-540.744,429,0,0,0,25476,0,245,245);
+-- Infector Embryo
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1110037,0,29703,1319,1186,-244,-497.91,57,0,0,0,25456,0,513,513);
 INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1110037,10,10),(1110037,15,0);
--- Infected Miner
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1110038,0,23500,1319,1185,-366,-534.399,324,0,0,0,24874,9753,513,513);
+-- Larval Infector
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1110038,0,29612,1319,1184,-331,-506.093,155,0,0,0,25456,0,513,513);
 INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1110038,10,10),(1110038,15,0);
--- Infected Miner
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1110039,0,23500,1319,1185,-361,-534.399,331,0,0,0,24874,9753,513,513);
+-- Larval Infector
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1110039,0,29612,1319,2012,-260,-495.604,105,0,0,0,25456,0,513,513);
 INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1110039,10,10),(1110039,15,0);
--- Infected Miner
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1110040,0,23500,1319,1185,-360,-534.399,328,0,0,0,24874,9753,513,513);
+-- Lonely Lost Larva
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1110040,0,29718,1319,1184,-383,-518.086,208,0,0,0,25456,0,219,219);
 INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1110040,10,10),(1110040,15,0);
--- Infected Miner
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1110041,0,23500,1319,1185,-362,-540.744,418,0,0,0,24874,9753,513,513);
+-- Lonely Lost Larva
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1110041,0,29718,1319,1184,-381,-498.591,130,0,0,0,25456,0,219,219);
 INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1110041,10,10),(1110041,15,0);
--- Infected Miner
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1110042,0,23500,1319,1185,-353,-534.399,329,0,0,0,24874,9753,513,513);
+-- Lonely Lost Larva
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1110042,0,29718,1319,1184,-402,-487.698,117,0,0,0,25456,0,219,219);
 INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1110042,10,10),(1110042,15,0);
--- Infector Embryo
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1110043,0,29703,1319,2012,-265,-495.604,77,0,0,0,25456,0,513,513);
+-- M-13 Miner
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1110043,0,29469,1319,1186,-253,-497.86,-3,0,0,0,25459,9024,466,466);
 INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1110043,10,10),(1110043,15,0);
--- Infector Embryo
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1110044,0,29703,1319,2012,-237,-495.604,69,0,0,0,25456,0,513,513);
+-- M-13 Miner
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1110044,0,29469,1319,1186,-241,-497.86,16,0,0,0,25459,9024,466,466);
 INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1110044,10,10),(1110044,15,0);
--- Infector Embryo
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1110045,0,29703,1319,2012,-252,-495.604,65,0,0,0,25456,0,513,513);
+-- M-13 Security Guard
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1110045,0,29471,1319,1186,-228,-497.91,33,0,0,0,25459,8467,466,466);
 INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1110045,10,10),(1110045,15,0);
--- Infector Embryo
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1110046,0,29703,1319,2012,-250,-495.604,107,0,0,0,25456,0,513,513);
+-- M-13 Security Guard
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1110046,0,29471,1319,1186,-234,-497.91,27,0,0,0,25459,8467,466,466);
 INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1110046,10,10),(1110046,15,0);
--- Infector Embryo
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1110047,0,29703,1319,2012,-237,-495.604,72,0,0,0,25456,0,513,513);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1110047,10,10),(1110047,15,0);
--- Infector Embryo
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1110048,0,29703,1319,2012,-254,-495.604,63,0,0,0,25456,0,513,513);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1110048,10,10),(1110048,15,0);
--- Infector Embryo
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1110049,0,29703,1319,1186,-244,-497.91,57,0,0,0,25456,0,513,513);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1110049,10,10),(1110049,15,0);
--- Larval Infector
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1110050,0,29612,1319,1184,-331,-506.093,155,0,0,0,25456,0,513,513);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1110050,10,10),(1110050,15,0);
--- Larval Infector
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1110051,0,29612,1319,2012,-260,-495.604,105,0,0,0,25456,0,513,513);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1110051,10,10),(1110051,15,0);
--- Lonely Lost Larva
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1110052,0,29718,1319,1184,-383,-518.086,208,0,0,0,25456,0,219,219);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1110052,10,10),(1110052,15,0);
--- Lonely Lost Larva
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1110053,0,29718,1319,1184,-381,-498.591,130,0,0,0,25456,0,219,219);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1110053,10,10),(1110053,15,0);
--- Lonely Lost Larva
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1110054,0,29718,1319,1184,-402,-487.698,117,0,0,0,25456,0,219,219);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1110054,10,10),(1110054,15,0);
--- M-13 Miner
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1110055,0,29469,1319,1186,-253,-497.86,-3,0,0,0,25459,9024,466,466);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1110055,10,10),(1110055,15,0);
--- M-13 Miner
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1110056,0,29469,1319,1186,-241,-497.86,16,0,0,0,25459,9024,466,466);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1110056,10,10),(1110056,15,0);
--- M-13 Security Guard
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1110057,0,29471,1319,1186,-228,-497.91,33,0,0,0,25459,8467,466,466);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1110057,10,10),(1110057,15,0);
--- M-13 Security Guard
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1110058,0,29471,1319,1186,-234,-497.91,27,0,0,0,25459,8467,466,466);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1110058,10,10),(1110058,15,0);
 -- Marauder Ship
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1110059,0,47252,1319,1184,-391,-518.086,211,0,0,0,22388,0,219,219);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1110059,10,1),(1110059,15,0);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1110047,0,47252,1319,1184,-391,-518.086,211,0,0,0,22388,0,219,219);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1110047,10,1),(1110047,15,0);
 -- Matthias Black
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1110060,0,19102,1319,1184,-121,-520.202,-158,0,0,0,27521,9608,171,171);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1110060,10,10),(1110060,15,0);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1110048,0,19102,1319,1184,-121,-520.202,-158,0,0,0,27521,9608,171,171);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1110048,10,10),(1110048,15,0);
 -- Medical Officer's Log
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1110061,0,29600,1319,2012,-268,-495.604,81,0,0,0,26389,0,219,219);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1110061,10,1),(1110061,15,0);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1110049,0,29600,1319,2012,-268,-495.604,81,0,0,0,26389,0,219,219);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1110049,10,1),(1110049,15,0);
 -- Meteorite
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1110062,0,30936,1319,1184,-370,-512.645,204,0,0,0,26790,0,219,219);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1110050,0,30936,1319,1184,-370,-512.645,204,0,0,0,26790,0,219,219);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1110050,10,10),(1110050,15,0);
+-- Meteorite
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1110051,0,30936,1319,1184,-156,-526.079,-179,0,0,0,26790,0,219,219);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1110051,10,10),(1110051,15,0);
+-- Meteorite
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1110052,0,30936,1319,1184,-159,-509.449,-114,0,0,0,26790,0,219,219);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1110052,10,10),(1110052,15,0);
+-- Meteorite
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1110053,0,30936,1319,1184,-191,-523.413,-143,0,0,0,26790,0,219,219);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1110053,10,10),(1110053,15,0);
+-- Meteorite
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1110054,0,30936,1319,1184,-376,-498.591,141,0,0,0,26790,0,219,219);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1110054,10,10),(1110054,15,0);
+-- Meteorite
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1110055,0,30936,1319,1184,-159,-509.449,-114,0,0,0,26790,0,219,219);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1110055,10,10),(1110055,15,0);
+-- Meteorite
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1110056,0,30936,1319,1184,-376,-498.591,141,0,0,0,26790,0,219,219);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1110056,10,10),(1110056,15,0);
+-- Meteorite
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1110057,0,30936,1319,1184,-370,-512.645,204,0,0,0,26790,0,219,219);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1110057,10,10),(1110057,15,0);
+-- Novaburn Corsair
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1110058,0,23453,1319,1541,9798,-939.792,5111,0,0,0,21472,0,448,448);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1110058,10,10),(1110058,15,0);
+-- Novaburn Corsair
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1110059,0,23453,1319,1541,9789,-939.792,5111,0,0,0,21472,0,448,448);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1110059,10,10),(1110059,15,0);
+-- Novaburn Corsair
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1110060,0,23453,1319,1541,9763,-939.792,5111,0,0,0,21472,0,448,448);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1110060,10,10),(1110060,15,0);
+-- Novaburn Corsair
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1110061,0,23453,1319,1541,9778,-939.792,5107,0,0,0,21472,0,448,448);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1110061,10,10),(1110061,15,0);
+-- Novaburn Corsair
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1110062,0,23453,1319,1541,9790,-939.792,5104,0,0,0,21472,0,448,448);
 INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1110062,10,10),(1110062,15,0);
--- Meteorite
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1110063,0,30936,1319,1184,-156,-526.079,-179,0,0,0,26790,0,219,219);
+-- Novaburn Corsair
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1110063,0,23453,1319,1541,9762,-939.792,5100,0,0,0,21472,0,448,448);
 INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1110063,10,10),(1110063,15,0);
--- Meteorite
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1110064,0,30936,1319,1184,-159,-509.449,-114,0,0,0,26790,0,219,219);
+-- Novaburn Corsair
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1110064,0,23453,1319,1541,9774,-939.792,5113,0,0,0,21472,0,448,448);
 INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1110064,10,10),(1110064,15,0);
--- Meteorite
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1110065,0,30936,1319,1184,-191,-523.413,-143,0,0,0,26790,0,219,219);
+-- Novaburn Corsair
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1110065,0,23453,1319,1541,9762,-939.792,5106,0,0,0,21472,0,448,448);
 INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1110065,10,10),(1110065,15,0);
--- Meteorite
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1110066,0,30936,1319,1184,-376,-498.591,141,0,0,0,26790,0,219,219);
+-- Novaburn Plunderer
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1110066,0,23454,1319,1541,9779,-945.222,5151,0,0,0,25050,0,395,395);
 INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1110066,10,10),(1110066,15,0);
--- Meteorite
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1110067,0,30936,1319,1184,-159,-509.449,-114,0,0,0,26790,0,219,219);
+-- Novaburn Plunderer
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1110067,0,23454,1319,1541,9773,-939.792,5115,0,0,0,25050,0,395,395);
 INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1110067,10,10),(1110067,15,0);
--- Meteorite
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1110068,0,30936,1319,1184,-376,-498.591,141,0,0,0,26790,0,219,219);
+-- Novaburn Plunderer
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1110068,0,23454,1319,1541,9799,-939.792,5110,0,0,0,25050,0,395,395);
 INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1110068,10,10),(1110068,15,0);
--- Meteorite
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1110069,0,30936,1319,1184,-370,-512.645,204,0,0,0,26790,0,219,219);
+-- Novaburn Plunderer
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1110069,0,23454,1319,1541,9760,-939.792,5106,0,0,0,25050,0,395,395);
 INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1110069,10,10),(1110069,15,0);
--- Novaburn Corsair
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1110070,0,23453,1319,1541,9798,-939.792,5111,0,0,0,21472,0,448,448);
+-- Novaburn Plunderer
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1110070,0,23454,1319,1541,9806,-939.792,5114,0,0,0,25050,0,395,395);
 INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1110070,10,10),(1110070,15,0);
--- Novaburn Corsair
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1110071,0,23453,1319,1541,9789,-939.792,5111,0,0,0,21472,0,448,448);
+-- Novaburn Plunderer
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1110071,0,23454,1319,1541,9770,-939.792,5107,0,0,0,25050,0,395,395);
 INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1110071,10,10),(1110071,15,0);
--- Novaburn Corsair
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1110072,0,23453,1319,1541,9763,-939.792,5111,0,0,0,21472,0,448,448);
+-- Novaburn Plunderer
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1110072,0,23454,1319,1541,9772,-939.792,5112,0,0,0,25050,0,395,395);
 INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1110072,10,10),(1110072,15,0);
--- Novaburn Corsair
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1110073,0,23453,1319,1541,9778,-939.792,5107,0,0,0,21472,0,448,448);
+-- Novaburn Plunderer
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1110073,0,23454,1319,1541,9805,-939.792,5103,0,0,0,25050,0,395,395);
 INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1110073,10,10),(1110073,15,0);
--- Novaburn Corsair
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1110074,0,23453,1319,1541,9790,-939.792,5104,0,0,0,21472,0,448,448);
+-- Novaburn Plunderer
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1110074,0,23454,1319,1541,9767,-939.792,5114,0,0,0,25050,0,395,395);
 INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1110074,10,10),(1110074,15,0);
--- Novaburn Corsair
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1110075,0,23453,1319,1541,9762,-939.792,5100,0,0,0,21472,0,448,448);
+-- Novaburn Plunderer
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1110075,0,23454,1319,1541,9798,-939.792,5117,0,0,0,25050,0,395,395);
 INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1110075,10,10),(1110075,15,0);
--- Novaburn Corsair
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1110076,0,23453,1319,1541,9774,-939.792,5113,0,0,0,21472,0,448,448);
+-- Novaburn Plunderer
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1110076,0,23454,1319,1541,9789,-939.792,5103,0,0,0,25050,0,395,395);
 INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1110076,10,10),(1110076,15,0);
--- Novaburn Corsair
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1110077,0,23453,1319,1541,9762,-939.792,5106,0,0,0,21472,0,448,448);
+-- Novaburn Plunderer
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1110077,0,23454,1319,1541,9795,-939.792,5106,0,0,0,25050,0,395,395);
 INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1110077,10,10),(1110077,15,0);
 -- Novaburn Plunderer
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1110078,0,23454,1319,1541,9779,-945.222,5151,0,0,0,25050,0,395,395);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1110078,0,23454,1319,1541,9781,-945.222,5151,0,0,0,25050,0,395,395);
 INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1110078,10,10),(1110078,15,0);
--- Novaburn Plunderer
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1110079,0,23454,1319,1541,9773,-939.792,5115,0,0,0,25050,0,395,395);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1110079,10,10),(1110079,15,0);
--- Novaburn Plunderer
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1110080,0,23454,1319,1541,9799,-939.792,5110,0,0,0,25050,0,395,395);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1110080,10,10),(1110080,15,0);
--- Novaburn Plunderer
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1110081,0,23454,1319,1541,9760,-939.792,5106,0,0,0,25050,0,395,395);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1110081,10,10),(1110081,15,0);
--- Novaburn Plunderer
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1110082,0,23454,1319,1541,9806,-939.792,5114,0,0,0,25050,0,395,395);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1110082,10,10),(1110082,15,0);
--- Novaburn Plunderer
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1110083,0,23454,1319,1541,9770,-939.792,5107,0,0,0,25050,0,395,395);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1110083,10,10),(1110083,15,0);
--- Novaburn Plunderer
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1110084,0,23454,1319,1541,9772,-939.792,5112,0,0,0,25050,0,395,395);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1110084,10,10),(1110084,15,0);
--- Novaburn Plunderer
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1110085,0,23454,1319,1541,9805,-939.792,5103,0,0,0,25050,0,395,395);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1110085,10,10),(1110085,15,0);
--- Novaburn Plunderer
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1110086,0,23454,1319,1541,9767,-939.792,5114,0,0,0,25050,0,395,395);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1110086,10,10),(1110086,15,0);
--- Novaburn Plunderer
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1110087,0,23454,1319,1541,9798,-939.792,5117,0,0,0,25050,0,395,395);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1110087,10,10),(1110087,15,0);
--- Novaburn Plunderer
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1110088,0,23454,1319,1541,9789,-939.792,5103,0,0,0,25050,0,395,395);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1110088,10,10),(1110088,15,0);
--- Novaburn Plunderer
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1110089,0,23454,1319,1541,9795,-939.792,5106,0,0,0,25050,0,395,395);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1110089,10,10),(1110089,15,0);
--- Novaburn Plunderer
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1110090,0,23454,1319,1541,9781,-945.222,5151,0,0,0,25050,0,395,395);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1110090,10,10),(1110090,15,0);
 -- Portal to Thayd
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1110091,0,53902,1319,1185,-348,-540.744,410,0,0,0,29666,0,165,165);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1110091,10,1),(1110091,15,0);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1110079,0,53902,1319,1185,-348,-540.744,410,0,0,0,29666,0,165,165);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1110079,10,1),(1110079,15,0);
 -- "Ransacker" Rorgh
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1110092,0,23455,1319,1541,9786,-945.222,5140,0,0,0,21557,0,383,383);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1110080,0,23455,1319,1541,9786,-945.222,5140,0,0,0,21557,0,383,383);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1110080,10,10),(1110080,15,0);
+-- Rescued Miner
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1110081,0,23571,1319,1184,-362,-513.455,188,0,0,0,24874,9753,219,219);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1110081,10,10),(1110081,15,0);
+-- Rescued Miner
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1110082,0,23571,1319,1184,-399,-515.327,203,0,0,0,24874,9753,219,219);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1110082,10,10),(1110082,15,0);
+-- Rescued Miner
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1110083,0,23571,1319,1184,-376,-518.086,216,0,0,0,24874,9753,219,219);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1110083,10,10),(1110083,15,0);
+-- Rescued Miner
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1110084,0,23571,1319,1184,-369,-512.645,213,0,0,0,24874,9753,219,219);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1110084,10,10),(1110084,15,0);
+-- Rescued Miner
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1110085,0,23571,1319,1184,-387,-518.086,217,0,0,0,24874,9753,219,219);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1110085,10,10),(1110085,15,0);
+-- Rescued Miner
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1110086,0,23571,1319,1184,-408,-516.651,211,0,0,0,24874,9753,219,219);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1110086,10,10),(1110086,15,0);
+-- Rescued Miner
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1110087,0,23571,1319,1184,-341,-510.211,189,0,0,0,24874,9753,219,219);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1110087,10,10),(1110087,15,0);
+-- Rescued Miner
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1110088,0,23571,1319,1184,-394,-518.58,229,0,0,0,24874,9753,219,219);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1110088,10,10),(1110088,15,0);
+-- Rescued Miner
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1110089,0,23571,1319,1184,-394,-518.086,221,0,0,0,24874,9753,219,219);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1110089,10,10),(1110089,15,0);
+-- Rescued Miner
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1110090,0,23571,1319,1185,-348,-540.721,443,0,0,0,24874,9753,219,219);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1110090,10,10),(1110090,15,0);
+-- Rescued Miner
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1110091,0,23571,1319,1185,-366,-540.744,437,0,0,0,24874,9753,219,219);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1110091,10,10),(1110091,15,0);
+-- Rescued Miner
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1110092,0,23571,1319,1185,-370,-540.744,430,0,0,0,24874,9753,219,219);
 INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1110092,10,10),(1110092,15,0);
 -- Rescued Miner
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1110093,0,23571,1319,1184,-362,-513.455,188,0,0,0,24874,9753,219,219);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1110093,0,23571,1319,1185,-338,-540.721,445,0,0,0,24874,9753,219,219);
 INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1110093,10,10),(1110093,15,0);
 -- Rescued Miner
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1110094,0,23571,1319,1184,-399,-515.327,203,0,0,0,24874,9753,219,219);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1110094,0,23571,1319,1185,-361,-540.744,430,0,0,0,24874,9753,219,219);
 INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1110094,10,10),(1110094,15,0);
--- Rescued Miner
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1110095,0,23571,1319,1184,-376,-518.086,216,0,0,0,24874,9753,219,219);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1110095,10,10),(1110095,15,0);
--- Rescued Miner
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1110096,0,23571,1319,1184,-369,-512.645,213,0,0,0,24874,9753,219,219);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1110096,10,10),(1110096,15,0);
--- Rescued Miner
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1110097,0,23571,1319,1184,-387,-518.086,217,0,0,0,24874,9753,219,219);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1110097,10,10),(1110097,15,0);
--- Rescued Miner
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1110098,0,23571,1319,1184,-408,-516.651,211,0,0,0,24874,9753,219,219);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1110098,10,10),(1110098,15,0);
--- Rescued Miner
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1110099,0,23571,1319,1184,-341,-510.211,189,0,0,0,24874,9753,219,219);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1110099,10,10),(1110099,15,0);
--- Rescued Miner
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1110100,0,23571,1319,1184,-394,-518.58,229,0,0,0,24874,9753,219,219);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1110100,10,10),(1110100,15,0);
--- Rescued Miner
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1110101,0,23571,1319,1184,-394,-518.086,221,0,0,0,24874,9753,219,219);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1110101,10,10),(1110101,15,0);
--- Rescued Miner
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1110102,0,23571,1319,1185,-348,-540.721,443,0,0,0,24874,9753,219,219);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1110102,10,10),(1110102,15,0);
--- Rescued Miner
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1110103,0,23571,1319,1185,-366,-540.744,437,0,0,0,24874,9753,219,219);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1110103,10,10),(1110103,15,0);
--- Rescued Miner
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1110104,0,23571,1319,1185,-370,-540.744,430,0,0,0,24874,9753,219,219);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1110104,10,10),(1110104,15,0);
--- Rescued Miner
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1110105,0,23571,1319,1185,-338,-540.721,445,0,0,0,24874,9753,219,219);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1110105,10,10),(1110105,15,0);
--- Rescued Miner
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1110106,0,23571,1319,1185,-361,-540.744,430,0,0,0,24874,9753,219,219);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1110106,10,10),(1110106,15,0);
 -- Return to Nexus
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1110107,0,23596,1319,1540,9782,-932.667,5273,0,0,0,24632,0,219,219);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1110107,10,1),(1110107,15,0);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1110095,0,23596,1319,1540,9782,-932.667,5273,0,0,0,24632,0,219,219);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1110095,10,1),(1110095,15,0);
 -- Return to Nexus
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1110108,0,23596,1319,1184,-404,-487.697,115,0,0,0,24632,0,219,219);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1110108,10,1),(1110108,15,0);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1110096,0,23596,1319,1184,-404,-487.697,115,0,0,0,24632,0,219,219);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1110096,10,1),(1110096,15,0);
 -- Space Frizlet
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1110109,0,23539,1319,1184,-349,-511.431,195,0,0,0,26363,0,859,859);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1110097,0,23539,1319,1184,-349,-511.431,195,0,0,0,26363,0,859,859);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1110097,10,10),(1110097,15,0);
+-- Space Frizlet
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1110098,0,23539,1319,1184,-363,-512.645,205,0,0,0,26363,0,859,859);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1110098,10,10),(1110098,15,0);
+-- Space Frizlet
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1110099,0,23539,1319,1184,-376,-498.591,131,0,0,0,26363,0,859,859);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1110099,10,10),(1110099,15,0);
+-- Space Frizlet
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1110100,0,23539,1319,1184,-366,-502.155,146,0,0,0,26363,0,859,859);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1110100,10,10),(1110100,15,0);
+-- Space Frizlet
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1110101,0,23539,1319,1184,-371,-498.591,142,0,0,0,26363,0,859,859);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1110101,10,10),(1110101,15,0);
+-- Space Frizlet
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1110102,0,23539,1319,1184,-422,-516.651,218,0,0,0,26363,0,859,859);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1110102,10,10),(1110102,15,0);
+-- Space Frizlet
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1110103,0,23539,1319,1184,-401,-518.58,212,0,0,0,26363,0,859,859);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1110103,10,10),(1110103,15,0);
+-- Space Frizlet
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1110104,0,23539,1319,1184,-397,-515.327,208,0,0,0,26363,0,859,859);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1110104,10,10),(1110104,15,0);
+-- Space Frizlet
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1110105,0,23539,1319,1184,-354,-511.431,200,0,0,0,26363,0,859,859);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1110105,10,10),(1110105,15,0);
+-- Space Frizlet
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1110106,0,23539,1319,1184,-371,-498.591,133,0,0,0,26363,0,859,859);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1110106,10,10),(1110106,15,0);
+-- Space Frizlet
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1110107,0,23539,1319,1184,-350,-511.431,196,0,0,0,26363,0,859,859);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1110107,10,10),(1110107,15,0);
+-- Space Frizlet
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1110108,0,23539,1319,1184,-353,-510.58,191,0,0,0,26363,0,859,859);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1110108,10,10),(1110108,15,0);
+-- Space Frizlet
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1110109,0,23539,1319,1184,-356,-511.431,197,0,0,0,26363,0,859,859);
 INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1110109,10,10),(1110109,15,0);
 -- Space Frizlet
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1110110,0,23539,1319,1184,-363,-512.645,205,0,0,0,26363,0,859,859);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1110110,0,23539,1319,1184,-415,-516.651,207,0,0,0,26363,0,859,859);
 INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1110110,10,10),(1110110,15,0);
 -- Space Frizlet
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1110111,0,23539,1319,1184,-376,-498.591,131,0,0,0,26363,0,859,859);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1110111,0,23539,1319,1184,-422,-516.651,209,0,0,0,26363,0,859,859);
 INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1110111,10,10),(1110111,15,0);
 -- Space Frizlet
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1110112,0,23539,1319,1184,-366,-502.155,146,0,0,0,26363,0,859,859);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1110112,0,23539,1319,1184,-421,-516.651,216,0,0,0,26363,0,859,859);
 INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1110112,10,10),(1110112,15,0);
--- Space Frizlet
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1110113,0,23539,1319,1184,-371,-498.591,142,0,0,0,26363,0,859,859);
+-- Steady Traveler Bosun
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1110113,0,29432,1319,1540,9773,-932.667,5263,0,0,0,21349,0,466,466);
 INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1110113,10,10),(1110113,15,0);
--- Space Frizlet
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1110114,0,23539,1319,1184,-422,-516.651,218,0,0,0,26363,0,859,859);
+-- Steady Traveler Bosun
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1110114,0,29432,1319,1540,9773,-932.667,5263,0,0,0,21349,0,466,466);
 INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1110114,10,10),(1110114,15,0);
--- Space Frizlet
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1110115,0,23539,1319,1184,-401,-518.58,212,0,0,0,26363,0,859,859);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1110115,10,10),(1110115,15,0);
--- Space Frizlet
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1110116,0,23539,1319,1184,-397,-515.327,208,0,0,0,26363,0,859,859);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1110116,10,10),(1110116,15,0);
--- Space Frizlet
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1110117,0,23539,1319,1184,-354,-511.431,200,0,0,0,26363,0,859,859);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1110117,10,10),(1110117,15,0);
--- Space Frizlet
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1110118,0,23539,1319,1184,-371,-498.591,133,0,0,0,26363,0,859,859);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1110118,10,10),(1110118,15,0);
--- Space Frizlet
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1110119,0,23539,1319,1184,-350,-511.431,196,0,0,0,26363,0,859,859);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1110119,10,10),(1110119,15,0);
--- Space Frizlet
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1110120,0,23539,1319,1184,-353,-510.58,191,0,0,0,26363,0,859,859);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1110120,10,10),(1110120,15,0);
--- Space Frizlet
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1110121,0,23539,1319,1184,-356,-511.431,197,0,0,0,26363,0,859,859);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1110121,10,10),(1110121,15,0);
--- Space Frizlet
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1110122,0,23539,1319,1184,-415,-516.651,207,0,0,0,26363,0,859,859);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1110122,10,10),(1110122,15,0);
--- Space Frizlet
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1110123,0,23539,1319,1184,-422,-516.651,209,0,0,0,26363,0,859,859);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1110123,10,10),(1110123,15,0);
--- Space Frizlet
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1110124,0,23539,1319,1184,-421,-516.651,216,0,0,0,26363,0,859,859);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1110124,10,10),(1110124,15,0);
--- Steady Traveler Bosun
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1110125,0,29432,1319,1540,9773,-932.667,5263,0,0,0,21349,0,466,466);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1110125,10,10),(1110125,15,0);
--- Steady Traveler Bosun
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1110126,0,29432,1319,1540,9773,-932.667,5263,0,0,0,21349,0,466,466);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1110126,10,10),(1110126,15,0);
 -- Steady Traveler Coxswain
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1110127,0,29437,1319,1540,9782,-932.667,5281,0,0,0,23465,0,466,466);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1110127,10,10),(1110127,15,0);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1110115,0,29437,1319,1540,9782,-932.667,5281,0,0,0,23465,0,466,466);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1110115,10,10),(1110115,15,0);
 -- Steady Traveler Engineer
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1110128,0,29447,1319,1540,9784,-932.668,5250,0,0,0,25459,9166,466,466);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1110128,10,10),(1110128,15,0);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1110116,0,29447,1319,1540,9784,-932.668,5250,0,0,0,25459,9166,466,466);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1110116,10,10),(1110116,15,0);
 -- Steady Traveler Mate
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1110129,0,29428,1319,1183,9791,-929.444,5231,0,0,0,25459,9731,466,466);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1110129,10,10),(1110129,15,0);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1110117,0,29428,1319,1183,9791,-929.444,5231,0,0,0,25459,9731,466,466);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1110117,10,10),(1110117,15,0);
 -- Steady Traveler Mate
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1110130,0,29428,1319,1540,9788,-932.667,5280,0,0,0,25459,9731,466,466);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1110130,10,10),(1110130,15,0);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1110118,0,29428,1319,1540,9788,-932.667,5280,0,0,0,25459,9731,466,466);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1110118,10,10),(1110118,15,0);
 -- Steady Traveler Mate
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1110131,0,29428,1319,1540,9805,-932.668,5264,0,0,0,25459,9731,466,466);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1110131,10,10),(1110131,15,0);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1110119,0,29428,1319,1540,9805,-932.668,5264,0,0,0,25459,9731,466,466);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1110119,10,10),(1110119,15,0);
 -- Steady Traveler Mate
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1110132,0,29428,1319,1540,9770,-932.667,5261,0,0,0,25459,9731,466,466);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1110132,10,10),(1110132,15,0);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1110120,0,29428,1319,1540,9770,-932.667,5261,0,0,0,25459,9731,466,466);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1110120,10,10),(1110120,15,0);
 -- Steady Traveler Mate
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1110133,0,29428,1319,1183,9764,-929.444,5231,0,0,0,25459,9731,466,466);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1110133,10,10),(1110133,15,0);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1110121,0,29428,1319,1183,9764,-929.444,5231,0,0,0,25459,9731,466,466);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1110121,10,10),(1110121,15,0);
 -- Steady Traveler Mate
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1110134,0,29428,1319,1540,9802,-932.668,5270,0,0,0,25459,9731,466,466);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1110134,10,10),(1110134,15,0);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1110122,0,29428,1319,1540,9802,-932.668,5270,0,0,0,25459,9731,466,466);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1110122,10,10),(1110122,15,0);
 -- Steady Traveler Ship's Log
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1110135,0,31210,1319,1540,9806,-932.668,5260,0,0,0,26834,0,219,219);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1110135,10,1),(1110135,15,0);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1110123,0,31210,1319,1540,9806,-932.668,5260,0,0,0,26834,0,219,219);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1110123,10,1),(1110123,15,0);
