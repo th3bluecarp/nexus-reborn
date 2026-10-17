@@ -10,6 +10,7 @@ Newest first. "Live" means running on our test server.
 
 ## 2026-10-15
 
+- You can break out of stuns by mashing the direction keys (98bed0f9).
 - Stuns, roots, silences and disarms now actually hold creatures down instead of being visual only (d43b787e).
 - Right-clicking an item at the bank now deposits it (08f8c6f2).
 - Logging in no longer replays quest state changes before you are in the world (d298a5b1).
