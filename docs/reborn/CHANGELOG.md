@@ -10,6 +10,7 @@ Newest first. "Live" means running on our test server.
 
 ## 2026-10-15
 
+- Galeras: Sparking Wires, Uplink Stations and Buzzbing Remains placed for their Scientist missions, Whimsical Whimfibers, Green Thumb and Supply Run challenges (5aa3df94)
 - Chasing Fireflies challenge counts the Fireflies (5bc2a5e1)
 - Scientist EXPERIMENTATION missions: the console opens the pattern puzzle and solving it completes the mission (47a51415)
 - Ability tier points follow the level instead of all 42 from level 1 (f32bfc40)
