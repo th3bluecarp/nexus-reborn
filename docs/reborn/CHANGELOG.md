@@ -10,6 +10,7 @@ Newest first. "Live" means running on our test server.
 
 ## 2026-10-15
 
+- Item challenges (loot the target item) and Ability challenges (hit enemies with the challenge's item ability, like the Eldan Combat Arm) now count (06fb727e).
 - Daily login rewards work: each new day counts on the calendar and gives that day's reward in your bags (db31d3ed).
 - Fixed the crash after looting: loot ids started at 1, the same id as the player, and the client removed the player when the first loot was granted after a restart (162562c9). Login no longer shows error boxes for ability charges and movement control.
 - Looting several of the same item at once no longer sends a burst of stack updates, the pattern behind two client crashes (e85f1017).
