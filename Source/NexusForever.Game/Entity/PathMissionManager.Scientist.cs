@@ -36,7 +36,10 @@ namespace NexusForever.Game.Entity
             [42u]  = new([["Dominion Turret", "Inactive Dominion Turret"], ["Dominion Secure Database", "Dominion Secure Database Hologram"]], 1u), // ANALYSIS: Turning the Tide
             [160u] = new([["Vitalium Crystal"]], 3u),                                                     // CHEMISTRY: Vitalium Crystals
             [648u] = new([["Skeech Diviner", "Skeech Scratcher", "Skeech Shaman", "Cleaved Skeech Shaman"]], 3u), // BIOLOGY: Skeech Physiology
-            // Algoroc (Grimstone Girrok 264, Gronyx 826 and Stumpkins 827 have no spawns anywhere in Algoroc, no rule)
+            // Algoroc
+            [264u]  = new([["Grimstone Digger", "Grimstone Ruffian", "Grimstone Mangler", "Grimstone Savage", "Grimstone Ravager"]], 3u), // BIOLOGY: Grimstone Girrok
+            [826u]  = new([["Augmented Slateform Slammer", "Augmented Slateform Charger", "Augmented Slateform Demolisher", "Hulking Gronyx", "Gronyx"]], 3u), // BIOLOGY: Gronyx
+            [827u]  = new([["Pinewrath Barktooth", "Pinewrath Trunksplitter", "Pinewrath Stumpmaker", "Pinewrath Logchomper", "Pinewrath Branchsnapper", "Barktooth Stumpkin", "Trunksplitter Stumpkin"]], 3u), // BIOLOGY: Stumpkins
             [201u]  = new([["Irradiated Icetail Leaper", "Irradiated Icetail Pouncer", "Irradiated Icetail Slayer", "Irradiated Icetail Stalker", "Irradiated Snoglug"]], 3u), // BIOLOGY: Irradiated Wildlife
             [218u]  = new([["Large Loftite Formation"]], 3u),       // CHEMISTRY: Loftite Crystals
             [266u]  = new([["Fiera Flower"]], 3u),                  // BOTANY: Fiera Flowers

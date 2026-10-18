@@ -113,7 +113,7 @@ namespace NexusForever.Game.Entity
             bool changed = false;
             foreach (ChallengeEntry entry in GameTableManager.Instance.Challenge.Entries)
             {
-                if (!IsSupported(entry) || (TargetGroup(entry) == 0u && !IsReach(entry)) || unlocked.ContainsKey(entry.Id))
+                if (!IsSupported(entry) || unlocked.ContainsKey(entry.Id))
                     continue;
 
                 uint areaZone = entry.WorldZoneIdRestriction != 0u ? entry.WorldZoneIdRestriction : entry.WorldZoneId;
@@ -143,8 +143,16 @@ namespace NexusForever.Game.Entity
         private static bool IsSupported(ChallengeEntry entry)
         {
             return (ChallengeType)entry.ChallengeTypeEnum is ChallengeType.Combat or ChallengeType.Collect or ChallengeType.ChecklistActivate or ChallengeType.Item or ChallengeType.Ability
-                || ((ChallengeType)entry.ChallengeTypeEnum == ChallengeType.General && (TargetGroup(entry) != 0u || IsReach(entry)));
+                || ((ChallengeType)entry.ChallengeTypeEnum == ChallengeType.General && (TargetGroup(entry) != 0u || TargetCreatures.ContainsKey(entry.Id) || IsReach(entry)));
         }
+
+        /// <summary>
+        /// General challenges without a target or reward pane group whose objects are a single creature, named in their text.
+        /// </summary>
+        private static readonly Dictionary<uint, uint> TargetCreatures = new()
+        {
+            [620u] = 37391u, // Seek and Destroy: Alchemical Supplies in Grimbone Tomb (Algoroc)
+        };
 
         /// <summary>
         /// The target group a challenge counts: its target, or for General challenges without one the reward pane group
@@ -169,9 +177,12 @@ namespace NexusForever.Game.Entity
                 return false;
 
             string progress = GameTableManager.Instance.TextEnglish?.GetEntry(entry.LocalizedTextIdProgress);
-            // "Reach the top of ...", "Race to ...", "Deliver ... to ..." (a run from the start spot to the indicator)
+            // "Reach the top of ...", "Race to ...", "Deliver ... to ..." (a run from the start spot to the indicator), "Navigate the
+            // lasers ..." (the end of the grid, touching a beam is not tracked), "Land in the center of the pond ..." (the pond)
             return progress != null && (progress.StartsWith("Reach", StringComparison.OrdinalIgnoreCase)
                 || progress.StartsWith("Race", StringComparison.OrdinalIgnoreCase)
+                || progress.StartsWith("Navigate", StringComparison.OrdinalIgnoreCase)
+                || progress.StartsWith("Land in", StringComparison.OrdinalIgnoreCase)
                 || (progress.StartsWith("Deliver", StringComparison.OrdinalIgnoreCase) && entry.WorldLocation2IdStartLocation != 0u));
         }
 
@@ -235,17 +246,17 @@ namespace NexusForever.Game.Entity
         /// <summary>
         /// Invoked when the player gets kill credit for a creature.
         /// </summary>
-        public void OnKill(IEnumerable<uint> targetGroupIds)
+        public void OnKill(uint creatureId, IEnumerable<uint> targetGroupIds)
         {
-            OnTarget(targetGroupIds, ChallengeType.Combat, ChallengeType.Collect, ChallengeType.General);
+            OnTarget(creatureId, targetGroupIds, ChallengeType.Combat, ChallengeType.Collect, ChallengeType.General);
         }
 
         /// <summary>
         /// Invoked when the player successfully activates a creature.
         /// </summary>
-        public void OnActivate(IEnumerable<uint> targetGroupIds)
+        public void OnActivate(uint creatureId, IEnumerable<uint> targetGroupIds)
         {
-            OnTarget(targetGroupIds, ChallengeType.Collect, ChallengeType.ChecklistActivate, ChallengeType.General);
+            OnTarget(creatureId, targetGroupIds, ChallengeType.Collect, ChallengeType.ChecklistActivate, ChallengeType.General);
         }
 
         public void OnItemLoot(uint itemId, uint count)
@@ -262,13 +273,11 @@ namespace NexusForever.Game.Entity
                 && (c.Entry.Target == spell4Id || (baseId != 0u && GameTableManager.Instance.Spell4.GetEntry(c.Entry.Target)?.Spell4BaseIdBaseSpell == baseId))).ToList(), 1u);
         }
 
-        private void OnTarget(IEnumerable<uint> targetGroupIds, params ChallengeType[] types)
+        private void OnTarget(uint creatureId, IEnumerable<uint> targetGroupIds, params ChallengeType[] types)
         {
             var groups = targetGroupIds.ToHashSet();
-            if (groups.Count == 0)
-                return;
-
-            Count(unlocked.Values.Where(c => groups.Contains(TargetGroup(c.Entry)) && types.Contains((ChallengeType)c.Entry.ChallengeTypeEnum)).ToList(), 1u);
+            Count(unlocked.Values.Where(c => types.Contains((ChallengeType)c.Entry.ChallengeTypeEnum)
+                && (groups.Contains(TargetGroup(c.Entry)) || (TargetCreatures.TryGetValue(c.Entry.Id, out uint target) && target == creatureId))).ToList(), 1u);
         }
 
         private void Count(List<Challenge> challenges, uint amount)

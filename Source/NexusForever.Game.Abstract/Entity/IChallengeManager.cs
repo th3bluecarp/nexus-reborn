@@ -17,12 +17,12 @@ namespace NexusForever.Game.Abstract.Entity
         /// <summary>
         /// Invoked when the player gets kill credit for a creature.
         /// </summary>
-        void OnKill(IEnumerable<uint> targetGroupIds);
+        void OnKill(uint creatureId, IEnumerable<uint> targetGroupIds);
 
         /// <summary>
         /// Invoked when the player successfully activates a creature.
         /// </summary>
-        void OnActivate(IEnumerable<uint> targetGroupIds);
+        void OnActivate(uint creatureId, IEnumerable<uint> targetGroupIds);
 
         /// <summary>
         /// Invoked when the player loots items, Item challenges count their target item.

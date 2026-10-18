@@ -627,7 +627,7 @@ namespace NexusForever.Game.Entity
                 using IDisposable suppressed = activator.QuestManager.SuppressObjectiveUpdates(ActivateSpellQuests());
 
                 activator.PathMissionManager.OnActivate(CreatureInfo.Entry.Id, AssetManager.Instance.GetTargetGroupsForCreatureId(CreatureInfo.Entry.Id));
-                activator.ChallengeManager.OnActivate(AssetManager.Instance.GetTargetGroupsForCreatureId(CreatureInfo.Entry.Id));
+                activator.ChallengeManager.OnActivate(CreatureInfo.Entry.Id, AssetManager.Instance.GetTargetGroupsForCreatureId(CreatureInfo.Entry.Id));
                 activator.QuestManager.ObjectiveUpdate(QuestObjectiveType.ActivateEntity, CreatureInfo.Entry.Id, 1u);
                 activator.QuestManager.ObjectiveUpdate(QuestObjectiveType.GatheResource, CreatureInfo.Entry.Id, 1u);
                 activator.QuestManager.ObjectiveUpdate(QuestObjectiveType.ActivateTargetGroupChecklist, CreatureInfo.Entry.Id, QuestChecklistIdx);

@@ -903,7 +903,7 @@ namespace NexusForever.Game.Entity
             player.QuestManager.ObjectiveUpdate(QuestObjectiveType.GatheResource, CreatureId, 1u);
             player.TradeskillManager.OnKill(CreatureId);
             player.PathMissionManager.OnKill(CreatureId, AssetManager.Instance.GetTargetGroupsForCreatureId(CreatureId));
-            player.ChallengeManager.OnKill(AssetManager.Instance.GetTargetGroupsForCreatureId(CreatureId));
+            player.ChallengeManager.OnKill(CreatureId, AssetManager.Instance.GetTargetGroupsForCreatureId(CreatureId));
 
             foreach (uint targetGroupId in AssetManager.Instance.GetTargetGroupsForCreatureId(CreatureId))
             {
