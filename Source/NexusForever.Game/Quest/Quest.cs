@@ -173,6 +173,8 @@ namespace NexusForever.Game.Quest
             flags |= QuestStateFlags.Tracked;
             State  = QuestState.Accepted;
 
+            // a mentioned or ignored quest that is accepted again is initialised a second time, its old objectives go
+            objectives.Clear();
             for (byte i = 0; i < info.Objectives.Count; i++)
                 objectives.Add(new QuestObjective(player, info, info.Objectives[i], i));
 
@@ -363,7 +365,7 @@ namespace NexusForever.Game.Quest
         /// </summary>
         public IQuestObjective GetQuestObjective(uint id)
         {
-            return objectives.SingleOrDefault(o => o.ObjectiveInfo.Id == id);
+            return objectives.FirstOrDefault(o => o.ObjectiveInfo.Id == id);
         }
 
         /// <summary>
@@ -371,7 +373,7 @@ namespace NexusForever.Game.Quest
         /// </summary>
         public IQuestObjective GetQuestObjectiveByIndex(byte index)
         {
-            return objectives.SingleOrDefault(o => o.Index == index);
+            return objectives.FirstOrDefault(o => o.Index == index);
         }
 
         /// <summary>
