@@ -762,6 +762,15 @@ namespace NexusForever.Game.Entity
                     throw new QuestException($"Player {player.CharacterId} tried to complete quest {questId} without any quest receiver!");
             }
 
+            // the reward items need room in the bags, otherwise the quest stays to be turned in later (retail behaviour)
+            uint rewardItems = (uint)quest.Info.Rewards.Values
+                .Count(r => (QuestRewardType)r.Quest2RewardTypeId == QuestRewardType.Item && (r.Flags == 0u || r.Id == reward));
+            if (rewardItems > 0u && player.Inventory.GetInventorySlotsRemaining(InventoryLocation.Inventory) < rewardItems)
+            {
+                player.SendGenericError(GenericError.ItemInventoryFull);
+                return;
+            }
+
             quest.RewardQuest(reward);
 
             activeQuests.Remove(questId);
