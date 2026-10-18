@@ -10,6 +10,7 @@ Newest first. "Live" means running on our test server.
 
 ## 2026-10-15
 
+- Scientist scanning, Settler expansions and Soldier holdouts now work, starting with the Northern Wilds: summon the scanbot and scan, gather Salvaged Machine Parts and build at the depots, start a holdout at its control point and beat the waves (18c92c90, settler data 913ca7c8).
 - Path switching and unlocking are free with no cooldown, so one character can test every path (b26cf681).
 - Kill quests that ask for several creature kinds at once now count kills, 196 objectives were stuck at 0 (found on Securing the Area, d6de199d).
 - Ellevar's An Eerie Eldan Glow now has its Recombinated Canimid: quest creatures whose names carry a plural tag are no longer skipped (868908ab).
