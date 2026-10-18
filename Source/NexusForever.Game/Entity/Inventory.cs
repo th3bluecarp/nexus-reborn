@@ -796,14 +796,10 @@ namespace NexusForever.Game.Entity
             item.StackCount = stackCount;
             countChangedItems.Add(item.Id);
 
-            // a stack update reaching the client without its player unit (loading screen) crashes it (WildStar64 0x1403c0c3d)
-            if (!CanSendStackUpdates())
-            {
-                pendingStackUpdates[item.Guid] = (item, reason);
-                return;
-            }
-
-            SendStackCountUpdate(item, reason);
+            // a stack update reaching the client without its player unit crashes it (WildStar64 0x1403c0c3d): seen on loading
+            // screens and twice right after a loot vacuum that sent an item add and 3 or 4 updates of the same item in one burst.
+            // Updates wait for the next inventory tick and are merged, one per item with its final count.
+            pendingStackUpdates[item.Guid] = (item, reason);
         }
 
         /// <summary>
