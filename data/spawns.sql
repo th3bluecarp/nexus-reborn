@@ -895,7 +895,7 @@ INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900296,10,23),(900296,1
 INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900297,0,20532,51,1613,4660.0,-933.363,-691.889,0,0,0,27270,8971,171,171);
 INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900297,10,23),(900297,15,0);
 -- Bunker Entrance (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900298,0,20623,51,138,5971,-860.5,-240,0,0,0,24764,0,219,219);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900298,0,20623,51,138,5888.0,-954.3,-180.0,0,0,0,24764,0,219,219);
 INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900298,10,1),(900298,15,0);
 -- Snowshadow Info Column (target, quest-linked)
 INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900299,0,20626,51,138,6366,-695.0,-76,0,0,0,27486,0,219,219);
@@ -3307,10 +3307,10 @@ INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (901100,10,1),(901100,15
 INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (901101,0,34237,51,1251,3998.792,-968.289,204.958,0,0,0,29064,0,1019,1019);
 INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (901101,10,25),(901101,15,0);
 -- Equalizer Julius (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (901102,0,34447,51,138,5956.815,-831.4,-77.593,0,0,0,30457,9205,170,170);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (901102,0,34447,51,138,5866.0,-953.9,-157.0,0,0,0,30457,9205,170,170);
 INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (901102,10,23),(901102,15,0);
 -- Cycler Kolo (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (901103,0,34448,51,138,5970.087,-819.025,-116.304,0,0,0,30456,9655,170,170);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (901103,0,34448,51,138,5880.0,-950.2,-130.0,0,0,0,30456,9655,170,170);
 INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (901103,10,23),(901103,15,0);
 -- Research Notes (giver, location link)
 INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (901104,0,34506,1421,1424,4455.539,-601.0,-7204.727,0,0,0,27128,0,219,219);
@@ -5212,13 +5212,13 @@ INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (901735,10,33),(901735,1
 INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (901736,0,44223,1421,1490,4048,-723.0,-5199,0,0,0,31506,9380,170,170);
 INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (901736,10,33),(901736,15,0);
 -- Bomb Plant Loc (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (901737,0,44320,51,138,5991,-850.75,-46,0,0,0,27794,0,219,219);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (901737,0,44320,51,138,5852.0,-951.1,-150.0,0,0,0,27794,0,219,219);
 INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (901737,10,1),(901737,15,0);
 -- Bomb Plant Loc (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (901738,0,44320,51,138,5964,-843.5,-57,0,0,0,27794,0,219,219);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (901738,0,44320,51,138,5870.0,-951.2,-135.0,0,0,0,27794,0,219,219);
 INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (901738,10,1),(901738,15,0);
 -- Bomb Plant Loc (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (901739,0,44320,51,138,5997,-845.0,-63,0,0,0,27794,0,219,219);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (901739,0,44320,51,138,5884.0,-955.5,-190.0,0,0,0,27794,0,219,219);
 INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (901739,10,1),(901739,15,0);
 -- Lumos Stinger (target, objective marker)
 INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (901740,0,44372,1421,4944,3787.062,-718.225,-5833.946,0,0,0,21609,0,356,356);
