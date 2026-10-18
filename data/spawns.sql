@@ -202,10 +202,10 @@ INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900065,10,15),(900065,1
 INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900066,0,14124,426,597,5011,-708.442,-5776,0,0,0,22572,0,219,219);
 INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900066,10,3),(900066,15,0);
 -- Imprisoned Survivor (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900067,0,14124,426,597,5041,-357.0,-5707,0,0,0,22572,0,219,219);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900067,0,14124,426,597,4903.0,-709.445,-5689.0,0,0,0,22572,0,219,219);
 INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900067,10,3),(900067,15,0);
 -- Imprisoned Survivor (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900068,0,14124,426,597,5076,-346.0,-5749,0,0,0,22572,0,219,219);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900068,0,14124,426,597,4922.0,-709.053,-5668.0,0,0,0,22572,0,219,219);
 INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900068,10,3),(900068,15,0);
 -- Darkspur Punisher (target, objective marker)
 INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900069,0,14430,22,1709,-4389.805,-938.716,-1421.065,0,0,0,30279,9043,709,709);

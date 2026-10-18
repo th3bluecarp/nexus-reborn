@@ -1351,15 +1351,16 @@ namespace NexusForever.Game.Entity
 
             Session.EnqueueMessageEncrypted(new ServerPlayerEnteredWorld());
 
-            // the first world entry of the session counts the daily login (items need the client in the world)
+            pendingTeleport = null;
+            IsLoading = false;
+
+            // the first world entry of the session counts the daily login, after loading ends: items created while
+            // loading are not sent to the client and only showed after a relog
             if (!dailyLoginChecked)
             {
                 dailyLoginChecked = true;
                 Account.DailyLoginManager.OnEnteredWorld(this);
             }
-
-            pendingTeleport = null;
-            IsLoading = false;
         }
 
         /// <summary>
