@@ -1055,7 +1055,8 @@ namespace NexusForever.Game.Entity
                     UnitId    = ControlGuid.Value
                 });
             }
-            else
+            // not before the player is on a map: at character select the client reports it as an unhandled message (an error box)
+            else if (Map != null)
                 Session.EnqueueMessageEncrypted(new ServerMovementControlRemove());
         }
 

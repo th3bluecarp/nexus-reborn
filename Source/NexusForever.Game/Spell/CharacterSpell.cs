@@ -256,6 +256,11 @@ namespace NexusForever.Game.Spell
 
         private void SendChargeUpdate()
         {
+            // at character select the client has no world yet and reports the message as unhandled (an error box); charges start
+            // full there, so the client needs no update until the player is on a map
+            if (Owner.Map == null)
+                return;
+
             Owner.Session.EnqueueMessageEncrypted(new ServerSpellAbilityCharges
             {
                 SpellId            = Item.Id,
