@@ -10,6 +10,7 @@ Newest first. "Live" means running on our test server.
 
 ## 2026-10-15
 
+- Illium and Thayd quest NPCs that stand inside buildings (Emperor Myrcalus, Rixis, Sergeant Akida and others) are now placed at their quests' turn-in spots (c60ffdd0).
 - Crafting work orders and craft-and-deliver quests can be finished: any successful craft counts for them. This unblocks about 200 quests, Thayd alone had 38 (6dcf63e6).
 - Galeras' Scientist scan missions have their targets (15 of 18) (0fd49dc0).
 - Celestion's twelve Scientist scan missions have their targets, and race and delivery challenges (Race to the top of Celestial Falls, Swiftfoot's tea biscuits) run like reach challenges (b1c9ab43).
