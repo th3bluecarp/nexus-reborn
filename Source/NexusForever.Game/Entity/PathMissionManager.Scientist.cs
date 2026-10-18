@@ -123,6 +123,31 @@ namespace NexusForever.Game.Entity
             [1182u] = new([["Larval Terminite", "Terminite Egg"]], 5u), // ANALYSIS: Terminite Mutations (checklist of 5)
             [1366u] = new([["Oozing Sludgeon", "Putrid Oozing Sludgeon", "Viscous Oozing Sludgeon"]], 3u), // BIOLOGY: Oozing Sludgeons
             [1887u] = new([["Bloodtalon Warden", "Bloodtalon Scrapper", "Bloodtalon Horncaller", "Bloodtalon Slicer"]], 3u), // BIOLOGY: Falkrin and Primal Air
+            // Ellevar (filtration 1693, icons of faith 1702 and weeping bluepines 1806 have no clear creatures, no rule)
+            [1692u] = new([["Ravenok Nest"]], 3u), // BIOLOGY: Ravenok Nesting Grounds
+            [1694u] = new([["Stoneridge Cragfist", "Stoneridge Smasher"]], 3u), // CHEMISTRY: Stoneridge Gronyx
+            [1695u] = new([["Highland Aloe"]], 3u), // BOTANY: Highland Aloe
+            [1707u] = new([["Copperworth Sprinkler"]], 3u), // DIAGNOSTICS: Copperworth Irrigation
+            [1738u] = new([["Augmentation Apparatus Component", "Ikthian Stasis Generator", "Ikthian Transport Controls", "Ikthian Biological Experiment", "Ikthian Scanning Device", "Ikthian Data Panel"]], 8u), // ANALYSIS: Ikthian Technology (checklist of 8)
+            [1748u] = new([["Ferocious Darkspire Slank", "Bloated Darkspire Slank", "Darkspire Slank", "Darkspire Tormentor", "Darkspire Strangler", "Darkspire Hoarder Slank"]], 3u), // BIOLOGY: Mutated Wildlife
+            [1807u] = new([["AH47 Augmentor", "Augmentor Core"]], 3u), // ARCHAEOLOGY: Eldan Answers
+            [2007u] = new([["Circuitry"]], 4u), // ARCHAEOLOGY: Eldan Circuitry (checklist of 4)
+            // Auroria (Collegium researchers 1612, Noxious Glade terminites 1615 and the Kel Voreth shrines 1745 have no clear creatures, no rule)
+            [183u] = new([["Plagued Strawgrazer Bull", "Plagued Fields Hunter"]], 3u), // BIOLOGY: Plagued Citizens
+            [187u] = new([["Greystone Rumbler", "Greystone Slasher", "Greystone Demolisher", "Greystone Earthrager", "Greystone Masher", "Greystone Burrower", "Greystone Pummeler"]], 3u), // BIOLOGY: Greystone Canimid
+            [188u] = new([["Nova Blossom"]], 3u), // BOTANY: Volatile Nova Blossom
+            [189u] = new([["Eldan Technology"]], 3u), // ARCHAEOLOGY: Augmentation Relics
+            [190u] = new([["Plague Canister"]], 3u), // ANALYSIS: Plague Canisters
+            [235u] = new([["Cuboar Abomination", "Expired Cubig"]], 3u), // BIOLOGY: Cuboar Rejects
+            [237u] = new([["Honeyhive Guardian", "Honeyhive Stinger", "Honeyhive Sentinel", "Honeyhive Swarmer", "Honeyhive Warden", "Honeyhive Harvester", "Honeyhive Drone"]], 3u), // BIOLOGY: Honeyhive Buzzbings
+            [301u] = new([["Blooming Gildgrass"]], 3u), // BOTANY: Blooming Gildgrass
+            [1322u] = new([["Biting Boulder"]], 3u), // BIOLOGY: Biting Boulder
+            [1362u] = new([["Terrenite"]], 3u), // CHEMISTRY: Terrenite
+            [1616u] = new([["Blackheart Spellbinder"], ["Blackheart Summoner"], ["Blackheart Enchanter"]], 1u), // ANALYSIS: Channelers of the Blackheart
+            [1750u] = new([["Soulrot Elixir", "Soulrotted Minion", "Soulrotted Digger", "Soulrotted Dark Mender"]], 3u), // BIOLOGY: Slaves of the Osun
+            [1751u] = new([["Lancer Drop Pod"]], 6u), // ANALYSIS: Dropping Like Granok (checklist of 6)
+            [1752u] = new([["Voreth Bone Totem"]], 3u), // ANALYSIS: Grim Foci
+            [1755u] = new([["Sky Cutter", "Fringe Pack Rover", "Fringe Scavenger", "Fringe Pack Alpha", "Fringe Pack Stalker", "Fringe Pack Hunter"]], 3u), // BIOLOGY: Scavenger Studies
         };
 
         /// <summary>
