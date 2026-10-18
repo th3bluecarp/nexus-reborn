@@ -10,6 +10,7 @@ Newest first. "Live" means running on our test server.
 
 ## 2026-10-15
 
+- Chasing Fireflies challenge counts the Fireflies (5bc2a5e1)
 - Scientist EXPERIMENTATION missions: the console opens the pattern puzzle and solving it completes the mission (47a51415)
 - Ability tier points follow the level instead of all 42 from level 1 (f32bfc40)
 - Daily login kit appears without a relog and opens, Mind Burst no longer applies all five psi tiers, path log shows no switch cooldown, Coldburrow survivors inside the cave (118798aa)
