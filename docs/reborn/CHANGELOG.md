@@ -10,6 +10,7 @@ Newest first. "Live" means running on our test server.
 
 ## 2026-10-15
 
+- Scientist field studies work: each behavior on the checklist is one scan of the studied creature (44c33727).
 - Twelve more challenges count: detonating mines, crushing spider eggs, burning bodies, picking Desert Roses and similar (6b9ad65d).
 - Malgrave and Grimvault Scientist scan missions have their targets: every open world zone except Farside and Murkmire now has scan rules (15b29f60).
 - Wilderrun Scientist scan missions have their targets (9936cccf).
