@@ -10,6 +10,7 @@ Newest first. "Live" means running on our test server.
 
 ## 2026-10-15
 
+- Looting several of the same item at once no longer sends a burst of stack updates, the pattern behind two client crashes (e85f1017).
 - Reach challenges (scale the cliffs, vistas, races) and General challenges like Roan Tipping now work, and five Algoroc Scientist scan missions have their targets (525e8746).
 - 
 - Scientist scanning, Settler expansions and Soldier holdouts now work, starting with the Northern Wilds: summon the scanbot and scan, gather Salvaged Machine Parts and build at the depots, start a holdout at its control point and beat the waves (18c92c90, settler data 913ca7c8).
