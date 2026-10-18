@@ -10,6 +10,7 @@ Newest first. "Live" means running on our test server.
 
 ## 2026-10-15
 
+- Galeras' Scientist scan missions have their targets (15 of 18) (0fd49dc0).
 - Celestion's twelve Scientist scan missions have their targets, and race and delivery challenges (Race to the top of Celestial Falls, Swiftfoot's tea biscuits) run like reach challenges (b1c9ab43).
 - Quests that wait for a public event that no longer exists or never starts (Gallow's Departed, Last One In Shut the Door, Coming in Hot!) now finish by holding the objective spot for 20 seconds (01c2f124).
 - Scientist datacube discovery and specimen surveys, Settler PROJECT missions (carry resources to the builder) and Algoroc's Scientist checklists now work (d95f9680).
