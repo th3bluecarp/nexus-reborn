@@ -164,6 +164,39 @@ namespace NexusForever.Game.Entity
             [2350u] = new([["Statue of Korol the Devout", "Torine Statue", "Ritual Statue"]], 4u), // ARCHAEOLOGY: Eldan Surveillance (checklist of 4)
             [3060u] = new([["Tanglecrash Slashtail", "Tanglecrash Clipclaw", "Tanglecrash Fastclaw", "Tanglecrash Curltail"]], 3u), // BIOLOGY: The Servants of Toria
             [3067u] = new([["Scattered Wreckage"]], 5u), // ANALYSIS: Wisdom from the Wreckage (checklist of 5)
+            // Malgrave (the sand disturbances of 2060 have no clear creature, no rule)
+            [1937u] = new([["Robo-Cultist Acolyte", "Robo-Cultist Initiate"]], 3u), // ANALYSIS: Occult Observation
+            [1941u] = new([["Dreg Hoversail", "Flammable Dreg Belongings", "Dreg Corpse", "Dreg Brute Corpse"]], 5u), // ANALYSIS: Dregging Up the Past (checklist of 5)
+            [1942u] = new([["Massive Skull"]], 10u), // BIOLOGY: Cataloguing the Massive Ones (checklist of 10)
+            [1946u] = new([["Spectral Brigand", "Spectral Raider", "Spectral Gunslinger", "Spectral Crackshot", "Spectral Outlaw"]], 3u), // ANALYSIS: We're Going Full Stream
+            [1947u] = new([["Blooming Hellrose"]], 3u), // BIOLOGY: Flaming Flora
+            [1950u] = new([["Eldan Defense Construct", "Eldan Security Construct", "Cooling Construct", "Sandstone Constructor"]], 3u), // ANALYSIS: Forgotten Science
+            [1952u] = new([["Land Mine"]], 3u), // DIAGNOSTICS: Proper Explosive Removal
+            [1953u] = new([["Disabled Probe"]], 3u), // DIAGNOSTICS: Back Online
+            [2044u] = new([["Skittering Flayer"]], 3u), // BIOLOGY: Skittering Spiders
+            [2065u] = new([["Angry Regurgitated Buzzbing"]], 3u), // BIOLOGY: Buzz Off
+            [2067u] = new([["Eldan Artifacts", "Eldan Relay"]], 5u), // ANALYSIS: Eldan Remnants (checklist of 5)
+            [2068u] = new([["Pure Loftite Crystal"]], 3u), // CHEMISTRY: Loftite Resonance
+            [2087u] = new([["Protostar Secure-A-Lock 3000"]], 3u), // ANALYSIS: Safecracking
+            [2088u] = new([["Dust Devil"]], 3u), // ANALYSIS: Hyperlocal Weather Systems
+            // Grimvault (the Cankertube creature of 3176 and the Strain Maw 3254 have no clear target, no rule)
+            [2211u] = new([["Corrupted Warden", "Corrupted Protector", "Corrupted Hatchling", "Corrupted Probe", "Corrupted Stemdragon", "Corrupted Watcher"]], 3u), // BIOLOGY: Corrupted Coterie
+            [2391u] = new([["Corrupted Warden", "Corrupted Protector", "Corrupted Hatchling", "Corrupted Probe", "Corrupted Stemdragon", "Corrupted Watcher"]], 3u), // BIOLOGY: Corrupted Coterie
+            [2212u] = new([["Mk. III Cryo Pod"]], 3u), // DIAGNOSTICS: Safety Recall
+            [2404u] = new([["Mk. III Cryo Pod"]], 3u), // DIAGNOSTICS: Safety Recall
+            [2215u] = new([["Oozing Sludge", "Oozing Horror"]], 3u), // BIOLOGY: Oozing Terrors
+            [2392u] = new([["Oozing Horror"]], 3u), // BIOLOGY: Oozing Horror
+            [2466u] = new([["Exanite Coated Plant"]], 3u), // CHEMISTRY: Exanite Interactions
+            [2468u] = new([["Exanite Coated Plant"]], 3u), // CHEMISTRY: Exanite Interactions
+            [2590u] = new([["Energy Worm"]], 3u), // BIOLOGY: Logical Constructs
+            [3122u] = new([["Eldan Console", "Cage Override Console", "System Core Console", "Genetic Archives Access Panel"]], 4u), // DIAGNOSTICS: Datacube on Lockdown (checklist of 4)
+            [3137u] = new([["Enthralled Exterminator", "Repair Construct", "Eldan Construct Fail-Safe"]], 3u), // ANALYSIS: Long-Term Effects
+            [3178u] = new([["Malleable Exanite", "Exanite Shard"]], 12u), // CHEMISTRY: Exanite Extraction (checklist of 12)
+            [3227u] = new([["Malleable Exanite", "Exanite Shard"]], 12u), // CHEMISTRY: Exanite Extraction (checklist of 12)
+            [3218u] = new([["Ship Debris"]], 5u), // ANALYSIS: The X-Periment (checklist of 5)
+            [3225u] = new([["Ship Debris"]], 5u), // ANALYSIS: Big Baby (checklist of 5)
+            [3242u] = new([["Eldan Control Panel", "Corrupted Generator"]], 7u), // ANALYSIS: Power of the Resonator (checklist of 7)
+            [3269u] = new([["Eldan Information Construct"]], 3u), // DIAGNOSTICS: Sentient Creations (checklist of 3)
         };
 
         /// <summary>
