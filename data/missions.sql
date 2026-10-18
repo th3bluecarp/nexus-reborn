@@ -357,3 +357,12 @@ INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1080117,10,50),(1080117
 -- The Caretaker, Enigma Chamber torso (Q9729 giver and Q9741 turn-in, beside Axis Pheydra, guessed)
 INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1080118,0,66229,22,2192,-3465.0,-880.0,-1050.0,0,0,0,25105,0,219,219);
 INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1080118,10,50),(1080118,15,0);
+-- Chancellor Juro Takigurian, released (Q10097 Alpha Sanctum Expedition turn-in, at the objective marker, guessed)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1080119,0,71302,22,2191,-3681.0,-851.0,-1046.0,0,0,0,34802,9057,170,170);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1080119,10,50),(1080119,15,0);
+-- Axis Pheydra (Q9729 Journey into OMNICore-1 talk target and turn-in, at its OMNICore-1 location links, guessed)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1080120,0,67338,1061,2834,79.0,-877.0,-4023.0,0,0,0,28019,9081,170,170);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1080120,10,50),(1080120,15,0);
+-- Axis Pheydra (Q9729 Journey into OMNICore-1 talk target and turn-in, at its OMNICore-1 location links, guessed)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1080121,0,62809,1061,2834,81.0,-877.0,-4163.0,0,0,0,28019,9081,1347,1347);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1080121,10,50),(1080121,15,0);
