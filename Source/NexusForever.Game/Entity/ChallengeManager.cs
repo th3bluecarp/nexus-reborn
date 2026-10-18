@@ -221,7 +221,8 @@ namespace NexusForever.Game.Entity
                 || progress.StartsWith("Run to", StringComparison.OrdinalIgnoreCase)
                 || progress.StartsWith("Get to", StringComparison.OrdinalIgnoreCase)
                 || progress.StartsWith("Make it to", StringComparison.OrdinalIgnoreCase)
-                || ((progress.StartsWith("Deliver", StringComparison.OrdinalIgnoreCase) || progress.StartsWith("Return", StringComparison.OrdinalIgnoreCase))
+                || ((progress.StartsWith("Deliver", StringComparison.OrdinalIgnoreCase) || progress.StartsWith("Return", StringComparison.OrdinalIgnoreCase)
+                    || progress.StartsWith("Take", StringComparison.OrdinalIgnoreCase))
                     && entry.WorldLocation2IdStartLocation != 0u));
         }
 
