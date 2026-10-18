@@ -2983,7 +2983,7 @@ INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900992,10,50),(900992,1
 INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900993,0,30983,22,1901,-2443.0,-772.67,-3912.111,0,0,0,25542,0,417,417);
 INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900993,10,8),(900993,15,0);
 -- Scaleborn Leviathan (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900994,0,30999,22,37,-736.283,-264.401,-3509.453,0,0,0,22858,0,340,340);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900994,0,30999,22,37,-944.4,-641.394,-3421.2,0,0,0,22858,0,340,340);
 INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900994,10,13),(900994,15,0);
 -- Cortex Breachscale (target, quest-linked)
 INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (900995,0,31000,22,3030,-609.364,-186.288,-3631.0,0,0,0,28394,0,340,340);
@@ -3103,19 +3103,19 @@ INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (901032,10,1),(901032,15
 INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (901033,0,32532,22,1773,-2508,-698.97,-2648,0,0,0,27105,0,219,219);
 INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (901033,10,9),(901033,15,0);
 -- Webwood Larva (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (901034,0,32560,22,37,-2395.5,-430.062,-2506.0,0,0,0,22265,0,219,219);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (901034,0,32560,22,37,-2395.5,-696.768,-2506.0,0,0,0,22265,0,219,219);
 INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (901034,10,1),(901034,15,0);
 -- Webwood Larva (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (901035,0,32560,22,37,-2384.0,-428.75,-2504.0,0,0,0,22265,0,219,219);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (901035,0,32560,22,37,-2384.0,-696.768,-2504.0,0,0,0,22265,0,219,219);
 INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (901035,10,1),(901035,15,0);
 -- Webwood Larva (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (901036,0,32560,22,37,-2376.0,-396.875,-2491.5,0,0,0,22265,0,219,219);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (901036,0,32560,22,37,-2376.0,-696.768,-2491.5,0,0,0,22265,0,219,219);
 INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (901036,10,1),(901036,15,0);
 -- Webwood Larva (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (901037,0,32560,22,37,-2375,-453.375,-2500,0,0,0,22265,0,219,219);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (901037,0,32560,22,37,-2375,-696.768,-2500,0,0,0,22265,0,219,219);
 INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (901037,10,1),(901037,15,0);
 -- Webwood Larva (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (901038,0,32560,22,37,-2381,-388.25,-2485,0,0,0,22265,0,219,219);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (901038,0,32560,22,37,-2381,-696.768,-2485,0,0,0,22265,0,219,219);
 INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (901038,10,1),(901038,15,0);
 -- Glitchbyte Leecher (target, objective marker)
 INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (901039,0,32685,22,1485,2365.472,-761.867,-2384.159,0,0,0,21753,0,470,470);

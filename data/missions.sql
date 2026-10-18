@@ -333,3 +333,27 @@ INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1080109,10,1),(1080109,
 -- Defiled Console (Q8356 Breaching the Core, around the Techno-Core location link, guessed)
 INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1080110,0,42552,1061,2841,-1024.0,-1200,-4102.0,0,0,0,28550,0,219,219);
 INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1080110,10,1),(1080110,15,0);
+-- Weeping Bluepine (M1806 BOTANY: Weeping Bluepine, around the mission marker near Webwood, guessed)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1080111,0,33037,22,404,-2366.4,-698.0,-2766.3,0,0,0,27152,0,219,219);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1080111,10,9),(1080111,15,0);
+-- Weeping Bluepine (M1806 BOTANY: Weeping Bluepine, around the mission marker near Webwood, guessed)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1080112,0,33037,22,404,-2352.2,-718.25,-2839.0,0,0,0,27152,0,219,219);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1080112,10,9),(1080112,15,0);
+-- Weeping Bluepine (M1806 BOTANY: Weeping Bluepine, around the mission marker near Webwood, guessed)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1080113,0,33037,22,404,-2311.6,-707.25,-2814.5,0,0,0,27152,0,219,219);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1080113,10,9),(1080113,15,0);
+-- Chancellor Juro Takigurian (Drusera quests giver and turn-in, at their Illium location link, guessed)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1080114,0,61415,22,2191,-3680.0,-851.0,-1049.0,0,0,0,34802,9057,170,170);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1080114,10,50),(1080114,15,0);
+-- Chancellor Juro Takigurian, captured (Q10097 Alpha Sanctum Expedition giver, at the objective marker, guessed)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1080115,0,71075,22,2191,-3674.0,-851.0,-1042.0,0,0,0,34802,9057,170,170);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1080115,10,50),(1080115,15,0);
+-- Axis Pheydra (World Story Gathering Support, at the quest location link, guessed)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1080116,0,66101,22,2192,-3461.0,-880.0,-1053.0,0,0,0,28019,9081,170,170);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1080116,10,50),(1080116,15,0);
+-- Emperor Myrcalus (World Story Gathering Support, beside Axis Pheydra, guessed)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1080117,0,66096,22,2192,-3457.0,-880.0,-1050.0,0,0,0,24316,0,170,170);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1080117,10,50),(1080117,15,0);
+-- The Caretaker, Enigma Chamber torso (Q9729 giver and Q9741 turn-in, beside Axis Pheydra, guessed)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1080118,0,66229,22,2192,-3465.0,-880.0,-1050.0,0,0,0,25105,0,219,219);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1080118,10,50),(1080118,15,0);

@@ -157,6 +157,11 @@ namespace NexusForever.Game.Entity
             [493u] = [30974u],          // Chasing Fireflies: Fireflies near Celestial Falls (Celestion)
             [185u] = [21185u, 21187u],  // Green Thumb: the healthy Galettuce and Galaraddish of Clearfield Farm (Galeras)
             [236u] = [23151u],          // Defusing the Situation: Sunderstone Proximity Mines (Whitevale), taking blast damage is not checked
+            [505u] = [33152u],          // Lowland Lavender Eggs (Ellevar)
+            [710u] = [41173u],          // Capital Trash: Illium Market Litter (Illium)
+            [424u] = [29638u],          // Speeder Beater: Darkspur Speeders (Auroria)
+            [467u] = [31600u],          // Hot Hand: Stray Flames (Auroria)
+            [490u] = [32060u],          // Here Comes the Boom: Mining Burrows (Auroria), dropping the explosive is the activation
         };
 
         /// <summary>
@@ -166,6 +171,7 @@ namespace NexusForever.Game.Entity
         private static readonly Dictionary<uint, uint[]> TouchCreatures = new()
         {
             [172u] = [9374u, 20791u, 20870u, 20871u, 20875u], // Whimsical Whimfibers: Flying Whimfibers (Galeras)
+            [410u] = [28977u],                                // Flitterfly Chaser: Everstar Flitterflies (Everstar Grove)
         };
 
         private const float TouchRange = 4f;
@@ -222,9 +228,27 @@ namespace NexusForever.Game.Entity
                 || progress.StartsWith("Get to", StringComparison.OrdinalIgnoreCase)
                 || progress.StartsWith("Make it to", StringComparison.OrdinalIgnoreCase)
                 || progress.StartsWith("Climb", StringComparison.OrdinalIgnoreCase)
+                || progress.StartsWith("Find the location", StringComparison.OrdinalIgnoreCase)
                 || ((progress.StartsWith("Deliver", StringComparison.OrdinalIgnoreCase) || progress.StartsWith("Return", StringComparison.OrdinalIgnoreCase)
                     || progress.StartsWith("Take", StringComparison.OrdinalIgnoreCase))
-                    && entry.WorldLocation2IdStartLocation != 0u));
+                    && entry.WorldLocation2IdStartLocation != 0u)
+                || IsTimedRun(entry));
+        }
+
+        /// <summary>
+        /// A General challenge whose start spot differs from its indicator and whose tiers are all time limits (Whirlwind Racer,
+        /// Ravenok Racer, Skeech Saboteur): a run from the start spot to the indicator, whatever the text says is done on the way.
+        /// </summary>
+        private static bool IsTimedRun(ChallengeEntry entry)
+        {
+            if (entry.WorldLocation2IdStartLocation == 0u || entry.WorldLocation2IdStartLocation == entry.WorldLocation2IdIndicator)
+                return false;
+
+            uint[] tiers = new[] { entry.ChallengeTierId00, entry.ChallengeTierId01, entry.ChallengeTierId02 }
+                .Select(t => GameTableManager.Instance.ChallengeTier.GetEntry(t)?.Count ?? 0u)
+                .Where(c => c > 0u)
+                .ToArray();
+            return tiers.Length > 0 && tiers.All(t => t >= 1000u);
         }
 
         private const float ReachMinRadius = 6f;

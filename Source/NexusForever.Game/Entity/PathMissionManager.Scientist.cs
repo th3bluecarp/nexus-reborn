@@ -119,10 +119,13 @@ namespace NexusForever.Game.Entity
             [1048u] = new([["Bloodpetal"]], 3u), // BOTANY: Bloodpetal Properties
             [1056u] = new([["Dreg Experiment", "Dreg Abomination"]], 3u), // BIOLOGY: Dreg Decryption
             [1057u] = new([["Deactivated Battlebot"]], 3u), // ANALYSIS: Repurposed Bots
-            // Levian Bay (the Eldan signal relays of 1365 have no spawned creature, no rule)
+            // Levian Bay
+            [1365u] = new([["Eldan Signal Relay", "Eldan Control Panel", "Eldan Security Node", "Eldan Primary Access Hub"]], 6u), // ARCHAEOLOGY: Eldan Enigma (checklist of 6)
             [1262u] = new([["Gloomshroud"]], 3u), // BOTANY: Gloomshroud Plants
             [1370u] = new([["Inactive Exile Turret"]], 3u), // ANALYSIS: Reversal of Fortune
-            // Deradune (supersized flora 1298 and the risen dead 1345 have no clear creatures, no rule)
+            // Deradune
+            [1298u] = new([["Giant Papyrus"]], 15u),                                // BOTANY: Supersized Flora (checklist of 15)
+            [1345u] = new([["Risen Girrok", "Risen Girrok Skullchewer", "Risen Draken Warrior", "Risen Draken Huntress", "Newly Risen Draken", "Vengeful Risen Draken", "Witchwake Risen"]], 3u), // BIOLOGY: The Risen Dead
             [66u] = new([["Cinderbloom"]], 3u), // BOTANY: Cinderbloom
             [67u] = new([["Deadwind Maniac", "Deadwind Witchdoctor", "Deadwind Lunatic", "Deadwind Caster", "Deadwind Sleeper"]], 3u), // BIOLOGY: Deadwind Moodies
             [68u] = new([["Gnarlfoot Climber", "Gnarlfoot Slasher"]], 3u), // BIOLOGY: Gnarlfoot Razortail
@@ -133,7 +136,10 @@ namespace NexusForever.Game.Entity
             [1182u] = new([["Larval Terminite", "Terminite Egg"]], 5u), // ANALYSIS: Terminite Mutations (checklist of 5)
             [1366u] = new([["Oozing Sludgeon", "Putrid Oozing Sludgeon", "Viscous Oozing Sludgeon"]], 3u), // BIOLOGY: Oozing Sludgeons
             [1887u] = new([["Bloodtalon Warden", "Bloodtalon Scrapper", "Bloodtalon Horncaller", "Bloodtalon Slicer"]], 3u), // BIOLOGY: Falkrin and Primal Air
-            // Ellevar (filtration 1693, icons of faith 1702 and weeping bluepines 1806 have no clear creatures, no rule)
+            // Ellevar (the Weeping Bluepines are placed by data/missions.sql)
+            [1693u] = new([["Rusty Frame", "Rusty Valve"]], 1u),                   // ARCHAEOLOGY: Forgotten Filtration
+            [1702u] = new([["Fine Leather Couch"], ["Lightreach Well"], ["Icon of Virtue"], ["Forgotten Jar"], ["Forgotten Sigil"], ["Forgotten Shrine"]], 1u), // ARCHAEOLOGY: Icons of Faith (checklist of 6)
+            [1806u] = new([["Weeping Bluepine"]], 3u),                             // BOTANY: Weeping Bluepine
             [1692u] = new([["Ravenok Nest"]], 3u), // BIOLOGY: Ravenok Nesting Grounds
             [1694u] = new([["Stoneridge Cragfist", "Stoneridge Smasher"]], 3u), // CHEMISTRY: Stoneridge Gronyx
             [1695u] = new([["Highland Aloe"]], 3u), // BOTANY: Highland Aloe
@@ -142,7 +148,12 @@ namespace NexusForever.Game.Entity
             [1748u] = new([["Ferocious Darkspire Slank", "Bloated Darkspire Slank", "Darkspire Slank", "Darkspire Tormentor", "Darkspire Strangler", "Darkspire Hoarder Slank"]], 3u), // BIOLOGY: Mutated Wildlife
             [1807u] = new([["AH47 Augmentor", "Augmentor Core"]], 3u), // ARCHAEOLOGY: Eldan Answers
             [2007u] = new([["Circuitry"]], 4u), // ARCHAEOLOGY: Eldan Circuitry (checklist of 4)
-            // Auroria (Collegium researchers 1612, Noxious Glade terminites 1615 and the Kel Voreth shrines 1745 have no clear creatures, no rule)
+            // Auroria
+            [1612u] = new([["Collegium Corpse"]], 3u),                             // BIOLOGY: Victims of Augmentation
+            [1615u] = new([["Larval Terminite", "Terminite Egg"]], 3u),          // BIOLOGY: Terminite Studies
+            [1745u] = new([["Shrine to Ugreth Foe-Breaker"], ["Shrine to Morgra the Subjugator"], ["Shrine to Kozek the Strong"], ["Shrine to Vrogh the Hound-Striker"], ["Shrine to Torug the Bladeforger"]], 1u), // ARCHAEOLOGY: Heroes of the Osun (checklist of 5)
+            // Illium
+            [2373u] = new([["Indominar"], ["Mechari Head"], ["Helm of Azrion"], ["Exanite Ore"], ["The Cozmotron"], ["The Illium Scroll"], ["The Nomad Beacon"], ["The God-Bone"]], 1u), // ANALYSIS: Eldan Treasure (checklist of 8)
             [183u] = new([["Plagued Strawgrazer Bull", "Plagued Fields Hunter"]], 3u), // BIOLOGY: Plagued Citizens
             [187u] = new([["Greystone Rumbler", "Greystone Slasher", "Greystone Demolisher", "Greystone Earthrager", "Greystone Masher", "Greystone Burrower", "Greystone Pummeler"]], 3u), // BIOLOGY: Greystone Canimid
             [188u] = new([["Nova Blossom"]], 3u), // BOTANY: Volatile Nova Blossom
