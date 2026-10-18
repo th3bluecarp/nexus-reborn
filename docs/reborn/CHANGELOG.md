@@ -10,6 +10,7 @@ Newest first. "Live" means running on our test server.
 
 ## 2026-10-15
 
+- Daily login kit appears without a relog and opens, Mind Burst no longer applies all five psi tiers, path log shows no switch cooldown, Coldburrow survivors inside the cave (118798aa)
 - Algoroc: biology scans for Grimstone Girrok, Gronyx and Stumpkins, The Grid, Bull's-Eye and Seek and Destroy challenges (f6e75eac)
 - Scientist field studies work: each behavior on the checklist is one scan of the studied creature (44c33727).
 - Twelve more challenges count: detonating mines, crushing spider eggs, burning bodies, picking Desert Roses and similar (6b9ad65d).
