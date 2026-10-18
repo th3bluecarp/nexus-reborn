@@ -208,9 +208,59 @@ namespace NexusForever.Game.Entity
         private uint? scanbotGuid;
         private readonly Dictionary<ushort, HashSet<uint>> scannedUnits = [];
 
+        private static readonly System.Collections.Concurrent.ConcurrentDictionary<uint, ScanRule> fieldStudyRules = new();
+
+        /// <summary>
+        /// The scan rule of a mission: written for scans and checklists, built from the table for field studies (mission type 20).
+        /// </summary>
+        /// <remarks>
+        /// A field study watches one creature (or target group) perform the behaviors of its checklist; the behavior events were
+        /// server side and are lost, so each checklist entry is one scan of a different unit of the creature.
+        /// </remarks>
+        private static ScanRule RuleFor(uint missionId)
+        {
+            if (ScanRules.TryGetValue(missionId, out ScanRule rule))
+                return rule;
+
+            return fieldStudyRules.GetOrAdd(missionId, id =>
+            {
+                PathMissionEntry entry = GameTableManager.Instance.PathMission.GetEntry(id);
+                if (entry == null || entry.PathMissionTypeEnum != 20u)
+                    return null;
+
+                PathScientistFieldStudyEntry study = GameTableManager.Instance.PathScientistFieldStudy.GetEntry(entry.ObjectId);
+                if (study == null)
+                    return null;
+
+                var creatures = new List<uint>();
+                if (study.Creature2Id != 0u)
+                    creatures.Add(study.Creature2Id);
+                TargetGroupEntry group = study.TargetGroupId != 0u ? GameTableManager.Instance.TargetGroup.GetEntry(study.TargetGroupId) : null;
+                if (group != null && group.Type == 1u)
+                    creatures.AddRange(group.DataEntries.Where(d => d != 0u));
+
+                string[] names = creatures
+                    .Select(c => GameTableManager.Instance.Creature2.GetEntry(c))
+                    .Where(c => c != null)
+                    .Select(c => GameTableManager.Instance.TextEnglish?.GetEntry(c.LocalizedTextIdName))
+                    .Where(n => !string.IsNullOrEmpty(n))
+                    .Select(n => Regex.Replace(n, @"\{p:[^}]*\}", ""))
+                    .Distinct()
+                    .ToArray();
+                if (names.Length == 0)
+                    return null;
+
+                uint behaviors = (uint)new[] { study.LocalizedTextIdChecklist00, study.LocalizedTextIdChecklist01, study.LocalizedTextIdChecklist02, study.LocalizedTextIdChecklist03,
+                    study.LocalizedTextIdChecklist04, study.LocalizedTextIdChecklist05, study.LocalizedTextIdChecklist06, study.LocalizedTextIdChecklist07 }
+                    .Count(t => t != 0u);
+                return new ScanRule([names], Math.Max(behaviors, 1u));
+            });
+        }
+
         private static PathMission CreateScanMission(PathMissionEntry entry)
         {
-            if (!ScanRules.TryGetValue(entry.Id, out ScanRule rule))
+            ScanRule rule = RuleFor(entry.Id);
+            if (rule == null)
                 return null;
 
             uint slots = Math.Min((uint)rule.Groups.Length * rule.ScansPerGroup, 32u);
@@ -235,7 +285,8 @@ namespace NexusForever.Game.Entity
         /// </summary>
         private static int ScanGroup(PathMission mission, string name)
         {
-            if (name == null || !ScanRules.TryGetValue(mission.Entry.Id, out ScanRule rule))
+            ScanRule rule = RuleFor(mission.Entry.Id);
+            if (name == null || rule == null)
                 return -1;
 
             for (int i = 0; i < rule.Groups.Length; i++)
@@ -250,7 +301,7 @@ namespace NexusForever.Game.Entity
         /// </summary>
         private static int? FreeScanSlot(PathMission mission, int group)
         {
-            uint perGroup = ScanRules[mission.Entry.Id].ScansPerGroup;
+            uint perGroup = RuleFor(mission.Entry.Id).ScansPerGroup;
             for (int i = 0; i < perGroup; i++)
             {
                 int slot = group * (int)perGroup + i;
