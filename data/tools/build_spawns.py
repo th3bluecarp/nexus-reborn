@@ -125,6 +125,10 @@ for (cid,z),info in sorted(todo.items()):
     if (not page or not page['pins']) and 'target' in info['roles'] and info.get('locs') and not info.get('topup'):
         marks=[[wloc[l]['Position0'],wloc[l]['Position2']] for l in info['locs'] if l in wloc and wloc[l]['WorldId']==w]
         if marks: page={'pins':marks,'file':'(objective marker)'}; conf='objective marker'
+    # in the capitals NPCs stand inside buildings the terrain does not cover: a giver or turn-in with its quest turn-in
+    # location (WorldLocation2IdReceiver) stands there rather than at its pins
+    if mp in ('illium','thayd') and info['roles']-{'target'} and any(q in c['QuestIdReceive'] and Q[q]['WorldLocation2IdReceiver'] in wloc and wloc[Q[q]['WorldLocation2IdReceiver']]['WorldId']==w for q in info['quests']):
+        page=None
     if (not page or not page['pins']) and info['roles']-{'target'}:
         # a giver or turn-in with no usable page: the hub its quest text links to (Location:N), or a hand-picked hub in MANUAL
         # the quest's own turn-in location (WorldLocation2IdReceiver) for an NPC that receives it is the most exact
@@ -134,7 +138,7 @@ for (cid,z),info in sorted(todo.items()):
         if lids:
             l=lids[0]; n=hubcount[l]; hubcount[l]+=1
             # stand NPCs sharing a hub 3 m apart
-            page={'pins':[[wloc[l]['Position0']+3*n,wloc[l]['Position2']+3]],'file':f'(quest location {l})'}; conf='location link'
+            page={'pins':[[wloc[l]['Position0']+3*n,wloc[l]['Position2']+3]],'file':f'(quest location {l})','y':wloc[l]['Position1']}; conf='location link'
     if not page or not page['pins']:
         report.append([cid,name,mp,'/'.join(sorted(info['roles'])),' '.join(map(str,sorted(info['quests']))),'SKIP', 'no Jabbithole page' if not cands else f'{len(cands)} pages, none quest-linked','',''])
         continue
@@ -160,7 +164,12 @@ for (cid,z),info in sorted(todo.items()):
     for cc in take:
         near=sorted(spawnpos[w], key=lambda s: math.hypot(s[0]-cc['x'],s[2]-cc['z']))[:5]
         near=[s for s in near if math.hypot(s[0]-cc['x'],s[2]-cc['z'])<=40]
-        if near:
+        if page.get('y') is not None and spawnpos[w]:
+            # a quest location is a full 3D position (inside capital buildings too): its height, the area of the nearest spawns
+            y=page['y']
+            nearest=sorted(spawnpos[w], key=lambda s: math.hypot(s[0]-cc['x'],s[2]-cc['z']))[:5]
+            area=collections.Counter(s[3] for s in nearest).most_common(1)[0][0]
+        elif near:
             y=sorted(s[1] for s in near)[len(near)//2]; area=collections.Counter(s[3] for s in near).most_common(1)[0][0]
         else:
             # no known spawn nearby: terrain height and area from the server's map files (tools/heights, run between two passes);
