@@ -38,6 +38,8 @@ namespace NexusForever.Game.Entity
             Cartography,
             ScavengerHunt,
             Scan,
+            Datacube,
+            SpecimenSurvey,
             Expansion,
             Infrastructure,
             Holdout
@@ -109,6 +111,14 @@ namespace NexusForever.Game.Entity
                     if (scan == null)
                         break;
                     return scan;
+                }
+                case (Path.Scientist, 23u):
+                case (Path.Scientist, 24u):
+                {
+                    PathMission discovery = CreateDiscoveryMission(entry);
+                    if (discovery == null)
+                        break;
+                    return discovery;
                 }
                 case (Path.Settler, 19u):
                 {
@@ -457,6 +467,7 @@ namespace NexusForever.Game.Entity
             StartHoldout(creatureId);
             GatherSettlerResource(creatureId);
             GatherInfrastructureResource(creatureId);
+            OpenDatacube(creatureId);
             OnCreature(MissionKind.Activate, creatureId, targetGroupIds);
         }
 
@@ -539,7 +550,7 @@ namespace NexusForever.Game.Entity
             {
                 MissionKind.Kill or MissionKind.Activate or MissionKind.Cartography or MissionKind.Expansion or MissionKind.Infrastructure or MissionKind.Holdout => mission.Progress >= mission.Count,
                 MissionKind.Scan => mission.Progress == (mission.Count >= 32u ? uint.MaxValue : (1u << (int)mission.Count) - 1u),
-                MissionKind.Locations or MissionKind.Quests or MissionKind.ScavengerHunt => mission.Progress == (mission.Objects.Length >= 32 ? uint.MaxValue : (1u << mission.Objects.Length) - 1u),
+                MissionKind.Locations or MissionKind.Quests or MissionKind.ScavengerHunt or MissionKind.Datacube or MissionKind.SpecimenSurvey => mission.Progress == (mission.Objects.Length >= 32 ? uint.MaxValue : (1u << mission.Objects.Length) - 1u),
                 _ => false
             };
 

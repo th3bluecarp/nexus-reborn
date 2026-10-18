@@ -230,7 +230,18 @@ namespace NexusForever.Game.Entity
                 .FirstOrDefault(e => FindScanMission(e) != null);
 
             if (target == null)
+            {
+                // a specimen survey takes a sample from the target, or the nearest creature, at its locations
+                IWorldEntity specimen = player.TargetGuid != null ? player.GetVisible<IWorldEntity>(player.TargetGuid.Value) : null;
+                specimen ??= player.GetVisible()
+                    .OfType<IUnitEntity>()
+                    .Where(e => e is not IPlayer && e.IsAlive && Vector3.Distance(e.Position, player.Position) <= ScanSearchRange)
+                    .OrderBy(e => Vector3.DistanceSquared(e.Position, player.Position))
+                    .FirstOrDefault();
+                if (specimen != null && Vector3.Distance(specimen.Position, player.Position) <= ScanTargetRange)
+                    ScanSpecimen(specimen);
                 return;
+            }
 
             (PathMission mission, int group) = FindScanMission(target).Value;
             int slot = FreeScanSlot(mission, group).Value;
