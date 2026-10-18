@@ -39,6 +39,7 @@ namespace NexusForever.Game.Entity
             ScavengerHunt,
             Scan,
             Expansion,
+            Infrastructure,
             Holdout
         }
 
@@ -115,6 +116,13 @@ namespace NexusForever.Game.Entity
                     if (hub == null)
                         break;
                     return new PathMission { Entry = entry, Kind = MissionKind.Expansion, Objects = [hub.Id], Count = Math.Max(hub.MissionCount, 1u) };
+                }
+                case (Path.Settler, 21u):
+                {
+                    PathSettlerInfrastructureEntry infrastructure = GameTableManager.Instance.PathSettlerInfrastructure.GetEntry(entry.ObjectId);
+                    if (infrastructure == null)
+                        break;
+                    return new PathMission { Entry = entry, Kind = MissionKind.Infrastructure, Objects = [infrastructure.Id], Count = Math.Max(infrastructure.MissionCount, 1u) };
                 }
                 case (Path.Soldier, 0u):
                 {
@@ -379,6 +387,8 @@ namespace NexusForever.Game.Entity
             if (player.Map == null)
                 return;
 
+            DeliverInfrastructureResources();
+
             foreach (PathMission mission in missions.Values.Where(m => m.Kind == MissionKind.Cartography && !m.IsComplete).ToList())
             {
                 uint percent = (uint)player.ZoneMapManager.GetExploredPercent(mission.Objects[0]);
@@ -446,6 +456,7 @@ namespace NexusForever.Game.Entity
         {
             StartHoldout(creatureId);
             GatherSettlerResource(creatureId);
+            GatherInfrastructureResource(creatureId);
             OnCreature(MissionKind.Activate, creatureId, targetGroupIds);
         }
 
@@ -526,7 +537,7 @@ namespace NexusForever.Game.Entity
 
             bool complete = mission.Kind switch
             {
-                MissionKind.Kill or MissionKind.Activate or MissionKind.Cartography or MissionKind.Expansion or MissionKind.Holdout => mission.Progress >= mission.Count,
+                MissionKind.Kill or MissionKind.Activate or MissionKind.Cartography or MissionKind.Expansion or MissionKind.Infrastructure or MissionKind.Holdout => mission.Progress >= mission.Count,
                 MissionKind.Scan => mission.Progress == (mission.Count >= 32u ? uint.MaxValue : (1u << (int)mission.Count) - 1u),
                 MissionKind.Locations or MissionKind.Quests or MissionKind.ScavengerHunt => mission.Progress == (mission.Objects.Length >= 32 ? uint.MaxValue : (1u << mission.Objects.Length) - 1u),
                 _ => false

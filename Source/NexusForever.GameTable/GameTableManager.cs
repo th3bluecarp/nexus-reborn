@@ -433,6 +433,7 @@ namespace NexusForever.GameTable
         public GameTable<PathSettlerImprovementEntry> PathSettlerImprovement { get; private set; }
         [GameData]
         public GameTable<PathSettlerImprovementGroupEntry> PathSettlerImprovementGroup { get; private set; }
+        [GameData]
         public GameTable<PathSettlerInfrastructureEntry> PathSettlerInfrastructure { get; private set; }
         [GameData]
         public GameTable<PathSettlerMayorEntry> PathSettlerMayor { get; private set; }
