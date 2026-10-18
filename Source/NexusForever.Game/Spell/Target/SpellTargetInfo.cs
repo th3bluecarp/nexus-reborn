@@ -94,6 +94,10 @@ namespace NexusForever.Game.Spell.Target
             Flags      = target.Flags;
 
             log.LogTrace($"Initialised SpellTargetInfo for target {Guid} for spell {Collection.Spell.Spell4Id}.");
+
+            // Ability challenges count the units a player hits with their spell
+            if (Collection.Spell.Caster is IPlayer player && target.Entity is IUnitEntity unit && unit != player && unit is not IPlayer)
+                player.ChallengeManager?.OnAbilityHit(Collection.Spell.Spell4Id);
         }
 
         public TargetInfo Build()

@@ -142,7 +142,7 @@ namespace NexusForever.Game.Entity
 
         private static bool IsSupported(ChallengeEntry entry)
         {
-            return (ChallengeType)entry.ChallengeTypeEnum is ChallengeType.Combat or ChallengeType.Collect or ChallengeType.ChecklistActivate or ChallengeType.Item
+            return (ChallengeType)entry.ChallengeTypeEnum is ChallengeType.Combat or ChallengeType.Collect or ChallengeType.ChecklistActivate or ChallengeType.Item or ChallengeType.Ability
                 || ((ChallengeType)entry.ChallengeTypeEnum == ChallengeType.General && (entry.Target != 0u || IsReach(entry)));
         }
 
@@ -237,6 +237,14 @@ namespace NexusForever.Game.Entity
         {
             // Item challenges: the target is the Item2 id to collect
             Count(unlocked.Values.Where(c => (ChallengeType)c.Entry.ChallengeTypeEnum == ChallengeType.Item && c.Entry.Target == itemId).ToList(), count);
+        }
+
+        public void OnAbilityHit(uint spell4Id)
+        {
+            // Ability challenges: the target is the Spell4 id (an item ability like the Eldan Combat Arm), any tier of its base counts
+            uint baseId = GameTableManager.Instance.Spell4.GetEntry(spell4Id)?.Spell4BaseIdBaseSpell ?? 0u;
+            Count(unlocked.Values.Where(c => (ChallengeType)c.Entry.ChallengeTypeEnum == ChallengeType.Ability
+                && (c.Entry.Target == spell4Id || (baseId != 0u && GameTableManager.Instance.Spell4.GetEntry(c.Entry.Target)?.Spell4BaseIdBaseSpell == baseId))).ToList(), 1u);
         }
 
         private void OnTarget(IEnumerable<uint> targetGroupIds, params ChallengeType[] types)

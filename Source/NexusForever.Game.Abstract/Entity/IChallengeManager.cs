@@ -30,6 +30,11 @@ namespace NexusForever.Game.Abstract.Entity
         void OnItemLoot(uint itemId, uint count);
 
         /// <summary>
+        /// Invoked when a spell of the player hits a unit, Ability challenges count hits of their target spell.
+        /// </summary>
+        void OnAbilityHit(uint spell4Id);
+
+        /// <summary>
         /// Handle the challenge window buttons.
         /// </summary>
         void HandleChoice(uint challengeId, ChallengeChoice choice);
