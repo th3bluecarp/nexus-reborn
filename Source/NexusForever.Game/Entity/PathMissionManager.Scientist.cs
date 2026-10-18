@@ -62,7 +62,10 @@ namespace NexusForever.Game.Entity
             [1847u] = new([["Ravenous Ripper", "Ravenous Ghoul", "Ravenous Horror", "Ravenous Fiend", "Ravenous Reaver", "Ravenous Malignant", "Ravenous Mordesh"]], 3u), // BIOLOGY: Ravenous Ruminations
             [1854u] = new([["Communication Controls", "Communication Dish"]], 4u), // ANALYSIS: Eldan Communications (checklist of 4)
             [1859u] = new([["Shield Generator", "Bio-Containment Shield"]], 3u), // DIAGNOSTICS: Switching Safeguards (checklist of 3)
-            // Galeras (dead Buzzbings 707, Crimson Legion uplink stations 712 and sparking wires 3156 have no spawns, no rule)
+            // Galeras (dead Buzzbings, uplink stations and sparking wires are placed by data/missions.sql)
+            [707u]  = new([["Buzzbing Remains 1", "Buzzbing Remains 2"]], 3u),          // BIOLOGY: Buzzing Bodies
+            [712u]  = new([["Crimson Legion Uplink Station"]], 3u),                  // ANALYSIS: Stolen Science
+            [3156u] = new([["Sparking Wire"]], 8u),                                  // DIAGNOSTICS: Power Outage (checklist of 8)
             [425u]  = new([["Razorbeak Riptalon", "Razorbeak Render", "Razorbeak Chick", "Razorbeak Nester", "Razorbeak Forager", "Razorbeak Ripper"]], 3u), // BIOLOGY: Razorbeak Gribbons
             [426u]  = new([["Thundercall Guardian", "Thundercall Arcanist", "Thundercall Wind-Speaker", "Thundercall Warrior", "Thundercall Wind-Witch", "Thundercall Wind-Striker"]], 3u), // BIOLOGY: Thundercall Pell
             [427u]  = new([["Sandstorm Elemental", "Wind Elemental", "Gust Elemental", "Sandsquall Elemental", "Angry Air Elemental"]], 3u), // BIOLOGY: Air Elementals

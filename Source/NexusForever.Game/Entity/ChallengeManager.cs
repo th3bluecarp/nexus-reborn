@@ -43,6 +43,7 @@ namespace NexusForever.Game.Entity
             public DateTime ActivatedAt { get; set; }
             public DateTime CooldownUntil { get; set; }
             public DateTime? LeftAreaAt { get; set; }
+            public HashSet<uint> Touched { get; } = [];
 
             public uint Goal => Tiers.Length > 0 ? Tiers[^1] : 0u;
         }
@@ -143,17 +144,48 @@ namespace NexusForever.Game.Entity
         private static bool IsSupported(ChallengeEntry entry)
         {
             return (ChallengeType)entry.ChallengeTypeEnum is ChallengeType.Combat or ChallengeType.Collect or ChallengeType.ChecklistActivate or ChallengeType.Item or ChallengeType.Ability
-                || ((ChallengeType)entry.ChallengeTypeEnum == ChallengeType.General && (TargetGroup(entry) != 0u || TargetCreatures.ContainsKey(entry.Id) || IsReach(entry)));
+                || ((ChallengeType)entry.ChallengeTypeEnum == ChallengeType.General && (TargetGroup(entry) != 0u || TargetCreatures.ContainsKey(entry.Id)
+                    || TouchCreatures.ContainsKey(entry.Id) || IsReach(entry)));
         }
 
         /// <summary>
-        /// General challenges without a target or reward pane group whose objects are a single creature, named in their text.
+        /// General challenges without a target or reward pane group whose objects are creatures named in their text, counted on kill or activation.
         /// </summary>
-        private static readonly Dictionary<uint, uint> TargetCreatures = new()
+        private static readonly Dictionary<uint, uint[]> TargetCreatures = new()
         {
-            [620u] = 37391u, // Seek and Destroy: Alchemical Supplies in Grimbone Tomb (Algoroc)
-            [493u] = 30974u, // Chasing Fireflies: Fireflies near Celestial Falls (Celestion)
+            [620u] = [37391u],          // Seek and Destroy: Alchemical Supplies in Grimbone Tomb (Algoroc)
+            [493u] = [30974u],          // Chasing Fireflies: Fireflies near Celestial Falls (Celestion)
+            [185u] = [21185u, 21187u],  // Green Thumb: the healthy Galettuce and Galaraddish of Clearfield Farm (Galeras)
         };
+
+        /// <summary>
+        /// General challenges counted by passing through creatures ("Jump through as many flying whimfibers as you can"): each unit
+        /// of them coming within <see cref="TouchRange"/> of the player counts once per run.
+        /// </summary>
+        private static readonly Dictionary<uint, uint[]> TouchCreatures = new()
+        {
+            [172u] = [9374u, 20791u, 20870u, 20871u, 20875u], // Whimsical Whimfibers: Flying Whimfibers (Galeras)
+        };
+
+        private const float TouchRange = 4f;
+
+        private void UpdateTouch()
+        {
+            foreach (Challenge challenge in unlocked.Values.Where(c => c.Activated && TouchCreatures.ContainsKey(c.Entry.Id)).ToList())
+            {
+                uint[] creatures = TouchCreatures[challenge.Entry.Id];
+                List<IWorldEntity> touched = player.GetVisible()
+                    .OfType<IWorldEntity>()
+                    .Where(e => creatures.Contains(e.CreatureId) && !challenge.Touched.Contains(e.Guid)
+                        && System.Numerics.Vector3.Distance(e.Position, player.Position) <= TouchRange)
+                    .ToList();
+                foreach (IWorldEntity entity in touched)
+                    challenge.Touched.Add(entity.Guid);
+
+                if (touched.Count > 0)
+                    Count([challenge], (uint)touched.Count);
+            }
+        }
 
         /// <summary>
         /// The target group a challenge counts: its target, or for General challenges without one the reward pane group
@@ -184,7 +216,8 @@ namespace NexusForever.Game.Entity
                 || progress.StartsWith("Race", StringComparison.OrdinalIgnoreCase)
                 || progress.StartsWith("Navigate", StringComparison.OrdinalIgnoreCase)
                 || progress.StartsWith("Land in", StringComparison.OrdinalIgnoreCase)
-                || (progress.StartsWith("Deliver", StringComparison.OrdinalIgnoreCase) && entry.WorldLocation2IdStartLocation != 0u));
+                || ((progress.StartsWith("Deliver", StringComparison.OrdinalIgnoreCase) || progress.StartsWith("Return", StringComparison.OrdinalIgnoreCase))
+                    && entry.WorldLocation2IdStartLocation != 0u));
         }
 
         private const float ReachMinRadius = 6f;
@@ -278,7 +311,7 @@ namespace NexusForever.Game.Entity
         {
             var groups = targetGroupIds.ToHashSet();
             Count(unlocked.Values.Where(c => types.Contains((ChallengeType)c.Entry.ChallengeTypeEnum)
-                && (groups.Contains(TargetGroup(c.Entry)) || (TargetCreatures.TryGetValue(c.Entry.Id, out uint target) && target == creatureId))).ToList(), 1u);
+                && (groups.Contains(TargetGroup(c.Entry)) || (TargetCreatures.TryGetValue(c.Entry.Id, out uint[] targets) && targets.Contains(creatureId)))).ToList(), 1u);
         }
 
         private void Count(List<Challenge> challenges, uint amount)
@@ -368,6 +401,7 @@ namespace NexusForever.Game.Entity
             challenge.Count       = 0u;
             challenge.CurrentTier = 0u;
             challenge.ActivatedAt = DateTime.UtcNow;
+            challenge.Touched.Clear();
             challenge.LeftAreaAt  = null;
             SendResult(challenge.Entry.Id, ChallengeResult.Activate, 0);
             // collect objects shown while the challenge runs (ChallengeRequirement) appear
@@ -446,6 +480,9 @@ namespace NexusForever.Game.Entity
 
         public void Update(double lastTick)
         {
+            // passing through moving creatures needs every tick, the rest once a second
+            UpdateTouch();
+
             updateTimer += lastTick;
             if (updateTimer < 1d)
                 return;
