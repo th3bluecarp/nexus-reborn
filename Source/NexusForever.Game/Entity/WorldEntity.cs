@@ -752,7 +752,8 @@ namespace NexusForever.Game.Entity
                             if (objective.ObjectiveInfo.Data == creatureId || (targetGroups.Contains(objective.ObjectiveInfo.Data)
                                 && GameTableManager.Instance.Creature2.GetEntry(objective.ObjectiveInfo.Data) == null))
                                 return true;
-                            if (objective.ObjectiveInfo.Type == QuestObjectiveType.ActivateEntity && (objective.ObjectiveInfo.Data == 0u || objective.ObjectiveInfo.Data == entry.TargetGroupIdRewardPane)
+                            if (objective.ObjectiveInfo.Type == QuestObjectiveType.ActivateEntity && (objective.ObjectiveInfo.Data == 0u || objective.ObjectiveInfo.Data == entry.TargetGroupIdRewardPane
+                                    || (GameTableManager.Instance.Creature2.GetEntry(objective.ObjectiveInfo.Data) == null && GameTableManager.Instance.TargetGroup.GetEntry(objective.ObjectiveInfo.Data) == null))
                                 && targetGroups.Contains(entry.TargetGroupIdRewardPane))
                                 return true;
                             break;

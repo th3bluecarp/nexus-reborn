@@ -532,7 +532,17 @@ namespace NexusForever.Game.Quest
             // ActivateEntity objectives with a creature target progress through it, those without one (or naming the reward pane group
             // itself, Captives of the Dominion) use the reward pane group
             ObjectiveUpdate(o => o.ObjectiveInfo.Entry.Type == (uint)type && o.ObjectiveInfo.Entry.TargetGroupIdRewardPane == targetGroupId
-                && (type != QuestObjectiveType.ActivateEntity || o.ObjectiveInfo.Data == 0u || o.ObjectiveInfo.Data == targetGroupId), progress);
+                && (type != QuestObjectiveType.ActivateEntity || o.ObjectiveInfo.Data == 0u || o.ObjectiveInfo.Data == targetGroupId || IsUnknownData(o.ObjectiveInfo.Data)), progress);
+        }
+
+        /// <summary>
+        /// Returns if objective data is neither a creature nor a target group (Use the rockets, Shout at the refugees, Escort the
+        /// archaeologist): such ActivateEntity objectives are counted through their reward pane group.
+        /// </summary>
+        private static bool IsUnknownData(uint data)
+        {
+            return GameTable.GameTableManager.Instance.Creature2.GetEntry(data) == null
+                && GameTable.GameTableManager.Instance.TargetGroup.GetEntry(data) == null;
         }
 
         /// <summary>
