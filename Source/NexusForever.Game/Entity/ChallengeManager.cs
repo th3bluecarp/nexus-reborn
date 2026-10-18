@@ -113,7 +113,7 @@ namespace NexusForever.Game.Entity
             bool changed = false;
             foreach (ChallengeEntry entry in GameTableManager.Instance.Challenge.Entries)
             {
-                if (!IsSupported(entry) || entry.Target == 0u || unlocked.ContainsKey(entry.Id))
+                if (!IsSupported(entry) || (entry.Target == 0u && !IsReach(entry)) || unlocked.ContainsKey(entry.Id))
                     continue;
 
                 uint areaZone = entry.WorldZoneIdRestriction != 0u ? entry.WorldZoneIdRestriction : entry.WorldZoneId;
@@ -142,7 +142,73 @@ namespace NexusForever.Game.Entity
 
         private static bool IsSupported(ChallengeEntry entry)
         {
-            return (ChallengeType)entry.ChallengeTypeEnum is ChallengeType.Combat or ChallengeType.Collect or ChallengeType.ChecklistActivate;
+            return (ChallengeType)entry.ChallengeTypeEnum is ChallengeType.Combat or ChallengeType.Collect or ChallengeType.ChecklistActivate
+                || ((ChallengeType)entry.ChallengeTypeEnum == ChallengeType.General && (entry.Target != 0u || IsReach(entry)));
+        }
+
+        /// <summary>
+        /// General challenges without a target whose text asks to reach a spot (scale a cliff, vista and race challenges): the
+        /// indicator location is the goal, the start location (when there is one) starts the challenge on arrival. Tiers of
+        /// thousands are time limits in milliseconds, finishing under more of them gives a better tier.
+        /// </summary>
+        private static bool IsReach(ChallengeEntry entry)
+        {
+            if ((ChallengeType)entry.ChallengeTypeEnum != ChallengeType.General || entry.Target != 0u || entry.WorldLocation2IdIndicator == 0u)
+                return false;
+
+            string progress = GameTableManager.Instance.TextEnglish?.GetEntry(entry.LocalizedTextIdProgress);
+            return progress != null && progress.StartsWith("Reach", StringComparison.OrdinalIgnoreCase);
+        }
+
+        private const float ReachMinRadius = 6f;
+        private const float ReachMaxHeight = 6f;
+
+        private bool AtLocation(uint worldLocationId, float minRadius, float maxHeight)
+        {
+            WorldLocation2Entry location = GameTableManager.Instance.WorldLocation2.GetEntry(worldLocationId);
+            if (location == null || player.Map == null || location.WorldId != player.Map.Entry.Id)
+                return false;
+
+            float dx = player.Position.X - location.Position0;
+            float dz = player.Position.Z - location.Position2;
+            float radius = Math.Max(location.Radius, minRadius);
+            return dx * dx + dz * dz <= radius * radius && Math.Abs(player.Position.Y - location.Position1) <= Math.Max(maxHeight, location.MaxVerticalDistance);
+        }
+
+        private void UpdateReach(DateTime now)
+        {
+            foreach (Challenge challenge in unlocked.Values.Where(c => IsReach(c.Entry)).ToList())
+            {
+                if (!challenge.Activated)
+                {
+                    // arriving at the start spot starts the challenge, challenges without one start from the challenge window
+                    if (challenge.Entry.WorldLocation2IdStartLocation == 0u || now < challenge.CooldownUntil || !InArea(challenge)
+                        || !AtLocation(challenge.Entry.WorldLocation2IdStartLocation, ReachMinRadius, 30f)
+                        || unlocked.Values.Any(c => c.Activated && c.Entry.ChallengeTypeEnum == challenge.Entry.ChallengeTypeEnum))
+                        continue;
+
+                    Activate(challenge);
+                    SendUpdate();
+                    continue;
+                }
+
+                if (!AtLocation(challenge.Entry.WorldLocation2IdIndicator, ReachMinRadius, ReachMaxHeight))
+                    continue;
+
+                if (challenge.Tiers.All(t => t >= 1000u))
+                {
+                    uint elapsed = (uint)(now - challenge.ActivatedAt).TotalMilliseconds;
+                    challenge.CurrentTier = (uint)Math.Max(challenge.Tiers.Count(t => elapsed <= t), 1);
+                    challenge.Count       = challenge.Goal;
+                }
+                else
+                {
+                    challenge.Count       = challenge.Goal;
+                    challenge.CurrentTier = (uint)challenge.Tiers.Length;
+                }
+
+                Finish(challenge, true);
+            }
         }
 
         private bool InArea(Challenge challenge)
@@ -156,7 +222,7 @@ namespace NexusForever.Game.Entity
         /// </summary>
         public void OnKill(IEnumerable<uint> targetGroupIds)
         {
-            OnTarget(targetGroupIds, ChallengeType.Combat, ChallengeType.Collect);
+            OnTarget(targetGroupIds, ChallengeType.Combat, ChallengeType.Collect, ChallengeType.General);
         }
 
         /// <summary>
@@ -164,7 +230,7 @@ namespace NexusForever.Game.Entity
         /// </summary>
         public void OnActivate(IEnumerable<uint> targetGroupIds)
         {
-            OnTarget(targetGroupIds, ChallengeType.Collect, ChallengeType.ChecklistActivate);
+            OnTarget(targetGroupIds, ChallengeType.Collect, ChallengeType.ChecklistActivate, ChallengeType.General);
         }
 
         private void OnTarget(IEnumerable<uint> targetGroupIds, params ChallengeType[] types)
@@ -342,6 +408,7 @@ namespace NexusForever.Game.Entity
             updateTimer = 0d;
 
             DateTime now = DateTime.UtcNow;
+            UpdateReach(now);
             foreach (Challenge challenge in unlocked.Values.Where(c => c.Activated).ToList())
             {
                 if (now - challenge.ActivatedAt >= ActiveTime)
