@@ -158,7 +158,27 @@ namespace NexusForever.Game.Entity
             [1751u] = new([["Lancer Drop Pod"]], 6u), // ANALYSIS: Dropping Like Granok (checklist of 6)
             [1752u] = new([["Voreth Bone Totem"]], 3u), // ANALYSIS: Grim Foci
             [1755u] = new([["Sky Cutter", "Fringe Pack Rover", "Fringe Scavenger", "Fringe Pack Alpha", "Fringe Pack Stalker", "Fringe Pack Hunter"]], 3u), // BIOLOGY: Scavenger Studies
-            // Wilderrun (Farside has too few spawns in the world database to choose targets, no rules there yet)
+            // Farside (asteroids, medusa eggs, foxfire, fiera flowers, toys, agave, drums and the third construct and hookfoot are placed by data/missions.sql)
+            [1534u] = new([["Farside Scavenger", "Farside Scrounger"]], 3u),                                // BIOLOGY: Alien Inhabitants (hookfoots)
+            [1535u] = new([["Unusual Asteroid"]], 5u),                                                     // ARCHAEOLOGY: Strange Rocks (checklist of 5)
+            [1558u] = new([["Derelict Silo Maintenance Construct", "Derelict Silo Command Construct", "Damaged Maintenance Construct", "Damaged Command Construct"]], 3u), // ANALYSIS: Eldan Maintenance
+            [1559u] = new([["Ravenous Frizlet"]], 3u),                                                     // BIOLOGY: Frizlet Necropsy
+            [1560u] = new([["Derelict Silo Squirg", "Derelict Silo Squirg Overseer"]], 3u),                // BIOLOGY: Derelict Squirg
+            [1561u] = new([["Darktide Engulfer", "Darktide Obstructer", "Darktide Destructor", "Darktide Champion", "Darktide Dragoon", "Darktide Finripper",
+                            "Darktide Enforcer", "Darktide Cryomancer", "Darktide Hydroprober", "Darktide Pincher", "Darktide Physicist", "Darktide Stifler"]], 3u), // BIOLOGY: Darktide Neural System
+            [1562u] = new([["Plasmic Equalizer"]], 1u),                                                    // ANALYSIS: Plasmic Equalizer (checklist of 1)
+            [1585u] = new([["Medusa Eggs"]], 3u),                                                          // BIOLOGY: Medusa Eggs
+            [1586u] = new([["Glowing Foxfire"]], 15u),                                                     // ANALYSIS: Unnatural Technologies (checklist of 15)
+            [2216u] = new([["Farside Fiera Flower"]], 3u),                                                 // BOTANY: Farside Fiera Flowers
+            [2222u] = new([["Tanglevine Toys"]], 3u),                                                      // ANALYSIS: Tanglevine Toys
+            [2226u] = new([["Timber Raven", "Domesticated Timber Raven"]], 3u),                            // BIOLOGY: Timber Raven
+            [2246u] = new([["Aggressive Agave"]], 3u),                                                     // BOTANY: Aggressive Agave
+            [2254u] = new([["Primal Vent"]], 1u),                                                          // CHEMISTRY: Primal Vents (one vent at the mission spot)
+            [2255u] = new([["Primal Vent"]], 1u),                                                          // CHEMISTRY: Primal Vents (one vent at the mission spot)
+            [2262u] = new([["Flamewalker Drum"]], 3u),                                                     // ANALYSIS: Flamewalker Drums
+            [2292u] = new([["Tanglevine Shaman", "Tanglevine Bruiser", "Tanglevine Brawler", "Tanglevine Slasher", "Tanglevine Matriarch", "Tanglevine Pummeler",
+                            "Tanglevine Menace", "Tanglevine Banshee", "Adolescent Tanglevine"]], 3u),     // BIOLOGY: Tanglevine Skeech
+            // Wilderrun
             [1567u] = new([["Swarming Splorg", "Wilderrun Splorg", "Scampering Splorg"]], 3u), // BIOLOGY: Splorg Toxins
             [1576u] = new([["Eldan Hologram", "Eldan Focal Monitor", "Eldan Holoprojector", "Eldan Augmentor"]], 3u), // ANALYSIS: The Truth is Somewhere (checklist of 3)
             [1628u] = new([["Primal Life Essence"]], 5u), // ANALYSIS: Elemental Life Spring (checklist of 5)
