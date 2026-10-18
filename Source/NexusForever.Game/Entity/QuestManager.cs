@@ -187,6 +187,25 @@ namespace NexusForever.Game.Entity
                         && IsInObjectiveArea(entry))
                         updates.Add((quest, objective.ObjectiveInfo.Id));
 
+                    // complete an event whose public event cannot run here (no longer in the client data, or on a map that does not
+                    // load): holding the objective's place for EventFallbackTime stands in for the event
+                    else if (objective.ObjectiveInfo.Type == QuestObjectiveType.CompleteEvent && !CanEventRun(objective.ObjectiveInfo.Data))
+                    {
+                        if (IsInObjectiveArea(entry) || IsAtTextLocation(entry))
+                        {
+                            eventFallback.TryGetValue(objective.ObjectiveInfo.Id, out double held);
+                            held += 1d;
+                            eventFallback[objective.ObjectiveInfo.Id] = held;
+                            if (held >= EventFallbackTime)
+                            {
+                                eventFallback.Remove(objective.ObjectiveInfo.Id);
+                                updates.Add((quest, objective.ObjectiveInfo.Id));
+                            }
+                        }
+                        else
+                            eventFallback.Remove(objective.ObjectiveInfo.Id);
+                    }
+
                     // a hidden step with no text, target or place (the last step of Contact with Thayd) was finished by a lost
                     // script once the other steps were done
                     else if (targetless && !HasIndicator(entry) && (HasNoText(entry) || objective.ObjectiveInfo.IsHidden())
@@ -198,6 +217,50 @@ namespace NexusForever.Game.Entity
 
             foreach ((IQuest quest, uint objectiveId) in updates)
                 quest.ObjectiveUpdate(objectiveId, 1u);
+        }
+
+        private const double EventFallbackTime = 20d;
+        private readonly Dictionary<uint, double> eventFallback = [];
+
+        /// <summary>
+        /// A public event can run for a quest when it is in the client data, on the player's map and either running or started by
+        /// the open world event starter (type 0 with a location).
+        /// </summary>
+        private bool CanEventRun(uint publicEventId)
+        {
+            PublicEventEntry entry = GameTableManager.Instance.PublicEvent.GetEntry(publicEventId);
+            if (entry == null || player.Map == null || entry.WorldId != player.Map.Entry.Id)
+                return false;
+
+            if (player.Map.PublicEventManager.GetEvent(publicEventId) != null)
+                return true;
+
+            return entry.PublicEventTypeEnum == 0u && entry.WorldLocation2Id != 0u && entry.PublicEventIdParent == 0u;
+        }
+
+        /// <summary>
+        /// Is the player at the location linked in the objective text (Link="Location:19503"), within 30 m.
+        /// </summary>
+        private bool IsAtTextLocation(QuestObjectiveEntry entry)
+        {
+            string text = GameTableManager.Instance.TextEnglish?.GetEntry(entry.LocalizedTextIdFull);
+            if (text == null)
+                return false;
+
+            foreach (System.Text.RegularExpressions.Match match in System.Text.RegularExpressions.Regex.Matches(text, @"Location:(\d+)"))
+            {
+                WorldLocation2Entry location = GameTableManager.Instance.WorldLocation2.GetEntry(uint.Parse(match.Groups[1].Value));
+                if (location == null || location.WorldId != player.Map.Entry.Id)
+                    continue;
+
+                float dx = player.Position.X - location.Position0;
+                float dz = player.Position.Z - location.Position2;
+                float radius = Math.Max(location.Radius, 30f);
+                if (dx * dx + dz * dz <= radius * radius)
+                    return true;
+            }
+
+            return false;
         }
 
         private static bool HasNoText(QuestObjectiveEntry entry)
