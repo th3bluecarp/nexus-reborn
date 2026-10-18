@@ -148,6 +148,22 @@ namespace NexusForever.Game.Entity
             [1751u] = new([["Lancer Drop Pod"]], 6u), // ANALYSIS: Dropping Like Granok (checklist of 6)
             [1752u] = new([["Voreth Bone Totem"]], 3u), // ANALYSIS: Grim Foci
             [1755u] = new([["Sky Cutter", "Fringe Pack Rover", "Fringe Scavenger", "Fringe Pack Alpha", "Fringe Pack Stalker", "Fringe Pack Hunter"]], 3u), // BIOLOGY: Scavenger Studies
+            // Wilderrun (Farside has too few spawns in the world database to choose targets, no rules there yet)
+            [1567u] = new([["Swarming Splorg", "Wilderrun Splorg", "Scampering Splorg"]], 3u), // BIOLOGY: Splorg Toxins
+            [1576u] = new([["Eldan Hologram", "Eldan Focal Monitor", "Eldan Holoprojector", "Eldan Augmentor"]], 3u), // ANALYSIS: The Truth is Somewhere (checklist of 3)
+            [1628u] = new([["Primal Life Essence"]], 5u), // ANALYSIS: Elemental Life Spring (checklist of 5)
+            [1632u] = new([["Undergrove Sporeling", "Undergrove Grimspore", "Undergrove Spore Herder", "Undergrove Direspore", "Corrupted Rootbrute"]], 3u), // BOTANY: Undergrove Rootbrutes
+            [1663u] = new([["Osun Chain", "Osun Weapon", "Ruined Osun Banner"]], 5u), // ARCHAEOLOGY: The Fall of the Osun (checklist of 5)
+            [1665u] = new([["Eldan Information Construct", "Eldan Hologram", "Eldan Augmentor", "Eldan Focal Monitor", "Eldan Holoprojector"]], 3u), // ANALYSIS: Secrets of the Jungle (checklist of 3)
+            [1666u] = new([["Aerophyll Bulb", "Aerophyll Drifter"]], 3u), // BOTANY: Aerophyll Bulbs
+            [2247u] = new([["Strain Corruptor", "Greater Strain Corruptor"]], 3u), // BIOLOGY: Strain Corruptors
+            [2249u] = new([["Corrupted Sporeling", "Corrupted Padfoot", "Corrupted Sister", "Corrupted Flora"]], 3u), // BIOLOGY: Corrupted Wilderness
+            [2289u] = new([["Megadroid Interface", "Megadroid Head", "Megadroid Leg Circuitry", "Megadroid Arm Circuitry", "Megadroid Hand Circuitry", "Megadroid Chest Circuitry"]], 5u), // ANALYSIS: Megadroid Remnants (checklist of 5)
+            [2329u] = new([["Kel Ulgar Forge", "Kel Ulgar Weapon Rack", "Osun Weapon"]], 3u), // ANALYSIS: Osun Forgemastery
+            [2340u] = new([["Spirevale Scorcher", "Spirevale Firenova"]], 3u), // BIOLOGY: Elemental Fallout
+            [2350u] = new([["Statue of Korol the Devout", "Torine Statue", "Ritual Statue"]], 4u), // ARCHAEOLOGY: Eldan Surveillance (checklist of 4)
+            [3060u] = new([["Tanglecrash Slashtail", "Tanglecrash Clipclaw", "Tanglecrash Fastclaw", "Tanglecrash Curltail"]], 3u), // BIOLOGY: The Servants of Toria
+            [3067u] = new([["Scattered Wreckage"]], 5u), // ANALYSIS: Wisdom from the Wreckage (checklist of 5)
         };
 
         /// <summary>
