@@ -14,7 +14,7 @@ using Path = NexusForever.Game.Static.PlayerPath.Path;
 namespace NexusForever.Game.Entity
 {
     /// <summary>
-    /// Scientist scan missions (mission type 2) and the scanbot.
+    /// Scientist scan missions (mission type 2, and type 14 checklists that need several different units) and the scanbot.
     /// </summary>
     /// <remarks>
     /// Retail decided on the server which creatures belong to a scan mission and told the client with
@@ -42,6 +42,10 @@ namespace NexusForever.Game.Entity
             [266u]  = new([["Fiera Flower"]], 3u),                  // BOTANY: Fiera Flowers
             [1978u] = new([["Augmented XAS Scientist"]], 3u),       // BIOLOGY: Augmented Scientists
             [2139u] = new([["Eldan Repair Construct"]], 3u),        // ANALYSIS: Eldan Constructs
+            [262u]  = new([["Darkspur Cartel Terminal"]], 5u),      // ANALYSIS: Darkspur Cartel Terminals (checklist of 5)
+            [701u]  = new([["Eldan Relic", "Eldan Relics"]], 8u),   // ARCHAEOLOGY: Excavated Artifacts (checklist of 8)
+            [2132u] = new([["DREDplex Data Terminal"]], 10u),       // ANALYSIS: DREDplex Weapon Designs (checklist of 10)
+            [2133u] = new([["Deadstar Data Terminal", "Deadstar Footlocker", "Deadstar Clothesline"]], 3u), // ANALYSIS: Deadeye and the Deadstar (checklist of 3)
         };
 
         /// <summary>

@@ -102,6 +102,7 @@ namespace NexusForever.Game.Entity
             switch (type)
             {
                 case (Path.Scientist, 2u):
+                case (Path.Scientist, 14u): // checklist: ChecklistCount different units of the target kind
                 {
                     PathMission scan = CreateScanMission(entry);
                     if (scan == null)
