@@ -75,6 +75,36 @@ namespace NexusForever.Game.Entity
             [711u]  = new([["Toxic Material"]], 6u),                // CHEMISTRY: Toxic Wasteland (checklist of 6)
             [1251u] = new([["Eldan Fuel Rod"]], 6u),                // ARCHAEOLOGY: Eldan Fuel Rods (checklist of 6)
             [3159u] = new([["Osiric Totem"]], 3u),                  // ANALYSIS: Totems of Osiric
+            // Everstar Grove
+            [1516u] = new([["Thrasher Fern"]], 3u), // BOTANY: Thrasher Ferns
+            [1517u] = new([["Barkblight Egg"]], 3u), // BIOLOGY: Barkblight Eggs
+            [1518u] = new([["Firestorm Fuel"]], 3u), // ANALYSIS: Firestorm Fuel
+            // Whitevale (the two augmented creatures behind force fields, 1033, have no clear name, no rule)
+            [777u] = new([["Silversnout Mauler", "Silversnout Crusher", "Silversnout Girrok", "Hibernating Silversnout", "Evolved Silversnout"]], 3u), // BIOLOGY: Silversnout Girrok
+            [873u] = new([["Silversnout Mauler", "Silversnout Crusher", "Silversnout Girrok", "Hibernating Silversnout", "Evolved Silversnout"]], 3u), // BIOLOGY: Silversnout Girrok
+            [778u] = new([["Territorial Icetail", "Wired Icetail", "Wired Icetail Screecher"]], 3u), // BIOLOGY: Aggressive Icetails
+            [871u] = new([["Territorial Icetail", "Wired Icetail", "Wired Icetail Screecher"]], 3u), // BIOLOGY: Aggressive Icetails
+            [779u] = new([["Ice-Crusted Boulderback"]], 3u), // BIOLOGY: Ice-Crusted Boulderbacks
+            [874u] = new([["Ice-Crusted Boulderback"]], 3u), // BIOLOGY: Ice-Crusted Boulderbacks
+            [780u] = new([["Frost-Striped Pumera"]], 3u), // BIOLOGY: Frost-Striped Pumera
+            [872u] = new([["Frost-Striped Pumera"]], 3u), // BIOLOGY: Frost-Striped Pumera
+            [781u] = new([["Lumbering Walatusk", "Walatusk Bull"]], 3u), // BIOLOGY: Walatusk
+            [782u] = new([["Tundra Jabbit"]], 3u), // BIOLOGY: Tundra Jabbit
+            [875u] = new([["Tundra Jabbit"]], 3u), // BIOLOGY: Tundra Jabbit
+            [814u] = new([["Gigantic Ancient Skull"], ["Gigantic Bone Claw"]], 1u), // ARCHAEOLOGY: Gigantic Ancient Remains (checklist of 2)
+            [877u] = new([["Territorial Icebay Shellark"]], 3u), // BIOLOGY: Territorial Icebay Shellark
+            [1103u] = new([["Lopp Treasure Hunter"]], 3u), // BIOLOGY: Lopp Treasure Hunters
+            [1106u] = new([["Rimerazor Nomad", "Rimerazor Brute", "Rimerazor Howler", "Rimerazor Bruiser"]], 3u), // BIOLOGY: Rimerazor Yeti
+            [1107u] = new([["Coldroot Icecracker"]], 3u), // BIOLOGY: Rootbrute Icecrackers
+            [1293u] = new([["Soulcore Evocator", "Soulcore Vindicator", "Soulcore Defender", "Soulcore Disciple", "Soulcore Interrogator", "Soulcore Fanatic", "Soulcore Zealot"]], 3u), // BIOLOGY: Soulcore Ascendancy
+            [1294u] = new([["Modified X426 Probe"]], 3u), // BIOLOGY: Soulcore Monstrosities
+            [1302u] = new([["Ikthian Data Terminal"]], 6u), // ANALYSIS: Ikthian Data Terminals (checklist of 6)
+            [1303u] = new([["Ikthian Data Terminal"]], 6u), // ANALYSIS: Ikthian Data Terminals (checklist of 6)
+            [1305u] = new([["Silverscale Hydrocrawler"]], 3u), // BIOLOGY: Silverscale Hydrocrawlers
+            [1307u] = new([["Silverscale Hydrocrawler"]], 3u), // BIOLOGY: Silverscale Hydrocrawlers
+            [1331u] = new([["Calmwater Rain-Warrior", "Calmwater Tide-Bringer", "Calmwater Rain-Catcher"]], 8u), // BIOLOGY: Calmwater Pell (checklist of 8)
+            [1334u] = new([["Calmwater Rain-Warrior", "Calmwater Tide-Bringer", "Calmwater Rain-Catcher"]], 8u), // BIOLOGY: Calmwater Pell (checklist of 8)
+            [3058u] = new([["Terros Medusa"]], 3u), // BIOLOGY: Terros Medusas
         };
 
         /// <summary>
