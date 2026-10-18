@@ -152,6 +152,7 @@ namespace NexusForever.Game.Entity
         private static readonly Dictionary<uint, uint> TargetCreatures = new()
         {
             [620u] = 37391u, // Seek and Destroy: Alchemical Supplies in Grimbone Tomb (Algoroc)
+            [493u] = 30974u, // Chasing Fireflies: Fireflies near Celestial Falls (Celestion)
         };
 
         /// <summary>
