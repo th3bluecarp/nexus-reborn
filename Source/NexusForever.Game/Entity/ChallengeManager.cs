@@ -147,7 +147,7 @@ namespace NexusForever.Game.Entity
         }
 
         /// <summary>
-        /// General challenges without a target whose text asks to reach a spot (scale a cliff, vista and race challenges): the
+        /// General challenges without a target whose text asks to reach, race or deliver to a spot (scale a cliff, vista and race challenges): the
         /// indicator location is the goal, the start location (when there is one) starts the challenge on arrival. Tiers of
         /// thousands are time limits in milliseconds, finishing under more of them gives a better tier.
         /// </summary>
@@ -157,7 +157,10 @@ namespace NexusForever.Game.Entity
                 return false;
 
             string progress = GameTableManager.Instance.TextEnglish?.GetEntry(entry.LocalizedTextIdProgress);
-            return progress != null && progress.StartsWith("Reach", StringComparison.OrdinalIgnoreCase);
+            // "Reach the top of ...", "Race to ...", "Deliver ... to ..." (a run from the start spot to the indicator)
+            return progress != null && (progress.StartsWith("Reach", StringComparison.OrdinalIgnoreCase)
+                || progress.StartsWith("Race", StringComparison.OrdinalIgnoreCase)
+                || (progress.StartsWith("Deliver", StringComparison.OrdinalIgnoreCase) && entry.WorldLocation2IdStartLocation != 0u));
         }
 
         private const float ReachMinRadius = 6f;

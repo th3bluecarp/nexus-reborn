@@ -46,6 +46,19 @@ namespace NexusForever.Game.Entity
             [701u]  = new([["Eldan Relic", "Eldan Relics"]], 8u),   // ARCHAEOLOGY: Excavated Artifacts (checklist of 8)
             [2132u] = new([["DREDplex Data Terminal"]], 10u),       // ANALYSIS: DREDplex Weapon Designs (checklist of 10)
             [2133u] = new([["Deadstar Data Terminal", "Deadstar Footlocker", "Deadstar Clothesline"]], 3u), // ANALYSIS: Deadeye and the Deadstar (checklist of 3)
+            // Celestion
+            [1714u] = new([["Hoogle Guardian Totem", "Transmorphing Flight Hoogle Totem"]], 3u), // ANALYSIS: Hoogle Totems
+            [1719u] = new([["Draken Garden Gnome"], ["Draken Backscratcher"], ["Draken Chamberpot"]], 1u), // ANALYSIS: Draken Implements
+            [1724u] = new([["Weave Portal"]], 3u),                  // BOTANY: Weave Portals (checklist of 3)
+            [1725u] = new([["Moodie Mojo"]], 3u),                   // ARCHAEOLOGY: Moodie Mojo
+            [1828u] = new([["Augmented Celestial Razortusk", "Augmented Nightfang Creeper", "Augmented Nightfang Weaver", "Augmented Nightfang Widow", "Augmented Buzzbing", "Augmented Nightfang Flayer"]], 3u), // BIOLOGY: Augmented Creatures
+            [1830u] = new([["Amorous Rowsdower"]], 10u),            // CHEMISTRY: Lessons in Love (checklist of 10)
+            [1840u] = new([["Rowsdower's Corpse", "Sunhorn Roamer's Corpse", "Ravenous Corpse"]], 3u), // BIOLOGY: That Special Glow
+            [1841u] = new([["Mordesh Vitality Extractor"]], 3u),    // DIAGNOSTICS: Mordesh Machinery
+            [1845u] = new([["Water of Life"]], 5u),                 // CHEMISTRY: Water of Life (checklist of 5)
+            [1847u] = new([["Ravenous Ripper", "Ravenous Ghoul", "Ravenous Horror", "Ravenous Fiend", "Ravenous Reaver", "Ravenous Malignant", "Ravenous Mordesh"]], 3u), // BIOLOGY: Ravenous Ruminations
+            [1854u] = new([["Communication Controls", "Communication Dish"]], 4u), // ANALYSIS: Eldan Communications (checklist of 4)
+            [1859u] = new([["Shield Generator", "Bio-Containment Shield"]], 3u), // DIAGNOSTICS: Switching Safeguards (checklist of 3)
         };
 
         /// <summary>
