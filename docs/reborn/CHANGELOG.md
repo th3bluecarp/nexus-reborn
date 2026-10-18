@@ -10,6 +10,7 @@ Newest first. "Live" means running on our test server.
 
 ## 2026-10-15
 
+- Reach challenges (scale the cliffs, vistas, races) and General challenges like Roan Tipping now work, and five Algoroc Scientist scan missions have their targets (525e8746).
 - 
 - Scientist scanning, Settler expansions and Soldier holdouts now work, starting with the Northern Wilds: summon the scanbot and scan, gather Salvaged Machine Parts and build at the depots, start a holdout at its control point and beat the waves (18c92c90, settler data 913ca7c8).
 - Path switching and unlocking are free with no cooldown, so one character can test every path (b26cf681).
