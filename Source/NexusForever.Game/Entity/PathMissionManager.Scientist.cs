@@ -62,6 +62,8 @@ namespace NexusForever.Game.Entity
             [1847u] = new([["Ravenous Ripper", "Ravenous Ghoul", "Ravenous Horror", "Ravenous Fiend", "Ravenous Reaver", "Ravenous Malignant", "Ravenous Mordesh"]], 3u), // BIOLOGY: Ravenous Ruminations
             [1854u] = new([["Communication Controls", "Communication Dish"]], 4u), // ANALYSIS: Eldan Communications (checklist of 4)
             [1859u] = new([["Shield Generator", "Bio-Containment Shield"]], 3u), // DIAGNOSTICS: Switching Safeguards (checklist of 3)
+            // Thayd (the Hoogle Statues are placed by data/missions.sql)
+            [3184u] = new([["Floating Hoogle Statue", "Hoogle Statue"]], 3u),          // ANALYSIS: Hoogle Stones
             // Galeras (dead Buzzbings, uplink stations and sparking wires are placed by data/missions.sql)
             [707u]  = new([["Buzzbing Remains 1", "Buzzbing Remains 2"]], 3u),          // BIOLOGY: Buzzing Bodies
             [712u]  = new([["Crimson Legion Uplink Station"]], 3u),                  // ANALYSIS: Stolen Science

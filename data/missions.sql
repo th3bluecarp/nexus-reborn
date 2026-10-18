@@ -51,3 +51,12 @@ INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1080015,10,1),(1080015,
 -- Buzzbing Remains (M707 BIOLOGY: Buzzing Bodies, around the mission marker, guessed)
 INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1080016,0,14846,51,1054,5188.8,-901.300,-1897.4,0,0,0,21780,0,0,0);
 INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1080016,10,1),(1080016,15,0);
+-- Hoogle Statue (M3184 ANALYSIS: Hoogle Stones, Arborian Gardens in Thayd, around the mission marker, guessed)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1080017,0,53582,51,2545,3610.6,-838.498,-1943.0,0,0,0,24690,0,219,219);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1080017,10,1),(1080017,15,0);
+-- Hoogle Statue (M3184 ANALYSIS: Hoogle Stones, Arborian Gardens in Thayd, around the mission marker, guessed)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1080018,0,54358,51,2545,3572.5,-839.31,-1942.2,0,0,0,26741,0,219,219);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1080018,10,1),(1080018,15,0);
+-- Hoogle Statue (M3184 ANALYSIS: Hoogle Stones, Arborian Gardens in Thayd, around the mission marker, guessed)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1080019,0,54359,51,2545,3591.1,-839.269,-1975.5,0,0,0,27786,0,219,219);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1080019,10,1),(1080019,15,0);
