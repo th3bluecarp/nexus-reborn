@@ -10,6 +10,7 @@ Newest first. "Live" means running on our test server.
 
 ## 2026-10-15
 
+- Wilderrun Scientist scan missions have their targets (9936cccf).
 - Ellevar and Auroria Scientist scan missions have their targets: every zone up to level 25 now has scan rules (1c6154d2).
 - Crimson Isle, Levian Bay and Deradune Scientist scan missions have their targets (62fcb91e).
 - Everstar Grove (3) and Whitevale (25) Scientist scan missions have their targets (9ea82997).
