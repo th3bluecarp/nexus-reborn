@@ -470,6 +470,11 @@ namespace NexusForever.Game.Quest
         /// <summary>
         /// Update any <see cref="IQuestObjective"/>'s with supplied <see cref="QuestObjectiveType"/> and data with progress.
         /// </summary>
+        public void ObjectiveUpdateAny(QuestObjectiveType type, uint progress)
+        {
+            ObjectiveUpdate(o => o.ObjectiveInfo.Entry.Type == (uint)type, progress);
+        }
+
         public void ObjectiveUpdate(QuestObjectiveType type, uint data, uint progress)
         {
             ObjectiveUpdate(o => o.ObjectiveInfo.Entry.Type == (uint)type && o.ObjectiveInfo.Data == data, progress);

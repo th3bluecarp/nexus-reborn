@@ -289,6 +289,9 @@ namespace NexusForever.Game.Entity
                 // work orders and crafting quests name the schematic
                 player.QuestManager.ObjectiveUpdate(QuestObjectiveType.CraftSchematic, tradeskillSchematic2Id, 1u);
                 player.QuestManager.ObjectiveUpdate(QuestObjectiveType.ObtainSchematic, tradeskillSchematic2Id, 1u);
+                // work order and crafting delivery objectives (type 31) point at a table that is not in the client data,
+                // any successful craft counts for them
+                player.QuestManager.ObjectiveUpdateAny(QuestObjectiveType.Unknown31, 1u);
             }
         }
 

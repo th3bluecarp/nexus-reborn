@@ -894,6 +894,13 @@ namespace NexusForever.Game.Entity
         /// <summary>
         /// Update any active quest <see cref="IQuestObjective"/>'s with supplied <see cref="QuestObjectiveType"/> and data with progress.
         /// </summary>
+        public void ObjectiveUpdateAny(QuestObjectiveType type, uint progress)
+        {
+            foreach (IQuest quest in activeQuests.Values.ToList())
+                if (!suppressedQuests.Contains(quest.Id))
+                    quest.ObjectiveUpdateAny(type, progress);
+        }
+
         public void ObjectiveUpdate(QuestObjectiveType type, uint data, uint progress)
         {
             // it is possible for an objective update to achieve a quest which has auto complete

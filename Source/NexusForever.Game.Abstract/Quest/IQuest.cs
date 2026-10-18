@@ -80,6 +80,11 @@ namespace NexusForever.Game.Abstract.Quest
         void ObjectiveUpdate(QuestObjectiveType type, uint data, uint progress);
 
         /// <summary>
+        /// Update any <see cref="IQuestObjective"/> of the supplied <see cref="QuestObjectiveType"/> whatever its data.
+        /// </summary>
+        void ObjectiveUpdateAny(QuestObjectiveType type, uint progress);
+
+        /// <summary>
         /// Update any <see cref="IQuestObjective"/>'s with supplied <see cref="QuestObjectiveType"/> whose reward pane target group matches with progress.
         /// </summary>
         /// <remarks>
