@@ -96,6 +96,8 @@ namespace NexusForever.Game.Entity
 
         private void SendStackCountUpdate(IItem item, ItemUpdateReason reason)
         {
+            // kept at Info while the 0x1403c0c3d client crash is open, it tells which item and reason the client was handling
+            log.Info($"Stack update item {item.Id} guid {item.Guid} count {item.StackCount} reason {reason} for {player.Name}.");
             player.Session.EnqueueMessageEncrypted(new ServerItemStackCountUpdate
             {
                 Guid       = item.Guid,
