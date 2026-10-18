@@ -113,7 +113,7 @@ namespace NexusForever.Game.Entity
             bool changed = false;
             foreach (ChallengeEntry entry in GameTableManager.Instance.Challenge.Entries)
             {
-                if (!IsSupported(entry) || (entry.Target == 0u && !IsReach(entry)) || unlocked.ContainsKey(entry.Id))
+                if (!IsSupported(entry) || (TargetGroup(entry) == 0u && !IsReach(entry)) || unlocked.ContainsKey(entry.Id))
                     continue;
 
                 uint areaZone = entry.WorldZoneIdRestriction != 0u ? entry.WorldZoneIdRestriction : entry.WorldZoneId;
@@ -143,7 +143,19 @@ namespace NexusForever.Game.Entity
         private static bool IsSupported(ChallengeEntry entry)
         {
             return (ChallengeType)entry.ChallengeTypeEnum is ChallengeType.Combat or ChallengeType.Collect or ChallengeType.ChecklistActivate or ChallengeType.Item or ChallengeType.Ability
-                || ((ChallengeType)entry.ChallengeTypeEnum == ChallengeType.General && (entry.Target != 0u || IsReach(entry)));
+                || ((ChallengeType)entry.ChallengeTypeEnum == ChallengeType.General && (TargetGroup(entry) != 0u || IsReach(entry)));
+        }
+
+        /// <summary>
+        /// The target group a challenge counts: its target, or for General challenges without one the reward pane group
+        /// (the mines, eggs, bodies or flowers its text asks for).
+        /// </summary>
+        private static uint TargetGroup(ChallengeEntry entry)
+        {
+            if (entry.Target != 0u)
+                return entry.Target;
+
+            return (ChallengeType)entry.ChallengeTypeEnum == ChallengeType.General ? entry.TargetGroupIdRewardPane : 0u;
         }
 
         /// <summary>
@@ -256,7 +268,7 @@ namespace NexusForever.Game.Entity
             if (groups.Count == 0)
                 return;
 
-            Count(unlocked.Values.Where(c => groups.Contains(c.Entry.Target) && types.Contains((ChallengeType)c.Entry.ChallengeTypeEnum)).ToList(), 1u);
+            Count(unlocked.Values.Where(c => groups.Contains(TargetGroup(c.Entry)) && types.Contains((ChallengeType)c.Entry.ChallengeTypeEnum)).ToList(), 1u);
         }
 
         private void Count(List<Challenge> challenges, uint amount)
