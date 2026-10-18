@@ -10,6 +10,7 @@ Newest first. "Live" means running on our test server.
 
 ## 2026-10-15
 
+- Farside: targets placed for Secondhand Research, The Hidden Lab, Fortuitous Discovery, Face the Custodian and Buried Shinies (3cbe427d)
 - Farside: scan rules for 17 Scientist missions, scan objects placed around their mission markers (d77ae5dd)
 - Whitevale: ANALYSIS: Augmented Monstrosities scan, Defusing the Situation, Deadrock Statue, Race to the Top and Explosive Ascent challenges (72c9af95)
 - Thayd: Hoogle Statues placed for ANALYSIS: Hoogle Stones, Leap of Faith challenge (91eebb19)
