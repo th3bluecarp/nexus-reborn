@@ -195,6 +195,8 @@ namespace NexusForever.Game.Entity
 
             // Grant Rewards for level up
             player.SpellManager.GrantSpells();
+            // ability tier points are earned from level 10, one per level (XpPerLevel.AbilityPointsPerLevel)
+            player.SpellManager.SendServerAbilityPoints();
             // Unlock LAS slots
             // Unlock AMPs
             // Add feature access

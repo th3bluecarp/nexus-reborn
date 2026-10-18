@@ -315,7 +315,15 @@ namespace NexusForever.Game.Entity
             else
             {
                 IActionSet actionSet = GetActionSet(actionSetIndex.Value);
+                byte oldTier = actionSet.GetShortcut(ShortcutType.SpellbookItem, spell4BaseId)?.Tier ?? 1;
                 actionSet.UpdateSpellShortcut(spell4BaseId, tier);
+
+                // more points than the level has earned: the tier stays as it was
+                if (ActionSet.MaxTierPoints - actionSet.TierPoints > EarnedTierPoints())
+                {
+                    actionSet.UpdateSpellShortcut(spell4BaseId, oldTier);
+                    tier = oldTier;
+                }
             }
 
             if (!player.IsLoading)
@@ -758,11 +766,25 @@ namespace NexusForever.Game.Entity
 
         public void SendServerAbilityPoints()
         {
+            uint earned = EarnedTierPoints();
+            uint spent  = (uint)(ActionSet.MaxTierPoints - actionSets[ActiveActionSet].TierPoints);
             player.Session.EnqueueMessageEncrypted(new ServerAbilityPoints
             {
-                AbilityPoints      = actionSets[ActiveActionSet].TierPoints,
-                TotalAbilityPoints = ActionSet.MaxTierPoints
+                AbilityPoints      = earned > spent ? earned - spent : 0u,
+                TotalAbilityPoints = earned
             });
+        }
+
+        /// <summary>
+        /// Ability tier points earned by the player's level: XpPerLevel.AbilityPointsPerLevel of every level reached (one per level
+        /// from 10), at most <see cref="ActionSet.MaxTierPoints"/>. The action sets count spent points against the maximum.
+        /// </summary>
+        private uint EarnedTierPoints()
+        {
+            uint earned = 0u;
+            for (uint level = 2u; level <= player.Level; level++)
+                earned += GameTableManager.Instance.XpPerLevel.GetEntry(level)?.AbilityPointsPerLevel ?? 0u;
+            return Math.Min(earned, ActionSet.MaxTierPoints);
         }
 
         private void SendServerActionSets()
