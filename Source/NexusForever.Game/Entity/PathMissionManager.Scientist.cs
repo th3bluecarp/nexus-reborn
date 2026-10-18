@@ -105,6 +105,24 @@ namespace NexusForever.Game.Entity
             [1331u] = new([["Calmwater Rain-Warrior", "Calmwater Tide-Bringer", "Calmwater Rain-Catcher"]], 8u), // BIOLOGY: Calmwater Pell (checklist of 8)
             [1334u] = new([["Calmwater Rain-Warrior", "Calmwater Tide-Bringer", "Calmwater Rain-Catcher"]], 8u), // BIOLOGY: Calmwater Pell (checklist of 8)
             [3058u] = new([["Terros Medusa"]], 3u), // BIOLOGY: Terros Medusas
+            // Crimson Isle
+            [1048u] = new([["Bloodpetal"]], 3u), // BOTANY: Bloodpetal Properties
+            [1056u] = new([["Dreg Experiment", "Dreg Abomination"]], 3u), // BIOLOGY: Dreg Decryption
+            [1057u] = new([["Deactivated Battlebot"]], 3u), // ANALYSIS: Repurposed Bots
+            // Levian Bay (the Eldan signal relays of 1365 have no spawned creature, no rule)
+            [1262u] = new([["Gloomshroud"]], 3u), // BOTANY: Gloomshroud Plants
+            [1370u] = new([["Inactive Exile Turret"]], 3u), // ANALYSIS: Reversal of Fortune
+            // Deradune (supersized flora 1298 and the risen dead 1345 have no clear creatures, no rule)
+            [66u] = new([["Cinderbloom"]], 3u), // BOTANY: Cinderbloom
+            [67u] = new([["Deadwind Maniac", "Deadwind Witchdoctor", "Deadwind Lunatic", "Deadwind Caster", "Deadwind Sleeper"]], 3u), // BIOLOGY: Deadwind Moodies
+            [68u] = new([["Gnarlfoot Climber", "Gnarlfoot Slasher"]], 3u), // BIOLOGY: Gnarlfoot Razortail
+            [70u] = new([["Bloodfire Sawgrass"]], 3u), // BOTANY: Bloodfire Sawgrass
+            [71u] = new([["Accelerite Crystal"]], 3u), // CHEMISTRY: Accelerite Crystals
+            [167u] = new([["Grove Strangler"]], 3u), // BOTANY: Grove Strangler
+            [1153u] = new([["Feralplain Data Station"]], 15u), // DIAGNOSTICS: Feralplain Security Checkpoints (checklist of 15)
+            [1182u] = new([["Larval Terminite", "Terminite Egg"]], 5u), // ANALYSIS: Terminite Mutations (checklist of 5)
+            [1366u] = new([["Oozing Sludgeon", "Putrid Oozing Sludgeon", "Viscous Oozing Sludgeon"]], 3u), // BIOLOGY: Oozing Sludgeons
+            [1887u] = new([["Bloodtalon Warden", "Bloodtalon Scrapper", "Bloodtalon Horncaller", "Bloodtalon Slicer"]], 3u), // BIOLOGY: Falkrin and Primal Air
         };
 
         /// <summary>
