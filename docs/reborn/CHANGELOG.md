@@ -10,6 +10,7 @@ Newest first. "Live" means running on our test server.
 
 ## 2026-10-15
 
+- Captives of the Dominion: freeing captive soldiers counts and they go away (9376c3e8)
 - A quest offered by a communicator call can be accepted away from its giver (ff9d45b0)
 - Fixed a world freeze when re-accepting a mentioned quest, and quest turn-in now waits for bag space instead of losing the reward (f9856c08)
 - Login no longer logs unhandled option, owned marketplace order and reward rotation messages (e60d8486)
