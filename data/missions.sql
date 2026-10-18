@@ -183,3 +183,39 @@ INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1080059,10,36),(1080059
 -- Farside Scavenger (M1534 BIOLOGY: Alien Inhabitants, a third hookfoot next to the spawned two, guessed)
 INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1080060,0,28211,1421,4944,3792.0,-718.225,-5838.0,0,0,0,23148,0,1084,1084);
 INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1080060,10,31),(1080060,15,0);
+-- Eldan Research Samples (Q6152/Q6456 Secondhand Research, at the Derelict Silo objective marker like its other targets, guessed)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1080061,0,27947,1421,1430,5574,-459.25,-11526,0,0,0,24340,0,219,219);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1080061,10,1),(1080061,15,0);
+-- Eldan Research Samples (Q6152/Q6456 Secondhand Research, at the Derelict Silo objective marker like its other targets, guessed)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1080062,0,27947,1421,1430,5580,-459.25,-11526,0,0,0,24340,0,219,219);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1080062,10,1),(1080062,15,0);
+-- Eldan Research Samples (Q6152/Q6456 Secondhand Research, at the Derelict Silo objective marker like its other targets, guessed)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1080063,0,27947,1421,1430,5574,-459.25,-11532,0,0,0,24340,0,219,219);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1080063,10,1),(1080063,15,0);
+-- Eldan Research Samples (Q6152/Q6456 Secondhand Research, at the Derelict Silo objective marker like its other targets, guessed)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1080064,0,27947,1421,1430,5580,-459.25,-11532,0,0,0,24340,0,219,219);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1080064,10,1),(1080064,15,0);
+-- Exo-Lab 13 defenders and records (Q7748/Q7749, around the Exo-Lab 13 location link, guessed)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1080065,0,38881,1421,2026,4538,-1384,-1473,0,0,0,31123,0,233,233);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1080065,10,31),(1080065,15,0);
+-- Exo-Lab 13 defenders and records (Q7748/Q7749, around the Exo-Lab 13 location link, guessed)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1080066,0,38881,1421,2026,4546,-1384,-1481,0,0,0,31123,0,233,233);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1080066,10,31),(1080066,15,0);
+-- Exo-Lab 13 defenders and records (Q7748/Q7749, around the Exo-Lab 13 location link, guessed)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1080067,0,38882,1421,2026,4546,-1384,-1473,0,0,0,31094,0,233,233);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1080067,10,32),(1080067,15,0);
+-- Exo-Lab 13 defenders and records (Q7748/Q7749, around the Exo-Lab 13 location link, guessed)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1080068,0,38882,1421,2026,4538,-1384,-1481,0,0,0,31094,0,233,233);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1080068,10,32),(1080068,15,0);
+-- Exo-Lab 13 defenders and records (Q7748/Q7749, around the Exo-Lab 13 location link, guessed)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1080069,0,50148,1421,2026,4550,-1384,-1477,0,0,0,31123,0,233,233);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1080069,10,31),(1080069,15,0);
+-- Exo-Lab 13 defenders and records (Q7748/Q7749, around the Exo-Lab 13 location link, guessed)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1080070,0,38884,1421,2026,4542,-1384,-1471,0,0,0,23102,0,219,219);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1080070,10,1),(1080070,15,0);
+-- Matrix Defense Console D (Q7997 Face the Custodian, beside the Bio-Dome 3 Custodian, guessed)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1080071,0,45365,1421,2035,1310,-935.625,-1190,0,0,0,23102,0,219,219);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1080071,10,1),(1080071,15,0);
+-- Keyuri's Kurg (Q8778 Buried Shinies, at the Keyuri Catacomb location link, guessed)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1080072,0,45662,1421,2026,3948,-947,-1567,0,0,0,21763,0,416,416);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1080072,10,30),(1080072,15,0);
