@@ -219,3 +219,117 @@ INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1080071,10,1),(1080071,
 -- Keyuri's Kurg (Q8778 Buried Shinies, at the Keyuri Catacomb location link, guessed)
 INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1080072,0,45662,1421,2026,3948,-947,-1567,0,0,0,21763,0,416,416);
 INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1080072,10,30),(1080072,15,0);
+-- The Alternator (Q8173 Solid Gold Gangster, at the Lady Lugwrench location link, guessed)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1080073,0,42437,51,863,2467,-898,3431,0,0,0,23464,0,233,233);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1080073,10,35),(1080073,15,0);
+-- Propaganda Control Station (Q8173, beside The Alternator, guessed)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1080074,0,42439,51,863,2472,-898,3431,0,0,0,28514,0,219,219);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1080074,10,1),(1080074,15,0);
+-- Enter the Transport Ship (Q8173 exit, beside The Alternator, guessed)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1080075,0,42433,51,863,2462,-898,3431,0,0,0,28170,0,219,219);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1080075,10,1),(1080075,15,0);
+-- Thought-Speaker (Q8177 Chompacabra Champ turn-in, beside the cage area marker, guessed)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1080076,0,42465,51,863,2634,-952,3062,0,0,0,21321,0,219,219);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1080076,10,36),(1080076,15,0);
+-- Mindbreak Disciple (Q8217 Back to the Village, at the Integral Function location link, guessed)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1080077,0,42477,51,2251,-40.0,-860,1835.0,0,0,0,22432,0,1140,1140);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1080077,10,37),(1080077,15,0);
+-- Mindbreak Disciple (Q8217 Back to the Village, at the Integral Function location link, guessed)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1080078,0,42477,51,2251,-44.0,-860,1839.0,0,0,0,22432,0,1140,1140);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1080078,10,37),(1080078,15,0);
+-- Mindbreak Disciple (Q8217 Back to the Village, at the Integral Function location link, guessed)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1080079,0,42477,51,2251,-48.0,-860,1835.0,0,0,0,22432,0,1140,1140);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1080079,10,37),(1080079,15,0);
+-- Mindbreak Disciple (Q8217 Back to the Village, at the Integral Function location link, guessed)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1080080,0,42477,51,2251,-44.0,-860,1831.0,0,0,0,22432,0,1140,1140);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1080080,10,37),(1080080,15,0);
+-- Corruption Source (Q8218 Structural Integrity, around the Integral Function location link, guessed)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1080081,0,42509,51,2251,-35.0,-860,1835.0,0,0,0,24324,0,0,0);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1080081,10,1),(1080081,15,0);
+-- Corruption Source (Q8218 Structural Integrity, around the Integral Function location link, guessed)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1080082,0,42509,51,2251,-44.0,-860,1844.0,0,0,0,24324,0,0,0);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1080082,10,1),(1080082,15,0);
+-- Corruption Source (Q8218 Structural Integrity, around the Integral Function location link, guessed)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1080083,0,42509,51,2251,-53.0,-860,1835.0,0,0,0,24324,0,0,0);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1080083,10,1),(1080083,15,0);
+-- Corruption Source (Q8218 Structural Integrity, around the Integral Function location link, guessed)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1080084,0,42509,51,2251,-44.0,-860,1826.0,0,0,0,24324,0,0,0);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1080084,10,1),(1080084,15,0);
+-- Pitchsoul Queen (Q8219 Unexpected Royalty, at the Integral Function location link, guessed)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1080085,0,41527,51,2251,-44,-860,1847,0,0,0,21787,0,233,233);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1080085,10,37),(1080085,15,0);
+-- Hexcomb hive buzzbings (Q8435 Buzzkill, at the Hexcomb Hive location link, guessed)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1080086,0,41578,51,4192,2886,-929,2218,0,0,0,24713,0,257,257);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1080086,10,35),(1080086,15,0);
+-- Hexcomb hive buzzbings (Q8435 Buzzkill, at the Hexcomb Hive location link, guessed)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1080087,0,41587,51,4192,2894,-929,2218,0,0,0,24713,0,257,257);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1080087,10,35),(1080087,15,0);
+-- Hexcomb hive buzzbings (Q8435 Buzzkill, at the Hexcomb Hive location link, guessed)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1080088,0,41589,51,4192,2890,-929,2214,0,0,0,21473,0,257,257);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1080088,10,35),(1080088,15,0);
+-- Hexcomb hive buzzbings (Q8435 Buzzkill, at the Hexcomb Hive location link, guessed)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1080089,0,41589,51,4192,2890,-929,2222,0,0,0,21473,0,257,257);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1080089,10,35),(1080089,15,0);
+-- Banner Placement (Q8438 Technological Advancement, chambers of the Hexcomb Hive Cavern, guessed)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1080090,0,42261,51,4192,3277,-956,2023,0,0,0,27794,0,219,219);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1080090,10,1),(1080090,15,0);
+-- Banner Placement (Q8438 Technological Advancement, chambers of the Hexcomb Hive Cavern, guessed)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1080091,0,42265,51,4192,3265,-956,2010,0,0,0,27794,0,219,219);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1080091,10,1),(1080091,15,0);
+-- Hexcomb Augmentor (Q8439 The Source of the Problem, at the Hexcomb Hive Cavern location link, guessed)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1080092,0,41753,51,4192,3282.0,-956,2023.0,0,0,0,23868,0,233,233);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1080092,10,35),(1080092,15,0);
+-- Hexcomb Augmentor (Q8439 The Source of the Problem, at the Hexcomb Hive Cavern location link, guessed)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1080093,0,41753,51,4192,3277.0,-956,2028.0,0,0,0,23868,0,233,233);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1080093,10,35),(1080093,15,0);
+-- Hexcomb Augmentor (Q8439 The Source of the Problem, at the Hexcomb Hive Cavern location link, guessed)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1080094,0,41753,51,4192,3272.0,-956,2023.0,0,0,0,23868,0,233,233);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1080094,10,35),(1080094,15,0);
+-- Hexcomb Augmentor (Q8439 The Source of the Problem, at the Hexcomb Hive Cavern location link, guessed)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1080095,0,41753,51,4192,3277.0,-956,2018.0,0,0,0,23868,0,233,233);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1080095,10,35),(1080095,15,0);
+-- Geometric Mapper Unit ONE (Q8440 Cave Cartography, between mapper two and the cavern link, guessed)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1080096,0,42419,51,4192,3200,-956,1980,0,0,0,22904,0,219,219);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1080096,10,1),(1080096,15,0);
+-- Power Generator (Q8607 Order of Snowflakes, around Pattern-Seeker's Recluse, guessed)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1080097,0,43327,51,1337,2226.0,-951,2533.0,0,0,0,26172,0,219,219);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1080097,10,1),(1080097,15,0);
+-- Power Generator (Q8607 Order of Snowflakes, around Pattern-Seeker's Recluse, guessed)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1080098,0,43327,51,1337,2217.7,-951,2544.4,0,0,0,26172,0,219,219);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1080098,10,1),(1080098,15,0);
+-- Power Generator (Q8607 Order of Snowflakes, around Pattern-Seeker's Recluse, guessed)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1080099,0,43327,51,1337,2204.3,-951,2540.1,0,0,0,26172,0,219,219);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1080099,10,1),(1080099,15,0);
+-- Power Generator (Q8607 Order of Snowflakes, around Pattern-Seeker's Recluse, guessed)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1080100,0,43327,51,1337,2204.3,-951,2525.9,0,0,0,26172,0,219,219);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1080100,10,1),(1080100,15,0);
+-- Power Generator (Q8607 Order of Snowflakes, around Pattern-Seeker's Recluse, guessed)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1080101,0,43327,51,1337,2217.7,-951,2521.6,0,0,0,26172,0,219,219);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1080101,10,1),(1080101,15,0);
+-- Exo-Lab XC42 constructs (Q7384 Defenders of the Cube, at the Exo-Lab XC42 location link, guessed)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1080102,0,35924,1061,1948,2226,-868,3768,0,0,0,30426,0,1115,1115);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1080102,10,46),(1080102,15,0);
+-- Exo-Lab XC42 constructs (Q7384 Defenders of the Cube, at the Exo-Lab XC42 location link, guessed)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1080103,0,35925,1061,1948,2234,-868,3768,0,0,0,30426,0,233,233);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1080103,10,46),(1080103,15,0);
+-- Exo-Lab XC42 constructs (Q7384 Defenders of the Cube, at the Exo-Lab XC42 location link, guessed)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1080104,0,35926,1061,1948,2230,-868,3764,0,0,0,30425,0,233,233);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1080104,10,45),(1080104,15,0);
+-- Exo-Lab XC42 constructs (Q7384 Defenders of the Cube, at the Exo-Lab XC42 location link, guessed)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1080105,0,35927,1061,1948,2230,-868,3772,0,0,0,30425,0,233,233);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1080105,10,45),(1080105,15,0);
+-- Exo-Lab XC42 constructs (Q7384 Defenders of the Cube, at the Exo-Lab XC42 location link, guessed)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1080106,0,35928,1061,1948,2236,-868,3774,0,0,0,30421,0,233,233);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1080106,10,46),(1080106,15,0);
+-- Defiled Console (Q8356 Breaching the Core, around the Techno-Core location link, guessed)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1080107,0,42552,1061,2841,-1018.0,-1200,-4096.0,0,0,0,28550,0,219,219);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1080107,10,1),(1080107,15,0);
+-- Defiled Console (Q8356 Breaching the Core, around the Techno-Core location link, guessed)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1080108,0,42552,1061,2841,-1024.0,-1200,-4090.0,0,0,0,28550,0,219,219);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1080108,10,1),(1080108,15,0);
+-- Defiled Console (Q8356 Breaching the Core, around the Techno-Core location link, guessed)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1080109,0,42552,1061,2841,-1030.0,-1200,-4096.0,0,0,0,28550,0,219,219);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1080109,10,1),(1080109,15,0);
+-- Defiled Console (Q8356 Breaching the Core, around the Techno-Core location link, guessed)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1080110,0,42552,1061,2841,-1024.0,-1200,-4102.0,0,0,0,28550,0,219,219);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1080110,10,1),(1080110,15,0);
