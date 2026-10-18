@@ -506,9 +506,10 @@ namespace NexusForever.Game.Quest
             if (targetGroupId == 0u)
                 return;
 
-            // ActivateEntity objectives with a target of their own progress through it, only those without one use the reward pane group
+            // ActivateEntity objectives with a creature target progress through it, those without one (or naming the reward pane group
+            // itself, Captives of the Dominion) use the reward pane group
             ObjectiveUpdate(o => o.ObjectiveInfo.Entry.Type == (uint)type && o.ObjectiveInfo.Entry.TargetGroupIdRewardPane == targetGroupId
-                && (type != QuestObjectiveType.ActivateEntity || o.ObjectiveInfo.Data == 0u), progress);
+                && (type != QuestObjectiveType.ActivateEntity || o.ObjectiveInfo.Data == 0u || o.ObjectiveInfo.Data == targetGroupId), progress);
         }
 
         /// <summary>

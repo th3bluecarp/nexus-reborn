@@ -751,7 +751,7 @@ namespace NexusForever.Game.Entity
                         case QuestObjectiveType.SucceedCSI:
                             if (objective.ObjectiveInfo.Data == creatureId)
                                 return true;
-                            if (objective.ObjectiveInfo.Type == QuestObjectiveType.ActivateEntity && objective.ObjectiveInfo.Data == 0u
+                            if (objective.ObjectiveInfo.Type == QuestObjectiveType.ActivateEntity && (objective.ObjectiveInfo.Data == 0u || objective.ObjectiveInfo.Data == entry.TargetGroupIdRewardPane)
                                 && targetGroups.Contains(entry.TargetGroupIdRewardPane))
                                 return true;
                             break;
