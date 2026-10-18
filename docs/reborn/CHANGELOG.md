@@ -10,6 +10,7 @@ Newest first. "Live" means running on our test server.
 
 ## 2026-10-15
 
+- Crimson Isle, Levian Bay and Deradune Scientist scan missions have their targets (62fcb91e).
 - Everstar Grove (3) and Whitevale (25) Scientist scan missions have their targets (9ea82997).
 - Illium and Thayd quest NPCs that stand inside buildings (Emperor Myrcalus, Rixis, Sergeant Akida and others) are now placed at their quests' turn-in spots (c60ffdd0).
 - Crafting work orders and craft-and-deliver quests can be finished: any successful craft counts for them. This unblocks about 200 quests, Thayd alone had 38 (6dcf63e6).
