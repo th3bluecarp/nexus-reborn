@@ -495,7 +495,30 @@ namespace NexusForever.Game.Quest
 
         public void ObjectiveUpdate(QuestObjectiveType type, uint data, uint progress)
         {
-            ObjectiveUpdate(o => o.ObjectiveInfo.Entry.Type == (uint)type && o.ObjectiveInfo.Data == data, progress);
+            ObjectiveUpdate(o => o.ObjectiveInfo.Entry.Type == (uint)type
+                && (o.ObjectiveInfo.Data == data || NamesTargetGroupOf(type, o, data)), progress);
+        }
+
+        /// <summary>
+        /// Returns if a creature objective names a target group holding the supplied creature instead of a creature.
+        /// </summary>
+        /// <remarks>
+        /// About 80 kill, talk, activate and interaction objectives carry a TargetGroup id in Data that is no Creature2 id (Kill
+        /// Moodie Hunters, Talk to the Survivors). Objectives whose Data is their reward pane group are counted by
+        /// <see cref="RewardPaneObjectiveUpdate"/> and left out here so they do not count twice.
+        /// </remarks>
+        private static bool NamesTargetGroupOf(QuestObjectiveType type, IQuestObjective objective, uint creatureId)
+        {
+            if (type is not (QuestObjectiveType.KillCreature or QuestObjectiveType.TalkTo or QuestObjectiveType.ActivateEntity
+                or QuestObjectiveType.ActivateEntity2 or QuestObjectiveType.SucceedCSI or QuestObjectiveType.GatheResource))
+                return false;
+
+            uint targetGroupId = objective.ObjectiveInfo.Data;
+            if (targetGroupId == 0u || targetGroupId == objective.ObjectiveInfo.Entry.TargetGroupIdRewardPane
+                || GameTable.GameTableManager.Instance.Creature2.GetEntry(targetGroupId) != null)
+                return false;
+
+            return Game.AssetManager.Instance.GetTargetGroupsForCreatureId(creatureId).Contains(targetGroupId);
         }
 
         /// <summary>
