@@ -142,7 +142,7 @@ namespace NexusForever.Game.Entity
 
         private static bool IsSupported(ChallengeEntry entry)
         {
-            return (ChallengeType)entry.ChallengeTypeEnum is ChallengeType.Combat or ChallengeType.Collect or ChallengeType.ChecklistActivate
+            return (ChallengeType)entry.ChallengeTypeEnum is ChallengeType.Combat or ChallengeType.Collect or ChallengeType.ChecklistActivate or ChallengeType.Item
                 || ((ChallengeType)entry.ChallengeTypeEnum == ChallengeType.General && (entry.Target != 0u || IsReach(entry)));
         }
 
@@ -233,14 +233,25 @@ namespace NexusForever.Game.Entity
             OnTarget(targetGroupIds, ChallengeType.Collect, ChallengeType.ChecklistActivate, ChallengeType.General);
         }
 
+        public void OnItemLoot(uint itemId, uint count)
+        {
+            // Item challenges: the target is the Item2 id to collect
+            Count(unlocked.Values.Where(c => (ChallengeType)c.Entry.ChallengeTypeEnum == ChallengeType.Item && c.Entry.Target == itemId).ToList(), count);
+        }
+
         private void OnTarget(IEnumerable<uint> targetGroupIds, params ChallengeType[] types)
         {
             var groups = targetGroupIds.ToHashSet();
             if (groups.Count == 0)
                 return;
 
+            Count(unlocked.Values.Where(c => groups.Contains(c.Entry.Target) && types.Contains((ChallengeType)c.Entry.ChallengeTypeEnum)).ToList(), 1u);
+        }
+
+        private void Count(List<Challenge> challenges, uint amount)
+        {
             DateTime now = DateTime.UtcNow;
-            foreach (Challenge challenge in unlocked.Values.Where(c => groups.Contains(c.Entry.Target) && types.Contains((ChallengeType)c.Entry.ChallengeTypeEnum)).ToList())
+            foreach (Challenge challenge in challenges)
             {
                 if (!challenge.Activated)
                 {
@@ -255,7 +266,7 @@ namespace NexusForever.Game.Entity
                         continue;
                 }
 
-                challenge.Count++;
+                challenge.Count += amount;
                 while (challenge.CurrentTier < challenge.Tiers.Length && challenge.Count >= challenge.Tiers[challenge.CurrentTier])
                 {
                     SendResult(challenge.Entry.Id, ChallengeResult.TierAchieved, (int)challenge.CurrentTier);

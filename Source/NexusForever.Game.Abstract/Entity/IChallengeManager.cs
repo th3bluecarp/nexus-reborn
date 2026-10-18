@@ -25,6 +25,11 @@ namespace NexusForever.Game.Abstract.Entity
         void OnActivate(IEnumerable<uint> targetGroupIds);
 
         /// <summary>
+        /// Invoked when the player loots items, Item challenges count their target item.
+        /// </summary>
+        void OnItemLoot(uint itemId, uint count);
+
+        /// <summary>
         /// Handle the challenge window buttons.
         /// </summary>
         void HandleChoice(uint challengeId, ChallengeChoice choice);

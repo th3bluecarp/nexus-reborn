@@ -296,6 +296,9 @@ namespace NexusForever.Game.Entity
             if (bag == null)
                 throw new ArgumentException();
 
+            if (reason == ItemUpdateReason.Loot)
+                player?.ChallengeManager?.OnItemLoot(info.Id, count);
+
             // update any existing stacks before creating new items
             if (info.IsStackable())
             {
