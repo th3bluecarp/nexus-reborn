@@ -531,8 +531,45 @@ namespace NexusForever.Game.Spell
                 if (innateCostType == 0)
                     continue;
 
-                Caster.ModifyVital((Vital)innateCostType, Parameters.SpellInfo.Entry.InnateCosts[i] * -1f);
+                float cost = Parameters.SpellInfo.Entry.InnateCosts[i];
+
+                // a cost with an EMM id (Mind Burst and the other psi point finishers) also consumes what is left of the
+                // vital, the extra amount picks the effects of that strength (EmmValue)
+                if (i < Parameters.SpellInfo.Entry.InnateCostEMMIds.Length && Parameters.SpellInfo.Entry.InnateCostEMMIds[i] != 0u)
+                {
+                    float extra = Math.Max(0f, Caster.GetVitalValue((Vital)innateCostType) - cost);
+                    emmAmount = (uint)MathF.Floor(extra);
+                    cost += emmAmount.Value;
+                }
+
+                Caster.ModifyVital((Vital)innateCostType, cost * -1f);
             }
+        }
+
+        private uint? emmAmount;
+
+        /// <summary>
+        /// Returns if the effect applies at the extra amount consumed by an EMM cost.
+        /// </summary>
+        /// <remarks>
+        /// Only effects of a type whose entries in the spell differ by EmmValue are tiers (Mind Burst has 5 Damage effects with
+        /// EmmValue 0 to 4), a lone effect with EmmValue 0 always applies. EmmComparison 0 is taken as equal, 1 as at least.
+        /// </remarks>
+        private bool MeetsEmm(Spell4EffectsEntry effect)
+        {
+            if (emmAmount == null)
+                return true;
+
+            bool tiered = Parameters.SpellInfo.Effects
+                .Where(e => e.EffectType == effect.EffectType)
+                .Select(e => e.EmmValue)
+                .Distinct()
+                .Skip(1)
+                .Any();
+            if (!tiered)
+                return true;
+
+            return effect.EmmComparison == 1u ? emmAmount.Value >= effect.EmmValue : emmAmount.Value == effect.EmmValue;
         }
 
         protected virtual void SelectTargets(ISpellExecutionContext executionContext)
@@ -592,6 +629,9 @@ namespace NexusForever.Game.Spell
         protected virtual bool CanExecuteEffect(Spell4EffectsEntry spell4EffectsEntry)
         {
             if (disableManager.IsDisabled(DisableType.SpellEffect, spell4EffectsEntry.Id))
+                return false;
+
+            if (!MeetsEmm(spell4EffectsEntry))
                 return false;
 
             if (Caster is IPlayer player)
