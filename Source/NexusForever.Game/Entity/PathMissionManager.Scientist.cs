@@ -59,6 +59,22 @@ namespace NexusForever.Game.Entity
             [1847u] = new([["Ravenous Ripper", "Ravenous Ghoul", "Ravenous Horror", "Ravenous Fiend", "Ravenous Reaver", "Ravenous Malignant", "Ravenous Mordesh"]], 3u), // BIOLOGY: Ravenous Ruminations
             [1854u] = new([["Communication Controls", "Communication Dish"]], 4u), // ANALYSIS: Eldan Communications (checklist of 4)
             [1859u] = new([["Shield Generator", "Bio-Containment Shield"]], 3u), // DIAGNOSTICS: Switching Safeguards (checklist of 3)
+            // Galeras (dead Buzzbings 707, Crimson Legion uplink stations 712 and sparking wires 3156 have no spawns, no rule)
+            [425u]  = new([["Razorbeak Riptalon", "Razorbeak Render", "Razorbeak Chick", "Razorbeak Nester", "Razorbeak Forager", "Razorbeak Ripper"]], 3u), // BIOLOGY: Razorbeak Gribbons
+            [426u]  = new([["Thundercall Guardian", "Thundercall Arcanist", "Thundercall Wind-Speaker", "Thundercall Warrior", "Thundercall Wind-Witch", "Thundercall Wind-Striker"]], 3u), // BIOLOGY: Thundercall Pell
+            [427u]  = new([["Sandstorm Elemental", "Wind Elemental", "Gust Elemental", "Sandsquall Elemental", "Angry Air Elemental"]], 3u), // BIOLOGY: Air Elementals
+            [696u]  = new([["Windyburrow Biter", "Windyburrow Nibbler", "Windyburrow Nipper", "Windyburrow Gnawer"]], 3u), // BIOLOGY: Chompacabra
+            [697u]  = new([["Pollen"]], 3u),                        // BOTANY: Pollen Clouds
+            [698u]  = new([["Falkrin Feather Pile", "Falkrin Feather"]], 3u), // BIOLOGY: Falkrin Feathers
+            [699u]  = new([["Primal Osun Brazier", "Osun Chains"]], 3u), // ARCHAEOLOGY: Osun Relics
+            [702u]  = new([["Augmented Gustclaw Burrower", "Augmented Sickleswarm Hivedrone", "Augmented Spiderling", "Augmented Recluse", "Augmented Sickleswarm Divebomber", "Augmented Gustclaw Shredder"]], 3u), // BIOLOGY: Augmented Organisms
+            [706u]  = new([["Eldan Scrap"]], 3u),                   // ARCHAEOLOGY: Eldan Scrap Yard
+            [708u]  = new([["Starstem Plant"]], 3u),                // BOTANY: The Growling Forest
+            [709u]  = new([["Eldan Switch"]], 4u),                  // ANALYSIS: Eldan Primal Lock (checklist of 4)
+            [710u]  = new([["Galeras Sprout"]], 3u),                // BOTANY: Resilient Sprouts
+            [711u]  = new([["Toxic Material"]], 6u),                // CHEMISTRY: Toxic Wasteland (checklist of 6)
+            [1251u] = new([["Eldan Fuel Rod"]], 6u),                // ARCHAEOLOGY: Eldan Fuel Rods (checklist of 6)
+            [3159u] = new([["Osiric Totem"]], 3u),                  // ANALYSIS: Totems of Osiric
         };
 
         /// <summary>
