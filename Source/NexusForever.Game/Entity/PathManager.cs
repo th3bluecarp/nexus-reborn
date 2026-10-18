@@ -281,7 +281,8 @@ namespace NexusForever.Game.Entity
 
         private float GetCooldownTime()
         {
-            return (float)DateTime.UtcNow.Subtract(player.PathActivatedTime).TotalDays * -1;
+            // Reborn: switching has no cooldown, the last switch is always reported a day ago so the client shows none
+            return -1f;
         }
 
         /// <summary>
