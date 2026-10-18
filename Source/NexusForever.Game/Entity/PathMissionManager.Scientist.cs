@@ -36,6 +36,12 @@ namespace NexusForever.Game.Entity
             [42u]  = new([["Dominion Turret", "Inactive Dominion Turret"], ["Dominion Secure Database", "Dominion Secure Database Hologram"]], 1u), // ANALYSIS: Turning the Tide
             [160u] = new([["Vitalium Crystal"]], 3u),                                                     // CHEMISTRY: Vitalium Crystals
             [648u] = new([["Skeech Diviner", "Skeech Scratcher", "Skeech Shaman", "Cleaved Skeech Shaman"]], 3u), // BIOLOGY: Skeech Physiology
+            // Algoroc (Grimstone Girrok 264, Gronyx 826 and Stumpkins 827 have no spawns anywhere in Algoroc, no rule)
+            [201u]  = new([["Irradiated Icetail Leaper", "Irradiated Icetail Pouncer", "Irradiated Icetail Slayer", "Irradiated Icetail Stalker", "Irradiated Snoglug"]], 3u), // BIOLOGY: Irradiated Wildlife
+            [218u]  = new([["Large Loftite Formation"]], 3u),       // CHEMISTRY: Loftite Crystals
+            [266u]  = new([["Fiera Flower"]], 3u),                  // BOTANY: Fiera Flowers
+            [1978u] = new([["Augmented XAS Scientist"]], 3u),       // BIOLOGY: Augmented Scientists
+            [2139u] = new([["Eldan Repair Construct"]], 3u),        // ANALYSIS: Eldan Constructs
         };
 
         /// <summary>
