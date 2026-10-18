@@ -63,5 +63,15 @@ namespace NexusForever.Game.Abstract.Entity
         /// Settler: build the supplied tier (zero based) of an improvement group at a depot.
         /// </summary>
         void BuildImprovement(uint improvementGroupId, uint tier);
+
+        /// <summary>
+        /// Scientist: open the experimentation of the supplied unit (ScientistActivate interaction), returns false when it has none.
+        /// </summary>
+        bool OpenExperimentation(IWorldEntity entity);
+
+        /// <summary>
+        /// Scientist: the client solved the open experimentation with the supplied pattern ids.
+        /// </summary>
+        void AttemptExperimentation(IReadOnlyList<uint> choices);
     }
 }

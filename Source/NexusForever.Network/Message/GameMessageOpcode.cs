@@ -639,9 +639,9 @@ namespace NexusForever.Network.Message
         ServerPrerequisiteFailure       = 0x0642,
         ServerOwnedCommodityOrders      = 0x064C,
         ServerOwnedItemAuctions         = 0x064D,
-        ServerPathScientistExperimentationInvoke = 0x667,
+        ServerPathScientistExperimentationInvoke = 0x667, // unit and secret code, needs the ScientistActivate interaction open (WildStar64 0x140618ed0)
         ServerPathScientistScanbotState = 0x0669,
-        ClientPathMissionAttemptScientistExperimentation = 0x066A,
+        ClientPathMissionAttemptScientistExperimentation = 0x066A, // sent only for a fully correct attempt, the client scores the others itself (WildStar64 0x140619230)
         ServerPathSettlerBuildResult    = 0x066C,
         ServerPathSettlerBuildInvoke    = 0x066D,
         ServerPathSettlerBuildStatusList = 0x066E,

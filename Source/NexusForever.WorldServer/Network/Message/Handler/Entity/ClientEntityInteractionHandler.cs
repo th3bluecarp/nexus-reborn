@@ -71,6 +71,10 @@ namespace NexusForever.WorldServer.Network.Message.Handler.Entity
                         InteractionUnitId = entityInteraction.UnitId
                     });
                     break;
+                case InteractionType.ScientistActivate: // experiment consoles, the client only opens the window for this interaction
+                    if (!session.Player.PathMissionManager.OpenExperimentation(entity))
+                        log.LogWarning($"Received unhandled interaction event {entityInteraction.Type} from Entity {entityInteraction.UnitId}");
+                    break;
                 case InteractionType.HousingGuildBroker: // "HousingGuildNeighborhoodBrokerOpen"
                 case InteractionType.ConvertItem:
                 case InteractionType.ConvertRep: // "ResourceConversionOpen"

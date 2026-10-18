@@ -42,7 +42,8 @@ namespace NexusForever.Game.Entity
             SpecimenSurvey,
             Expansion,
             Infrastructure,
-            Holdout
+            Holdout,
+            Experimentation
         }
 
         private class PathMission
@@ -120,6 +121,13 @@ namespace NexusForever.Game.Entity
                     if (discovery == null)
                         break;
                     return discovery;
+                }
+                case (Path.Scientist, 22u):
+                {
+                    PathScientistExperimentationEntry experimentation = GameTableManager.Instance.PathScientistExperimentation.GetEntry(entry.ObjectId);
+                    if (experimentation == null)
+                        break;
+                    return new PathMission { Entry = entry, Kind = MissionKind.Experimentation, Objects = [experimentation.Id], Count = 1u };
                 }
                 case (Path.Settler, 19u):
                 {
@@ -549,7 +557,8 @@ namespace NexusForever.Game.Entity
 
             bool complete = mission.Kind switch
             {
-                MissionKind.Kill or MissionKind.Activate or MissionKind.Cartography or MissionKind.Expansion or MissionKind.Infrastructure or MissionKind.Holdout => mission.Progress >= mission.Count,
+                MissionKind.Kill or MissionKind.Activate or MissionKind.Cartography or MissionKind.Expansion or MissionKind.Infrastructure or MissionKind.Holdout
+                    or MissionKind.Experimentation => mission.Progress >= mission.Count,
                 MissionKind.Scan => mission.Progress == (mission.Count >= 32u ? uint.MaxValue : (1u << (int)mission.Count) - 1u),
                 MissionKind.Locations or MissionKind.Quests or MissionKind.ScavengerHunt or MissionKind.Datacube or MissionKind.SpecimenSurvey => mission.Progress == (mission.Objects.Length >= 32 ? uint.MaxValue : (1u << mission.Objects.Length) - 1u),
                 _ => false

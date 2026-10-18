@@ -422,7 +422,9 @@ namespace NexusForever.GameTable
         [GameData]
         public GameTable<PathScientistCreatureInfoEntry> PathScientistCreatureInfo { get; private set; }
         public GameTable<PathScientistDatacubeDiscoveryEntry> PathScientistDatacubeDiscovery { get; private set; }
+        [GameData]
         public GameTable<PathScientistExperimentationEntry> PathScientistExperimentation { get; private set; }
+        [GameData]
         public GameTable<PathScientistExperimentationPatternEntry> PathScientistExperimentationPattern { get; private set; }
         [GameData]
         public GameTable<PathScientistFieldStudyEntry> PathScientistFieldStudy { get; private set; }
