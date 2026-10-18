@@ -156,6 +156,7 @@ namespace NexusForever.Game.Entity
             [620u] = [37391u],          // Seek and Destroy: Alchemical Supplies in Grimbone Tomb (Algoroc)
             [493u] = [30974u],          // Chasing Fireflies: Fireflies near Celestial Falls (Celestion)
             [185u] = [21185u, 21187u],  // Green Thumb: the healthy Galettuce and Galaraddish of Clearfield Farm (Galeras)
+            [236u] = [23151u],          // Defusing the Situation: Sunderstone Proximity Mines (Whitevale), taking blast damage is not checked
         };
 
         /// <summary>
@@ -217,6 +218,9 @@ namespace NexusForever.Game.Entity
                 || progress.StartsWith("Navigate", StringComparison.OrdinalIgnoreCase)
                 || progress.StartsWith("Land in", StringComparison.OrdinalIgnoreCase)
                 || progress.StartsWith("Leap", StringComparison.OrdinalIgnoreCase)
+                || progress.StartsWith("Run to", StringComparison.OrdinalIgnoreCase)
+                || progress.StartsWith("Get to", StringComparison.OrdinalIgnoreCase)
+                || progress.StartsWith("Make it to", StringComparison.OrdinalIgnoreCase)
                 || ((progress.StartsWith("Deliver", StringComparison.OrdinalIgnoreCase) || progress.StartsWith("Return", StringComparison.OrdinalIgnoreCase))
                     && entry.WorldLocation2IdStartLocation != 0u));
         }
