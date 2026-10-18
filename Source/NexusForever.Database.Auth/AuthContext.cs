@@ -9,6 +9,7 @@ namespace NexusForever.Database.Auth
         public DbSet<AccountModel> Account { get; set; }
         public DbSet<AccountCostumeUnlockModel> AccountCostumeUnlock { get; set; }
         public DbSet<AccountCurrencyModel> AccountCurrency { get; set; }
+        public DbSet<AccountDailyLoginModel> AccountDailyLogin { get; set; }
         public DbSet<AccountEntitlementModel> AccountEntitlement { get; set; }
         public DbSet<AccountExternalReferenceModel> AccountExternalReference { get; set; }
         public DbSet<AccountGenericUnlockModel> AccountGenericUnlock { get; set; }
@@ -152,6 +153,33 @@ namespace NexusForever.Database.Auth
                     .WithMany(p => p.AccountCurrency)
                     .HasForeignKey(d => d.Id)
                     .HasConstraintName("FK__account_currency_id__account_id");
+            });
+
+            modelBuilder.Entity<AccountDailyLoginModel>(entity =>
+            {
+                entity.HasKey(e => e.Id)
+                    .HasName("PRIMARY");
+
+                entity.ToTable("account_daily_login");
+
+                entity.Property(e => e.Id)
+                    .HasColumnName("id")
+                    .HasColumnType("int(10) unsigned")
+                    .HasDefaultValue(0);
+
+                entity.Property(e => e.LoginDays)
+                    .HasColumnName("loginDays")
+                    .HasColumnType("int(10) unsigned")
+                    .HasDefaultValue(0);
+
+                entity.Property(e => e.LastLoginDay)
+                    .HasColumnName("lastLoginDay")
+                    .HasColumnType("datetime");
+
+                entity.HasOne(d => d.Account)
+                    .WithMany(p => p.AccountDailyLogin)
+                    .HasForeignKey(d => d.Id)
+                    .HasConstraintName("FK__account_daily_login_id__account_id");
             });
 
             modelBuilder.Entity<AccountEntitlementModel>(entity =>

@@ -15,6 +15,7 @@ namespace NexusForever.Database.Auth.Model
 
         public ICollection<AccountCostumeUnlockModel> AccountCostumeUnlock { get; set; } = [];
         public ICollection<AccountCurrencyModel> AccountCurrency { get; set; } = [];
+        public ICollection<AccountDailyLoginModel> AccountDailyLogin { get; set; } = [];
         public ICollection<AccountEntitlementModel> AccountEntitlement { get; set; } = [];
         public ICollection<AccountExternalReferenceModel> AccountExternalReference { get; set; } = [];
         public ICollection<AccountGenericUnlockModel> AccountGenericUnlock { get; set; } = [];

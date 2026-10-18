@@ -1339,6 +1339,8 @@ namespace NexusForever.Game.Entity
         /// <summary>
         /// Invoked when <see cref="IPlayer""/> has finished loading and is ready to enter world.
         /// </summary>
+        private bool dailyLoginChecked;
+
         public void OnEnteredWorld()
         {
             // right before the loading screen is removed we can now send the actual network entity commands
@@ -1348,6 +1350,13 @@ namespace NexusForever.Game.Entity
                     we.MovementManager.SendNetworkEntityCommands(Session);
 
             Session.EnqueueMessageEncrypted(new ServerPlayerEnteredWorld());
+
+            // the first world entry of the session counts the daily login (items need the client in the world)
+            if (!dailyLoginChecked)
+            {
+                dailyLoginChecked = true;
+                Account.DailyLoginManager.OnEnteredWorld(this);
+            }
 
             pendingTeleport = null;
             IsLoading = false;

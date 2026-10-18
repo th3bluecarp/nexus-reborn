@@ -24,6 +24,7 @@ namespace NexusForever.Game.Abstract.Account
         IAccountCostumeManager CostumeManager { get; }
         IRewardPropertyManager RewardPropertyManager { get; }
         IAccountKeybindingManager KeybindingManager { get; }
+        DailyLogin.IAccountDailyLoginManager DailyLoginManager { get; }
 
         AccountTier AccountTier { get; }
 

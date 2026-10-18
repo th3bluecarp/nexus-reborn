@@ -75,6 +75,7 @@ namespace NexusForever.Database.Auth
                 .AsSplitQuery()
                 .Include(a => a.AccountCostumeUnlock)
                 .Include(a => a.AccountCurrency)
+                .Include(a => a.AccountDailyLogin)
                 .Include(a => a.AccountGenericUnlock)
                 .Include(a => a.AccountKeybinding)
                 .Include(a => a.AccountEntitlement)

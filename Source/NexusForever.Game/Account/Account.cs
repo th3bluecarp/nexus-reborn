@@ -33,6 +33,7 @@ namespace NexusForever.Game.Account
         public IAccountCostumeManager CostumeManager { get; private set; }
         public IRewardPropertyManager RewardPropertyManager { get; private set; }
         public IAccountKeybindingManager KeybindingManager { get; private set; } 
+        public Abstract.Account.DailyLogin.IAccountDailyLoginManager DailyLoginManager { get; private set; }
 
         public AccountTier AccountTier => RbacManager.HasPermission(Permission.Signature) ? AccountTier.Signature : AccountTier.Basic;
 
@@ -57,6 +58,7 @@ namespace NexusForever.Game.Account
             CostumeManager        = new AccountCostumeManager(this, model);
             RewardPropertyManager = new RewardPropertyManager(this);
             KeybindingManager     = new AccountKeybindingManager(model);
+            DailyLoginManager     = new DailyLogin.AccountDailyLoginManager(this, model);
         }
 
         public void Save(AuthContext context)
@@ -67,6 +69,7 @@ namespace NexusForever.Game.Account
             EntitlementManager.Save(context);
             CostumeManager.Save(context);
             KeybindingManager.Save(context);
+            DailyLoginManager.Save(context);
         }
     }
 }

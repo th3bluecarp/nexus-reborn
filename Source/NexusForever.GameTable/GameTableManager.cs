@@ -183,6 +183,7 @@ namespace NexusForever.GameTable
         public GameTable<CustomerSurveyEntry> CustomerSurvey { get; private set; }
         public GameTable<CustomizationParameterEntry> CustomizationParameter { get; private set; }
         public GameTable<CustomizationParameterMapEntry> CustomizationParameterMap { get; private set; }
+        [GameData]
         public GameTable<DailyLoginRewardEntry> DailyLoginReward { get; private set; }
 
         [GameData]
