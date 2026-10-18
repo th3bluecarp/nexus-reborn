@@ -10,6 +10,7 @@ Newest first. "Live" means running on our test server.
 
 ## 2026-10-15
 
+- Whitevale: ANALYSIS: Augmented Monstrosities scan, Defusing the Situation, Deadrock Statue, Race to the Top and Explosive Ascent challenges (72c9af95)
 - Thayd: Hoogle Statues placed for ANALYSIS: Hoogle Stones, Leap of Faith challenge (91eebb19)
 - Quest objective complete flags are sent, so objects of later objectives (Imprisoned Survivors) can be used after a relog (11a27caa)
 - Galeras: Sparking Wires, Uplink Stations and Buzzbing Remains placed for their Scientist missions, Whimsical Whimfibers, Green Thumb and Supply Run challenges (5aa3df94)
