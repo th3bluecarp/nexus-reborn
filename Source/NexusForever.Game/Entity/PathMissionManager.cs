@@ -23,9 +23,10 @@ namespace NexusForever.Game.Entity
     /// <remarks>
     /// Supported mission kinds: kill counts (Soldier assassination), activation counts (Soldier demolition and rescue,
     /// Explorer activate), locations to visit (Explorer vista, claim, exploration, Settler scout and mayor) and quests to
-    /// complete (Settler sheriff). Scientist scans, Settler hubs and infrastructure, Soldier holdouts and SWAT are not handled.
+    /// complete (Settler sheriff), Scientist scans (PathMissionManager.Scientist.cs), Settler expansions
+    /// (PathMissionManager.Settler.cs) and Soldier holdouts (PathMissionManager.Soldier.cs). Settler infrastructure is not handled.
     /// </remarks>
-    public class PathMissionManager : IPathMissionManager
+    public partial class PathMissionManager : IPathMissionManager
     {
         private enum MissionKind
         {
@@ -35,7 +36,10 @@ namespace NexusForever.Game.Entity
             Locations,
             Quests,
             Cartography,
-            ScavengerHunt
+            ScavengerHunt,
+            Scan,
+            Expansion,
+            Holdout
         }
 
         private class PathMission
@@ -97,6 +101,27 @@ namespace NexusForever.Game.Entity
             var type = ((Path)entry.PathTypeEnum, entry.PathMissionTypeEnum);
             switch (type)
             {
+                case (Path.Scientist, 2u):
+                {
+                    PathMission scan = CreateScanMission(entry);
+                    if (scan == null)
+                        break;
+                    return scan;
+                }
+                case (Path.Settler, 19u):
+                {
+                    PathSettlerHubEntry hub = GameTableManager.Instance.PathSettlerHub.GetEntry(entry.ObjectId);
+                    if (hub == null)
+                        break;
+                    return new PathMission { Entry = entry, Kind = MissionKind.Expansion, Objects = [hub.Id], Count = Math.Max(hub.MissionCount, 1u) };
+                }
+                case (Path.Soldier, 0u):
+                {
+                    PathSoldierEventEntry soldierEvent = GameTableManager.Instance.PathSoldierEvent.GetEntry(entry.ObjectId);
+                    if (soldierEvent == null)
+                        break;
+                    return new PathMission { Entry = entry, Kind = MissionKind.Holdout, Objects = [soldierEvent.Id], Count = 1u };
+                }
                 case (Path.Soldier, 4u):
                 {
                     PathSoldierAssassinateEntry assassinate = GameTableManager.Instance.PathSoldierAssassinate.GetEntry(entry.ObjectId);
@@ -342,6 +367,8 @@ namespace NexusForever.Game.Entity
 
         public void Update(double lastTick)
         {
+            UpdateHoldout(lastTick);
+
             locationTimer.Update(lastTick);
             if (!locationTimer.HasElapsed)
                 return;
@@ -416,6 +443,8 @@ namespace NexusForever.Game.Entity
         /// </summary>
         public void OnActivate(uint creatureId, IEnumerable<uint> targetGroupIds)
         {
+            StartHoldout(creatureId);
+            GatherSettlerResource(creatureId);
             OnCreature(MissionKind.Activate, creatureId, targetGroupIds);
         }
 
@@ -496,7 +525,8 @@ namespace NexusForever.Game.Entity
 
             bool complete = mission.Kind switch
             {
-                MissionKind.Kill or MissionKind.Activate or MissionKind.Cartography => mission.Progress >= mission.Count,
+                MissionKind.Kill or MissionKind.Activate or MissionKind.Cartography or MissionKind.Expansion or MissionKind.Holdout => mission.Progress >= mission.Count,
+                MissionKind.Scan => mission.Progress == (mission.Count >= 32u ? uint.MaxValue : (1u << (int)mission.Count) - 1u),
                 MissionKind.Locations or MissionKind.Quests or MissionKind.ScavengerHunt => mission.Progress == (mission.Objects.Length >= 32 ? uint.MaxValue : (1u << mission.Objects.Length) - 1u),
                 _ => false
             };

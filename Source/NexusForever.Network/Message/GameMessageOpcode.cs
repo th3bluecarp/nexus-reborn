@@ -150,7 +150,7 @@ namespace NexusForever.Network.Message
         ClientCCStateKnockdownBreak     = 0x015C,
         ClientLootRollAction            = 0x015D,
         ClientItemUseLootBag            = 0x015E,
-        ClientPathScientistDismissScanbotPathAction = 0x015F,
+        ClientPathScientistScan = 0x015F, // path action button with the scanbot out (WildStar64 0x140571200), was named DismissScanbotPathAction
         ClientPathScientistRequestScanbot = 0x0180,
         ServerCharacterSelectFail       = 0x0162,
         ClientSetInstanceSettings       = 0x0163,

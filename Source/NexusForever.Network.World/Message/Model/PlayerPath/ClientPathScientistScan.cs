@@ -2,12 +2,12 @@
 
 namespace NexusForever.Network.World.Message.Model.PlayerPath
 {
-    [Message(GameMessageOpcode.ClientPathScientistDismissScanbotPathAction)]
-    public class ClientPathScientistDismissScanbotPathAction : IReadable
+    [Message(GameMessageOpcode.ClientPathScientistScan)]
+    public class ClientPathScientistScan : IReadable
     {
         public void Read(GamePacketReader reader)
         {
-            // zero byte message
+            // zero byte message, the server picks the target
         }
     }
 }

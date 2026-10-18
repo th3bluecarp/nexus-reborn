@@ -37,9 +37,12 @@ namespace NexusForever.Game.Entity
 
         #endregion
 
-        public void Initialise(IPlayer owner, ICreatureInfo creatureInfo)
+        public bool IsScanbot { get; private set; }
+
+        public void Initialise(IPlayer owner, ICreatureInfo creatureInfo, bool scanbot = false)
         {
             OwnerGuid = owner.Guid;
+            IsScanbot = scanbot;
             Initialise(creatureInfo);
 
             SetBaseProperty(Property.BaseHealth, 800.0f);
@@ -71,6 +74,9 @@ namespace NexusForever.Game.Entity
                 RemoveFromMap();
                 return;
             }
+
+            if (IsScanbot)
+                return;
 
             owner.VanityPetGuid = Guid;
 

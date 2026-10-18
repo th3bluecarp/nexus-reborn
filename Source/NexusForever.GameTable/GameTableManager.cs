@@ -418,15 +418,20 @@ namespace NexusForever.GameTable
         [GameData]
         public GameTable<PathRewardEntry> PathReward { get; private set; }
 
+        [GameData]
         public GameTable<PathScientistCreatureInfoEntry> PathScientistCreatureInfo { get; private set; }
         public GameTable<PathScientistDatacubeDiscoveryEntry> PathScientistDatacubeDiscovery { get; private set; }
         public GameTable<PathScientistExperimentationEntry> PathScientistExperimentation { get; private set; }
         public GameTable<PathScientistExperimentationPatternEntry> PathScientistExperimentationPattern { get; private set; }
         public GameTable<PathScientistFieldStudyEntry> PathScientistFieldStudy { get; private set; }
+        [GameData]
         public GameTable<PathScientistScanBotProfileEntry> PathScientistScanBotProfile { get; private set; }
         public GameTable<PathScientistSpecimenSurveyEntry> PathScientistSpecimenSurvey { get; private set; }
+        [GameData]
         public GameTable<PathSettlerHubEntry> PathSettlerHub { get; private set; }
+        [GameData]
         public GameTable<PathSettlerImprovementEntry> PathSettlerImprovement { get; private set; }
+        [GameData]
         public GameTable<PathSettlerImprovementGroupEntry> PathSettlerImprovementGroup { get; private set; }
         public GameTable<PathSettlerInfrastructureEntry> PathSettlerInfrastructure { get; private set; }
         [GameData]
@@ -437,7 +442,9 @@ namespace NexusForever.GameTable
         public GameTable<PathSoldierActivateEntry> PathSoldierActivate { get; private set; }
         [GameData]
         public GameTable<PathSoldierAssassinateEntry> PathSoldierAssassinate { get; private set; }
+        [GameData]
         public GameTable<PathSoldierEventEntry> PathSoldierEvent { get; private set; }
+        [GameData]
         public GameTable<PathSoldierEventWaveEntry> PathSoldierEventWave { get; private set; }
         [GameData]
         public GameTable<PathSoldierSWATEntry> PathSoldierSWAT { get; private set; }

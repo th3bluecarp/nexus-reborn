@@ -6,6 +6,11 @@ namespace NexusForever.Game.Abstract.Entity
     {
         uint OwnerGuid { get; }
 
-        void Initialise(IPlayer owner, ICreatureInfo creatureInfo);
+        /// <summary>
+        /// A scientist scanbot follows its owner like a vanity pet but does not take the vanity pet slot.
+        /// </summary>
+        bool IsScanbot { get; }
+
+        void Initialise(IPlayer owner, ICreatureInfo creatureInfo, bool scanbot = false);
     }
 }

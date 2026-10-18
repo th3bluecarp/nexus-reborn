@@ -937,6 +937,7 @@ namespace NexusForever.Game.Entity
 
         protected override void OnRemoveFromMap()
         {
+            PathMissionManager?.OnRemoveFromMap();
             DestroyDependents();
             base.OnRemoveFromMap();
         }
@@ -968,7 +969,11 @@ namespace NexusForever.Game.Entity
             base.AddVisible(entity);
 
             if (entity is IWorldEntity worldEntity)
+            {
                 Session.EnqueueMessageEncrypted(worldEntity.BuildCreatePacket(IsLoading));
+                // scientist scan targets and settler depots are marked once the client has the unit
+                PathMissionManager?.OnEntityVisible(worldEntity);
+            }
 
             if (entity is IPlayer playerEntity)
                 Session.EnqueueMessageEncrypted(new ServerSetUnitPathType
