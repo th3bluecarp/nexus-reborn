@@ -10,6 +10,7 @@ Newest first. "Live" means running on our test server.
 
 ## 2026-10-15
 
+- Dominion zones: Scientist scans in Deradune, Ellevar, Auroria, Illium and Levian Bay, Weeping Bluepines and Illium world story NPCs placed, collect, touch and timed run challenges, Scaleborn Leviathan and Webwood Larvae off the terrain top (5f26e9c0)
 - Murkmire, Malgrave and Grimvault: targets placed for twelve blocked quests, Topsy Tower Turvey challenge (69e952cb)
 - Farside: targets placed for Secondhand Research, The Hidden Lab, Fortuitous Discovery, Face the Custodian and Buried Shinies (3cbe427d)
 - Farside: scan rules for 17 Scientist missions, scan objects placed around their mission markers (d77ae5dd)
