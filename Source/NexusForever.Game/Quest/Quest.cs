@@ -53,9 +53,25 @@ namespace NexusForever.Game.Quest
 
         private QuestState state;
 
+        /// <remarks>
+        /// The Objective0Complete to Objective5Complete bits always follow the objectives: the client keeps them as its record of which
+        /// objectives are done (WildStar64.exe 0x1405510d0) and only updates them itself on objective updates, so after a relog a
+        /// sequential objective whose earlier objectives lack their bit is never available and its objects cannot be used
+        /// (0x140553790, unit activation 0x1405a8b30).
+        /// </remarks>
         public QuestStateFlags Flags
         {
-            get => flags;
+            get
+            {
+                QuestStateFlags objectiveFlags = QuestStateFlags.None;
+                foreach (IQuestObjective objective in objectives.Where(o => o.Index < 6 && o.IsComplete()))
+                    objectiveFlags |= (QuestStateFlags)((uint)QuestStateFlags.Objective0Complete << (int)objective.Index);
+
+                const QuestStateFlags allObjectives = QuestStateFlags.Objective0Complete | QuestStateFlags.Objective1Complete
+                    | QuestStateFlags.Objective2Complete | QuestStateFlags.Objective3Complete | QuestStateFlags.Objective4Complete
+                    | QuestStateFlags.Objective5Complete;
+                return (flags & ~allObjectives) | objectiveFlags;
+            }
             set
             {
                 flags = value;
