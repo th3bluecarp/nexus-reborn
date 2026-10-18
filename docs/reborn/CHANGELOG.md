@@ -10,6 +10,7 @@ Newest first. "Live" means running on our test server.
 
 ## 2026-10-15
 
+- A quest offered by a communicator call can be accepted away from its giver (ff9d45b0)
 - Fixed a world freeze when re-accepting a mentioned quest, and quest turn-in now waits for bag space instead of losing the reward (f9856c08)
 - Login no longer logs unhandled option, owned marketplace order and reward rotation messages (e60d8486)
 - Dominion zones: Scientist scans in Deradune, Ellevar, Auroria, Illium and Levian Bay, Weeping Bluepines and Illium world story NPCs placed, collect, touch and timed run challenges, Scaleborn Leviathan and Webwood Larvae off the terrain top (5f26e9c0)
