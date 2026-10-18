@@ -17,7 +17,7 @@ namespace NexusForever.Database.Auth.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "8.0.4")
+                .HasAnnotation("ProductVersion", "10.0.10")
                 .HasAnnotation("Relational:MaxIdentifierLength", 64);
 
             MySqlModelBuilderExtensions.AutoIncrementColumns(modelBuilder);
@@ -72,6 +72,30 @@ namespace NexusForever.Database.Auth.Migrations
                         .HasName("PRIMARY");
 
                     b.ToTable("account_currency", (string)null);
+                });
+
+            modelBuilder.Entity("NexusForever.Database.Auth.Model.AccountDailyLoginModel", b =>
+                {
+                    b.Property<uint>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int(10) unsigned")
+                        .HasDefaultValue(0u)
+                        .HasColumnName("id");
+
+                    b.Property<DateTime>("LastLoginDay")
+                        .HasColumnType("datetime")
+                        .HasColumnName("lastLoginDay");
+
+                    b.Property<uint>("LoginDays")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int(10) unsigned")
+                        .HasDefaultValue(0u)
+                        .HasColumnName("loginDays");
+
+                    b.HasKey("Id")
+                        .HasName("PRIMARY");
+
+                    b.ToTable("account_daily_login", (string)null);
                 });
 
             modelBuilder.Entity("NexusForever.Database.Auth.Model.AccountEntitlementModel", b =>
@@ -1235,6 +1259,18 @@ namespace NexusForever.Database.Auth.Migrations
                     b.Navigation("Account");
                 });
 
+            modelBuilder.Entity("NexusForever.Database.Auth.Model.AccountDailyLoginModel", b =>
+                {
+                    b.HasOne("NexusForever.Database.Auth.Model.AccountModel", "Account")
+                        .WithMany("AccountDailyLogin")
+                        .HasForeignKey("Id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("FK__account_daily_login_id__account_id");
+
+                    b.Navigation("Account");
+                });
+
             modelBuilder.Entity("NexusForever.Database.Auth.Model.AccountEntitlementModel", b =>
                 {
                     b.HasOne("NexusForever.Database.Auth.Model.AccountModel", "Account")
@@ -1363,6 +1399,8 @@ namespace NexusForever.Database.Auth.Migrations
                     b.Navigation("AccountCostumeUnlock");
 
                     b.Navigation("AccountCurrency");
+
+                    b.Navigation("AccountDailyLogin");
 
                     b.Navigation("AccountEntitlement");
 
