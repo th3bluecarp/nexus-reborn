@@ -658,6 +658,20 @@ namespace NexusForever.Game.Entity
                 && GameTableManager.Instance.WorldLocation2.GetEntry(locationId) is WorldLocation2Entry location)
                 activator.TeleportTo((ushort)location.WorldId, location.Position0, location.Position1, location.Position2);
 
+            // control panels whose door was opened by a lost server script: using the panel opens or closes the door near it
+            if (CreatureInfo?.Entry != null && ControlledDoors.TryGetValue(CreatureInfo.Entry.Id, out (uint Door, float Range) controlled) && Map != null)
+            {
+                var doorCheck = new SearchCheckRange<IDoorEntity>();
+                doorCheck.Initialise(Position, controlled.Range);
+                foreach (IDoorEntity door in Map.Search(Position, controlled.Range, doorCheck).Where(d => d.CreatureId == controlled.Door).ToList())
+                {
+                    if (door.IsOpen)
+                        door.CloseDoor();
+                    else
+                        door.OpenDoor();
+                }
+            }
+
             // Quest creatures (trapped survivors, cages, cannons) go away once used and come back on the respawn timer when
             // their activate spells give no rule of their own. Spells with a DespawnUnit effect remove the object themselves and
             // spells that clear SetBusy after a delay mean a reusable object, both are left to the data.
@@ -670,6 +684,16 @@ namespace NexusForever.Game.Entity
         /// Creature2 id of a transport object to the WorldLocation2 it takes the player to. Retail flew the player with server
         /// scripts that are lost; the destination is the receiver location of the quest that ends there.
         /// </summary>
+        /// <summary>
+        /// Creature2 id of a control panel to the door creature it opens and the search range. The script that linked them is lost.
+        /// </summary>
+        private static readonly Dictionary<uint, (uint Door, float Range)> ControlledDoors = new()
+        {
+            // Barrier Control Panel at the Dominion ships, Camp Icefury, Northern Wilds: the Icefury Fence Door (the red force field)
+            // blocks the ships that More Important Than Revenge (3963) sends the player into
+            { 12653u, (16799u, 30f) }
+        };
+
         private static readonly Dictionary<uint, uint> ScriptedTransports = new()
         {
             // Unusual Rock below the Direct Survivors to Camp vista, Northern Wilds: its Northern Wilds Platform Activate spell raised
