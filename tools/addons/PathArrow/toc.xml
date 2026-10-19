@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
 <Addon Author="Nexus Reborn" APIVersion="16" Name="PathArrow" Description="Arrow pointing to the nearest path mission or tracked quest objective. /patharrow" Version="1.0">
     <Form Name="PathArrow.xml"/>
+    <Script Name="PathArrowData.lua"/>
     <Script Name="PathArrow.lua"/>
 </Addon>
