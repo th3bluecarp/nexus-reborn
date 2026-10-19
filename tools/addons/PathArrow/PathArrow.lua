@@ -506,6 +506,18 @@ function PathArrow:BuildMissionTargets(ptPlayer, unitPlayer)
 		end
 	end
 
+	-- The active path comes from the missions the client lists for the current episode (they are always the
+	-- active path's), looked up in the data. GetPlayerPathType's numbering is only the fallback.
+	if type(PathArrowData) == "table" then
+		for nSeenId in pairs(tSeen) do
+			local tSeenData = PathArrowData[nSeenId]
+			if tSeenData and type(tSeenData.path) == "number" then
+				nPathType = tSeenData.path
+				break
+			end
+		end
+	end
+
 	-- Every other mission of this path in this world from the data, still listed when the
 	-- client has not unlocked it so the player can walk there.
 	if type(nPathType) == "number" then
