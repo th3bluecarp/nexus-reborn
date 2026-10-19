@@ -513,6 +513,10 @@ namespace NexusForever.Game.Quest
 
         public void ObjectiveUpdate(QuestObjectiveType type, uint data, uint progress)
         {
+            if (type == QuestObjectiveType.ActivateTargetGroupChecklist && objectives.Any(o => o.ObjectiveInfo.Type == type))
+                log.LogDebug($"Quest {Id} state {State} checklist update data {data} progress {progress}: "
+                    + string.Join(", ", objectives.Select(o => $"[{o.Index} type {o.ObjectiveInfo.Type} data {o.ObjectiveInfo.Data} progress {o.Progress} complete {o.IsComplete()} canUpdate {CanUpdateObjective(o)}]")));
+
             ObjectiveUpdate(o => o.ObjectiveInfo.Entry.Type == (uint)type
                 && (o.ObjectiveInfo.Data == data || NamesTargetGroupOf(type, o, data)), progress);
         }
@@ -727,8 +731,9 @@ namespace NexusForever.Game.Quest
         {
             if (objective.ObjectiveInfo.IsSequential())
             {
-                for (int i = 0; i < objective.Index; i++)
-                    if (!objectives[i].IsComplete())
+                // objectives loaded from the database are not ordered by index
+                foreach (IQuestObjective previous in objectives.Where(o => o.Index < objective.Index))
+                    if (!previous.IsComplete())
                         return false;
             }
 
