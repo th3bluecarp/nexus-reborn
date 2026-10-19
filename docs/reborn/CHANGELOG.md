@@ -10,6 +10,7 @@ Newest first. "Live" means running on our test server.
 
 ## 2026-10-15
 
+- Uplifting Updrafts (Galeras) now counts jumps through the Skywind Breach Primal Air clouds. Touch challenge objects count again 20 seconds after use (754a0be1).
 - Storm the Gates, Evacuate Tempest Refuge, Light at the End, Side Effects and Adventures in Archaeology activation steps progress (adea6a01)
 - About 80 kill, talk and activate objectives that name a group of creatures now progress (9899af95)
 - Captives of the Dominion: freeing captive soldiers counts and they go away (9376c3e8)
