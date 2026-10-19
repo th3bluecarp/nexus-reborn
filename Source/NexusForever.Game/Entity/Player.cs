@@ -958,8 +958,23 @@ namespace NexusForever.Game.Entity
                 && !PrerequisiteManager.Instance.Meets(this, worldEntity.CreatureInfo.PrerequisiteVisibilityEntry.Id, new PrerequisiteParameters { UnhandledResult = true, EvaluatedUnit = worldEntity }))
                 return false;
 
+            // story NPCs that moved on in retail through server phasing that is lost: hide the earlier copy once the quest that sends
+            // the player after them has been taken (the later copy has its own visibility prerequisite in the client data)
+            if (entity is IWorldEntity movedEntity && MovedStoryNpcs.TryGetValue(movedEntity.CreatureId, out ushort movedAfterQuest)
+                && QuestManager.GetQuestState(movedAfterQuest) is QuestState.Accepted or QuestState.Achieved or QuestState.Completed)
+                return false;
+
             return base.CanSeeEntity(entity);
         }
+
+        /// <summary>
+        /// Creature2 id of an earlier copy of a story NPC to the quest after which it is hidden.
+        /// </summary>
+        private static readonly Dictionary<uint, ushort> MovedStoryNpcs = new()
+        {
+            // hub Deadeye Brightland, Northern Wilds: Calm Before the Storm (3670) sends the player to him at Camp Icefury (12959)
+            { 11063u, 3670 }
+        };
 
         /// <summary>
         /// Add tracked <see cref="IGridEntity"/> that is in vision range.
