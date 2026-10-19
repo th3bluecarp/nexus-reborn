@@ -605,8 +605,21 @@ namespace NexusForever.Game.Entity
                 if (Enumerable.Range(0, 30).Any(i => player.Inventory.GetItem(InventoryLocation.Equipped, (uint)i)?.Info.Id == equipItemId))
                     quest.EquipObjectiveUpdate(equipItemId);
             
+            // quests that ask for the retail store or other lost services complete on accept so they can be turned in
+            if (LostServiceQuests.Contains((ushort)info.Entry.Id))
+                foreach (IQuestObjective objective in quest.ToList())
+                    quest.ObjectiveUpdate(objective.ObjectiveInfo.Entry.Id, objective.ObjectiveInfo.Entry.Count);
+
             log.LogTrace($"Accepted new quest {info.Entry.Id}.");
         }
+
+        /// <summary>
+        /// Quests whose only objective is a lost online service, such as buying with OmniBits from the in-game store.
+        /// </summary>
+        private static readonly HashSet<ushort> LostServiceQuests =
+        [
+            10510 // Learning to Shop: buy "Title: Smart Shopper" with OmniBits in the In-Game Store (Protostar Store Consultant)
+        ];
 
         private void QuestReset(IQuest quest)
         {
