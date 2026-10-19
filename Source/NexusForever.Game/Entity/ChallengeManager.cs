@@ -43,7 +43,7 @@ namespace NexusForever.Game.Entity
             public DateTime ActivatedAt { get; set; }
             public DateTime CooldownUntil { get; set; }
             public DateTime? LeftAreaAt { get; set; }
-            public HashSet<uint> Touched { get; } = [];
+            public Dictionary<uint, DateTime> Touched { get; } = [];
 
             public uint Goal => Tiers.Length > 0 ? Tiers[^1] : 0u;
         }
@@ -166,15 +166,18 @@ namespace NexusForever.Game.Entity
 
         /// <summary>
         /// General challenges counted by passing through creatures ("Jump through as many flying whimfibers as you can"): each unit
-        /// of them coming within <see cref="TouchRange"/> of the player counts once per run.
+        /// of them coming within <see cref="TouchRange"/> of the player counts, and counts again <see cref="TouchRespawn"/> later
+        /// (retail despawned touched objects and brought them back, Uplifting Updrafts asks for 15 jumps through 10 known clouds).
         /// </summary>
         private static readonly Dictionary<uint, uint[]> TouchCreatures = new()
         {
             [172u] = [9374u, 20791u, 20870u, 20871u, 20875u], // Whimsical Whimfibers: Flying Whimfibers (Galeras)
             [410u] = [28977u],                                // Flitterfly Chaser: Everstar Flitterflies (Everstar Grove)
+            [191u] = [18481u],                                // Uplifting Updrafts: the Primal Air jump clouds of Skywind Breach (Galeras), shared with quest 4908
         };
 
         private const float TouchRange = 4f;
+        private static readonly TimeSpan TouchRespawn = TimeSpan.FromSeconds(20);
 
         private void UpdateTouch()
         {
@@ -183,11 +186,12 @@ namespace NexusForever.Game.Entity
                 uint[] creatures = TouchCreatures[challenge.Entry.Id];
                 List<IWorldEntity> touched = player.GetVisible()
                     .OfType<IWorldEntity>()
-                    .Where(e => creatures.Contains(e.CreatureId) && !challenge.Touched.Contains(e.Guid)
+                    .Where(e => creatures.Contains(e.CreatureId)
+                        && (!challenge.Touched.TryGetValue(e.Guid, out DateTime at) || DateTime.UtcNow - at >= TouchRespawn)
                         && System.Numerics.Vector3.Distance(e.Position, player.Position) <= TouchRange)
                     .ToList();
                 foreach (IWorldEntity entity in touched)
-                    challenge.Touched.Add(entity.Guid);
+                    challenge.Touched[entity.Guid] = DateTime.UtcNow;
 
                 if (touched.Count > 0)
                     Count([challenge], (uint)touched.Count);
