@@ -10,6 +10,7 @@ Newest first. "Live" means running on our test server.
 
 ## 2026-10-15
 
+- Shellshock! cannons count by their own checklist bit like the huts (f1ab79e6).
 - Burned Skeech huts in Fiery Distraction now show fire. The Algoroc Deadeye Brightland copy at Camp Icefury is removed (1d1e428f).
 - Fiery Distraction huts verified in game. Sequential objectives were checked by list position, and objectives loaded from the database can come back out of order (bb57a420).
 - Fiery Distraction huts now count: checklist objectives set one bit per hut. Accepting a quest offered again by a call now saves as accepted (8a424195).
