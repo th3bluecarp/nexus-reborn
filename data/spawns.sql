@@ -103,7 +103,7 @@ INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900032,10,12),(900032,1
 INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`,`QuestChecklistIdx`) VALUES (900033,0,12484,426,604,4800,-711.32,-5651,0,0,0,27273,0,171,171,0);
 INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900033,10,6),(900033,15,0);
 -- Signal Flare (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`,`QuestChecklistIdx`) VALUES (900036,0,12521,426,595,4387,-748.151,-5637,0,0,0,23093,0,219,219,0);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`,`QuestChecklistIdx`) VALUES (900036,0,12521,426,595,4387.0,-745.0,-5637.0,0,0,0,23093,0,219,219,0);
 INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900036,10,1),(900036,15,0);
 -- Spatial Anomaly (target, objective marker)
 INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`,`QuestChecklistIdx`) VALUES (900037,0,12535,426,597,4560.223,-669.008,-5803.48,0,0,0,23241,0,219,219,0);
@@ -124,10 +124,10 @@ INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900041,10,7),(900041,15
 INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`,`QuestChecklistIdx`) VALUES (900042,0,13095,1061,1847,1814.188,-955.599,3796.341,0,0,0,22904,0,219,219,1);
 INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900042,10,7),(900042,15,0);
 -- Signal Flare (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`,`QuestChecklistIdx`) VALUES (900043,0,13150,426,595,4367,-748.151,-5639,0,0,0,23093,0,219,219,1);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`,`QuestChecklistIdx`) VALUES (900043,0,13150,426,595,4367.0,-744.0,-5639.0,0,0,0,23093,0,219,219,1);
 INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900043,10,1),(900043,15,0);
 -- Signal Flare (target, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`,`QuestChecklistIdx`) VALUES (900047,0,13151,426,595,4348,-749.248,-5637,0,0,0,23093,0,219,219,2);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`,`QuestChecklistIdx`) VALUES (900047,0,13151,426,595,4348.0,-744.75,-5637.0,0,0,0,23093,0,219,219,2);
 INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900047,10,1),(900047,15,0);
 -- Redsnout the Ravenous (target, quest-linked)
 INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`,`QuestChecklistIdx`) VALUES (900049,0,13522,22,386,-1957.539,-889.996,-1376.579,0,0,0,21579,0,291,291,0);
