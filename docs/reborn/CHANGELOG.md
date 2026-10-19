@@ -10,6 +10,7 @@ Newest first. "Live" means running on our test server.
 
 ## 2026-10-15
 
+- Fiery Distraction huts verified in game. Sequential objectives were checked by list position, and objectives loaded from the database can come back out of order (bb57a420).
 - Fiery Distraction huts now count: checklist objectives set one bit per hut. Accepting a quest offered again by a call now saves as accepted (8a424195).
 - Uplifting Updrafts (Galeras) now counts jumps through the Skywind Breach Primal Air clouds. Touch challenge objects count again 20 seconds after use (754a0be1).
 - Storm the Gates, Evacuate Tempest Refuge, Light at the End, Side Effects and Adventures in Archaeology activation steps progress (adea6a01)
