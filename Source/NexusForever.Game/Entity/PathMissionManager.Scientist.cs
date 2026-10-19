@@ -380,6 +380,29 @@ namespace NexusForever.Game.Entity
             return null;
         }
 
+        /// <summary>
+        /// The progress value the client expects in ServerPathMissionUpdate (and the episode lists) for the mission.
+        /// </summary>
+        /// <remarks>
+        /// The server keeps scan progress as a bit mask of filled slots. For a type 2 scan mission the client reads the value
+        /// as a percentage: GetNumNeeded is a constant 100 and GetNumCompleted the raw value (WildStar64 0x14056d330 and
+        /// 0x14056d119). The mission's scan component (0x14056b600, created by 0x140572b10 from PathScientistCreatureInfo
+        /// ObjectId) fires PlayerPathScientistScanData when the value goes up, and the FloatText addon shows the
+        /// "Scan Mission: name X%" progress floater on PlayerPathMissionUpdate. Type 14 checklists count set bits against
+        /// PathScientistCreatureInfo.ChecklistCount on the client, so their mask is sent unchanged.
+        /// </remarks>
+        private static uint NetworkProgress(PathMission mission)
+        {
+            if (mission.Kind != MissionKind.Scan || mission.Entry.PathMissionTypeEnum != 2u || mission.Count == 0u)
+                return mission.Progress;
+
+            if (mission.IsComplete)
+                return 100u;
+
+            uint filled = (uint)BitOperations.PopCount(mission.Progress);
+            return Math.Min(filled * 100u / mission.Count, 99u);
+        }
+
         private void MarkScanTarget(IWorldEntity entity)
         {
             if (player.Path != Path.Scientist)
@@ -389,11 +412,20 @@ namespace NexusForever.Game.Entity
             if (target == null)
                 return;
 
-            player.Session.EnqueueMessageEncrypted(new ServerPathScientistAddCreatureInfoToCreature
-            {
-                UnitId                      = entity.Guid,
-                PathScientistCreatureInfoId = target.Value.Mission.Entry.ObjectId
-            });
+            // the 0x8B2 id is a PathScientistCreatureInfo (client 0x1404842a0 looks it up with 0x14021fc40), true for scan
+            // missions (type 2) and checklists (type 14); a field study (type 20) object is a PathScientistFieldStudy, sent with 0x8B5
+            if (target.Value.Mission.Entry.PathMissionTypeEnum == 20u)
+                player.Session.EnqueueMessageEncrypted(new ServerPathScientistAddFieldStudyToCreature
+                {
+                    UnitId                    = entity.Guid,
+                    PathScientistFieldStudyId = target.Value.Mission.Entry.ObjectId
+                });
+            else
+                player.Session.EnqueueMessageEncrypted(new ServerPathScientistAddCreatureInfoToCreature
+                {
+                    UnitId                      = entity.Guid,
+                    PathScientistCreatureInfoId = target.Value.Mission.Entry.ObjectId
+                });
             player.Session.EnqueueMessageEncrypted(new ServerPathScientistUnitScanParameters
             {
                 UnitId          = entity.Guid,
@@ -474,6 +506,15 @@ namespace NexusForever.Game.Entity
 
             if (target == null)
             {
+                // a selected unit that was already scanned gives nothing again, clear its scannable marker so the client stops offering it
+                if (player.TargetGuid != null && scannedUnits.Values.Any(s => s.Contains(player.TargetGuid.Value)))
+                    player.Session.EnqueueMessageEncrypted(new ServerPathScientistUnitScanParameters
+                    {
+                        UnitId          = player.TargetGuid.Value,
+                        ScanRewardFlags = 0,
+                        IsScannable     = false
+                    });
+
                 // a specimen survey takes a sample from the target, or the nearest creature, at its locations
                 IWorldEntity specimen = player.TargetGuid != null ? player.GetVisible<IWorldEntity>(player.TargetGuid.Value) : null;
                 specimen ??= player.GetVisible()

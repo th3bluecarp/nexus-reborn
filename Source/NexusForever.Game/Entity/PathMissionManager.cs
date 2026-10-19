@@ -350,7 +350,7 @@ namespace NexusForever.Game.Entity
             {
                 PathMissionId            = mission.Entry.Id,
                 Completed                = mission.IsComplete,
-                ObjectiveCompletionFlags = mission.Progress,
+                ObjectiveCompletionFlags = NetworkProgress(mission),
                 StateFlags               = 0u,
                 State                    = mission.State,
                 GiverUnitId              = 0u
