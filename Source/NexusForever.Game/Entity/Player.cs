@@ -1017,6 +1017,22 @@ namespace NexusForever.Game.Entity
         }
 
         /// <summary>
+        /// Send every visible world entity again so the client re-evaluates state it only checks on unit creation,
+        /// such as interaction prerequisites on the player's path (settler resources need the Settler path).
+        /// </summary>
+        public void ResendVisibleEntities()
+        {
+            foreach (IGridEntity entity in visibleEntities.Values.ToList())
+            {
+                if (entity == this || entity is IPlayer || entity is not IWorldEntity)
+                    continue;
+
+                RemoveVisible(entity);
+                AddVisible(entity);
+            }
+        }
+
+        /// <summary>
         /// Remove tracked <see cref="IGridEntity"/> that is no longer in vision range.
         /// </summary>
         protected override void RemoveVisible(IGridEntity entity)

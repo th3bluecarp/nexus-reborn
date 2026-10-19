@@ -100,6 +100,9 @@ namespace NexusForever.Game.Entity
 
             // the new path's episode and missions for the current zone, otherwise they only arrived after a relog or zone change
             player.PathMissionManager.SendInitialPackets();
+
+            // units gated on the player's path (settler resources, scan targets) are only re-checked by the client when created
+            player.ResendVisibleEntities();
         }
 
         /// <summary>

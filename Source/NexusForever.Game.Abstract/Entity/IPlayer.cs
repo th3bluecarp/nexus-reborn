@@ -82,6 +82,11 @@ namespace NexusForever.Game.Abstract.Entity
         ICharacterKeybindingManager KeybindingManager { get; }
         IDatacubeManager DatacubeManager { get; }
         IPathMissionManager PathMissionManager { get; }
+
+        /// <summary>
+        /// Send every visible world entity again so the client re-evaluates state it only checks on unit creation.
+        /// </summary>
+        void ResendVisibleEntities();
         IChallengeManager ChallengeManager { get; }
         ITradeskillManager TradeskillManager { get; }
         IMailManager MailManager { get; }
