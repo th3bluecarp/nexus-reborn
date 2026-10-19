@@ -411,6 +411,25 @@ namespace NexusForever.Game.Entity
             QuestMention(info);
         }
 
+        public void CheckPrerequisiteCommunicators()
+        {
+            if (player.Map == null)
+                return;
+
+            foreach (ICommunicatorMessage message in GlobalQuestManager.Instance.GetPrerequisiteCommunicatorMessages((ushort)player.Map.Entry.Id).ToList())
+            {
+                if (GetQuest(message.QuestId) != null)
+                    continue;
+
+                IQuestInfo info = GlobalQuestManager.Instance.GetQuestInfo(message.QuestId);
+                if (info == null || DisableManager.Instance.IsDisabled(DisableType.Quest, message.QuestId))
+                    continue;
+
+                if (MeetsPrerequisites(info) && message.Meets(player))
+                    QuestMention(info);
+            }
+        }
+
         /// <summary>
         /// Mention a quest from supplied <see cref="IQuestInfo"/>, skipping any prerequisites checks.
         /// </summary>

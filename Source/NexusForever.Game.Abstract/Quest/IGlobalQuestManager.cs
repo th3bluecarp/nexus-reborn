@@ -51,5 +51,10 @@ namespace NexusForever.Game.Abstract.Quest
         /// Return a collection of <see cref="ICommunicatorMessage"/>'s that are triggered when a quest hits a certain state.
         /// </summary>
         IEnumerable<ICommunicatorMessage> GetQuestCommunicatorQuestStateTriggers(ushort questId, QuestState state);
+
+        /// <summary>
+        /// Return the communicator messages of a world that offer a quest once its prerequisite quests are complete.
+        /// </summary>
+        IEnumerable<ICommunicatorMessage> GetPrerequisiteCommunicatorMessages(ushort worldId);
     }
 }

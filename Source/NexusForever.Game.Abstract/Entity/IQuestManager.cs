@@ -46,6 +46,11 @@ namespace NexusForever.Game.Abstract.Entity
         void QuestMention(ushort questId);
 
         /// <summary>
+        /// Mention quests offered by communicator messages of the current world whose prerequisite quests are now complete.
+        /// </summary>
+        void CheckPrerequisiteCommunicators();
+
+        /// <summary>
         /// Mention a quest from supplied <see cref="IQuestInfo"/>, skipping any prerequisites checks.
         /// </summary>
         void QuestMention(IQuestInfo info);

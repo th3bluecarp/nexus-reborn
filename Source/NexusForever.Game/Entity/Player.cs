@@ -1361,6 +1361,9 @@ namespace NexusForever.Game.Entity
                 dailyLoginChecked = true;
                 Account.DailyLoginManager.OnEnteredWorld(this);
             }
+
+            // communicator offers whose prerequisites were met while the player was away or in another world
+            QuestManager.CheckPrerequisiteCommunicators();
         }
 
         /// <summary>

@@ -30,6 +30,7 @@ namespace NexusForever.Game.Quest
         private ImmutableDictionary<uint, ICommunicatorMessage> communicatorStore;
         private ImmutableDictionary<ushort, ImmutableList<ICommunicatorMessage>> communicatorQuestStore;
         private ImmutableDictionary<(ushort /*questId*/, QuestState), ImmutableList<ICommunicatorMessage>> communicatorQuestStateTriggerStore;
+        private ImmutableDictionary<ushort /*worldId*/, ImmutableList<ICommunicatorMessage>> communicatorPrerequisiteStore;
 
         public void Initialise()
         {
@@ -42,6 +43,7 @@ namespace NexusForever.Game.Quest
             InitialiseCommunicatorEntries();
             InitialiseCommunicatorQuests();
             InitialiseCommunicatorQuestStateTriggers();
+            InitialiseCommunicatorPrerequisites();
 
             log.Info($"Cached {questInfoStore.Count} quests in {sw.ElapsedMilliseconds}ms.");
         }
@@ -149,6 +151,37 @@ namespace NexusForever.Game.Quest
             }
 
             communicatorQuestStateTriggerStore = builder.ToImmutableDictionary(e => e.Key, e => e.Value.ToImmutableList());
+        }
+
+        /// <summary>
+        /// Communicator messages with no quest state condition that offer a quest with prerequisite quests, such as Contact with
+        /// Thayd (3673) after Fiery Distraction: they are sent once the offered quest's prerequisites are met, nothing else triggers them.
+        /// </summary>
+        private void InitialiseCommunicatorPrerequisites()
+        {
+            var builder = new Dictionary<ushort, List<ICommunicatorMessage>>();
+            foreach (CommunicatorMessagesEntry entry in GameTableManager.Instance.CommunicatorMessages.Entries
+                .Where(e => e.QuestIdDelivered != 0u && e.WorldId != 0u && e.Quests.All(q => q == 0u)))
+            {
+                Quest2Entry quest = GameTableManager.Instance.Quest2.GetEntry(entry.QuestIdDelivered);
+                if (quest == null || quest.PrerequisiteQuests.All(q => q == 0u))
+                    continue;
+
+                if (!builder.ContainsKey((ushort)entry.WorldId))
+                    builder.Add((ushort)entry.WorldId, new List<ICommunicatorMessage>());
+                builder[(ushort)entry.WorldId].Add(communicatorStore[entry.Id]);
+            }
+
+            communicatorPrerequisiteStore = builder.ToImmutableDictionary(e => e.Key, e => e.Value.ToImmutableList());
+        }
+
+        /// <summary>
+        /// Return the communicator messages of a world that offer a quest once its prerequisite quests are complete.
+        /// </summary>
+        public IEnumerable<ICommunicatorMessage> GetPrerequisiteCommunicatorMessages(ushort worldId)
+        {
+            return communicatorPrerequisiteStore.TryGetValue(worldId, out ImmutableList<ICommunicatorMessage> messages)
+                ? messages : Enumerable.Empty<ICommunicatorMessage>();
         }
 
         public void Update(double lastTick)

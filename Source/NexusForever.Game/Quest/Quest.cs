@@ -788,6 +788,10 @@ namespace NexusForever.Game.Quest
                 if (message.Meets(player))
                     player.QuestManager.QuestMention(message.QuestId);
 
+            // completing a quest can meet the prerequisites of a quest a communicator message offers
+            if (state == QuestState.Completed)
+                player.QuestManager.CheckPrerequisiteCommunicators();
+
             scriptCollection?.Invoke<IQuestScript>(s => s.OnQuestStateChange(State, oldState));
         }
 
