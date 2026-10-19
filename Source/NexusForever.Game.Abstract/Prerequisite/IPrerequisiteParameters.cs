@@ -18,5 +18,10 @@ namespace NexusForever.Game.Abstract.Prerequisite
         /// prerequisite types is not implemented.
         /// </remarks>
         public bool UnhandledResult { get; set; }
+
+        /// <summary>
+        /// The unit whose own prerequisite is evaluated (visibility), used by types that read the unit, such as its quest checklist bit.
+        /// </summary>
+        public IWorldEntity EvaluatedUnit { get; set; }
     }
 }

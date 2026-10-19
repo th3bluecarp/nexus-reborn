@@ -11,5 +11,6 @@ namespace NexusForever.Game.Prerequisite
         public IUnitEntity Target { get; set; }
         public ushort? TaxiNode { get; set; }
         public bool UnhandledResult { get; set; }
+        public IWorldEntity EvaluatedUnit { get; set; }
     }
 }

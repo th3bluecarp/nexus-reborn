@@ -955,7 +955,7 @@ namespace NexusForever.Game.Entity
             // have a visibility prerequisite, unhandled prerequisite types leave the entity visible
             if (entity is IWorldEntity worldEntity
                 && worldEntity.CreatureInfo?.PrerequisiteVisibilityEntry != null
-                && !PrerequisiteManager.Instance.Meets(this, worldEntity.CreatureInfo.PrerequisiteVisibilityEntry.Id, new PrerequisiteParameters { UnhandledResult = true }))
+                && !PrerequisiteManager.Instance.Meets(this, worldEntity.CreatureInfo.PrerequisiteVisibilityEntry.Id, new PrerequisiteParameters { UnhandledResult = true, EvaluatedUnit = worldEntity }))
                 return false;
 
             return base.CanSeeEntity(entity);
