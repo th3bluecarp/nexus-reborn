@@ -10,6 +10,7 @@ Newest first. "Live" means running on our test server.
 
 ## 2026-10-15
 
+- Path switch: nearby units are re-sent so path-gated objects such as settler resources work without a relog (0974dabb)
 - Learning to Shop, the Protostar store quest, completes on accept since the store is gone (7c19f6a5).
 - Calls that offer the next story quest once its prerequisites are done now arrive, so Contact with Thayd follows Fiery Distraction (d85e0ab6).
 - Shellshock! cannons count by their own checklist bit like the huts (f1ab79e6).
