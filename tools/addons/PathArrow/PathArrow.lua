@@ -13,7 +13,8 @@
 --   /patharrow path     switch back to path missions
 --   /patharrow hint     also fire the game's own hint arrow for the current target
 --   /patharrow flip     mirror the arrow left/right (only needed if it points mirrored)
---   /patharrow rad      toggle pixie rotation units degrees/radians (only if it spins wrong)
+--   /patharrow rad      toggle pixie rotation units radians/degrees (radians is the default)
+--   /patharrow clear    forget the points marked done for the current mission
 --   /patharrow reset    move the window back to the default spot
 --
 -- API sources (see README.md for the full confirmed/guessed list):
@@ -31,7 +32,8 @@ require "Quest"
 
 local PathArrow = {}
 
-local knSaveVersion      = 1
+local knSaveVersion      = 2     -- 2: radians default, per mission done points
+local kfDoneRadius       = 40    -- a point within this many meters counts as the one just done
 local kfTickSeconds      = 0.1   -- arrow refresh
 local knRescanTicks      = 20    -- rebuild the target list every 2 seconds
 local kstrArrowSprite    = "CRB_Basekit:kitIcon_Holo_UpArrow" -- confirmed sprite name (Carbine Crafting.xml), art points up
@@ -123,9 +125,11 @@ function PathArrow:new(o)
 	o.tTargets = {}
 	o.nTicks = 0
 	o.bFlip = false
-	o.bRadians = false
+	o.bRadians = true
 	o.bShown = true
 	o.tDone = {}
+	o.tPtDone = {}     -- [missionId] = { [pointKey] = true } points already scanned, killed or reached
+	o.tProgress = {}   -- [missionId] = last progress number seen (not saved, a baseline per session)
 	return o
 end
 
@@ -143,6 +147,8 @@ function PathArrow:OnDocumentReady()
 		return
 	end
 	Apollo.RegisterSlashCommand("patharrow", "OnSlashCommand", self)
+	-- Fired by the client when a path mission's progress changes (Carbine PathTracker listens to it).
+	pcall(Apollo.RegisterEventHandler, "PlayerPathMissionUpdate", "OnPathMissionUpdate", self)
 	self:CreateWindow()
 	self.timerTick = ApolloTimer.Create(kfTickSeconds, true, "OnTick", self)
 end
@@ -178,6 +184,7 @@ function PathArrow:OnSave(eType)
 		bRadians = self.bRadians,
 		bShown = self.bShown,
 		tDone = self.tDone,
+		tPtDone = self.tPtDone,
 	}
 end
 
@@ -185,7 +192,7 @@ function PathArrow:OnRestore(eType, tData)
 	if eType ~= GameLib.CodeEnumAddonSaveLevel.Character or type(tData) ~= "table" then
 		return
 	end
-	if tData.nVersion ~= knSaveVersion then return end
+	if tData.nVersion ~= 1 and tData.nVersion ~= knSaveVersion then return end
 	if tData.tLocation then
 		self.locSaved = WindowLocation.new(tData.tLocation)
 		if self.wndMain and self.wndMain:IsValid() then
@@ -194,10 +201,22 @@ function PathArrow:OnRestore(eType, tData)
 	end
 	if tData.strMode == "quest" or tData.strMode == "path" then self.strMode = tData.strMode end
 	self.bFlip = tData.bFlip and true or false
-	self.bRadians = tData.bRadians and true or false
+	if tData.nVersion == 1 then
+		-- Version 1 defaulted to degrees, which spins. Radians is the new default, and a player
+		-- who already typed "/patharrow rad" had radians on, so every old save gets radians.
+		self.bRadians = true
+	else
+		self.bRadians = tData.bRadians and true or false
+	end
 	if tData.bShown ~= nil then self.bShown = tData.bShown and true or false end
 	-- Missions seen complete, so data-only missions of other episodes drop off the list once done.
 	if type(tData.tDone) == "table" then self.tDone = tData.tDone end
+	if type(tData.tPtDone) == "table" then
+		self.tPtDone = {}
+		for nId, tKeys in pairs(tData.tPtDone) do
+			if type(tKeys) == "table" then self.tPtDone[nId] = tKeys end
+		end
+	end
 	if self.wndMain and self.wndMain:IsValid() then
 		self.wndMain:Show(self.bShown, true)
 	end
@@ -259,13 +278,21 @@ function PathArrow:OnSlashCommand(strCmd, strArg)
 	elseif strSub == "rad" then
 		self.bRadians = not self.bRadians
 		Print("pixie rotation units " .. (self.bRadians and "radians" or "degrees"))
+	elseif strSub == "clear" then
+		local t = self.tTargets[self.nIndex]
+		if t and t.id ~= nil and self.strMode ~= "quest" then
+			self.tPtDone[t.id] = nil
+			Print("forgot the done points of " .. tostring(t.strName))
+		else
+			Print("no path mission to clear")
+		end
 	elseif strSub == "reset" then
 		self.locSaved = nil
 		self.wndMain:Destroy()
 		self.wndMain = nil
 		self:CreateWindow()
 	else
-		Print("commands: /patharrow [next | prev | nearest | quest | path | hint | flip | rad | reset]")
+		Print("commands: /patharrow [next | prev | nearest | quest | path | hint | flip | rad | clear | reset]")
 	end
 	self:Rescan()
 	self:Refresh()
@@ -293,6 +320,109 @@ function PathArrow:DataPoints(nId, tData)
 	end
 	self.tPointCache[nId] = tPts
 	return tPts
+end
+
+-----------------------------------------------------------------------------------------------
+-- Done points. When a mission's progress goes up, the undone point of that mission closest
+-- to the player (within kfDoneRadius) is marked done and skipped from then on. Points are
+-- keyed by their rounded x and z so the key survives a data rebuild that reorders points.
+-----------------------------------------------------------------------------------------------
+local function PointKey(pt)
+	return string.format("%d_%d", math.floor(pt.x + 0.5), math.floor(pt.z + 0.5))
+end
+
+-- The points of a mission that are not marked done. If every point is marked but the mission
+-- is still open, something else must have counted, so the marks are dropped and it starts over.
+function PathArrow:RemainingPoints(nId, tPoints)
+	local tMarks = (nId ~= nil) and self.tPtDone[nId] or nil
+	if type(tMarks) ~= "table" or #tPoints == 0 then return tPoints end
+	local tLeft = {}
+	for _, pt in ipairs(tPoints) do
+		if not tMarks[PointKey(pt)] then table.insert(tLeft, pt) end
+	end
+	if #tLeft == 0 then
+		self.tPtDone[nId] = nil
+		return tPoints
+	end
+	return tLeft
+end
+
+-- Progress number of a mission. GetNumCompleted is tried first, the percent calls after it.
+local function MissionProgress(pm)
+	local n = SafeMethod(pm, "GetNumCompleted")
+	if type(n) == "number" then return n end
+	n = SafeMethod(pm, "GetCompletedPercent")
+	if type(n) == "number" then return n end
+	n = SafeMethod(pm, "GetPercentComplete")
+	if type(n) == "number" then return n end
+	return nil
+end
+
+function PathArrow:MarkNearestDone(nId)
+	local ptPlayer = self:GetPlayerPos()
+	if not ptPlayer or nId == nil then return false end
+	local tPoints = nil
+	if self.strMode ~= "quest" then
+		for _, t in ipairs(self.tTargets or {}) do
+			if t.id == nId and t.tPoints then tPoints = t.tPoints break end
+		end
+	end
+	if not tPoints and type(PathArrowData) == "table" and type(PathArrowData[nId]) == "table" then
+		tPoints = self:RemainingPoints(nId, self:DataPoints(nId, PathArrowData[nId]))
+	end
+	if not tPoints then return false end
+	local nBest, ptBest = nil, nil
+	for _, pt in ipairs(tPoints) do
+		local d = FlatDistance(ptPlayer, pt)
+		if d <= kfDoneRadius and (nBest == nil or d < nBest) then nBest, ptBest = d, pt end
+	end
+	if not ptBest then return false end
+	self.tPtDone[nId] = self.tPtDone[nId] or {}
+	self.tPtDone[nId][PointKey(ptBest)] = true
+	return true
+end
+
+-- Compares the mission's progress with the last value seen. bFromEvent means the client fired
+-- PlayerPathMissionUpdate, which counts as progress when the client offers no progress number.
+function PathArrow:CheckProgress(pm, bFromEvent)
+	local nId = SafeMethod(pm, "GetId")
+	if nId == nil then return false end
+	if SafeMethod(pm, "IsComplete") then
+		self.tPtDone[nId] = nil
+		self.tProgress[nId] = nil
+		return false
+	end
+	local bUp = false
+	local n = MissionProgress(pm)
+	if type(n) == "number" then
+		local nOld = self.tProgress[nId]
+		self.tProgress[nId] = n
+		bUp = (nOld ~= nil and n > nOld)
+	elseif bFromEvent then
+		bUp = true
+	end
+	if bUp then return self:MarkNearestDone(nId) end
+	return false
+end
+
+function PathArrow:OnPathMissionUpdate(pm)
+	local bOk, bMarked = pcall(function()
+		if pm ~= nil then return self:CheckProgress(pm, true) end
+		-- No mission passed: check every mission of the current episode.
+		local bAny = false
+		local epi = SafeCall(PlayerPathLib.GetCurrentEpisode)
+		local tMissions = epi and SafeMethod(epi, "GetMissions") or nil
+		if type(tMissions) == "table" then
+			for _, m in ipairs(tMissions) do
+				if self:CheckProgress(m, false) then bAny = true end
+			end
+		end
+		return bAny
+	end)
+	if bOk and bMarked and self.strMode ~= "quest" then
+		pcall(self.Rescan, self)
+		pcall(self.Refresh, self)
+	end
 end
 
 -- Data missions grouped by world, built once.
@@ -345,8 +475,13 @@ function PathArrow:BuildMissionTargets(ptPlayer, unitPlayer)
 			local eState = SafeMethod(pm, "GetMissionState")
 			local bComplete = SafeMethod(pm, "IsComplete")
 			if nId ~= nil then tSeen[nId] = true end
+			-- Progress check on every rescan, in case the update event is missed.
+			pcall(self.CheckProgress, self, pm, false)
 			if bComplete then
-				if nId ~= nil then self.tDone[nId] = true end
+				if nId ~= nil then
+					self.tDone[nId] = true
+					self.tPtDone[nId] = nil
+				end
 			else
 				-- Active = unlocked or started, and not complete (same test as Carbine ZoneMap:UpdateMissionList)
 				local bActive = (eState == eUnlocked or eState == eStarted)
@@ -360,7 +495,10 @@ function PathArrow:BuildMissionTargets(ptPlayer, unitPlayer)
 					CollectPoints(SafeMethod(pm, "GetMapRegions"), tPoints)
 					CollectPoints(SafeMethod(pm, "GetMapLocations"), tPoints)
 				end
+				local nAll = #tPoints
+				tPoints = self:RemainingPoints(nId, tPoints)
 				local t = self:MakeTarget(pm, SafeMethod(pm, "GetName"), tPoints, ptPlayer, SafeMethod(pm, "GetDistance"))
+				t.nAllPts = nAll
 				t.bLocked = not bActive
 				t.bFromData = bData or false
 				table.insert(tOut, t)
@@ -374,7 +512,9 @@ function PathArrow:BuildMissionTargets(ptPlayer, unitPlayer)
 		for nId, tData in pairs(self:DataForWorld(nWorldId)) do
 			local bFactionOk = nFaction == nil or tData.faction ~= (3 - nFaction)
 			if tData.path == nPathType and bFactionOk and not tSeen[nId] and not self.tDone[nId] then
-				local t = self:MakeTarget(nil, tData.name, self:DataPoints(nId, tData), ptPlayer, nil)
+				local tAll = self:DataPoints(nId, tData)
+				local t = self:MakeTarget(nil, tData.name, self:RemainingPoints(nId, tAll), ptPlayer, nil)
+				t.nAllPts = #tAll
 				t.id = nId
 				t.bLocked = true
 				t.bFromData = true
@@ -523,8 +663,9 @@ function PathArrow:SetArrow(fAngle)
 		return
 	end
 	-- AddPixie / UpdatePixie with fRotation: confirmed in RaidCore and Carbine Crafting.
-	-- GUESSED: units. The API docs and RaidCore say degrees, Carbine Crafting and AMPs
-	-- code passes radians. Default is degrees, "/patharrow rad" switches.
+	-- Units: the API docs and RaidCore say degrees, Carbine Crafting and AMPs code passes
+	-- radians. Degrees spun wildly in game on the 16042 client, so radians is the default and
+	-- "/patharrow rad" switches back.
 	local fRot = fAngle
 	if self.bRadians then fRot = math.rad(fAngle) end
 	local tPixie = {
@@ -569,8 +710,12 @@ function PathArrow:Refresh()
 
 	-- Missions the client has not unlocked yet are still listed, marked with "(locked)".
 	self.wndTitle:SetText(t.bLocked and ("(locked) " .. t.strName) or t.strName)
-	local nPts = t.tPoints and #t.tPoints or 0
+	local nLeft = t.tPoints and #t.tPoints or 0
+	local nPts = t.nAllPts or nLeft
 	local strPts = string.format("%d pt%s%s", nPts, nPts == 1 and "" or "s", (self.strMode ~= "quest" and not t.bFromData) and " map" or "")
+	if self.strMode ~= "quest" then
+		strPts = strPts .. string.format("  %d left", nLeft)
+	end
 	self.wndModeText:SetText(string.format("%s  %d/%d  %s", strModeLabel, self.nIndex, #self.tTargets, strPts))
 
 	local ptPlayer, unitPlayer = self:GetPlayerPos()

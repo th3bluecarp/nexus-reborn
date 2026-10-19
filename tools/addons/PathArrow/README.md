@@ -27,12 +27,19 @@ The list holds every mission of your path in the current world. Missions the cli
 | `/patharrow path` | Point at path missions again |
 | `/patharrow hint` | Also fire the game's own hint arrow for the current target |
 | `/patharrow flip` | Mirror the arrow left and right, only if it points the mirror way |
-| `/patharrow rad` | Switch the arrow rotation units, only if the arrow barely turns or spins wildly |
+| `/patharrow rad` | Switch the arrow rotation units between radians (the default) and degrees, only if the arrow barely turns or spins wildly |
+| `/patharrow clear` | Forget the points marked done for the current mission |
 | `/patharrow reset` | Put the window back in its default spot |
 
-Drag the window to move it. The position, mode and the two fix toggles are saved per character.
+Drag the window to move it. The position, mode, the two fix toggles and the done points are saved per character. Saves from the first version switch to radians, since degrees made the arrow spin.
 
-The line under the distance shows the position in the list and how many target points the mission has, for example "Path  2/9  12 pts". The arrow always picks the closest of those points as you move. "map" after the count means the mission is missing from the data and the client map region is used instead.
+The line under the distance shows the position in the list, how many target points the mission has and how many of them are left, for example "Path  2/9  12 pts  9 left". The arrow always picks the closest point that is left as you move. "map" after the count means the mission is missing from the data and the client map region is used instead.
+
+## Done points
+
+When a mission's progress goes up, the addon marks the point of that mission closest to you as done, as long as it is within 40 meters, and skips it from then on. So after you scan a creature the arrow moves on to the targets you still need. It checks in two ways. It listens for the client's `PlayerPathMissionUpdate` event, and every 2 seconds it compares the mission's progress number with the last one it saw. The first number seen in a session is only a starting point, so progress made before you log in is not marked.
+
+When a mission completes its marks are dropped along with the mission. If every point of a mission is marked but the mission is still open, something else must have counted, so the marks are cleared and the arrow starts over on all points. Use `/patharrow clear` to do the same by hand for the mission it points at.
 
 After `next` or `prev` the addon stays on that mission while it re-sorts. When the mission finishes it goes back to the nearest one.
 
@@ -76,12 +83,13 @@ Sources: the Hammster wildstar-api-docs repo, the Carbine default UI addon dumps
 ## Guessed, and how the addon copes
 
 1. `mission:GetMapLocations()` is listed in the API docs but no public addon calls it, so its return shape is unknown. The addon reads it as a list of points or a list of tables holding a point, and tries the likely field names. If it gives nothing useful, `GetMapRegions()` still supplies the location.
-2. The unit of `fRotation` for pixies. The API docs and RaidCore use degrees. Two Carbine addons pass values that look like radians. Degrees is the default and `/patharrow rad` switches.
+2. The unit of `fRotation` for pixies. The API docs and RaidCore use degrees. Two Carbine addons pass values that look like radians. Degrees made the arrow spin in game, so radians is the default and `/patharrow rad` switches back.
 3. The turn direction of the fallback that uses character facing. The world handedness is not documented, so that fallback may be mirrored. It is only used when the camera probe fails, and `/patharrow flip` fixes it.
 4. Distance is measured on the ground plane between the player and the closest target point of the mission. For missions missing from the data it is the closest map region marker, which is the center the map shows, so for large area missions you may reach the area before the distance reaches zero. The height difference shows as "up" or "down" when it is more than 10 meters.
 5. Missions with no point at all show "no location", with the game's own distance in brackets when the client offers one. In the data that is only the Explorer cartography missions, which ask you to explore the whole zone map, and one Soldier mission whose target never spawns.
 6. The player faction comes from `Unit:GetFaction()`, compared with 167 for Exile and 166 for Dominion. If the client gives something else, missions of both factions are listed.
 7. `PlayerPathLib.GetPlayerPathType()` is used to match the path numbers in the data (0 Soldier, 1 Settler, 2 Scientist, 3 Explorer). Without it only the missions of the current episode are listed.
+8. The mission progress number. The addon tries `mission:GetNumCompleted()` first, then `GetCompletedPercent()` and `GetPercentComplete()`. If none of them gives a number, each `PlayerPathMissionUpdate` event for an open mission counts as progress. The event is expected to pass the mission, and when it passes nothing every mission of the episode is checked.
 
 ## Files
 
