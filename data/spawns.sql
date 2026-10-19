@@ -115,7 +115,7 @@ INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900038,10,50),(900038,1
 INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`,`QuestChecklistIdx`) VALUES (900039,0,12737,426,595,4355,-751.653,-5681,0,0,0,26018,9063,171,171,0);
 INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900039,10,3),(900039,15,0);
 -- Deadeye Brightland (giver/turn-in, quest-linked)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`,`QuestChecklistIdx`) VALUES (900040,0,12959,426,595,4341,-751.769,-5683,0,0,0,26124,9064,171,171,0);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`,`QuestChecklistIdx`) VALUES (900040,0,12959,426,595,4486.465,-724.843,-5391.258,0,0,0,26124,9064,171,171,0);
 INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900040,10,50),(900040,15,0);
 -- Chua Ship Anchor (target, objective marker)
 INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`,`QuestChecklistIdx`) VALUES (900041,0,13095,1061,1847,1846.076,-953.774,3771.649,0,0,0,22904,0,219,219,0);
