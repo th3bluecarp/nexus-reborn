@@ -630,7 +630,6 @@ namespace NexusForever.Game.Entity
                 activator.ChallengeManager.OnActivate(CreatureInfo.Entry.Id, AssetManager.Instance.GetTargetGroupsForCreatureId(CreatureInfo.Entry.Id));
                 activator.QuestManager.ObjectiveUpdate(QuestObjectiveType.ActivateEntity, CreatureInfo.Entry.Id, 1u);
                 activator.QuestManager.ObjectiveUpdate(QuestObjectiveType.GatheResource, CreatureInfo.Entry.Id, 1u);
-                activator.QuestManager.ObjectiveUpdate(QuestObjectiveType.ActivateTargetGroupChecklist, CreatureInfo.Entry.Id, QuestChecklistIdx);
                 activator.QuestManager.ObjectiveUpdate(QuestObjectiveType.SucceedCSI, CreatureInfo.Entry.Id, 1u);
 
                 foreach (uint targetGroupId in AssetManager.Instance.GetTargetGroupsForCreatureId(CreatureInfo.Entry.Id))
@@ -638,6 +637,8 @@ namespace NexusForever.Game.Entity
                     activator.QuestManager.ObjectiveUpdate(QuestObjectiveType.ActivateTargetGroup, targetGroupId, 1u); // Updates the objective, but seems to disable all the other targets. TODO: Investigate
                     // Unknown10 objectives name a target group of creatures to use, such as the Dominion cannons in Shellshock! (3487)
                     activator.QuestManager.ObjectiveUpdate(QuestObjectiveType.Unknown10, targetGroupId, 1u);
+                    // checklist objectives name the target group of their units and set the unit's checklist bit
+                    activator.QuestManager.ObjectiveUpdate(QuestObjectiveType.ActivateTargetGroupChecklist, targetGroupId, QuestChecklistIdx);
                     activator.QuestManager.RewardPaneObjectiveUpdate(QuestObjectiveType.VirtualCollect, targetGroupId, 1u);
                     // rescue objectives (Unknown28) name the cage to open in their reward pane target group
                     activator.QuestManager.RewardPaneObjectiveUpdate(QuestObjectiveType.Unknown28, targetGroupId, 1u);
@@ -757,8 +758,8 @@ namespace NexusForever.Game.Entity
                                 && targetGroups.Contains(entry.TargetGroupIdRewardPane))
                                 return true;
                             break;
+                        // checklist units (Skeech huts) stay, the client shows them used (burning) from their checklist bit
                         case QuestObjectiveType.ActivateTargetGroup:
-                        case QuestObjectiveType.ActivateTargetGroupChecklist:
                         case QuestObjectiveType.Unknown10:
                             if (targetGroups.Contains(entry.Data))
                                 return true;

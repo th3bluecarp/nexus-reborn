@@ -143,10 +143,22 @@ namespace NexusForever.Game.Quest
         }
 
         /// <summary>
+        /// Checklist objectives (Burn Skeech Huts) keep one bit per unit's QuestChecklistIdx as their progress, the client reads
+        /// type 14 progress as that bitmask (WildStar64.exe 0x1405517a0) and shows each used unit from its bit.
+        /// </summary>
+        private bool IsChecklist()
+        {
+            return ObjectiveInfo.Type == QuestObjectiveType.ActivateTargetGroupChecklist;
+        }
+
+        /// <summary>
         /// Return if the <see cref="QuestObjective"/> has been completed.
         /// </summary>
         public bool IsComplete()
         {
+            if (IsChecklist())
+                return System.Numerics.BitOperations.PopCount(progress) >= ObjectiveInfo.Entry.Count;
+
             return progress >= GetMaxValue();
         }
 
@@ -160,6 +172,14 @@ namespace NexusForever.Game.Quest
         /// </summary>
         public void ObjectiveUpdate(uint update)
         {
+            // checklist updates carry the unit's checklist index
+            if (IsChecklist())
+            {
+                if (update < 32u)
+                    Progress = progress | (1u << (int)update);
+                return;
+            }
+
             if (IsDynamic())
                 update = (uint)(((float)update / ObjectiveInfo.Entry.Count) * 1000f);
 
@@ -176,6 +196,15 @@ namespace NexusForever.Game.Quest
 
         public void Complete()
         {
+            if (IsChecklist())
+            {
+                uint bits = progress;
+                for (int i = 0; i < 32 && System.Numerics.BitOperations.PopCount(bits) < ObjectiveInfo.Entry.Count; i++)
+                    bits |= 1u << i;
+                Progress = bits;
+                return;
+            }
+
             Progress = GetMaxValue();
         }
     }

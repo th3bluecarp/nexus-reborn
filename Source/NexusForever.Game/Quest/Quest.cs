@@ -168,15 +168,32 @@ namespace NexusForever.Game.Quest
         /// </summary>
         public void Initialise(IPlayer owner, IQuestInfo info)
         {
+            // a mentioned, ignored or failed quest that is accepted again is initialised a second time, when it is already
+            // stored its row and objective rows are updated, inserting them again failed the save and the quest stayed Mentioned
+            bool stored = Info != null && (saveMask & QuestSaveMask.Create) == 0;
+
             player = owner;
             Info   = info;
             flags |= QuestStateFlags.Tracked;
             State  = QuestState.Accepted;
 
-            // a mentioned or ignored quest that is accepted again is initialised a second time, its old objectives go
-            objectives.Clear();
-            for (byte i = 0; i < info.Objectives.Count; i++)
-                objectives.Add(new QuestObjective(player, info, info.Objectives[i], i));
+            if (stored)
+            {
+                saveMask |= QuestSaveMask.Flags;
+                for (byte i = 0; i < info.Objectives.Count; i++)
+                {
+                    if (objectives.FirstOrDefault(o => o.Index == i) is IQuestObjective objective)
+                        objective.Progress = 0u;
+                    else
+                        objectives.Add(new QuestObjective(player, info, info.Objectives[i], i));
+                }
+            }
+            else
+            {
+                objectives.Clear();
+                for (byte i = 0; i < info.Objectives.Count; i++)
+                    objectives.Add(new QuestObjective(player, info, info.Objectives[i], i));
+            }
 
             if (objectives.Count == 0)
                 State = QuestState.Achieved;
@@ -186,7 +203,8 @@ namespace NexusForever.Game.Quest
 
             player.VisibilityUpdate();
 
-            saveMask = QuestSaveMask.Create;
+            if (!stored)
+                saveMask = QuestSaveMask.Create;
 
             scriptCollection = scriptManager.InitialiseOwnedCollection<IQuest>(this);
             scriptManager.InitialiseOwnedScripts<IQuest>(scriptCollection, info.Entry.Id);
