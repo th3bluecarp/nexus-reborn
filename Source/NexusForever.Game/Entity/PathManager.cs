@@ -97,6 +97,9 @@ namespace NexusForever.Game.Entity
             SendServerPathActivateResult(GenericError.Ok);
             SendSetUnitPathTypePacket();
             SendPathLogPacket();
+
+            // the new path's episode and missions for the current zone, otherwise they only arrived after a relog or zone change
+            player.PathMissionManager.SendInitialPackets();
         }
 
         /// <summary>
