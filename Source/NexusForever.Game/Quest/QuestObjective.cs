@@ -143,12 +143,12 @@ namespace NexusForever.Game.Quest
         }
 
         /// <summary>
-        /// Checklist objectives (Burn Skeech Huts) keep one bit per unit's QuestChecklistIdx as their progress, the client reads
-        /// type 14 progress as that bitmask (WildStar64.exe 0x1405517a0) and shows each used unit from its bit.
+        /// Checklist objectives (Burn Skeech Huts, Overload the Dominion Cannons) keep one bit per unit's QuestChecklistIdx as their
+        /// progress, the client reads type 10 and 14 progress as that bitmask (WildStar64.exe 0x1405517a0) and gates each unit on its bit.
         /// </summary>
         private bool IsChecklist()
         {
-            return ObjectiveInfo.Type == QuestObjectiveType.ActivateTargetGroupChecklist;
+            return ObjectiveInfo.Type is QuestObjectiveType.ActivateTargetGroupChecklist or QuestObjectiveType.Unknown10;
         }
 
         /// <summary>
