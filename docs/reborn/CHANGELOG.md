@@ -2,6 +2,10 @@
 
 Newest first. "Live" means running on our test server.
 
+## 2026-10-20
+
+- **Settler resources and other collectables can be used** (data only, live). Our spawn data created all 310 collectable objects (Creature2 CreationTypeEnum 8, such as Salvaged Machine Parts) as NonPlayer entities, so the client never offered to use them. They are now CollectableUnit entities, the same as the 4,383 in the world database. The spawn builders write the type from the creature data.
+
 ## 2026-10-16
 
 - **Fixes from a second code review** (9bfe273e, live). Logging out and then closing the game could run the logout twice, which threw and slowly filled the login queue. A quest whose only step is a hidden one is no longer completed the moment you accept it. The starting zone ship controls no longer vanish after use.

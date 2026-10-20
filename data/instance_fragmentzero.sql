@@ -14,13 +14,13 @@ INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1160002,10,50),(1160002
 INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1160003,0,67961,3180,4635,9595,-817.046,-6514,0,0,0,28898,0,466,466);
 INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1160003,10,50),(1160003,15,0);
 -- Cargo Crate
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1160004,0,67965,3180,4620,10073,-769.794,-6127,0,0,0,21976,0,219,219);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1160004,8,67965,3180,4620,10073,-769.794,-6127,0,0,0,21976,0,219,219);
 INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1160004,10,50),(1160004,15,0);
 -- Cargo Crate
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1160005,0,67965,3180,4620,9874,-779.338,-6264,0,0,0,21976,0,219,219);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1160005,8,67965,3180,4620,9874,-779.338,-6264,0,0,0,21976,0,219,219);
 INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1160005,10,50),(1160005,15,0);
 -- Cargo Crate
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1160006,0,67965,3180,4619,9929,-753.137,-5905,0,0,0,21976,0,219,219);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1160006,8,67965,3180,4619,9929,-753.137,-5905,0,0,0,21976,0,219,219);
 INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1160006,10,50),(1160006,15,0);
 -- Crew Mate Tycho
 INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1160007,0,69044,3180,4620,9896,-783.358,-6031,0,0,0,28895,0,219,219);

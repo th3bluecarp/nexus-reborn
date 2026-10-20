@@ -398,7 +398,7 @@ INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1200130,10,35),(1200130
 INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1200131,0,28660,1271,4802,4296,-800.068,-3855,0,0,0,24875,0,1306,1306);
 INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1200131,10,35),(1200131,15,0);
 -- Silverblade
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1200132,0,56800,1271,2260,4256,-772.176,-3248,0,0,0,34996,0,219,219);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1200132,8,56800,1271,2260,4256,-772.176,-3248,0,0,0,34996,0,219,219);
 INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1200132,10,1),(1200132,15,0);
 -- Spectral Lantern
 INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1200133,0,33854,1271,4802,4263,-800.837,-3865,0,0,0,21720,0,219,219);

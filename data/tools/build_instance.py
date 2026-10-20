@@ -7,6 +7,8 @@ mapname, world, level, first, out = sys.argv[1], int(sys.argv[2]), int(sys.argv[
 J='/w/json/'; ld=lambda n: json.load(open(J+n+'.json'))
 text={int(k):v for k,v in json.load(open(J+'text.json')).items()}; T=lambda i:(text.get(i) or '')
 cr=ld('Creature2')
+# collectables (Creature2 CreationTypeEnum 8) must be CollectableUnit entities, the client won't let NonPlayer ones be used
+ct={c['Id']:c.get('CreationTypeEnum',0) for c in cr}; etype=lambda cid: 8 if ct.get(cid)==8 else 0
 byname=collections.defaultdict(list)
 for c in cr: byname[T(c['LocalizedTextIdName'])].append(c)
 dgrp=collections.defaultdict(list)
@@ -75,7 +77,7 @@ with open(out,'w') as f:
     f.write(f'DELETE FROM `entity_stats` WHERE `Id` BETWEEN {first} AND {first+9999};\nDELETE FROM `entity` WHERE `Id` BETWEEN {first} AND {first+9999};\n')
     for (i,cid,w,area,x,y,z,disp,outfit,fac,lvl,name) in rows:
         f.write(f'-- {name}\n')
-        f.write(f"INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES ({i},0,{cid},{w},{area},{x},{y},{z},0,0,0,{disp},{outfit},{fac},{fac});\n")
+        f.write(f"INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES ({i},{etype(cid)},{cid},{w},{area},{x},{y},{z},0,0,0,{disp},{outfit},{fac},{fac});\n")
         f.write(f"INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES ({i},10,{lvl}),({i},15,0);\n")
 for r in report: print(*r)
 print('spawns', len(rows))

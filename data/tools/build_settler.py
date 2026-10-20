@@ -12,6 +12,8 @@ WL = {w['Id']: w for w in ld('WorldLocation2')}
 HUB = {h['Id']: h for h in ld('PathSettlerHub')}
 GROUPS = ld('PathSettlerImprovementGroup')
 CR = {c['Id']: c for c in ld('Creature2')}
+# collectables (Creature2 CreationTypeEnum 8) must be CollectableUnit entities, the client won't let NonPlayer ones be used
+etype = lambda cid: 8 if CR[cid].get('CreationTypeEnum') == 8 else 0
 ITEMS = {i['Id']: i for i in ld('Item2')}
 WORLD = {w['Id']: w for w in ld('World')}
 EP = {e['Id']: e for e in ld('PathEpisode')}
@@ -93,6 +95,6 @@ with open('/a/parsed/settler_spawns.sql', 'w') as f:
     for i, (cid, w, area, x, y, z, note) in enumerate(rows, start=1090001):
         c = CR[cid]; lvl = min(max(c['MaxLevel'] or c['MinLevel'] or 1, 1), 50)
         f.write(f'-- {note}\nINSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) '
-                f'VALUES ({i},0,{cid},{w},{area},{x:.3f},{y:.3f},{z:.3f},0,0,0,{display(cid)},0,{c["FactionId"]},{c["FactionId"]});\n')
+                f'VALUES ({i},{etype(cid)},{cid},{w},{area},{x:.3f},{y:.3f},{z:.3f},0,0,0,{display(cid)},0,{c["FactionId"]},{c["FactionId"]});\n')
         f.write(f'INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES ({i},10,{lvl}),({i},15,0);\n')
 print('hubs', len(hubs), dict(report), 'rows', len(rows), 'terrain needed', len(set(needed)))

@@ -101,7 +101,7 @@ INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1120031,10,15),(1120031
 INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1120032,0,46883,2149,2421,197,-2.931,324,0,0,0,23685,0,218,218);
 INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1120032,10,15),(1120032,15,0);
 -- Clean Air Tank
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1120033,0,45841,2149,2415,-23,7.4,156,0,0,0,21362,0,219,219);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1120033,8,45841,2149,2415,-23,7.4,156,0,0,0,21362,0,219,219);
 INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1120033,10,1),(1120033,15,0);
 -- Crazed Guard
 INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1120034,0,45777,2149,2416,-41,-0.052,129,0,0,0,26022,9436,218,218);
