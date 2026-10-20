@@ -1385,6 +1385,10 @@ namespace NexusForever.Game.Entity
             pendingTeleport = null;
             IsLoading = false;
 
+            // units are created while loading, before the client knows the player's path, and the client only checks
+            // path prerequisites (settler resources) when a unit is created, so send them again now
+            ResendVisibleEntities();
+
             // the first world entry of the session counts the daily login, after loading ends: items created while
             // loading are not sent to the client and only showed after a relog
             if (!dailyLoginChecked)
