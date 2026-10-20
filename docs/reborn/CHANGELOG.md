@@ -10,6 +10,7 @@ Newest first. "Live" means running on our test server.
 
 ## 2026-10-15
 
+- Settler resources usable right after login: visible units are re-sent once loading ends (6fb9f30e)
 - Path switch: nearby units are re-sent so path-gated objects such as settler resources work without a relog (0974dabb)
 - Learning to Shop, the Protostar store quest, completes on accept since the store is gone (7c19f6a5).
 - Calls that offer the next story quest once its prerequisites are done now arrive, so Contact with Thayd follows Fiery Distraction (d85e0ab6).
