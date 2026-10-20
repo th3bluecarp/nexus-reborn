@@ -75,6 +75,10 @@ namespace NexusForever.WorldServer.Network.Message.Handler.Entity
                     if (!session.Player.PathMissionManager.OpenExperimentation(entity))
                         log.LogWarning($"Received unhandled interaction event {entityInteraction.Type} from Entity {entityInteraction.UnitId}");
                     break;
+                case InteractionType.SettlerImprovement: // settler depots, the client opens the build window on ServerPathSettlerBuildInvoke
+                    if (!session.Player.PathMissionManager.OpenSettlerDepot(entity))
+                        log.LogWarning($"Received unhandled interaction event {entityInteraction.Type} from Entity {entityInteraction.UnitId}");
+                    break;
                 case InteractionType.HousingGuildBroker: // "HousingGuildNeighborhoodBrokerOpen"
                 case InteractionType.ConvertItem:
                 case InteractionType.ConvertRep: // "ResourceConversionOpen"

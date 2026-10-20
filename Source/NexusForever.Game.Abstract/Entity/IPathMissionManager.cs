@@ -65,6 +65,11 @@ namespace NexusForever.Game.Abstract.Entity
         void BuildImprovement(uint improvementGroupId, uint tier);
 
         /// <summary>
+        /// Open the settler build window for a depot, returns false if the entity is not a depot of the player.
+        /// </summary>
+        bool OpenSettlerDepot(IWorldEntity entity);
+
+        /// <summary>
         /// Scientist: open the experimentation of the supplied unit (ScientistActivate interaction), returns false when it has none.
         /// </summary>
         bool OpenExperimentation(IWorldEntity entity);

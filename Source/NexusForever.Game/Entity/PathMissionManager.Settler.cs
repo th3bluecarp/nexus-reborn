@@ -142,6 +142,27 @@ namespace NexusForever.Game.Entity
                 SendDepot(entity, group);
         }
 
+        public bool OpenSettlerDepot(IWorldEntity entity)
+        {
+            if (entity == null || player.Path != Path.Settler)
+                return false;
+
+            List<PathSettlerImprovementGroupEntry> groups = DepotGroups(entity);
+            if (groups.Count == 0)
+                return false;
+
+            // the window lists the groups the client knows for the unit, so refresh them first
+            foreach (PathSettlerImprovementGroupEntry group in groups)
+                SendDepot(entity, group);
+
+            player.Session.EnqueueMessageEncrypted(new ServerPathSettlerBuildInvoke
+            {
+                SettlerHubUnitId               = entity.Guid,
+                PathSettlerImprovementGroupIds = groups.Select(g => g.Id).ToList()
+            });
+            return true;
+        }
+
         public void BuildImprovement(uint improvementGroupId, uint tier)
         {
             if (player.Path != Path.Settler || player.Map == null)
