@@ -27,7 +27,8 @@ namespace NexusForever.Game.Entity
         private class BuiltImprovement
         {
             public uint Tier { get; init; }
-            public DateTime? Expires { get; init; }
+            public DateTime? Expires { get; set; }
+            public uint Bundles { get; set; } = 1u;
         }
 
         private readonly Dictionary<uint, BuiltImprovement> builtImprovements = [];
@@ -151,8 +152,42 @@ namespace NexusForever.Game.Entity
             if (player.Path != Path.Settler)
                 return;
 
-            foreach (PathSettlerImprovementGroupEntry group in DepotGroups(entity))
+            List<PathSettlerImprovementGroupEntry> groups = DepotGroups(entity);
+            foreach (PathSettlerImprovementGroupEntry group in groups)
                 SendDepot(entity, group);
+            SendBuildStatusList(groups);
+        }
+
+        private SettlerImprovementGroupStatus BuildStatus(PathSettlerImprovementGroupEntry group)
+        {
+            // the client treats a group with no status as tier 0 built with no time left, its build button then shows a blank time
+            BuiltImprovement built = GetBuilt(group.Id);
+            return new SettlerImprovementGroupStatus
+            {
+                PathSettlerImprovementGroupId = (ushort)group.Id,
+                Tier                          = built == null ? -1 : (int)built.Tier - 1,
+                RemainingTimeMS               = built?.Expires == null ? 0u : (uint)Math.Max(0d, (built.Expires.Value - DateTime.UtcNow).TotalMilliseconds),
+                BundleCount                   = built?.Bundles ?? 0u
+            };
+        }
+
+        private void SendBuildStatus(PathSettlerImprovementGroupEntry group)
+        {
+            player.Session.EnqueueMessageEncrypted(new ServerPathSettlerBuildStatus
+            {
+                PathSettlerHubId = (ushort)group.PathSettlerHubId,
+                Status           = BuildStatus(group)
+            });
+        }
+
+        private void SendBuildStatusList(IEnumerable<PathSettlerImprovementGroupEntry> groups)
+        {
+            foreach (IGrouping<uint, PathSettlerImprovementGroupEntry> hub in groups.GroupBy(g => g.PathSettlerHubId))
+                player.Session.EnqueueMessageEncrypted(new ServerPathSettlerBuildStatusList
+                {
+                    PathSettlerHubId         = (ushort)hub.Key,
+                    ImprovementGroupStatuses = hub.Select(BuildStatus).ToList()
+                });
         }
 
         public bool OpenSettlerDepot(IWorldEntity entity)
@@ -167,6 +202,7 @@ namespace NexusForever.Game.Entity
             // the window lists the groups the client knows for the unit, so refresh them first
             foreach (PathSettlerImprovementGroupEntry group in groups)
                 SendDepot(entity, group);
+            SendBuildStatusList(groups);
 
             player.Session.EnqueueMessageEncrypted(new ServerPathSettlerBuildInvoke
             {
@@ -190,16 +226,21 @@ namespace NexusForever.Game.Entity
             if (tier >= tiers.Length)
                 return;
 
-            // a tier is built over the one before it
+            // a tier is built over the one before it, building the active tier again adds a bundle of time (recontribution)
             BuiltImprovement built = GetBuilt(group.Id);
-            if (built != null && built.Tier >= tier + 1u)
+            bool recontribute = built != null && built.Tier == tier + 1u;
+            if (built != null && built.Tier > tier + 1u)
+                return;
+            if (recontribute && (built.Expires == null || built.Bundles >= Math.Max(group.MaxBundleCount, 1u)))
                 return;
 
             PathSettlerImprovementEntry improvement = GameTableManager.Instance.PathSettlerImprovement.GetEntry(tiers[tier]);
             if (improvement == null)
                 return;
 
-            var costs = new[] { (hub.Item2IdResource00, improvement.CountResource00), (hub.Item2IdResource01, improvement.CountResource01), (hub.Item2IdResource02, improvement.CountResource02) }
+            var costs = (recontribute
+                ? new[] { (hub.Item2IdResource00, improvement.CountRecontributionResource00), (hub.Item2IdResource01, improvement.CountRecontributionResource01), (hub.Item2IdResource02, improvement.CountRecontributionResource02) }
+                : new[] { (hub.Item2IdResource00, improvement.CountResource00), (hub.Item2IdResource01, improvement.CountResource01), (hub.Item2IdResource02, improvement.CountResource02) })
                 .Where(c => c.Item1 != 0u && c.Item2 != 0u)
                 .ToList();
             if (costs.Any(c => !player.Inventory.HasItemCount(c.Item1, c.Item2)))
@@ -215,11 +256,20 @@ namespace NexusForever.Game.Entity
             foreach ((uint itemId, uint count) in costs)
                 player.Inventory.ItemDelete(itemId, count, ItemUpdateReason.NoReason);
 
-            builtImprovements[group.Id] = new BuiltImprovement
+            uint bundleMs = Math.Max(group.DurationPerBundleMs, 60000u);
+            if (recontribute)
             {
-                Tier    = tier + 1u,
-                Expires = group.DurationPerBundleMs == uint.MaxValue ? null : DateTime.UtcNow.AddMilliseconds(Math.Max(group.DurationPerBundleMs, 60000u))
-            };
+                built.Expires = built.Expires.Value.AddMilliseconds(bundleMs);
+                built.Bundles++;
+            }
+            else
+            {
+                builtImprovements[group.Id] = new BuiltImprovement
+                {
+                    Tier    = tier + 1u,
+                    Expires = group.DurationPerBundleMs == uint.MaxValue ? null : DateTime.UtcNow.AddMilliseconds(bundleMs)
+                };
+            }
 
             player.Session.EnqueueMessageEncrypted(new ServerPathSettlerBuildResult
             {
@@ -233,12 +283,17 @@ namespace NexusForever.Game.Entity
                 .OfType<IWorldEntity>()
                 .Where(e => e.CreatureId == group.Creature2IdDepot && DepotGroups(e).Any(g => g.Id == group.Id))
                 .FirstOrDefault();
+            SendBuildStatus(group);
             if (depot != null)
             {
                 SendDepot(depot, group);
-                if (improvement.Spell4IdDisplay != 0u && depot is IUnitEntity unit)
+                if (!recontribute && improvement.Spell4IdDisplay != 0u && depot is IUnitEntity unit)
                     unit.CastSpell(improvement.Spell4IdDisplay, new SpellParameters { UserInitiatedSpellCast = false });
             }
+
+            // adding time keeps the improvement up but is not a new build for the expansion missions
+            if (recontribute)
+                return;
 
             uint contribution = Math.Max(group.ContributionValue + tier * group.PerTierBonusContributionValue, 1u);
             foreach (PathMission mission in missions.Values.Where(m => m.Kind == MissionKind.Expansion && !m.IsComplete && m.Objects[0] == hub.Id).ToList())
