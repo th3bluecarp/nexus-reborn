@@ -4,6 +4,8 @@ Newest first. "Live" means running on our test server.
 
 ## 2026-10-20
 
+- **Settler depots open the build window** (live). Using a depot sent a request the server ignored, so you could not spend Salvaged Machine Parts on improvements. The server now answers with the build window message (0x66D, layout read from the client).
+
 - **Settler resources and other collectables can be used** (data only, live). Our spawn data created all 310 collectable objects (Creature2 CreationTypeEnum 8, such as Salvaged Machine Parts) as NonPlayer entities, so the client never offered to use them. They are now CollectableUnit entities, the same as the 4,383 in the world database. The spawn builders write the type from the creature data.
 
 ## 2026-10-16
