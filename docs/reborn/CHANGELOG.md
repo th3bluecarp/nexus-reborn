@@ -4,6 +4,7 @@ Newest first. "Live" means running on our test server.
 
 ## 2026-10-20
 
+- **Settler improvements are permanent** (live, our choice). Built improvements no longer expire after 5 minutes. Retail timing is one switch away (PermanentImprovements), noted in SEMANTICS.
 - **Settler depot window shows its button and timer** (live). The server now sends each improvement's build status, so the build button reads Build (it was blank) and built improvements show their time left. Building one that is already up adds another 5 minutes for the top-up cost, up to 10 times.
 - **Settler resource nodes disappear when gathered** and come back after the respawn delay (e1502ab4, live).
 

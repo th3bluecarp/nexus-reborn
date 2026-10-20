@@ -33,6 +33,12 @@ namespace NexusForever.Game.Entity
 
         private readonly Dictionary<uint, BuiltImprovement> builtImprovements = [];
 
+        /// <summary>
+        /// Reborn choice (Brian 2026-10-20): built improvements never expire. Retail ran them for DurationPerBundleMs per bundle,
+        /// topped up by any settler up to MaxBundleCount. Set to false to go back to the timed retail behaviour.
+        /// </summary>
+        private const bool PermanentImprovements = true;
+
         private static Dictionary<string, uint> settlerResourceItems;
 
         /// <summary>
@@ -131,7 +137,7 @@ namespace NexusForever.Game.Entity
             {
                 UnitId                        = depot.Guid,
                 PathSettlerImprovementGroupId = group.Id,
-                RemainingTime                 = built?.Expires == null ? 0u : (uint)Math.Max(0d, (built.Expires.Value - DateTime.UtcNow).TotalMilliseconds)
+                RemainingTime                 = built == null ? 0u : RemainingMs(group, built)
             };
 
             if (built != null)
@@ -166,9 +172,18 @@ namespace NexusForever.Game.Entity
             {
                 PathSettlerImprovementGroupId = (ushort)group.Id,
                 Tier                          = built == null ? -1 : (int)built.Tier - 1,
-                RemainingTimeMS               = built?.Expires == null ? 0u : (uint)Math.Max(0d, (built.Expires.Value - DateTime.UtcNow).TotalMilliseconds),
+                RemainingTimeMS               = built == null ? 0u : RemainingMs(group, built),
                 BundleCount                   = built?.Bundles ?? 0u
             };
+        }
+
+        private static uint RemainingMs(PathSettlerImprovementGroupEntry group, BuiltImprovement built)
+        {
+            // a permanent improvement shows the full top-up time, the client has no "forever" for timed groups and shows a blank button at 0
+            if (built.Expires == null)
+                return group.DurationPerBundleMs == uint.MaxValue ? 0u : Math.Max(group.DurationPerBundleMs, 60000u) * Math.Max(group.MaxBundleCount, 1u);
+
+            return (uint)Math.Max(0d, (built.Expires.Value - DateTime.UtcNow).TotalMilliseconds);
         }
 
         private void SendBuildStatus(PathSettlerImprovementGroupEntry group)
@@ -267,7 +282,7 @@ namespace NexusForever.Game.Entity
                 builtImprovements[group.Id] = new BuiltImprovement
                 {
                     Tier    = tier + 1u,
-                    Expires = group.DurationPerBundleMs == uint.MaxValue ? null : DateTime.UtcNow.AddMilliseconds(bundleMs)
+                    Expires = PermanentImprovements || group.DurationPerBundleMs == uint.MaxValue ? null : DateTime.UtcNow.AddMilliseconds(bundleMs)
                 };
             }
 
