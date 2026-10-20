@@ -57,17 +57,30 @@ namespace NexusForever.Game.Entity
             return settlerResourceItems = items;
         }
 
-        private void GatherSettlerResource(uint creatureId)
+        /// <summary>
+        /// Item id of the hub resource a settler resource node gives, 0 when the creature is not one.
+        /// </summary>
+        private static uint SettlerResourceItem(uint creatureId)
         {
-            if (player.Path != Path.Settler)
-                return;
-
             Creature2Entry creature = GameTableManager.Instance.Creature2.GetEntry(creatureId);
             string name = creature == null ? null : GameTableManager.Instance.TextEnglish?.GetEntry(creature.LocalizedTextIdName);
             if (name == null || !SettlerResourceItems().TryGetValue(Regex.Replace(name, @"\{p:[^}]*\}", ""), out uint itemId))
+                return 0u;
+
+            return itemId;
+        }
+
+        public bool IsSettlerResource(uint creatureId)
+        {
+            return player.Path == Path.Settler && SettlerResourceItem(creatureId) != 0u;
+        }
+
+        private void GatherSettlerResource(uint creatureId)
+        {
+            if (!IsSettlerResource(creatureId))
                 return;
 
-            player.Inventory.ItemCreate(InventoryLocation.Inventory, itemId, 1u, ItemUpdateReason.Loot);
+            player.Inventory.ItemCreate(InventoryLocation.Inventory, SettlerResourceItem(creatureId), 1u, ItemUpdateReason.Loot);
         }
 
         private const float DepotRange = 10f;

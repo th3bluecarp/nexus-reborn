@@ -616,6 +616,8 @@ namespace NexusForever.Game.Entity
         {
             // checked before the updates below complete the objective
             bool questTarget = IsActiveQuestActivateTarget(activator);
+            // settler resource nodes are used up when gathered and come back on the respawn timer, as in retail
+            bool settlerResource = CreatureInfo?.Entry != null && activator.PathMissionManager.IsSettlerResource(CreatureInfo.Entry.Id);
 
             // transmat terminals bind the player, Recall - Transmat returns here
             if (CreatureInfo?.Entry != null && CreatureInfo.Entry.BindPointId != 0u && Map != null)
@@ -675,7 +677,7 @@ namespace NexusForever.Game.Entity
             // Quest creatures (trapped survivors, cages, cannons) go away once used and come back on the respawn timer when
             // their activate spells give no rule of their own. Spells with a DespawnUnit effect remove the object themselves and
             // spells that clear SetBusy after a delay mean a reusable object, both are left to the data.
-            if (questTarget && this is IUnitEntity unit && unit is not IPlayer && !ActivateSpellsHandleUse()
+            if ((questTarget || settlerResource) && this is IUnitEntity unit && unit is not IPlayer && !ActivateSpellsHandleUse()
                 && !ScriptedTransports.ContainsKey(CreatureInfo.Entry.Id))
                 unit.Despawn();
         }

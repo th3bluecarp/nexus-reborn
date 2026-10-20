@@ -70,6 +70,11 @@ namespace NexusForever.Game.Abstract.Entity
         bool OpenSettlerDepot(IWorldEntity entity);
 
         /// <summary>
+        /// Returns if using the creature gathers a settler hub resource for the player.
+        /// </summary>
+        bool IsSettlerResource(uint creatureId);
+
+        /// <summary>
         /// Scientist: open the experimentation of the supplied unit (ScientistActivate interaction), returns false when it has none.
         /// </summary>
         bool OpenExperimentation(IWorldEntity entity);
