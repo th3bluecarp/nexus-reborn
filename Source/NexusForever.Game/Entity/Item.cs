@@ -111,7 +111,7 @@ namespace NexusForever.Game.Entity
             get => durability;
             set
             {
-                if (Durability > 1.0f)
+                if (value < 0f || value > 1.0f)
                     throw new ArgumentOutOfRangeException();
 
                 durability = value;
@@ -330,6 +330,26 @@ namespace NexusForever.Game.Entity
         /// <summary>
         /// Returns the amount of <see cref="CurrencyType"/> this <see cref="IItem"/> sells for at a vendor.
         /// </summary>
+        /// <summary>
+        /// Credits a vendor charges to repair this item to full, the same amount the client shows.
+        /// </summary>
+        /// <remarks>
+        /// GameFormula 559 Datafloat03 (0.25) times the missing fraction times the item value, from WildStar64.exe 0x1403b54a0.
+        /// </remarks>
+        public ulong GetRepairCost()
+        {
+            uint maxDurability = Info.GetMaxDurability();
+            if (maxDurability == 0u)
+                return 0ul;
+
+            uint current = durability <= 0.000001f ? 0u : Math.Max(1u, (uint)(maxDurability * durability + 0.5f));
+            if (current >= maxDurability)
+                return 0ul;
+
+            float rate = GameTableManager.Instance.GameFormula.GetEntry(559).Datafloat03;
+            return (ulong)(rate * ((maxDurability - current) / (float)maxDurability) * Info.GetItemValue() + 0.5f);
+        }
+
         public uint GetVendorSellAmount(byte index)
         {
             // TODO: Rawaho was lazy and didn't finish this

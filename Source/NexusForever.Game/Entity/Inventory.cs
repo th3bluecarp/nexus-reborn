@@ -861,6 +861,58 @@ namespace NexusForever.Game.Entity
                     }, ItemUpdateReason.MaterialBagConversion);
         }
 
+        /// <summary>
+        /// Fraction of maximum durability equipped armor and weapons lose when the player dies.
+        /// </summary>
+        /// <remarks>
+        /// Invented, retail's value is not in the client data (see docs/reborn/SEMANTICS.md).
+        /// </remarks>
+        public const float DeathDurabilityLoss = 0.1f;
+
+        /// <summary>
+        /// Set the durability of an <see cref="IItem"/> and update the client.
+        /// </summary>
+        public void ItemDurabilityUpdate(IItem item, float durability)
+        {
+            durability = Math.Clamp(durability, 0f, 1f);
+            if (item.Durability == durability)
+                return;
+
+            item.Durability = durability;
+            player.Session.EnqueueMessageEncrypted(new ServerItemDurabilityUpdate
+            {
+                ItemGuid   = item.Guid,
+                Durability = durability
+            });
+        }
+
+        /// <summary>
+        /// Equipped armor and weapons lose <see cref="DeathDurabilityLoss"/> of their durability.
+        /// </summary>
+        public void ApplyDeathDurabilityLoss()
+        {
+            IBag bag = GetBag(InventoryLocation.Equipped);
+            if (bag == null)
+                return;
+
+            foreach (IItem item in bag.ToList())
+                if (item.Info.GetMaxDurability() > 0u)
+                    ItemDurabilityUpdate(item, item.Durability - DeathDurabilityLoss);
+        }
+
+        /// <summary>
+        /// Return every equipped or carried item that has lost durability.
+        /// </summary>
+        public IEnumerable<IItem> GetDamagedItems()
+        {
+            return new[] { InventoryLocation.Equipped, InventoryLocation.Inventory }
+                .Select(GetBag)
+                .Where(b => b != null)
+                .SelectMany(b => b)
+                .Where(i => i.Info.GetMaxDurability() > 0u && i.Durability < 1f)
+                .ToList();
+        }
+
         private IBag GetBag(InventoryLocation location)
         {
             return bags.TryGetValue(location, out IBag container) ? container : null;

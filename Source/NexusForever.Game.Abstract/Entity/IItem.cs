@@ -29,6 +29,11 @@ namespace NexusForever.Game.Abstract.Entity
         CurrencyType GetVendorSellCurrency(byte index);
 
         /// <summary>
+        /// Credits a vendor charges to repair this <see cref="IItem"/> to full durability.
+        /// </summary>
+        ulong GetRepairCost();
+
+        /// <summary>
         /// Returns the amount of <see cref="CurrencyType"/> this <see cref="IItem"/> sells for at a vendor.
         /// </summary>
         uint GetVendorSellAmount(byte index);

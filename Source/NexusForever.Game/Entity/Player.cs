@@ -1782,6 +1782,10 @@ namespace NexusForever.Game.Entity
             Dismount();
             RemoveControlUnit();
 
+            // not when a character that logged out dead is put back into its death state
+            if (!IsLoading)
+                Inventory.ApplyDeathDurabilityLoss();
+
             UpdateRangeChecks();
 
             Map.PublicEventManager.UpdateStat(this, PublicEventStat.Deaths, 1);

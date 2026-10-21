@@ -99,7 +99,23 @@ namespace NexusForever.Game.Loot
         /// <param name="lootedItem">The item that was looted.</param>
         public void GenerateLoot(IPlayer looter, IItem lootedItem)
         {
-            ILootBuilder lootBuilder = lootGroupManager.GenerateItemLoot(lootedItem.Id, [ looter ]);
+            GenerateItemLoot(looter, lootedItem.Id);
+        }
+
+        /// <summary>
+        /// Returns whether item loot exists for the supplied item loot id.
+        /// </summary>
+        public bool HasItemLoot(uint itemLootId)
+        {
+            return lootGroupManager.HasItemLoot(itemLootId);
+        }
+
+        /// <summary>
+        /// Generates the item loot with the supplied id (an item id, or a salvage loot id) straight into the player's bags.
+        /// </summary>
+        public void GenerateItemLoot(IPlayer looter, uint itemLootId)
+        {
+            ILootBuilder lootBuilder = lootGroupManager.GenerateItemLoot(itemLootId, [ looter ]);
             if (lootBuilder == null)
                 return;
 

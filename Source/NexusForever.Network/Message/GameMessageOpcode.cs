@@ -136,6 +136,7 @@ namespace NexusForever.Network.Message
         ClientItemDelete                = 0x0149,
         ServerAbilityRemove             = 0x014A,
         ServerCharacterRenameResult     = 0x014B,
+        ClientItemRepair                = 0x014C, // read from WildStar64.exe 0x140088e60: item guid (0 = repair all), guild id, guild repair limit
         ClientEntityInteractChair       = 0x014E,
         ClientLootItem                  = 0x014F,
         ClientResetAttributePoints      = 0x0150,
@@ -208,6 +209,7 @@ namespace NexusForever.Network.Message
         ClientCommitAmpSpec             = 0x01A2,
         ServerAmpList                   = 0x01A3,
         ServerReputationUpdate          = 0x01A5,
+        ServerItemDurabilityUpdate      = 0x01A7, // read from WildStar64.exe 0x14008ef80: item guid, durability float
         ServerPathUpdateXP              = 0x01AA,
         ServerResurrectionUpdate        = 0x01AB,
         ServerExperienceGained          = 0x01AC,

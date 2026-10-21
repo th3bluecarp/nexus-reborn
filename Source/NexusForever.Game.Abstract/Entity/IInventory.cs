@@ -60,6 +60,21 @@ namespace NexusForever.Game.Abstract.Entity
         IItem GetItem(ulong guid);
 
         /// <summary>
+        /// Set the durability of an <see cref="IItem"/> and update the client.
+        /// </summary>
+        void ItemDurabilityUpdate(IItem item, float durability);
+
+        /// <summary>
+        /// Equipped armor and weapons lose durability on death.
+        /// </summary>
+        void ApplyDeathDurabilityLoss();
+
+        /// <summary>
+        /// Return every equipped or carried item that has lost durability.
+        /// </summary>
+        IEnumerable<IItem> GetDamagedItems();
+
+        /// <summary>
         /// Returns <see cref="IItemVisual"/> for any visible items.
         /// </summary>
         IEnumerable<IItemVisual> GetItemVisuals();

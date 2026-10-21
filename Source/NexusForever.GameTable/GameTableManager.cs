@@ -545,6 +545,7 @@ namespace NexusForever.GameTable
         [GameData]
         public GameTable<RewardTrackEntry> RewardTrack { get; private set; }
         public GameTable<RewardTrackRewardsEntry> RewardTrackRewards { get; private set; }
+        [GameData]
         public GameTable<SalvageEntry> Salvage { get; private set; }
         public GameTable<SalvageExceptionEntry> SalvageException { get; private set; }
         public GameTable<SkyCloudSetEntry> SkyCloudSet { get; private set; }

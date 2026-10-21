@@ -24,5 +24,10 @@ namespace NexusForever.Game.Abstract.Loot.Generate
         /// <returns>
         /// An <see cref="ILootBuilder"/> containing the generated loot, or <see langword="null"/> if loot generation failed.
         ILootBuilder GenerateItemLoot(uint id, List<IPlayer> players);
+
+        /// <summary>
+        /// Returns whether item loot (loot bag contents or a salvage table) exists for the supplied id.
+        /// </summary>
+        bool HasItemLoot(uint id);
     }
 }

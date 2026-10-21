@@ -49,6 +49,16 @@ namespace NexusForever.Game.Abstract.Entity
         uint GetVendorSellAmount(byte index);
 
         /// <summary>
+        /// Maximum durability points, 0 for items without durability (anything but armor and weapons).
+        /// </summary>
+        uint GetMaxDurability();
+
+        /// <summary>
+        /// Base worth of the item that repair costs are priced from.
+        /// </summary>
+        float GetItemValue();
+
+        /// <summary>
         /// Returns if item can be equipped into an item slot.
         /// </summary>
         bool IsEquippable();

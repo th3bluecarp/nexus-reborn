@@ -413,7 +413,37 @@ namespace NexusForever.Game.Entity
             }
         }
 
+        /// <summary>
+        /// Maximum durability points: armor and weapons (families 1 and 2) have power level plus GameFormula 559 Dataint01, everything else none.
+        /// </summary>
+        /// <remarks>
+        /// Matches the client (WildStar64.exe 0x1403b5400).
+        /// </remarks>
+        public uint GetMaxDurability()
+        {
+            if (Entry.Item2FamilyId is not (1u or 2u))
+                return 0u;
+
+            return Entry.PowerLevel + GameTableManager.Instance.GameFormula.GetEntry(559).Dataint01;
+        }
+
+        /// <summary>
+        /// Base worth of the item the client prices repairs from: the vendor amount with quality 0 counted as 1, at least 1.
+        /// </summary>
+        /// <remarks>
+        /// Matches the client (WildStar64.exe 0x14040bee0).
+        /// </remarks>
+        public float GetItemValue()
+        {
+            return MathF.Max(1f, MathF.Floor(CalculateVendorAmount(Entry.ItemQualityId == 0u ? 1f : Entry.ItemQualityId)));
+        }
+
         private float CalculateVendorAmount()
+        {
+            return CalculateVendorAmount(Entry.ItemQualityId);
+        }
+
+        private float CalculateVendorAmount(float quality)
         {
             GameFormulaEntry formulaEntry = GameTableManager.Instance.GameFormula.GetEntry(1078);
 
@@ -422,7 +452,7 @@ namespace NexusForever.Game.Entity
             float v16 = (v14 * formulaEntry.Datafloat0) + (MathF.Pow(v15, formulaEntry.Datafloat03) * formulaEntry.Datafloat02);
 
             float vendorMultipler = CategoryEntry.VendorMultiplier * FamilyEntry.VendorMultiplier * TypeEntry.VendorMultiplier;
-            return (v16 * (Entry.ItemQualityId * vendorMultipler));
+            return (v16 * (quality * vendorMultipler));
         }
 
         /// <summary>
