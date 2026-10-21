@@ -4,6 +4,7 @@ Newest first. "Live" means running on our test server.
 
 ## 2026-10-21
 
+- **Damage formula** (083a8218): critical hits were weak. The game's 150 percent base crit damage was missing, so with little Critical Hit Severity a crit hit for less than a normal hit. Fixed, and the combat stats that did nothing now work: Strikethrough lowers the target's Deflect chance, Armor Pierce ignores part of the target's armor, Critical Hit Deflect and Critical Mitigation protect the target, Multi-Hit adds extra damage, Lifesteal heals you, Reflect sends damage back, and glancing blows show how much was glanced. Also from earlier today: damage and healing marks (85298f28).
 - **Cheat-death and on-death AMPs** (dc650c17): Last Stand, To the Pain, Unbreakable, Homeward Bound and The Trick now save you from a killing blow and cast their effect; Final Salvo, From the Grave, Cheat Death and the PvP Self-Destruct fire as you die. Their "once every N minutes" lockouts are respected. Not yet tried in game.
 - **Immunities** (4e00a058): Freedom, Unstoppable Force, Self CC Immunity and boss immunities now block the crowd control, knockbacks, interrupts or damage they name.
 - **Damage and healing marks** (85298f28): abilities that make a foe take more damage from you (Analyze Weakness, Cheap Shot, Nano Spike), deal less damage to you (Nerve Induction) or boost healing you give someone (Sigil of Recovery, Fusion Probe) now change the numbers. About 130 class and AMP spell effects use this.

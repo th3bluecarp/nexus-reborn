@@ -73,6 +73,13 @@ Confidence: **High** = consistent across all the data we checked and no counter 
 | DelayDeath (121) | a killing blow casts DataBits01 instead; DataBits00 0 and 1 survive, 2 dies after the delay; DataBits02 ms death is held off; DataBits03 prerequisite (usually "not under" the lockout spell); DataBits04 cooldown ms | Medium | tooltips: Unbreakable "prevents death for data02 ms", Cheat Death 6000 ms spirit form, To the Pain 300000 = "every 5 minutes"; DataBits03 rows are UnderSpell not-equal checks | mode 1 (Astral Infusion) treated like 0; triggers with no lockout or cooldown get an invented 30 s cooldown so a permanent effect cannot make a unit unkillable; while dying, Cheat Death's spirit form is just 1 health |
 | PersonalDmgHealMod (151) | a multiplier held by the target: DataBits00 3 to 5 physical, tech, magic damage the target deals, 6 to 8 the same types it takes, 12 healing and 13 shield healing it receives; DataBits01 1 only against the caster, 2 against everyone; DataBits02 the multiplier (float) | Medium | tooltips: Analyze Weakness 6 to 8 x1.2 "damage taken from the Stalker increased", Nerve Induction 3 to 5 x0.8 "damage dealt to Medic reduced", Deep-Rooted Connection 3 to 5 x100 on the player against the bonded creature, Sigil of Recovery 12 x1.1 | DataBits01 = 2 is a guess (Unsteady Miasma, Ruin); category 9 (flat per hit) is only on a test spell and ignored |
 
+## Damage formula
+
+- **Crit severity** is CriticalHitSeverityMultiplier (UnitProperty2 default 1.5) plus the rating share from GameFormula 1232, capped at 300 percent. Critical mitigation scales only the bonus above 100 percent. Crit deflect and critical mitigation do not apply to heals. High confidence on the 1.5 base, Medium on how mitigation applies.
+- **Strikethrough** is subtracted from the target's deflect chance, **armor pierce** multiplies the armor part of mitigation by 1 minus its share (Medium, WildStar tooltips describe both this way, exact client math not read).
+- **Multi-hit** adds MultiHitAmount share of the hit to the same hit instead of a separate strike (Invented presentation, the client has a MultiHit combat log we do not send).
+- **Reflect** sends the reflect share of the damage taken straight to the attacker's health, unmitigated and not reflected again (Medium).
+
 ## Tradeskills
 
 | Item | Our meaning | Confidence | Notes |
