@@ -4,6 +4,9 @@ Newest first. "Live" means running on our test server.
 
 ## 2026-10-21
 
+- **Trading between players** (457d3d1c): invite, offer up to 8 items and credits, both commit and the swap happens. Several trade message layouts were wrong and are fixed from the game client.
+- **Galactic Archive** (415884ad): the journal's lore articles now unlock and are saved. Articles the game unlocks itself (talking to certain creatures, archive links) are recorded, and entries tied to finishing a quest unlock when you finish it, including quests you finished before today.
+- **Explorer missions** listen to the game's own "node reached" reports (e97ac111), on top of the server's distance check.
 - **Combat log filters** (c87b3396): the combat log checkboxes and Hide Other Players now stop the server sending those entries.
 - **Zone, LFG, class and guild recruitment chat** (8485b11a) work instead of answering "Currently not implemented". Zone chat reaches everyone on the same continent.
 - **Quests that reward tradeskill xp pay it** (b54fd665), to a tradeskill you have learned (378 quests).
