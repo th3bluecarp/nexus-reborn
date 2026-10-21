@@ -221,6 +221,8 @@ namespace NexusForever.Game.Entity
 
         public void OnRemoveFromMap()
         {
+            DismissMortarTeams();
+
             if (holdout != null)
                 EndHoldout(PlayerPathSoldierResult.FailLeaveArea);
 

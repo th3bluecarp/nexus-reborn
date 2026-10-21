@@ -396,6 +396,7 @@ namespace NexusForever.Game.Entity
         public void Update(double lastTick)
         {
             UpdateHoldout(lastTick);
+            UpdateMortarTeams(lastTick);
 
             locationTimer.Update(lastTick);
             if (!locationTimer.HasElapsed)
