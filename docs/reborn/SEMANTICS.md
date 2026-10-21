@@ -25,6 +25,7 @@ Confidence: **High** = consistent across all the data we checked and no counter 
 | DeadState (12) | Value 0 alive, 1 dead, numeric comparison | Medium | 140 of 169 uses are Equal 0 (living players only) | ObjectId set on a few uses, ignored | PrerequisiteCheckDeadState |
 | ItemQuantity (51) | count of item ObjectId carried compared with Value | Medium | ObjectIds are items, values 0 to 4 with all comparisons | may count bank or equipped items too | PrerequisiteCheckItemQuantity |
 | PathLevel (91) | active path level compared with Value | Medium | ObjectId 0, values 1 to 24 with GreaterThan | might be a specific path when ObjectId is set | PrerequisiteCheckPathLevel |
+| InfrastructureState (148) | state of settler project ObjectId: 2 built, 1 under way, 0 not started, compared with Value; the player's own project mission (retail shared projects per zone) | Medium | 71 uses, ObjectIds are PathSettlerInfrastructure ids, one project used with both 0 and 2 (before and after) | 1 might mean something else; non settlers never build, so they see the not built state | PrerequisiteCheckInfrastructureState |
 | Spell59 | **not implemented**: ObjectId a Spell4 id (253 of 260), Value 1 to 5 with numeric comparisons, probably a stack count; no way to count stacks yet | | | | |
 | Unknown47, ChallengeRequirement (69), ChallengeLocked (74), PlayerPathMission (54), PathMissionRequirement (67) | **not implemented** | | Value is a spell / challenge / mission id | several readings fit equally well | | unhandled on purpose |
 
