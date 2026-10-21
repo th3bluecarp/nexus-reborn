@@ -153,6 +153,25 @@ namespace NexusForever.Game.Abstract.Entity
         uint ConsumeAbsorb(DamageType damageType, uint damage);
 
         /// <summary>
+        /// Add a damage or healing multiplier from a PersonalDmgHealMod effect, <paramref name="otherGuid"/> is the unit it applies against (0 for any unit).
+        /// </summary>
+        /// <remarks>
+        /// Categories 3 to 5 scale physical, tech and magic damage this unit deals, 6 to 8 the same damage types this unit takes,
+        /// 12 healing and 13 shield healing this unit receives.
+        /// </remarks>
+        void AddPersonalModifier(uint effectId, uint casterGuid, uint category, uint otherGuid, float multiplier);
+
+        /// <summary>
+        /// Remove the multiplier added by supplied spell effect and caster.
+        /// </summary>
+        void RemovePersonalModifier(uint effectId, uint casterGuid);
+
+        /// <summary>
+        /// Product of the multipliers of supplied category that apply against supplied unit.
+        /// </summary>
+        float GetPersonalModifier(uint category, uint otherGuid);
+
+        /// <summary>
         /// Modify the health of this <see cref="IUnitEntity"/> by the supplied amount.
         /// </summary>
         /// <remarks>

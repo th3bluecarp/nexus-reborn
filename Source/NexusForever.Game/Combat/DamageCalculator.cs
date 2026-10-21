@@ -67,6 +67,8 @@ namespace NexusForever.Game.Combat
 
             damage = CalculateBaseDamageVariance(damage);
 
+            damage = GetDamageAfterPersonalModifiers(executionContext.Spell.Caster, victim, info.Entry.DamageType, damage);
+
             damage = GetDamageAfterArmorMitigation(victim, info.Entry.DamageType, damage);
 
             // TODO: Add in other attacking modifiers like Armor Pierce, Strikethrough, Multi-Hit, etc.
@@ -121,6 +123,7 @@ namespace NexusForever.Game.Combat
             float heal = CalculateEffectAmount(caster, target, info.Entry);
             heal *= caster.GetPropertyValue(Property.HealingMultiplierOutgoing);
             heal *= target.GetPropertyValue(Property.HealingMultiplierIncoming);
+            heal *= target.GetPersonalModifier(info.Entry.EffectType == SpellEffectType.HealShields ? 13u : 12u, caster.Guid);
 
             uint amount = CalculateBaseDamageVariance((uint)Math.Max(0f, heal));
 
@@ -149,6 +152,19 @@ namespace NexusForever.Game.Combat
             float typeBaseDamage     = entry.EffectType == SpellEffectType.Absorption ? BitConverter.UInt32BitsToSingle(entry.DataBits01) : entry.DataBits01;
 
             return (uint)Math.Max(0f, basePropertyDamage + ((typeBaseDamage + baseEntityDamage) * typeMultiplier));
+        }
+
+        /// <summary>
+        /// Apply PersonalDmgHealMod multipliers: those on the attacker for damage it deals and those on the victim for damage it takes.
+        /// </summary>
+        private static uint GetDamageAfterPersonalModifiers(IUnitEntity attacker, IUnitEntity victim, DamageType damageType, uint damage)
+        {
+            if (damageType is < DamageType.Physical or > DamageType.Magic)
+                return damage;
+
+            uint offset = (uint)damageType - 1u;
+            float multiplier = attacker.GetPersonalModifier(3u + offset, victim.Guid) * victim.GetPersonalModifier(6u + offset, attacker.Guid);
+            return (uint)Math.Max(0f, damage * multiplier);
         }
 
         /// <summary>

@@ -688,6 +688,37 @@ namespace NexusForever.Game.Entity
             return absorbed;
         }
 
+        private readonly List<(uint EffectId, uint CasterGuid, uint Category, uint OtherGuid, float Multiplier)> personalModifiers = [];
+
+        /// <summary>
+        /// Add a damage or healing multiplier from a PersonalDmgHealMod effect, <paramref name="otherGuid"/> is the unit it applies against (0 for any unit).
+        /// </summary>
+        public void AddPersonalModifier(uint effectId, uint casterGuid, uint category, uint otherGuid, float multiplier)
+        {
+            RemovePersonalModifier(effectId, casterGuid);
+            personalModifiers.Add((effectId, casterGuid, category, otherGuid, multiplier));
+        }
+
+        /// <summary>
+        /// Remove the multiplier added by supplied spell effect and caster.
+        /// </summary>
+        public void RemovePersonalModifier(uint effectId, uint casterGuid)
+        {
+            personalModifiers.RemoveAll(m => m.EffectId == effectId && m.CasterGuid == casterGuid);
+        }
+
+        /// <summary>
+        /// Product of the multipliers of supplied category that apply against supplied unit.
+        /// </summary>
+        public float GetPersonalModifier(uint category, uint otherGuid)
+        {
+            float multiplier = 1f;
+            foreach ((uint EffectId, uint CasterGuid, uint Category, uint OtherGuid, float Multiplier) modifier in personalModifiers)
+                if (modifier.Category == category && (modifier.OtherGuid == 0u || modifier.OtherGuid == otherGuid))
+                    multiplier *= modifier.Multiplier;
+            return multiplier;
+        }
+
         public void TakeDamage(IUnitEntity attacker, IDamageDescription damageDescription)
         {
             if (!IsAlive || !attacker.IsAlive || attacker == this)
