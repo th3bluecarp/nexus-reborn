@@ -4,6 +4,10 @@ Newest first. "Live" means running on our test server.
 
 ## 2026-10-21
 
+- **Combat log filters** (c87b3396): the combat log checkboxes and Hide Other Players now stop the server sending those entries.
+- **Zone, LFG, class and guild recruitment chat** (8485b11a) work instead of answering "Currently not implemented". Zone chat reaches everyone on the same continent.
+- **Quests that reward tradeskill xp pay it** (b54fd665), to a tradeskill you have learned (378 quests).
+- **Four more spell effects** (84f3c875): items handed out by spells, Dismount and other knock-off-your-mount effects, instant kills, and spells that advance an achievement.
 - **Gear durability and vendor repairs** (66cf2d84). Dying now costs your equipped armor and weapons 10 percent durability (our number, retail's is unknown), shown on your gear at once. Repair and Repair All at vendors work and charge exactly the price the vendor window shows (formula read from the game client).
 - **Salvage is wired up** (66cf2d84). The game's Salvage action is the same message that opens loot bags; armor and weapons now break down into their salvage table. The salvage tables themselves are being rebuilt from archived Jabbithole data, so gear salvage yields nothing until that data lands.
 - **Rename a character** from the character select screen (c5cc0eb2). Free; a character that owns a house cannot be renamed yet.
