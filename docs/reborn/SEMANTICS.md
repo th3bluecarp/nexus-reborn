@@ -43,6 +43,7 @@ Confidence: **High** = consistent across all the data we checked and no counter 
 | DespawnUnit (97) | remove target, world spawns return on the respawn timer | Medium | names (Clearing Weeds, Detonate) | real respawn delay per object unknown |
 | Scale (18) | DataBits00 float scale, timed | High | values 1.1 to 2.0 on growth buffs | DataBits01/02 look like blend times, unused |
 | SummonPet (98) | DataBits00 creature | High | names match creatures (Repairbot, Geist) | DataBits01 (4, 5, 7, 9) probably a pet slot; limits unenforced |
+| SummonVehicle (6) | DataBits00 creature, DataBits01 UnitVehicle, DataBits02 = 1 seats the target as pilot | Medium | all 12 uses: the ride spells (Summon Hoverbike, Fattened Warpig, Battle Bot, Securitybot) have DataBits02 = 1, placed turrets, airships and war mechs have 0 | DataBits03 (2 on one test turret) unknown; how placed vehicles are boarded is not done | |
 | PetCastSpell (111) | DataBits00 pet creature, DataBits01 spell | High | bot ability names line up | with no owner target the pet uses its own target, then itself (a guess) |
 | Stealth / RemoveStealth (83/84) | stealth state; SpellCastStealthChange 1 breaks it, 2 does not | Medium | 1 is on Stalker attacks, 2 on Stealth and Nano Skin | 0 on non-Stalker spells: does it break stealth? |
 | SpellDispel (53) | DataBits03 is the SpellClass removed, DataBits00 the count | Medium | values 36 and 38 match BuffDispellable / DebuffDispellable | Cleanse examples use 36 (buffs), which is odd |
@@ -123,6 +124,9 @@ Confidence: **High** = consistent across all the data we checked and no counter 
 | calls for help | idle same faction creatures within 10 m join, one ring only, Prime rank (bosses) never answer | CombatAI |
 | fall damage | free up to 25 m from the highest point of the Fall state, then 3 percent of max health per metre (lethal near 58 m); none when the landing batch leaves the player swimming | MovementManager (if the client switches to Swim one packet after landing, a water dive still hurts) |
 | leash range | 50 m from where combat started, then 10 s ignoring proximity on the walk home | CombatAI |
+| PvP flag off | at once; retail kept you flagged for a cooldown after turning it off (ServerPvpCooldownUpdate) | ClientPvpToggleFlagsHandler (client sends 1 = turn on or keep on, 0 = turn off, read from WildStar64.exe 0x1403b5ef0) |
+| Reset Instances | drops every solo instance lock except the instance you stand in; the portal reset does the same since the message does not say which dungeon | ClientResetInstancesHandler |
+| ability training cost | free; class abilities are granted on level up anyway, the trainer only teaches ones the character qualifies for but lacks | ClientAbilityBookActivateSpellHandler |
 
 ## Special cases that stand in for an unknown generic mechanism
 

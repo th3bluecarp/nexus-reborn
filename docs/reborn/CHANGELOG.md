@@ -4,6 +4,12 @@ Newest first. "Live" means running on our test server.
 
 ## 2026-10-21
 
+- **Ride and quest vehicle spells work** (e4d60c36). The SummonVehicle spell effect was ignored. It now spawns the vehicle and seats you as the pilot for the ride spells (hoverbike, warpig, battle bot, securitybot); Exit Vehicle gets you out and the vehicle goes away.
+- **Turn PvP On/Off** from your portrait menu now works (e4d60c36). Players only fight each other when both are flagged. Turning it off is immediate, retail had a cooldown.
+- **Reset Instances** works (e4d60c36): your next dungeon entry starts a fresh copy. The instance you are standing in is kept.
+- **The ability trainer's Learn button** teaches a class ability you qualify for but do not know yet, for free (e4d60c36). Abilities still come automatically on level up.
+- **Tracker corrected**: harvest nodes, Soldier holdouts, Explorer missions, path XP and work orders were already built but still listed as missing.
+
 - **Northern Wilds could stop letting you log in** (live). When the game unloaded an empty part of the map, one creature that had already left the map was still listed there, and the unload crashed on it every update. That part of the map got stuck, and logging in there timed out, so the client kept losing connection. The unload now drops such leftovers and carries on.
 
 ## 2026-10-20
