@@ -982,6 +982,20 @@ namespace NexusForever.Game.Entity
 
                 playerCreate.SpecIndex = SpellManager.ActiveActionSet;
                 Session.EnqueueMessageEncrypted(playerCreate);
+
+                // the rune window reads slots from the rune update, not from the item itself
+                foreach (IItem item in Inventory
+                    .Where(b => b.Location != InventoryLocation.Ability)
+                    .SelectMany(i => i)
+                    .Where(i => i.RuneData != 0u))
+                {
+                    Session.EnqueueMessageEncrypted(new ServerItemRunesUpdate
+                    {
+                        ItemGuid = item.Guid,
+                        RuneData = item.RuneData,
+                        Runes    = item.Runes.ToList()
+                    });
+                }
             }
 
             TitleManager.SendTitles();

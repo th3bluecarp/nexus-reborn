@@ -349,6 +349,7 @@ namespace NexusForever.Game.Entity
                             Reason = reason
                         }
                     });
+                    SendRuneUpdate(item);
                 }
 
                 count -= item.StackCount;
@@ -697,6 +698,7 @@ namespace NexusForever.Game.Entity
                         Reason = reason
                     }
                 });
+                SendRuneUpdate(item);
             }
         }
 
@@ -911,6 +913,22 @@ namespace NexusForever.Game.Entity
                 .SelectMany(b => b)
                 .Where(i => i.Info.GetMaxDurability() > 0u && i.Durability < 1f)
                 .ToList();
+        }
+
+        /// <summary>
+        /// The rune window reads an item's slots from the rune update, so send one after adding an item that has rune slots.
+        /// </summary>
+        private void SendRuneUpdate(IItem item)
+        {
+            if (item.RuneData == 0u || player?.Session == null)
+                return;
+
+            player.Session.EnqueueMessageEncrypted(new ServerItemRunesUpdate
+            {
+                ItemGuid = item.Guid,
+                RuneData = item.RuneData,
+                Runes    = item.Runes.ToList()
+            });
         }
 
         private IBag GetBag(InventoryLocation location)
