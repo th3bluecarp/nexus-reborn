@@ -92,6 +92,7 @@ namespace NexusForever.Game.Abstract.Entity
         void ResendVisibleEntities();
         IChallengeManager ChallengeManager { get; }
         ITradeskillManager TradeskillManager { get; }
+        IArchiveManager ArchiveManager { get; }
         IMailManager MailManager { get; }
         IZoneMapManager ZoneMapManager { get; }
         IQuestManager QuestManager { get; }
