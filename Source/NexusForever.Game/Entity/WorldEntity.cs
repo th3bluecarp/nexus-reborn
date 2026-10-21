@@ -824,6 +824,26 @@ namespace NexusForever.Game.Entity
             { 34130u, 16579u }, // Destroyed Exile Medical Station, the working Settler Medical Station (Settler Health Boost)
             { 34129u, 16579u }, // Destroyed Dominion Medical Station
             { 33880u, 33878u }, // Unbuilt Furniture (dining set) Exile Aurin, Aurin Table
+            // matched by model rather than name (2026-10-21): the same mesh grown, repaired or built
+            { 31445u, 34304u }, // Untended Purple Glowbulbs, Nurtured Plant (the grown model of the same _grow mesh)
+            { 34145u, 34589u }, // Ruined Dock, Aurin Dock platform
+            { 56442u, 56434u }, // Warplot Broken Sniper Turret, Settler Sniper Turret: Shielded
+            { 31442u, 31439u }, // Flower Bed Exile (dirt mound), Well-Kept Blue Cup Flowers
+            { 33861u, 30453u }, // Fallow Patch Exile (dirt mound), Veggie Carrot Sprout
+            { 48886u, 63194u }, // Unbuilt Outpost, Camp-in-a-Box tent
+            { 48923u, 63194u }, // Unbuilt Outpost Exile, Camp-in-a-Box tent
+            { 65684u, 63194u }, // Unbuilt Rescue HQ Exile, Camp-in-a-Box tent
+            { 65685u, 63194u }, // Unbuilt Rescue HQ, Camp-in-a-Box tent
+            { 58748u, 58754u }, // Strip Mining Gear Tier 1, Mining Explosives Tier 1
+            { 58767u, 58754u }, // Strip Mining Gear Exile Tier 1
+            { 59891u, 59897u }, // Strip Mining Gear Tier 2, Mining Explosives Tier 2
+            { 59894u, 59897u }, // Strip Mining Gear Exile Tier 2
+            { 59892u, 59898u }, // Strip Mining Gear Tier 3, Mining Explosives Tier 3
+            { 59895u, 59898u }, // Strip Mining Gear Exile Tier 3
+            { 59893u, 59899u }, // Strip Mining Gear Tier 4, Mining Explosives Tier 4
+            { 59896u, 59899u }, // Strip Mining Gear Exile Tier 4
+            { 62949u, 62952u }, // Strip Mining Gear Tier 5, Mining Explosives Tier 5
+            { 62948u, 62952u }, // Strip Mining Gear Exile Tier 5
         };
 
         /// <summary>
