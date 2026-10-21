@@ -10,7 +10,7 @@ namespace NexusForever.Network.World.Message.Model.Crafting
 
         public void Write(GamePacketWriter writer)
         {
-            writer.Write(TradeskillSigilResult, 32u);
+            writer.Write(TradeskillSigilResult, 4u); // 4 bits, read from WildStar64.exe
         }
     }
 }

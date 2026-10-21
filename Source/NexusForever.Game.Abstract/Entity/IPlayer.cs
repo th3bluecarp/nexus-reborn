@@ -9,6 +9,7 @@ using NexusForever.Game.Abstract.Housing;
 using NexusForever.Game.Abstract.Map;
 using NexusForever.Game.Abstract.Map.Lock;
 using NexusForever.Game.Abstract.Pvp;
+using NexusForever.Game.Abstract.Trade;
 using NexusForever.Game.Abstract.Reputation;
 using NexusForever.Game.Static.Entity;
 using NexusForever.Game.Static.PVP;
@@ -117,6 +118,11 @@ namespace NexusForever.Game.Abstract.Entity
         /// Duel challenges are refused while set (Ignore Duel Requests option).
         /// </summary>
         bool IgnoreDuelRequests { get; set; }
+
+        /// <summary>
+        /// Trade this <see cref="IPlayer"/> is in or has been invited to.
+        /// </summary>
+        IPlayerTrade Trade { get; set; }
 
         /// <summary>
         /// Combat log entry kinds the client asked not to be sent.

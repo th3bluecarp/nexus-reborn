@@ -10,8 +10,8 @@ namespace NexusForever.Network.World.Message.Model
 
         public void Write(GamePacketWriter writer)
         {
+            writer.Write(UnitId); // unit id first, read from WildStar64.exe 0x140098280
             writer.Write(Credits);
-            writer.Write(UnitId);
         }
     }
 }

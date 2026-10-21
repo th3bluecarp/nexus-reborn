@@ -19,6 +19,7 @@ using NexusForever.Game.Abstract.Map.Lock;
 using NexusForever.Game.Abstract.Matching.Match;
 using NexusForever.Game.Abstract.Matching.Queue;
 using NexusForever.Game.Abstract.Pvp;
+using NexusForever.Game.Abstract.Trade;
 using NexusForever.Game.Abstract.Reputation;
 using NexusForever.Game.Abstract.Spell;
 using NexusForever.Game.Achievement;
@@ -265,6 +266,7 @@ namespace NexusForever.Game.Entity
 
         public IVendorInfo SelectedVendorInfo { get; set; } // TODO unset this when too far away from vendor
         public IDuel Duel { get; set; }
+        public IPlayerTrade Trade { get; set; }
         public bool IgnoreDuelRequests { get; set; }
         public CombatLogOptions CombatLogDisables { get; set; }
         public bool CombatLogDisableOthers { get; set; }
@@ -503,6 +505,10 @@ namespace NexusForever.Game.Entity
             // the challenger's update drives a duel
             if (Duel?.Challenger == this)
                 Duel.Update(lastTick);
+
+            // and the initiator's a trade
+            if (Trade?.Initiator == this)
+                Trade.Update(lastTick);
 
             TitleManager.Update(lastTick);
             SpellManager.Update(lastTick);
@@ -1573,6 +1579,7 @@ namespace NexusForever.Game.Entity
         private void DestroyDependents()
         {
             Duel?.Cancel();
+            Trade?.Abort();
 
             // vehicle will be removed if player is the last passenger
             Dismount();
