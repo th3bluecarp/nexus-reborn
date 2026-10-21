@@ -4,6 +4,8 @@ Newest first. "Live" means running on our test server.
 
 ## 2026-10-21
 
+- **Salvage tables rebuilt from 190 archived items** (f820467e, was 61), so the odds per level band are steadier.
+- **Fewer ignored messages** (05ff6ad2): answering or dismissing a communicator call and the CREDD exchange check at login are now handled (both showed as unhandled every session).
 - **Runes** (6774d20c): armor and weapons (item level 5 and up) now have rune slots, using the game's own rules for how many and which elements (your current gear gets its slots the next time you log in). The Runecrafting window works: put runes in matching slots (Fusion runes fit anywhere), take them out (optionally keeping the rune), add slots and change empty slots' elements, all free for now. Rune stats count while the gear is equipped.
 - **Placed vehicles can be boarded** (08456a7b): clicking a vehicle that stands in the world (Farside battle suits, the Rage Logic shiphand speeders) puts you in the pilot seat; getting out leaves it where it was for the next use.
 - **Wake Here has its 30 minute cooldown** (dce92dff). It was free and unlimited; it is still free, but after using it the holocrypt (or a service token) is the way back for 30 minutes, as in late retail. The death window shows the time left.
