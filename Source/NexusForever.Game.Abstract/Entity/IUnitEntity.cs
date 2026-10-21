@@ -172,6 +172,21 @@ namespace NexusForever.Game.Abstract.Entity
         float GetPersonalModifier(uint category, uint otherGuid);
 
         /// <summary>
+        /// ModifySpell and ModifySpellEffect effects active on this unit, they change the unit's own spells.
+        /// </summary>
+        IEnumerable<GameTable.Model.Spell4EffectsEntry> SpellModifiers { get; }
+
+        /// <summary>
+        /// Add a ModifySpell or ModifySpellEffect effect, until removed.
+        /// </summary>
+        void AddSpellModifier(uint effectId, uint casterGuid, GameTable.Model.Spell4EffectsEntry entry);
+
+        /// <summary>
+        /// Remove the modifier added by supplied spell effect and caster.
+        /// </summary>
+        void RemoveSpellModifier(uint effectId, uint casterGuid);
+
+        /// <summary>
         /// Make this unit immune to effects of supplied type from other units, until removed.
         /// </summary>
         void AddEffectImmunity(uint effectId, uint casterGuid, SpellEffectType type);

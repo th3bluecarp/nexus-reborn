@@ -723,6 +723,30 @@ namespace NexusForever.Game.Entity
             return multiplier;
         }
 
+        private readonly List<(uint EffectId, uint CasterGuid, Spell4EffectsEntry Entry)> spellModifiers = [];
+
+        /// <summary>
+        /// ModifySpell and ModifySpellEffect effects active on this unit, they change the unit's own spells.
+        /// </summary>
+        public IEnumerable<Spell4EffectsEntry> SpellModifiers => spellModifiers.Select(m => m.Entry);
+
+        /// <summary>
+        /// Add a ModifySpell or ModifySpellEffect effect, until removed.
+        /// </summary>
+        public void AddSpellModifier(uint effectId, uint casterGuid, Spell4EffectsEntry entry)
+        {
+            RemoveSpellModifier(effectId, casterGuid);
+            spellModifiers.Add((effectId, casterGuid, entry));
+        }
+
+        /// <summary>
+        /// Remove the modifier added by supplied spell effect and caster.
+        /// </summary>
+        public void RemoveSpellModifier(uint effectId, uint casterGuid)
+        {
+            spellModifiers.RemoveAll(m => m.EffectId == effectId && m.CasterGuid == casterGuid);
+        }
+
         private readonly List<(uint EffectId, uint CasterGuid, SpellEffectType Type)> effectImmunities = [];
 
         /// <summary>
