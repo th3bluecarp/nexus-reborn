@@ -4,6 +4,9 @@ Newest first. "Live" means running on our test server.
 
 ## 2026-10-21
 
+- **Commodity Exchange** (603a7621): run by the server as an unlimited market. Buy Now and Sell Now work for any stackable item at server prices (vendor price to buy, a fifth of it to sell, never less than a vendor pays).
+- **Salvaging gear gives materials** (88cbe017): salvage tables for every armor, weapon and gadget type and level, rebuilt from what players recorded on Jabbithole (for example light armor at levels 5 to 10: Canvas Cloth 41 percent, Rough Quartz Power Core 15, Nano Tech Parts 13, rune signs and fragments).
+- **Vendor discount buffs** (3aa0cb44) lower prices and raise what vendors pay.
 - **Trading between players** (457d3d1c): invite, offer up to 8 items and credits, both commit and the swap happens. Several trade message layouts were wrong and are fixed from the game client.
 - **Galactic Archive** (415884ad): the journal's lore articles now unlock and are saved. Articles the game unlocks itself (talking to certain creatures, archive links) are recorded, and entries tied to finishing a quest unlock when you finish it, including quests you finished before today.
 - **Explorer missions** listen to the game's own "node reached" reports (e97ac111), on top of the server's distance check.

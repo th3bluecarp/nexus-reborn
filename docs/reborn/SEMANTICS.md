@@ -132,6 +132,8 @@ Confidence: **High** = consistent across all the data we checked and no counter 
 | repair cost | exact client formula: 0.25 x missing fraction x item value, max durability = power level + 20 (armor and weapons only) | Item.GetRepairCost (WildStar64.exe 0x1403b54a0) |
 | character rename | free, retail needed a rename token; characters that own a house are refused because houses are found by owner name | ClientCharacterRenameHandler |
 | duel | 30 s to accept, 5 s countdown, ends at 1 health, 50 m area with 10 s to come back, 40 m challenge range | Duel |
+| commodity exchange | NPC market with unlimited stock; ask = vendor buy price in credits (item value without one), bid = a fifth of the ask, never below the vendor sell price; limit orders that do not cross are refused | NpcCommodityMarket |
+| salvage yields | one item per salvage from the pooled Jabbithole shares of its class and level band; neighbouring bands weigh 0.3 and 0.05, other classes 0.3; materials mapped to the class's material of the same tier | tools/build_salvage.py |
 | trade | 8 items per side, 30 s to accept the invite, 30 m range; items move as they are (durability and charges kept) | PlayerTrade |
 | Galactic Archive unlock rules | type 2 = quest completion (Object00-05 quest ids, High: the quest ids and article topics match). Types 0 and 1 (234 and 208 rules, Object00 values such as 5, 1049, 1385) match no table we checked and are not applied | ArchiveManager |
 
