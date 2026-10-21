@@ -1734,9 +1734,10 @@ namespace NexusForever.Game.Entity
         /// </summary>
         public override bool CanAttack(IUnitEntity target)
         {
-            if (target is IPlayer player)
+            // players only fight players when both are flagged for PvP
+            if (target is IPlayer player && player != this)
             {
-                if (player.PvPFlags == PvPFlag.Disabled)
+                if (player.PvPFlags == PvPFlag.Disabled || PvPFlags == PvPFlag.Disabled)
                     return false;
             }
 

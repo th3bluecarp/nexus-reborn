@@ -30,6 +30,11 @@ namespace NexusForever.Game.Abstract.Map.Lock
         IMapLock GetMatchLock(Guid guid, uint worldId);
 
         /// <summary>
+        /// Remove the solo <see cref="IMapLock"/>s of the supplied character, except the one for the world it is on, so the next entry starts a fresh instance.
+        /// </summary>
+        uint ResetSoloLocks(Identity identity, uint currentWorldId);
+
+        /// <summary>
         /// Return <see cref="IResidenceMapLock"/> for supplied <see cref="IResidence"/>.
         /// </summary>
         IResidenceMapLock GetResidenceLock(IResidence residence);

@@ -94,6 +94,27 @@ namespace NexusForever.Game.Map.Lock
         }
 
         /// <summary>
+        /// Remove the solo <see cref="IMapLock"/>s of the supplied character, except the one for the world it is on, so the next entry starts a fresh instance.
+        /// </summary>
+        public uint ResetSoloLocks(Identity identity, uint currentWorldId)
+        {
+            if (!soloLocks.TryGetValue(identity, out IMapLockCollection mapLockCollection))
+                return 0u;
+
+            uint count = 0u;
+            foreach (uint worldId in mapLockCollection
+                .Select(l => l.WorldId)
+                .Where(w => w != currentWorldId)
+                .ToList())
+            {
+                mapLockCollection.RemoveMapLock(worldId);
+                count++;
+            }
+
+            return count;
+        }
+
+        /// <summary>
         /// Return <see cref="IMapLock"/> for supplied match guid and world id.
         /// </summary>
         public IMapLock GetMatchLock(Guid guid, uint worldId)

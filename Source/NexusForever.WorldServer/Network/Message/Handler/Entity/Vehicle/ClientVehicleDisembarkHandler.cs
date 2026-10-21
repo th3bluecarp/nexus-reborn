@@ -14,8 +14,16 @@ namespace NexusForever.WorldServer.Network.Message.Handler.Entity.Vehicle
             if (session.Player.PlatformGuid == null)
                 return;
 
+            bool mounted = false;
             foreach (ISpell spell in session.Player.GetSpellsByEffect(SpellEffectType.SummonMount))
+            {
                 spell.Finish();
+                mounted = true;
+            }
+
+            // summoned and quest vehicles are not mount spells, leave the seat directly
+            if (!mounted)
+                session.Player.Dismount();
         }
     }
 }
