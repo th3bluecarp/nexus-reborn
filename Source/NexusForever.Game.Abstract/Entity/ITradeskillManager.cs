@@ -31,5 +31,10 @@ namespace NexusForever.Game.Abstract.Entity
         /// Invoked when the player destroys a creature, gathering tradeskills earn xp from harvest nodes.
         /// </summary>
         void OnKill(uint creatureId);
+
+        /// <summary>
+        /// Add xp to a learned tradeskill (quest TradeSkillXp rewards).
+        /// </summary>
+        void AddXp(TradeskillType type, uint xp);
     }
 }

@@ -7,6 +7,7 @@ using NexusForever.Database.Character.Model;
 using NexusForever.Game.Abstract.Entity;
 using NexusForever.Game.Abstract.Quest;
 using NexusForever.Game.Static.Achievement;
+using NexusForever.Game.Static.Crafting;
 using NexusForever.Game.Static.Entity;
 using NexusForever.Game.Static.Quest;
 using NexusForever.GameTable.Model;
@@ -489,6 +490,9 @@ namespace NexusForever.Game.Quest
                     break;
                 case QuestRewardType.Reputation:
                     player.ReputationManager.UpdateReputation((NexusForever.Game.Static.Reputation.Faction)entry.ObjectId, entry.ObjectAmount);
+                    break;
+                case QuestRewardType.TradeSkillXp:
+                    player.TradeskillManager.AddXp((TradeskillType)entry.ObjectId, entry.ObjectAmount);
                     break;
                 case QuestRewardType.AccountCurrency:
                     player.Account.CurrencyManager.CurrencyAddAmount((NexusForever.Game.Static.AccountInventory.AccountCurrencyType)entry.ObjectId, entry.ObjectAmount);

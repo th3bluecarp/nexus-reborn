@@ -221,6 +221,19 @@ namespace NexusForever.Game.Entity
         /// <remarks>
         /// TradeskillTier has no harvest xp column, the tier CraftXp stands in for it.
         /// </remarks>
+        /// <summary>
+        /// Add xp to a learned tradeskill (quest TradeSkillXp rewards). Unlearned tradeskills get nothing.
+        /// </summary>
+        public void AddXp(TradeskillType type, uint xp)
+        {
+            if (xp == 0u || !tradeskills.TryGetValue(type, out Tradeskill tradeskill))
+                return;
+
+            tradeskill.Xp     += xp;
+            tradeskill.IsDirty = true;
+            SendUpdate(type, tradeskill);
+        }
+
         public void OnKill(uint creatureId)
         {
             Creature2Entry creature = GameTableManager.Instance.Creature2.GetEntry(creatureId);
