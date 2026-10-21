@@ -4,6 +4,7 @@ Newest first. "Live" means running on our test server.
 
 ## 2026-10-21
 
+- **Four more prerequisite checks** (8a836a5c): riding a vehicle, being alive or dead, carrying a number of an item, and path level now gate NPCs, quests and spells the way the data says (they were always treated as met).
 - **Salvage tables rebuilt from 190 archived items** (f820467e, was 61), so the odds per level band are steadier.
 - **Fewer ignored messages** (05ff6ad2): answering or dismissing a communicator call and the CREDD exchange check at login are now handled (both showed as unhandled every session).
 - **Runes** (6774d20c): armor and weapons (item level 5 and up) now have rune slots, using the game's own rules for how many and which elements (your current gear gets its slots the next time you log in). The Runecrafting window works: put runes in matching slots (Fusion runes fit anywhere), take them out (optionally keeping the rune), add slots and change empty slots' elements, all free for now. Rune stats count while the gear is equipped.

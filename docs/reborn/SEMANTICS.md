@@ -21,6 +21,10 @@ Confidence: **High** = consistent across all the data we checked and no counter 
 | Inventory (246) | Value an Item2 id, NotEqual = the player does not carry it | High | 793 uses, all NotEqual, Value an item in 791 (hoverboards, bags, titles) | ObjectId on 60 rows unknown, ignored | PrerequisiteCheckInventory |
 | TradeSkillProfession (19) | ObjectId a TradeskillTier, 1 when that tier of its tradeskill is reached | Medium | 268 uses, ObjectIds are tier ids, Value 0 with GreaterThan/LessThanOrEqual or 1 with Equal | could mean the tier is the current one, not reached | PrerequisiteCheckTradeskillProfession |
 | EpisodeState (9) | Value is a QuestState over the episode's quests (3 = all completed) | Medium | 31 of 34 uses are Value 3 | how "accepted" is defined for an episode is a guess | | PrerequisiteCheckEpisodeState |
+| Vehicle (83) | ObjectId the vehicle creature (0 any vehicle), Equal = riding it, NotEqual = not | Medium | 44 uses, ObjectIds are vehicle creatures (Exile Battle Suit 28319), Value always -1 | | PrerequisiteCheckVehicle |
+| DeadState (12) | Value 0 alive, 1 dead, numeric comparison | Medium | 140 of 169 uses are Equal 0 (living players only) | ObjectId set on a few uses, ignored | PrerequisiteCheckDeadState |
+| ItemQuantity (51) | count of item ObjectId carried compared with Value | Medium | ObjectIds are items, values 0 to 4 with all comparisons | may count bank or equipped items too | PrerequisiteCheckItemQuantity |
+| PathLevel (91) | active path level compared with Value | Medium | ObjectId 0, values 1 to 24 with GreaterThan | might be a specific path when ObjectId is set | PrerequisiteCheckPathLevel |
 | Spell59 | **not implemented**: ObjectId a Spell4 id (253 of 260), Value 1 to 5 with numeric comparisons, probably a stack count; no way to count stacks yet | | | | |
 | Unknown47, ChallengeRequirement (69), ChallengeLocked (74), PlayerPathMission (54), PathMissionRequirement (67) | **not implemented** | | Value is a spell / challenge / mission id | several readings fit equally well | | unhandled on purpose |
 
