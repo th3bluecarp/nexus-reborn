@@ -74,7 +74,8 @@ namespace NexusForever.Game.Loot.Generate
 
         /// <summary>
         /// Creatures with no recorded drop table (Jabbithole saw no kills, for example the Northern Wilds Dominion Scout) use the table
-        /// of a creature built from the same template, same Creature2 description and faction (the scout borrows from the Gunner).
+        /// of a creature built from the same template, same Creature2 description and faction (the scout borrows from the Gunner),
+        /// else of a creature of the same race and archetype at about the same level.
         /// </summary>
         private int BorrowSiblingLoot()
         {
@@ -93,12 +94,40 @@ namespace NexusForever.Game.Loot.Generate
             }
 
             int borrowed = 0;
+            var stillMissing = new List<uint>();
             foreach ((uint id, (string, uint) key) in missing)
             {
                 if (!donors.TryGetValue(key, out List<ILootGroup> groups))
+                {
+                    stillMissing.Add(id);
                     continue;
+                }
 
                 entityLoot[id] = groups;
+                borrowed++;
+            }
+
+            // no sibling: a creature of the same race (and archetype when there is one) within 10 levels, so a Dominion soldier drops
+            // what a Dominion soldier of about its level drops. Critters keep dropping nothing, as most did in retail.
+            ILookup<uint, Creature2Entry> withLoot = GameTableManager.Instance.Creature2.Entries
+                .Where(c => c.UnitRaceId != 0u && entityLoot.ContainsKey(c.Id))
+                .ToLookup(c => c.UnitRaceId);
+            foreach (uint id in stillMissing)
+            {
+                Creature2Entry creature = GameTableManager.Instance.Creature2.GetEntry(id);
+                if (creature == null || creature.UnitRaceId == 0u || creature.Description.Contains("Critter", StringComparison.OrdinalIgnoreCase))
+                    continue;
+
+                Creature2Entry donor = withLoot[creature.UnitRaceId]
+                    .Where(c => Math.Abs((int)c.MinLevel - (int)creature.MinLevel) <= 10)
+                    .OrderBy(c => c.Creature2ArcheTypeId == creature.Creature2ArcheTypeId ? 0 : 1)
+                    .ThenBy(c => Math.Abs((int)c.MinLevel - (int)creature.MinLevel))
+                    .ThenBy(c => c.Id)
+                    .FirstOrDefault();
+                if (donor == null)
+                    continue;
+
+                entityLoot[id] = entityLoot[donor.Id];
                 borrowed++;
             }
 
