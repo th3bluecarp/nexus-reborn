@@ -8,6 +8,7 @@ using NexusForever.GameTable.Text.Filter;
 using NexusForever.GameTable.Text.Static;
 using NexusForever.Network.Internal;
 using NexusForever.Network.Internal.Message.Chat;
+using NexusForever.Network.Message;
 using NexusForever.Network.Session;
 using NexusForever.Network.World.Message.Model;
 using NexusForever.Network.World.Message.Model.Chat;
@@ -18,6 +19,15 @@ namespace NexusForever.Game.Chat
     public sealed class GlobalChatManager : Singleton<GlobalChatManager>, IGlobalChatManager
     {
         private const float LocalChatDistance = 155f;
+
+        private bool IsWorldChat(ChatChannelType type) => type
+            is ChatChannelType.Zone
+            or ChatChannelType.ZonePvP
+            or ChatChannelType.ZoneGerman
+            or ChatChannelType.ZoneFrench
+            or ChatChannelType.LFG
+            or ChatChannelType.Class
+            or ChatChannelType.GuildRecruit;
 
         private bool IsLocalChat(ChatChannelType type) => type
             is ChatChannelType.Say
@@ -44,17 +54,20 @@ namespace NexusForever.Game.Chat
         private readonly IChatFormatManager chatFormatManager;
         private readonly ITextFilterManager textFilterManager;
         private readonly IInternalMessagePublisher messagePublisher;
+        private readonly IPlayerManager playerManager;
 
         public GlobalChatManager(
             ILogger<GlobalChatManager> log,
             IChatFormatManager chatFormatManager,
             ITextFilterManager textFilterManager,
-            IInternalMessagePublisher messagePublisher)
+            IInternalMessagePublisher messagePublisher,
+            IPlayerManager playerManager)
         {
             this.log               = log;
             this.chatFormatManager = chatFormatManager;
             this.textFilterManager = textFilterManager;
             this.messagePublisher  = messagePublisher;
+            this.playerManager     = playerManager;
         }
 
         #endregion
@@ -64,7 +77,7 @@ namespace NexusForever.Game.Chat
         /// </summary>
         public void HandleClientChat(IPlayer player, ClientChat chat)
         {
-            if (IsLocalChat(chat.Channel.ChatChannelId))
+            if (IsLocalChat(chat.Channel.ChatChannelId) || IsWorldChat(chat.Channel.ChatChannelId))
                 HandleLocalChat(player, chat);
             else if (IsInternalChat(chat.Channel.ChatChannelId))
                 HandleChatServerChat(player, chat);
@@ -114,8 +127,33 @@ namespace NexusForever.Game.Chat
                 GM       = player.Account.RbacManager.HasPermission(Permission.GMFlag)
             };
 
-            player.Talk(builder, LocalChatDistance, player);
+            if (IsWorldChat(chat.Channel.ChatChannelId))
+            {
+                IWritable message = builder.Build();
+                foreach (IPlayer recipient in GetWorldChatRecipients(player, chat.Channel.ChatChannelId))
+                    recipient.Session.EnqueueMessageEncrypted(message);
+            }
+            else
+                player.Talk(builder, LocalChatDistance, player);
+
             return ChatResult.Ok;
+        }
+
+        /// <summary>
+        /// Zone, LFG, class and guild recruitment channels, handled on this world server: zone channels reach every player on
+        /// the same map (continent), LFG and guild recruitment every online player, class chat every player of the same class.
+        /// </summary>
+        private IEnumerable<IPlayer> GetWorldChatRecipients(IPlayer sender, ChatChannelType type)
+        {
+            return playerManager
+                .Where(p => p != sender && p.Session != null)
+                .Where(p => type switch
+                {
+                    ChatChannelType.Class => p.Class == sender.Class,
+                    ChatChannelType.LFG or ChatChannelType.GuildRecruit => true,
+                    _ => p.Map != null && p.Map == sender.Map
+                })
+                .ToList();
         }
 
         private void HandleChatServerChat(IPlayer player, ClientChat chat)
