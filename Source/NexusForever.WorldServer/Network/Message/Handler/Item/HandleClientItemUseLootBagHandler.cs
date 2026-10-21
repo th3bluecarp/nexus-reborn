@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using NexusForever.Game.Abstract.Entity;
+using NexusForever.Game.Static.Entity;
 using NexusForever.GameTable;
 using NexusForever.GameTable.Model;
 using NexusForever.Network.Message;
@@ -31,7 +32,8 @@ namespace NexusForever.WorldServer.Network.Message.Handler.Item
 
             if (!session.Player.Map.LootManager.HasItemLoot(item.Id))
             {
-                uint? salvageLootId = GetSalvageLootId(item);
+                // only bag items: deleting equipped gear this way would leave its stats on the player
+                uint? salvageLootId = item.Location == InventoryLocation.Inventory ? GetSalvageLootId(item) : null;
                 if (salvageLootId != null && session.Player.Map.LootManager.HasItemLoot(salvageLootId.Value))
                 {
                     session.Player.Inventory.ItemDelete(useLootBag.ItemLocation, ItemUpdateReason.Salvage);

@@ -127,6 +127,10 @@ namespace NexusForever.WorldServer.Network.Message.Handler.Entity
             if (!session.Player.CanMount() || session.Player.Map == null)
                 return true;
 
+            // the client only offers the interaction close by, a far click would be a free teleport
+            if (System.Numerics.Vector3.Distance(session.Player.Position, worldEntity.Position) > 15f)
+                return true;
+
             var vehicle = entityFactory.CreateEntity<IVehicleEntity>();
             vehicle.Initialise(worldEntity.CreatureInfo, worldEntity.CreatureInfo.Entry.UnitVehicleId, 0u);
             vehicle.Rotation = worldEntity.Rotation;

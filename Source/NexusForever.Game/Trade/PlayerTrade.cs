@@ -25,6 +25,7 @@ namespace NexusForever.Game.Trade
         private class Offer
         {
             public List<ulong> Items { get; } = [];
+            public Dictionary<ulong, uint> Counts { get; } = [];
             public ulong Credits { get; set; }
             public bool Committed { get; set; }
         }
@@ -98,6 +99,7 @@ namespace NexusForever.Game.Trade
             }
 
             offer.Items.Add(itemGuid);
+            offer.Counts[itemGuid] = item.StackCount;
             ClearCommits();
 
             var update = new ServerP2PTradeUpdateItem
@@ -211,8 +213,9 @@ namespace NexusForever.Game.Trade
             }
 
             // everything offered must still be there, paid for and fit in the other's bags
-            if (initiatorItems.Any(i => i == null || i.Location != InventoryLocation.Inventory)
-                || targetItems.Any(i => i == null || i.Location != InventoryLocation.Inventory)
+            // an offered stack must still be the size that was shown (split after offering)
+            if (initiatorItems.Any(i => i == null || i.Location != InventoryLocation.Inventory || i.StackCount != initiatorOffer.Counts[i.Guid])
+                || targetItems.Any(i => i == null || i.Location != InventoryLocation.Inventory || i.StackCount != targetOffer.Counts[i.Guid])
                 || !Initiator.CurrencyManager.CanAfford(CurrencyType.Credits, initiatorOffer.Credits)
                 || !Target.CurrencyManager.CanAfford(CurrencyType.Credits, targetOffer.Credits)
                 || Target.Inventory.GetInventorySlotsRemaining(InventoryLocation.Inventory) + (uint)targetItems.Count < (uint)initiatorItems.Count

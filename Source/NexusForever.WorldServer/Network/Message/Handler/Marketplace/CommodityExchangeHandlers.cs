@@ -23,12 +23,13 @@ namespace NexusForever.WorldServer.Network.Message.Handler.Marketplace
 
         public static (ulong Ask, ulong Bid)? GetQuote(IItemInfo info)
         {
-            if (info == null || !info.IsStackable())
+            // only stackables with a plain credit price are traded, so items priced in other currencies or never sold stay out
+            if (info == null || !info.IsStackable() || info.GetVendorBuyCurrency(0) != CurrencyType.Credits || info.Entry.CurrencyTypeId[0] != CurrencyType.Credits)
                 return null;
 
-            ulong ask = info.GetVendorBuyCurrency(0) == CurrencyType.Credits ? info.GetVendorBuyAmount(0) : 0ul;
+            ulong ask = info.GetVendorBuyAmount(0);
             if (ask == 0ul)
-                ask = (ulong)Math.Max(1f, info.GetItemValue());
+                return null;
 
             ulong vendorSell = info.GetVendorSellCurrency(0) == CurrencyType.Credits ? info.GetVendorSellAmount(0) : 0ul;
             ulong bid = Math.Max(Math.Max(ask / 5ul, vendorSell), 1ul);
@@ -101,7 +102,7 @@ namespace NexusForever.WorldServer.Network.Message.Handler.Marketplace
             GenericError Fill(out ulong cost)
             {
                 cost = 0ul;
-                if (order.Quantity == 0u)
+                if (order.Quantity == 0u || order.Quantity > NpcCommodityMarket.ListedCount)
                     return GenericError.AuctionOrderTooBig;
 
                 IItemInfo info = itemManager.GetItemInfo(order.Item2Id);

@@ -48,7 +48,7 @@ namespace NexusForever.WorldServer.Network.Message.Handler.Crafting
 
         public static IItem GetItem(IPlayer player, ulong guid)
         {
-            IItem item = player.Inventory.GetItem(guid);
+            IItem item = player?.Inventory.GetItem(guid);
             return item != null && item.Location is InventoryLocation.Inventory or InventoryLocation.Equipped ? item : null;
         }
 
@@ -165,7 +165,7 @@ namespace NexusForever.WorldServer.Network.Message.Handler.Crafting
             }
 
             int slot = (int)clear.RuneSlotIndex;
-            if (slot >= item.RuneSlotCount || item.Runes[slot] == 0u)
+            if (slot < 0 || slot >= item.RuneSlotCount || item.Runes[slot] == 0u)
             {
                 Runecrafting.SendResult(session, TradeskillResult.InvalidSlot);
                 return;
@@ -201,7 +201,7 @@ namespace NexusForever.WorldServer.Network.Message.Handler.Crafting
             }
 
             int slot = (int)reroll.SlotIndex;
-            if (slot >= item.RuneSlotCount)
+            if (slot < 0 || slot >= item.RuneSlotCount)
             {
                 Runecrafting.SendResult(session, TradeskillResult.InvalidSlot);
                 return;

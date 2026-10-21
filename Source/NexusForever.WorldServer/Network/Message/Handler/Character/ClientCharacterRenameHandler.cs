@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using NexusForever.Database;
@@ -108,7 +109,14 @@ namespace NexusForever.WorldServer.Network.Message.Handler.Character
 
                 character.Name = name;
                 characterManager.DeleteCharacter(character.Id, oldName);
-                characterManager.AddCharacter(character);
+                try
+                {
+                    characterManager.AddCharacter(character);
+                }
+                catch (ArgumentException)
+                {
+                    // another character took the name at the same moment, the database already has it, the cache keeps the id only
+                }
 
                 session.EnqueueMessageEncrypted(new ServerCharacterRenameResult
                 {

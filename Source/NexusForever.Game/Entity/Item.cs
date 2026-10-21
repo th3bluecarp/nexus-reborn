@@ -376,7 +376,7 @@ namespace NexusForever.Game.Entity
         {
             if (Info?.Entry == null || Info.Entry.Item2FamilyId is not (1u or 2u))
                 return false;
-            if (Info.Entry.PowerLevel < GameTableManager.Instance.GameFormula.GetEntry(1024).Dataint01)
+            if (Info.Entry.PowerLevel < (GameTableManager.Instance.GameFormula.GetEntry(1024)?.Dataint01 ?? 5u))
                 return false;
 
             ItemRuneInstanceEntry instance = Info.Entry.ItemRuneInstanceId != 0u ? GameTableManager.Instance.ItemRuneInstance.GetEntry(Info.Entry.ItemRuneInstanceId) : null;
