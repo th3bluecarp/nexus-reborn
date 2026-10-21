@@ -1295,6 +1295,9 @@ namespace NexusForever.Game.Entity
                 if (!includeSelf && (Guid == entity.Guid || ControllerGuid == entity.Guid))
                     continue;
 
+                if (message is ServerCombatLog combatLog && player.IsCombatLogFiltered(combatLog, this))
+                    continue;
+
                 player.Session.EnqueueMessageEncrypted(message);
             }
         }

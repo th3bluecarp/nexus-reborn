@@ -14,6 +14,7 @@ using NexusForever.Game.Static.Entity;
 using NexusForever.Game.Static.PVP;
 using NexusForever.Game.Static.Setting;
 using NexusForever.Game.Static.Option;
+using NexusForever.Network.World.Message.Model;
 using NexusForever.GameTable.Model;
 using NexusForever.Network.Session;
 using NexusForever.Network.World.Message.Static;
@@ -116,6 +117,21 @@ namespace NexusForever.Game.Abstract.Entity
         /// Duel challenges are refused while set (Ignore Duel Requests option).
         /// </summary>
         bool IgnoreDuelRequests { get; set; }
+
+        /// <summary>
+        /// Combat log entry kinds the client asked not to be sent.
+        /// </summary>
+        CombatLogOptions CombatLogDisables { get; set; }
+
+        /// <summary>
+        /// Combat log entries from other players are not sent while set.
+        /// </summary>
+        bool CombatLogDisableOthers { get; set; }
+
+        /// <summary>
+        /// Returns if the supplied combat log entry broadcast by the supplied entity is filtered out by this player's combat log options.
+        /// </summary>
+        bool IsCombatLogFiltered(ServerCombatLog combatLog, IWorldEntity source);
 
         /// <summary>
         /// Save <see cref="IPlayer"/> to database, invoke supplied <see cref="Action"/> once save is complete.

@@ -40,6 +40,7 @@ using NexusForever.Game.Static.Quest;
 using NexusForever.Game.Static.RBAC;
 using NexusForever.Game.Static.Reputation;
 using NexusForever.Game.Static.Setting;
+using NexusForever.Game.Static.Combat;
 using NexusForever.Game.Static.Option;
 using NexusForever.Game.Static.Spell;
 using NexusForever.GameTable;
@@ -265,6 +266,42 @@ namespace NexusForever.Game.Entity
         public IVendorInfo SelectedVendorInfo { get; set; } // TODO unset this when too far away from vendor
         public IDuel Duel { get; set; }
         public bool IgnoreDuelRequests { get; set; }
+        public CombatLogOptions CombatLogDisables { get; set; }
+        public bool CombatLogDisableOthers { get; set; }
+
+        /// <summary>
+        /// Returns if the supplied combat log entry broadcast by the supplied entity is filtered out by this player's combat log options.
+        /// </summary>
+        public bool IsCombatLogFiltered(ServerCombatLog combatLog, IWorldEntity source)
+        {
+            if (CombatLogDisableOthers && source is IPlayer other && other != this)
+                return true;
+
+            if (CombatLogDisables == 0 || combatLog?.CombatLog == null)
+                return false;
+
+            CombatLogOptions option = combatLog.CombatLog.Type switch
+            {
+                CombatLogType.Absorption or CombatLogType.HealingAbsorption => CombatLogOptions.DisableAbsorption,
+                CombatLogType.CCState or CombatLogType.CCStateBreak => CombatLogOptions.DisableCCState,
+                CombatLogType.Damage or CombatLogType.DamageShields or CombatLogType.Reflect or CombatLogType.MultiHit
+                    or CombatLogType.MultiHitShields or CombatLogType.Lifesteal => CombatLogOptions.DisableDamage,
+                CombatLogType.Deflect => CombatLogOptions.DisableDeflect,
+                CombatLogType.DelayDeath => CombatLogOptions.DisableDelayDeath,
+                CombatLogType.Dispel => CombatLogOptions.DisableDispel,
+                CombatLogType.FallingDamage => CombatLogOptions.DisableFallingDamage,
+                CombatLogType.Heal or CombatLogType.MultiHeal => CombatLogOptions.DisableHeal,
+                CombatLogType.Immune => CombatLogOptions.DisableImmunity,
+                CombatLogType.Interrupted => CombatLogOptions.DisableInterrupted,
+                CombatLogType.ModifyInterruptArmor => CombatLogOptions.DisableInterruptArmor,
+                CombatLogType.Transference => CombatLogOptions.DisableTransference,
+                CombatLogType.VitalModifier => CombatLogOptions.DisableVitalModifier,
+                CombatLogType.Death => CombatLogOptions.DisableDeath,
+                _ => 0
+            };
+
+            return option != 0 && (CombatLogDisables & option) != 0;
+        }
 
         private bool forceSave;
         private UpdateTimer saveTimer = new(SaveDuration);
