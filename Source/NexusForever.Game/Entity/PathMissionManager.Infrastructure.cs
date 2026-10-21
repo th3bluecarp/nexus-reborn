@@ -24,6 +24,22 @@ namespace NexusForever.Game.Entity
 
         private readonly Dictionary<uint, uint> carriedResources = [];
 
+        /// <summary>
+        /// State of a settler infrastructure project as the InfrastructureState prerequisite reads it: 2 built, 1 under way, 0 not started.
+        /// </summary>
+        /// <remarks>
+        /// Retail shared projects between all settlers of a zone; here it is the player's own project mission (see docs/reborn/SEMANTICS.md).
+        /// </remarks>
+        public uint GetInfrastructureState(uint infrastructureId)
+        {
+            PathMission mission = missions.Values.FirstOrDefault(m => m.Kind == MissionKind.Infrastructure && m.Objects.Length > 0 && m.Objects[0] == infrastructureId);
+            if (mission == null)
+                return 0u;
+            if (mission.IsComplete)
+                return 2u;
+            return mission.Progress > 0u || mission.State == Static.PlayerPath.PathMissionState.Started ? 1u : 0u;
+        }
+
         private static uint[] ResourceCreatures(PathSettlerInfrastructureEntry infrastructure)
         {
             return new[] { infrastructure.Creature2IdResource00, infrastructure.Creature2IdResource01, infrastructure.Creature2IdResource02 }

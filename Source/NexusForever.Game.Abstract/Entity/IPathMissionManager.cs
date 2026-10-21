@@ -75,6 +75,11 @@ namespace NexusForever.Game.Abstract.Entity
         bool OpenSettlerDepot(IWorldEntity entity);
 
         /// <summary>
+        /// State of a settler infrastructure project: 2 built, 1 under way, 0 not started.
+        /// </summary>
+        uint GetInfrastructureState(uint infrastructureId);
+
+        /// <summary>
         /// Returns if using the creature gathers a settler hub resource for the player.
         /// </summary>
         bool IsSettlerResource(uint creatureId);
