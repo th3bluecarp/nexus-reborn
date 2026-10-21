@@ -57,6 +57,7 @@ namespace NexusForever.Game.Spell.Effect.Handler
             }
 
             target.TakeDamage(executionContext.Spell.Caster, info.Damage);
+            damageCalculator.ApplyDamageReactions(executionContext, target, info.Damage);
 
             if (executionContext.Spell.Caster is IPlayer player)
                 player.Map.PublicEventManager.UpdateStat(player, PublicEventStat.Damage, info.Damage.AdjustedDamage);

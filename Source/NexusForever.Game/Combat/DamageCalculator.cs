@@ -69,9 +69,12 @@ namespace NexusForever.Game.Combat
 
             damage = GetDamageAfterPersonalModifiers(executionContext.Spell.Caster, victim, info.Entry.DamageType, damage);
 
-            damage = GetDamageAfterArmorMitigation(victim, info.Entry.DamageType, damage);
+            damage = GetDamageAfterArmorMitigation(executionContext.Spell.Caster, victim, info.Entry.DamageType, damage);
 
-            // TODO: Add in other attacking modifiers like Armor Pierce, Strikethrough, Multi-Hit, etc.
+            // multi-hit: a second strike for a share of the damage, folded into this hit
+            float multiHitChance = GetRatingPercentMod(Property.RatingMultiHitChance, executionContext.Spell.Caster);
+            if (multiHitChance > 0f && IsSuccessfulChance(multiHitChance))
+                damage += (uint)Math.Round(damage * GetRatingPercentMod(Property.RatingMultiHitAmount, executionContext.Spell.Caster));
 
             if (CalculateCrit(ref damage, executionContext.Spell.Caster, victim))
                 damageDescription.CombatResult = CombatResult.Critical;
@@ -79,8 +82,7 @@ namespace NexusForever.Game.Combat
             uint preGlanceDamage = damage;
             if (CalculateGlance(ref damage, executionContext.Spell.Caster, victim))
             {
-                uint glanceDamage = preGlanceDamage - damage;
-                // TODO: Add CombatLog
+                damageDescription.GlanceAmount = preGlanceDamage - damage;
             }
 
             // absorb shields from spells take damage before the shield does
@@ -110,6 +112,55 @@ namespace NexusForever.Game.Combat
         }
 
         /// <summary>
+        /// After the victim took the damage: heal the attacker by its lifesteal share and, on a reflect roll, send the victim's reflect share back.
+        /// </summary>
+        /// <remarks>
+        /// Reflected damage goes straight to health, it is not mitigated, absorbed or reflected again.
+        /// </remarks>
+        public void ApplyDamageReactions(ISpellExecutionContext executionContext, IUnitEntity victim, IDamageDescription damage)
+        {
+            IUnitEntity attacker = executionContext.Spell.Caster;
+            if (damage.AdjustedDamage == 0u || attacker == victim || !attacker.IsAlive)
+                return;
+
+            uint stolen = (uint)Math.Round(damage.AdjustedDamage * GetRatingPercentMod(Property.RatingLifesteal, attacker));
+            if (stolen > 0u && attacker.Health < attacker.MaxHealth)
+            {
+                attacker.ModifyHealth(stolen, DamageType.Heal, attacker);
+                executionContext.AddCombatLog(new CombatLogLifesteal
+                {
+                    UnitId       = attacker.Guid,
+                    HealthStolen = stolen
+                });
+            }
+
+            float reflectChance = GetRatingPercentMod(Property.RatingDamageReflectChance, victim);
+            if (reflectChance <= 0f || !victim.IsAlive || !IsSuccessfulChance(reflectChance))
+                return;
+
+            uint reflected = (uint)Math.Round(damage.AdjustedDamage * GetRatingPercentMod(Property.RatingDamageReflectAmount, victim));
+            if (reflected == 0u)
+                return;
+
+            attacker.ModifyHealth(reflected, damage.DamageType, victim);
+            executionContext.AddCombatLog(new CombatLogReflect
+            {
+                DamageAmount = reflected,
+                RawDamage    = reflected,
+                BKilled      = !attacker.IsAlive,
+                DamageType   = damage.DamageType,
+                EffectType   = SpellEffectType.Damage,
+                CastData     = new CombatLogCastData
+                {
+                    CasterId     = victim.Guid,
+                    TargetId     = attacker.Guid,
+                    SpellId      = executionContext.Spell.Parameters.SpellInfo.Entry.Id,
+                    CombatResult = CombatResult.Hit
+                }
+            });
+        }
+
+        /// <summary>
         /// Returns the calculated heal amount for a Heal or HealShields effect.
         /// </summary>
         /// <remarks>
@@ -128,7 +179,7 @@ namespace NexusForever.Game.Combat
             uint amount = CalculateBaseDamageVariance((uint)Math.Max(0f, heal));
 
             damageDescription.DamageType      = info.Entry.EffectType == SpellEffectType.HealShields ? DamageType.HealShields : DamageType.Heal;
-            damageDescription.CombatResult    = CalculateCrit(ref amount, caster, target) ? CombatResult.Critical : CombatResult.Hit;
+            damageDescription.CombatResult    = CalculateCrit(ref amount, caster, target, false) ? CombatResult.Critical : CombatResult.Hit;
             damageDescription.RawDamage       = amount;
             damageDescription.RawScaledDamage = amount;
             damageDescription.AdjustedDamage  = amount;
@@ -324,11 +375,14 @@ namespace NexusForever.Game.Combat
             return (uint)(damage * (Random.Shared.Next(95, 103) / 100f));
         }
 
-        private uint GetDamageAfterArmorMitigation(IUnitEntity victim, DamageType damageType, uint damage)
+        private uint GetDamageAfterArmorMitigation(IUnitEntity attacker, IUnitEntity victim, DamageType damageType, uint damage)
         {
             GameFormulaEntry armorFormulaEntry = gameTableManager.GameFormula.GetEntry(1234);
             float maximumArmorMitigation = (float)(armorFormulaEntry.Dataint01 * 0.01);
             float mitigationPct = (armorFormulaEntry.Datafloat0 / victim.Level * armorFormulaEntry.Datafloat01) * victim.GetPropertyValue(Property.Armor) / 100;
+
+            // armor pierce ignores a share of the victim's armor
+            mitigationPct *= 1f - Math.Clamp(GetRatingPercentMod(Property.RatingArmorPierce, attacker), 0f, 1f);
 
             if (damageType == DamageType.Physical)
                 mitigationPct += victim.GetPropertyValue(Property.DamageMitigationPctOffsetPhysical);
@@ -365,26 +419,31 @@ namespace NexusForever.Game.Combat
         /// <remarks>Calculates chance to deflect an attack, avoiding all damage from that attack.</remarks>
         private bool CalculateDeflect(IUnitEntity attacker, IUnitEntity victim)
         {
-            // TODO: Add in Strikethrough Calculations (and that increases Armor Pierce)
-
-            float deflectChance = GetRatingPercentMod(Property.RatingAvoidIncrease, victim);
-            return IsSuccessfulChance(deflectChance);
+            // strikethrough takes away from the victim's deflect chance
+            float deflectChance = GetRatingPercentMod(Property.RatingAvoidIncrease, victim)
+                - GetRatingPercentMod(Property.RatingAvoidReduce, attacker);
+            return deflectChance > 0f && IsSuccessfulChance(deflectChance);
         }
 
         /// <summary>
         /// Returns whether this attack crit, and if so, modifies the referenced damage value appropriately.
         /// </summary>
-        private bool CalculateCrit(ref uint damage, IUnitEntity attacker, IUnitEntity victim)
+        private bool CalculateCrit(ref uint damage, IUnitEntity attacker, IUnitEntity victim, bool hostile = true)
         {
-            // TODO: Add in Crit Deflect and Critical Mitigation calculations
-
-            float critRate = GetRatingPercentMod(Property.RatingCritChanceIncrease, attacker);
+            // the victim's crit deflect takes away from the crit chance, its critical mitigation from the bonus damage
+            float critRate = GetRatingPercentMod(Property.RatingCritChanceIncrease, attacker)
+                - (hostile ? GetRatingPercentMod(Property.RatingCritChanceDecrease, victim) : 0f);
             if (critRate <= 0f)
                 return false;
 
             bool crit = IsSuccessfulChance(critRate);
             if (crit)
-                damage = (uint)Math.Round(damage * GetRatingPercentMod(Property.RatingCritSeverityIncrease, attacker));
+            {
+                float bonus = GetRatingPercentMod(Property.RatingCritSeverityIncrease, attacker) - 1f;
+                if (hostile)
+                    bonus *= 1f - Math.Clamp(GetRatingPercentMod(Property.RatingCriticalMitigation, victim), 0f, 1f);
+                damage = (uint)Math.Round(damage * (1f + Math.Max(0f, bonus)));
+            }
 
             return crit;
         }
@@ -523,8 +582,8 @@ namespace NexusForever.Game.Combat
                     baseValue = entity.GetPropertyValue(Property.BaseCritChance);
                     break;
                 case Property.RatingCritSeverityIncrease:
-                    // TODO: Confirm Property below
-                    // baseValue = entity.GetPropertyValue(Property.CriticalHitSeverityMultiplier);
+                    // UnitProperty2 default 1.5, formula 1232 caps the total at 300 percent
+                    baseValue = entity.GetPropertyValue(Property.CriticalHitSeverityMultiplier);
                     break;
                 case Property.RatingDamageReflectAmount:
                 case Property.BaseDamageReflectAmount:

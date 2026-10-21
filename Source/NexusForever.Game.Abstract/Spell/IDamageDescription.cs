@@ -12,6 +12,7 @@ namespace NexusForever.Game.Abstract.Spell
         uint ShieldAbsorbAmount { get; set; }
         uint AdjustedDamage { get; set; }
         uint OverkillAmount { get; set; }
+        uint GlanceAmount { get; set; }
         bool KilledTarget { get; set; }
         CombatResult CombatResult { get; set; }
         DamageType DamageType { get; set; }

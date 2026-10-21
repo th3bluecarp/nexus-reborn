@@ -15,6 +15,11 @@ namespace NexusForever.Game.Abstract.Combat
         void CalculateDamage(ISpellExecutionContext executionContext, IUnitEntity victim, ISpellTargetEffectInfo info);
 
         /// <summary>
+        /// After the victim took the damage: heal the attacker by its lifesteal share and, on a reflect roll, send the victim's reflect share back.
+        /// </summary>
+        void ApplyDamageReactions(ISpellExecutionContext executionContext, IUnitEntity victim, IDamageDescription damage);
+
+        /// <summary>
         /// Returns the calculated heal amount for a Heal or HealShields effect and updates the referenced <see cref="ISpellTargetEffectInfo"/> appropriately.
         /// </summary>
         uint CalculateHeal(ISpellExecutionContext executionContext, IUnitEntity target, ISpellTargetEffectInfo info);
