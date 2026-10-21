@@ -4,6 +4,7 @@ Newest first. "Live" means running on our test server.
 
 ## 2026-10-21
 
+- **Fixes from a review of today's work** (e4e1245a): the commodity exchange only trades items with a normal credit price (it could sell Renown or Prestige items for a few copper), at most 999 per order; salvage only works on items in your bags (salvaging worn gear kept its stats); a trade is cancelled if an offered stack was split after offering; rune slot inputs, vehicle boarding range (15 m) and a rename race are checked.
 - **Explorer Searching ability** (bdb6de00) now answers with the hot or cold search effect instead of being ignored.
 - **Settler projects change the world** (c5b98030): things that should only appear once a Settler infrastructure project is built (or only before it) now follow your project's state.
 - **Runes checked in game** (554a6af7): the Runecrafting window first showed no slots; the game hides an item's rune slots unless a version marker is set in its random-stat data, which is now sent. Tested with a throwaway character: slots show, putting a rune in works ("Inscribing operation successful", the rune leaves your bags) and adding a slot of a chosen element works.
