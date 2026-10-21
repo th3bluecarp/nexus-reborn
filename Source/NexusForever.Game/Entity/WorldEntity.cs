@@ -1,6 +1,4 @@
 ﻿using NexusForever.Game.Abstract.Quest;
-using Microsoft.Extensions.DependencyInjection;
-using NexusForever.Shared;
 using System.Numerics;
 using Newtonsoft.Json.Linq;
 using NexusForever.Database.World.Model;
@@ -662,20 +660,6 @@ namespace NexusForever.Game.Entity
                 && GameTableManager.Instance.WorldLocation2.GetEntry(locationId) is WorldLocation2Entry location)
                 activator.TeleportTo((ushort)location.WorldId, location.Position0, location.Position1, location.Position2);
 
-            // discoveries: what retail spawned under the marker is lost, uncovering one pays out a salvage roll at the player's level
-            if (CreatureInfo?.Entry != null && DiscoveryIndicators.Contains(CreatureInfo.Entry.Id) && this is IUnitEntity indicator && Map != null)
-            {
-                uint? lootId = GetDiscoveryLootId(activator.Level);
-                if (lootId != null)
-                    Map.LootManager.GenerateItemLoot(activator, lootId.Value);
-                indicator.Despawn(DiscoveryRespawnDelay);
-            }
-
-            // settler minfrastructure: the repaired object takes the broken one's place for a while
-            if (CreatureInfo?.Entry != null && RepairedMinfrastructure.TryGetValue(CreatureInfo.Entry.Id, out uint repairedId)
-                && this is IUnitEntity broken && Map != null)
-                RepairMinfrastructure(broken, repairedId);
-
             // control panels whose door was opened by a lost server script: using the panel opens or closes the door near it
             if (CreatureInfo?.Entry != null && ControlledDoors.TryGetValue(CreatureInfo.Entry.Id, out (uint Door, float Range) controlled) && Map != null)
             {
@@ -703,49 +687,6 @@ namespace NexusForever.Game.Entity
         /// scripts that are lost; the destination is the receiver location of the quest that ends there.
         /// </summary>
         /// <summary>
-        /// Discovery - Tier 1 to 4 - Indicator, the sparkling "Discovery" markers.
-        /// </summary>
-        private static readonly HashSet<uint> DiscoveryIndicators = [11254u, 11255u, 11256u, 11257u];
-
-        /// <summary>
-        /// How long an uncovered discovery marker stays away (invented, the respawn delay brought it back after a minute).
-        /// </summary>
-        private static readonly TimeSpan DiscoveryRespawnDelay = TimeSpan.FromMinutes(30);
-
-        /// <summary>
-        /// Item loot id of a salvage table at the highest level not above supplied level, picked at random among the item types
-        /// (salvage loot ids are 3000000 plus the client Salvage id, see data/salvage.sql).
-        /// </summary>
-        private uint? GetDiscoveryLootId(uint level)
-        {
-            SalvageEntry[] entries = GameTableManager.Instance.Salvage.Entries
-                .Where(e => e.Level > 0u && e.Level <= Math.Max(5u, level) && Map.LootManager.HasItemLoot(3000000u + e.Id))
-                .ToArray();
-            if (entries.Length == 0)
-                return null;
-
-            uint best = entries.Max(e => e.Level);
-            SalvageEntry[] candidates = entries.Where(e => e.Level == best).ToArray();
-            return 3000000u + candidates[Random.Shared.Next(candidates.Length)].Id;
-        }
-
-        private static void RepairMinfrastructure(IUnitEntity broken, uint repairedId)
-        {
-            ICreatureInfo info = LegacyServiceProvider.Provider.GetService<ICreatureInfoManager>().GetCreatureInfo(repairedId);
-            if (info == null)
-                return;
-
-            IWorldEntity repaired = LegacyServiceProvider.Provider.GetService<IEntityFactory>().CreateWorldEntity(broken.Type);
-            repaired.Initialise(info);
-            repaired.Rotation = broken.Rotation;
-            if (repaired is IUnitEntity unit)
-                unit.DespawnAfter(MinfrastructureDuration);
-
-            broken.Map.EnqueueAdd(repaired, broken.Position);
-            broken.Despawn(MinfrastructureDuration);
-        }
-
-        /// <summary>
         /// Creature2 id of a control panel to the door creature it opens and the search range. The script that linked them is lost.
         /// </summary>
         private static readonly Dictionary<uint, (uint Door, float Range)> ControlledDoors = new()
@@ -754,102 +695,6 @@ namespace NexusForever.Game.Entity
             // blocks the ships that More Important Than Revenge (3963) sends the player into
             { 12653u, (16799u, 30f) }
         };
-
-        /// <summary>
-        /// Settler minfrastructure: Creature2 id of a broken or unbuilt object to its repaired version. Retail swapped them with a lost
-        /// server script; the pairs are matched by name (Broken Banner Exile to Exile Banner and so on). Only the broken objects are
-        /// placed in the world.
-        /// </summary>
-        private static readonly Dictionary<uint, uint> RepairedMinfrastructure = new()
-        {
-            { 26293u, 26287u }, // Broken Banner Dominion
-            { 26306u, 26305u }, // Broken Banner Exile
-            { 26311u, 26312u }, // Broken Banner Chua
-            { 26320u, 26321u }, // Broken Science Bot
-            { 27372u, 26639u }, // Broken Fence (Rowsdower)
-            { 27380u, 27381u }, // Broken Fence (Rowsdower/Draken)
-            { 27383u, 27382u }, // Broken Fence (Rowsdower/Chua)
-            { 30180u, 26639u }, // Broken Fence (Kurg)
-            { 38997u, 27381u }, // Broken Fence (Warpig/Draken)
-            { 27384u, 27385u }, // Broken Shrine (Draken)
-            { 27406u, 27405u }, // Broken Vigilant Church Statue
-            { 27472u, 27473u }, // Sleeping Bag (Closed)
-            { 27391u, 61373u }, // Exhausted Firepit (Brown Rock)
-            { 34127u, 61373u }, // Exhausted Firepit (Gray Rock)
-            { 38145u, 61373u }, // Exhausted Fire (Celestion)
-            { 31438u, 31439u }, // Untended Blue Cup Flowers
-            { 33857u, 33858u }, // Untended Yellow Flowers
-            { 31535u, 31536u }, // Empty Flower Pot
-            { 33765u, 31536u }, // Empty Flower Pot 1
-            { 33760u, 33761u }, // Empty Bowl
-            { 31544u, 31545u }, // Unbuilt Furniture (bed) Exile
-            { 62692u, 62689u }, // Unbuilt Furniture (bed) Dom
-            { 33749u, 33750u }, // Unbuilt Pipe
-            { 35253u, 35254u }, // Broken Totem 1 (Draken)
-            { 35257u, 35258u }, // Broken Totem 2 (Draken)
-            { 35259u, 35260u }, // Broken Totem 3 (Draken)
-            { 35524u, 35525u }, // Malgrave unbuilt shrine
-            { 36227u, 36229u }, // Unbuilt Draken Feast Table
-            { 39140u, 39143u }, // Protostar Generator (Broken)
-            { 38504u, 38491u }, // Unbuilt Street Lamp DOM
-            { 46500u, 46499u }, // Unbuilt Street Lamp Exile
-            { 48671u, 48674u }, // Unbuilt Tent Aurin
-            { 52972u, 52973u }, // Unbuilt Wayfinder Pylon
-            { 58440u, 58443u }, // Unbuilt Wayfinder Pylon 1 Deradune
-            { 58441u, 58444u }, // Unbuilt Wayfinder Pylon 2 Deradune
-            { 58442u, 58445u }, // Unbuilt Wayfinder Pylon 3 Deradune
-            { 58457u, 58455u }, // Unbuilt Wayfinder Pylon 1 and 2 Ellevar
-            { 58458u, 58456u }, // Unbuilt Wayfinder Pylon Vigilant Heart Ellevar
-            { 52975u, 52982u }, // Unbuilt Mile Marker Kritons Command
-            { 58513u, 58514u }, // Unbuilt Mile Marker to Tempest and Kriton
-            { 58533u, 58534u }, // Unbuilt Mile Marker to Kara and SA
-            { 58546u, 58547u }, // Unbuilt Mile Marker to Skywatch
-            { 58553u, 58554u }, // Unbuilt Mile Marker to Gildgrass
-            { 58569u, 58570u }, // Unbuilt Mile Marker to Fort
-            { 55026u, 55028u }, // Bunker-in-a-Box Exile
-            { 55027u, 55029u }, // Bunker-in-a-Box DOM
-            { 63152u, 63194u }, // Camp-in-a-Box
-            { 56350u, 56351u }, // Warplot Broken Med Station
-            { 56393u, 56394u }, // Warplot Broken Buff Station
-            { 56301u, 56286u }, // Warplot Broken Turret
-            { 65205u, 65201u }, // Shade's Eve Topiary Uncut
-            { 65342u, 65343u }, // Occult Items
-            { 67605u, 67610u }, // Halonian Flora Purple
-            { 67606u, 67611u }, // Halonian Flora Blue Green
-            { 67607u, 67612u }, // Halonian Flora Pink
-            { 56418u, 55028u }, // Bunker-in-a-Box Mk 2 Exile
-            { 56477u, 55029u }, // Bunker-in-a-Box Mk 2 DOM
-            { 51480u, 39143u }, // Unbuilt Generator
-            { 56084u, 39143u }, // Unbuilt Generator
-            { 34130u, 16579u }, // Destroyed Exile Medical Station, the working Settler Medical Station (Settler Health Boost)
-            { 34129u, 16579u }, // Destroyed Dominion Medical Station
-            { 33880u, 33878u }, // Unbuilt Furniture (dining set) Exile Aurin, Aurin Table
-            // matched by model rather than name (2026-10-21): the same mesh grown, repaired or built
-            { 31445u, 34304u }, // Untended Purple Glowbulbs, Nurtured Plant (the grown model of the same _grow mesh)
-            { 34145u, 34589u }, // Ruined Dock, Aurin Dock platform
-            { 56442u, 56434u }, // Warplot Broken Sniper Turret, Settler Sniper Turret: Shielded
-            { 31442u, 31439u }, // Flower Bed Exile (dirt mound), Well-Kept Blue Cup Flowers
-            { 33861u, 30453u }, // Fallow Patch Exile (dirt mound), Veggie Carrot Sprout
-            { 48886u, 63194u }, // Unbuilt Outpost, Camp-in-a-Box tent
-            { 48923u, 63194u }, // Unbuilt Outpost Exile, Camp-in-a-Box tent
-            { 65684u, 63194u }, // Unbuilt Rescue HQ Exile, Camp-in-a-Box tent
-            { 65685u, 63194u }, // Unbuilt Rescue HQ, Camp-in-a-Box tent
-            { 58748u, 58754u }, // Strip Mining Gear Tier 1, Mining Explosives Tier 1
-            { 58767u, 58754u }, // Strip Mining Gear Exile Tier 1
-            { 59891u, 59897u }, // Strip Mining Gear Tier 2, Mining Explosives Tier 2
-            { 59894u, 59897u }, // Strip Mining Gear Exile Tier 2
-            { 59892u, 59898u }, // Strip Mining Gear Tier 3, Mining Explosives Tier 3
-            { 59895u, 59898u }, // Strip Mining Gear Exile Tier 3
-            { 59893u, 59899u }, // Strip Mining Gear Tier 4, Mining Explosives Tier 4
-            { 59896u, 59899u }, // Strip Mining Gear Exile Tier 4
-            { 62949u, 62952u }, // Strip Mining Gear Tier 5, Mining Explosives Tier 5
-            { 62948u, 62952u }, // Strip Mining Gear Exile Tier 5
-        };
-
-        /// <summary>
-        /// How long a repaired minfrastructure object stands before the broken one comes back (invented, retail is unknown).
-        /// </summary>
-        private static readonly TimeSpan MinfrastructureDuration = TimeSpan.FromMinutes(15);
 
         private static readonly Dictionary<uint, uint> ScriptedTransports = new()
         {

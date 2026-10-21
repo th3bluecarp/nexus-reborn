@@ -5,7 +5,6 @@ using NexusForever.Game.Abstract.Spell;
 using NexusForever.Game.Abstract.Spell.Target;
 using NexusForever.Game.Static.Entity;
 using NexusForever.Game.Static.Spell;
-using NexusForever.Game.Spell;
 using NexusForever.GameTable;
 using NexusForever.GameTable.Model;
 using NexusForever.Network.World.Combat;
@@ -69,10 +68,6 @@ namespace NexusForever.Game.Combat
             damage = CalculateBaseDamageVariance(damage);
 
             damage = GetDamageAfterPersonalModifiers(executionContext.Spell.Caster, victim, info.Entry.DamageType, damage);
-
-            // ModifySpellEffect AMPs (Atomic Rush, Building Pressure, elemental talents) on the caster
-            damage = (uint)Math.Round(damage * SpellModification.ApplyEffect(executionContext.Spell.Caster.SpellModifiers,
-                executionContext.Spell.Parameters.SpellInfo.Entry, info.Entry, SpellModification.Damage, 1f));
 
             damage = GetDamageAfterArmorMitigation(executionContext.Spell.Caster, victim, info.Entry.DamageType, damage);
 
@@ -179,7 +174,6 @@ namespace NexusForever.Game.Combat
             float heal = CalculateEffectAmount(caster, target, info.Entry);
             heal *= caster.GetPropertyValue(Property.HealingMultiplierOutgoing);
             heal *= target.GetPropertyValue(Property.HealingMultiplierIncoming);
-            heal *= SpellModification.ApplyEffect(caster.SpellModifiers, executionContext.Spell.Parameters.SpellInfo.Entry, info.Entry, SpellModification.Damage, 1f);
             heal *= target.GetPersonalModifier(info.Entry.EffectType == SpellEffectType.HealShields ? 13u : 12u, caster.Guid);
 
             uint amount = CalculateBaseDamageVariance((uint)Math.Max(0f, heal));

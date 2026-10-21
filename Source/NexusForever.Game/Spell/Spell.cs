@@ -383,7 +383,7 @@ namespace NexusForever.Game.Spell
                 if (innateCostType == 0)
                     continue;
 
-                if (Caster.GetVitalValue((Vital)innateCostType) < GetInnateCost(i))
+                if (Caster.GetVitalValue((Vital)innateCostType) < Parameters.SpellInfo.Entry.InnateCosts[i])
                     return GlobalSpellManager.Instance.GetFailedCastResultForVital((Vital)innateCostType);
             }
 
@@ -516,13 +516,8 @@ namespace NexusForever.Game.Spell
             if (Caster is not IPlayer player)
                 return;
 
-            // ModifySpell AMPs (Path Expert, Swift Gadgetry, Impulse) change the cooldown in milliseconds
-            if (Parameters.SpellInfo.Entry.SpellCoolDown == 0u)
-                return;
-
-            float cooldown = SpellModification.ApplySpell(Caster.SpellModifiers, Parameters.SpellInfo.Entry, SpellModification.Cooldown, Parameters.SpellInfo.Entry.SpellCoolDown);
-            if (cooldown > 0f)
-                player.SpellManager.SetSpellCooldown(Parameters.SpellInfo, cooldown / 1000d, true);
+            if (Parameters.SpellInfo.Entry.SpellCoolDown != 0u)
+                player.SpellManager.SetSpellCooldown(Parameters.SpellInfo, Parameters.SpellInfo.Entry.SpellCoolDown / 1000d, true);
         }
 
         protected void CostSpell()
@@ -536,7 +531,7 @@ namespace NexusForever.Game.Spell
                 if (innateCostType == 0)
                     continue;
 
-                float cost = GetInnateCost(i);
+                float cost = Parameters.SpellInfo.Entry.InnateCosts[i];
 
                 // a cost with an EMM id (Mind Burst and the other psi point finishers) also consumes what is left of the
                 // vital, the extra amount picks the effects of that strength (EmmValue)
@@ -552,14 +547,6 @@ namespace NexusForever.Game.Spell
         }
 
         private uint? emmAmount;
-
-        /// <summary>
-        /// Innate cost of supplied index after ModifySpell AMPs (Efficiency, abilities that cost nothing for a while).
-        /// </summary>
-        private float GetInnateCost(int index)
-        {
-            return SpellModification.ApplySpell(Caster.SpellModifiers, Parameters.SpellInfo.Entry, SpellModification.Cost, Parameters.SpellInfo.Entry.InnateCosts[index]);
-        }
 
         /// <summary>
         /// Returns if the effect applies at the extra amount consumed by an EMM cost.
