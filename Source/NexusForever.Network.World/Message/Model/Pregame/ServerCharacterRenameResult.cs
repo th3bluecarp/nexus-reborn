@@ -13,7 +13,7 @@ namespace NexusForever.Network.World.Message.Model.Pregame
 
         public void Write(GamePacketWriter writer)
         {
-            writer.Write(Result, 3u);
+            writer.Write(Result, 6u); // 6 bits, read from WildStar64.exe 0x140080460
             writer.Write(CharacterId);
             writer.WriteStringWide(Name);
         }
