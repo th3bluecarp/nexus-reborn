@@ -546,6 +546,23 @@ namespace NexusForever.Game.Entity
             }
         }
 
+        /// <summary>
+        /// Invoked when the client reports an Explorer mission node reached (ClientPathExplorerProgressReport, sent by the client's
+        /// own mission update loop when the player gets within the node radius).
+        /// </summary>
+        public void OnExplorerProgressReport(uint missionId, uint nodeIndex)
+        {
+            if (!missions.TryGetValue((ushort)missionId, out PathMission mission) || mission.IsComplete || mission.Kind != MissionKind.Locations)
+                return;
+
+            if (nodeIndex >= mission.Objects.Length || nodeIndex >= 32u)
+                return;
+
+            uint bit = 1u << (int)nodeIndex;
+            if ((mission.Progress & bit) == 0u)
+                Advance(mission, mission.Progress | bit);
+        }
+
         private void Advance(PathMission mission, uint progress)
         {
             PathMissionState oldState = mission.State;

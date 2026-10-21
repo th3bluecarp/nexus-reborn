@@ -30,6 +30,11 @@ namespace NexusForever.Game.Abstract.Entity
         void OnQuestComplete(uint questId);
 
         /// <summary>
+        /// Invoked when the client reports an Explorer mission node reached.
+        /// </summary>
+        void OnExplorerProgressReport(uint missionId, uint nodeIndex);
+
+        /// <summary>
         /// Returns the state of the path mission, <see cref="PathMissionState.NoMission"/> when the player does not have it.
         /// </summary>
         PathMissionState GetMissionState(uint missionId);
