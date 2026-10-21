@@ -588,6 +588,7 @@ namespace NexusForever.GameTable
         [GameData]
         public GameTable<Spell4EffectGroupListEntry> Spell4EffectGroupList { get; private set; }
 
+        [GameData]
         public GameTable<Spell4EffectModificationEntry> Spell4EffectModification { get; private set; }
 
         [GameData]
@@ -599,6 +600,7 @@ namespace NexusForever.GameTable
         [GameData]
         public GameTable<Spell4HitResultsEntry> Spell4HitResults { get; private set; }
 
+        [GameData]
         public GameTable<Spell4ModificationEntry> Spell4Modification { get; private set; }
 
         [GameData]

@@ -34,7 +34,8 @@ namespace NexusForever.Game.Spell.Type
             if (!base.Cast())
                 return false;
 
-            uint castTime = Parameters.CastTimeOverride > -1 ? (uint)Parameters.CastTimeOverride : Parameters.SpellInfo.Entry.CastTime;
+            uint castTime = Parameters.CastTimeOverride > -1 ? (uint)Parameters.CastTimeOverride
+                : (uint)SpellModification.ApplySpell(Caster.SpellModifiers, Parameters.SpellInfo.Entry, SpellModification.CastTime, Parameters.SpellInfo.Entry.CastTime);
             events.EnqueueEvent(new SpellEvent(castTime / 1000d, () => { Execute(); })); // enqueue spell to be executed after cast time
 
             status = SpellStatus.Casting;
