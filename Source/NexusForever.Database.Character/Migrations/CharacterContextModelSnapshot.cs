@@ -2054,6 +2054,18 @@ namespace NexusForever.Database.Character.Migrations
                         .HasColumnType("bigint(20) unsigned")
                         .HasColumnName("ownerId");
 
+                    b.Property<uint>("RuneData")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int(10) unsigned")
+                        .HasDefaultValue(0u)
+                        .HasColumnName("runeData");
+
+                    b.Property<string>("Runes")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("varchar(100)")
+                        .HasDefaultValue("")
+                        .HasColumnName("runes");
+
                     b.Property<uint>("StackCount")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int(10) unsigned")
