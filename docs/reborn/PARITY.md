@@ -14,8 +14,8 @@ Columns in parity.csv:
 
 | | Ours | Upstream |
 |---|---|---|
-| Implemented | 78 | 50 |
-| Partial | 70 | 44 |
+| Implemented | 77 | 50 |
+| Partial | 71 | 44 |
 | Missing | 4 | 55 |
 | Only on a side branch | 0 | 3 |
 | Features where we are ahead | 61 | |
