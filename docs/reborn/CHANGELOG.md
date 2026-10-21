@@ -4,6 +4,7 @@ Newest first. "Live" means running on our test server.
 
 ## 2026-10-21
 
+- **Placed vehicles can be boarded** (08456a7b): clicking a vehicle that stands in the world (Farside battle suits, the Rage Logic shiphand speeders) puts you in the pilot seat; getting out leaves it where it was for the next use.
 - **Wake Here has its 30 minute cooldown** (dce92dff). It was free and unlimited; it is still free, but after using it the holocrypt (or a service token) is the way back for 30 minutes, as in late retail. The death window shows the time left.
 - **XP boost buffs and consumables work** (62a77f66): Combat XP increased and similar boosts add their bonus to the XP you earn, and other boost types show on your character.
 - **Disguises keep creatures calm** (f8118b0a): disguise spells that change your standing with a faction (Hidden in Plain Sight, Hidden in Hay) now stop that faction's creatures from attacking you on sight.
