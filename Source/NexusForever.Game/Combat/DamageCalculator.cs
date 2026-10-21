@@ -379,7 +379,7 @@ namespace NexusForever.Game.Combat
         {
             GameFormulaEntry armorFormulaEntry = gameTableManager.GameFormula.GetEntry(1234);
             float maximumArmorMitigation = (float)(armorFormulaEntry.Dataint01 * 0.01);
-            float mitigationPct = (armorFormulaEntry.Datafloat0 / victim.Level * armorFormulaEntry.Datafloat01) * victim.GetPropertyValue(Property.Armor) / 100;
+            float mitigationPct = ConvertRating(armorFormulaEntry, victim.Level, victim.GetPropertyValue(Property.Armor));
 
             // armor pierce ignores a share of the victim's armor
             mitigationPct *= 1f - Math.Clamp(GetRatingPercentMod(Property.RatingArmorPierce, attacker), 0f, 1f);
@@ -547,9 +547,38 @@ namespace NexusForever.Game.Combat
                     break;
             }
 
+            if (gameFormula == null)
+                return GetBasePercentMod(property, entity);
+
             // Return a decimal representing the % applied by this rating.
-            float ratingMod = ((gameFormula.Datafloat0 / entity.Level) * gameFormula.Datafloat01) * entity.GetPropertyValue(property);
-            return Math.Min((GetBasePercentMod(property, entity) + ratingMod) * 100f, gameFormula.Dataint01) / 100f;
+            float ratingMod = ConvertRating(gameFormula, entity.Level, entity.GetPropertyValue(property));
+            return Math.Min(GetBasePercentMod(property, entity) + ratingMod, gameFormula.Dataint01 * 0.01f);
+        }
+
+        /// <summary>
+        /// Convert a rating to a fraction the way the client does (WildStar64.exe 0x140453b60, shared by every rating getter).
+        /// </summary>
+        /// <remarks>
+        /// Each point is worth Datafloat0 / level * Datafloat01 percent, plus Dataint0, up to the knee at Datafloat02 percent. Past the knee the
+        /// extra rating t adds cos(t / (t + Datafloat03) * pi / 2) * t points' worth, a soft cap. The result is a percentage, so it is scaled by 0.01.
+        /// </remarks>
+        private static float ConvertRating(GameFormulaEntry formula, uint level, float rating)
+        {
+            float perPoint = formula.Datafloat0 / Math.Max(1u, level) * formula.Datafloat01;
+            if (perPoint <= 0f || rating <= 0f)
+                return 0f;
+
+            float knee = (formula.Datafloat02 - formula.Dataint0) / perPoint;
+            float percent;
+            if (rating < knee)
+                percent = perPoint * rating + formula.Dataint0;
+            else
+            {
+                float extra = rating - knee;
+                percent = MathF.Cos(extra / (extra + formula.Datafloat03) * MathF.PI * 0.5f) * extra * perPoint + formula.Datafloat02;
+            }
+
+            return percent * 0.01f;
         }
 
         private float GetBasePercentMod(Property property, IUnitEntity entity)
