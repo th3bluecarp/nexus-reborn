@@ -4,6 +4,8 @@ Newest first. "Live" means running on our test server.
 
 ## 2026-10-21
 
+- **XP boost buffs and consumables work** (62a77f66): Combat XP increased and similar boosts add their bonus to the XP you earn, and other boost types show on your character.
+- **Disguises keep creatures calm** (f8118b0a): disguise spells that change your standing with a faction (Hidden in Plain Sight, Hidden in Hay) now stop that faction's creatures from attacking you on sight.
 - **Commodity Exchange** (603a7621): run by the server as an unlimited market. Buy Now and Sell Now work for any stackable item at server prices (vendor price to buy, a fifth of it to sell, never less than a vendor pays).
 - **Salvaging gear gives materials** (88cbe017): salvage tables for every armor, weapon and gadget type and level, rebuilt from what players recorded on Jabbithole (for example light armor at levels 5 to 10: Canvas Cloth 41 percent, Rough Quartz Power Core 15, Nano Tech Parts 13, rune signs and fragments).
 - **Vendor discount buffs** (3aa0cb44) lower prices and raise what vendors pay.
