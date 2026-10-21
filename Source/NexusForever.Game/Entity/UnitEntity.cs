@@ -172,6 +172,17 @@ namespace NexusForever.Game.Entity
 
             statUpdateManager.Update(lastTick);
 
+            if (expireTimer != null)
+            {
+                expireTimer.Update(lastTick);
+                if (expireTimer.HasElapsed)
+                {
+                    expireTimer = null;
+                    if (Map != null && !PendingRemoval)
+                        RemoveFromMap();
+                }
+            }
+
             if (respawnTimer != null)
             {
                 respawnTimer.Update(lastTick);
@@ -962,6 +973,15 @@ namespace NexusForever.Game.Entity
         }
 
         private UpdateTimer respawnTimer;
+        private UpdateTimer expireTimer;
+
+        /// <summary>
+        /// Remove this unit from the map after supplied time, with no respawn (temporary objects such as repaired minfrastructure).
+        /// </summary>
+        public void DespawnAfter(TimeSpan delay)
+        {
+            expireTimer = new UpdateTimer(delay);
+        }
 
         /// <summary>
         /// Schedule a fresh copy of this creature to replace it at its spawn position, open world database spawns only.
@@ -1008,12 +1028,20 @@ namespace NexusForever.Game.Entity
         /// </summary>
         public void Despawn()
         {
+            Despawn(null);
+        }
+
+        /// <summary>
+        /// Remove this unit from the map without killing it, a world database spawn comes back after supplied delay.
+        /// </summary>
+        public void Despawn(TimeSpan? respawnDelay)
+        {
             IBaseMap map = Map;
             if (this is IPlayer || map == null || PendingRemoval)
                 return;
 
             // the map owns the respawn from here, the pending corpse respawn (if any) goes with this entity
-            TimeSpan? delay = GetRespawnDelay();
+            TimeSpan? delay = GetRespawnDelay() != null ? respawnDelay ?? GetRespawnDelay() : null;
             if (delay.HasValue)
                 map.EnqueueAdd(CreateRespawnEntity(), new Vector3(SpawnModel.X, SpawnModel.Y, SpawnModel.Z), delay.Value);
 

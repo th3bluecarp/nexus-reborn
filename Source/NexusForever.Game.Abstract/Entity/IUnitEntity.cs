@@ -225,6 +225,16 @@ namespace NexusForever.Game.Abstract.Entity
         void Despawn();
 
         /// <summary>
+        /// Remove this unit from the map without killing it, a world database spawn comes back after supplied delay (the respawn delay when null).
+        /// </summary>
+        void Despawn(TimeSpan? respawnDelay);
+
+        /// <summary>
+        /// Remove this unit from the map after supplied time, with no respawn.
+        /// </summary>
+        void DespawnAfter(TimeSpan delay);
+
+        /// <summary>
         /// Return active <see cref="ISpell"/>s cast by this unit that have the supplied unit as a target.
         /// </summary>
         IEnumerable<ISpell> GetSpellsAffecting(IUnitEntity target);
