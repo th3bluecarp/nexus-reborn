@@ -151,6 +151,38 @@ namespace NexusForever.Database.Character.Migrations
                     b.ToTable("character_appearance", (string)null);
                 });
 
+            modelBuilder.Entity("NexusForever.Database.Character.Model.CharacterArchiveModel", b =>
+                {
+                    b.Property<ulong>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint(20) unsigned")
+                        .HasDefaultValue(0ul)
+                        .HasColumnName("id");
+
+                    b.Property<ushort>("ArticleId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("smallint(5) unsigned")
+                        .HasDefaultValue((ushort)0)
+                        .HasColumnName("articleId");
+
+                    b.Property<uint>("UnlockedFlags")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int(10) unsigned")
+                        .HasDefaultValue(0u)
+                        .HasColumnName("unlockedFlags");
+
+                    b.Property<uint>("ViewedFlags")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int(10) unsigned")
+                        .HasDefaultValue(0u)
+                        .HasColumnName("viewedFlags");
+
+                    b.HasKey("Id", "ArticleId")
+                        .HasName("PRIMARY");
+
+                    b.ToTable("character_archive", (string)null);
+                });
+
             modelBuilder.Entity("NexusForever.Database.Character.Model.CharacterBindModel", b =>
                 {
                     b.Property<ulong>("Id")
@@ -2689,6 +2721,18 @@ namespace NexusForever.Database.Character.Migrations
                     b.Navigation("Character");
                 });
 
+            modelBuilder.Entity("NexusForever.Database.Character.Model.CharacterArchiveModel", b =>
+                {
+                    b.HasOne("NexusForever.Database.Character.Model.CharacterModel", "Character")
+                        .WithMany("Archive")
+                        .HasForeignKey("Id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("FK__character_archive_id__character_id");
+
+                    b.Navigation("Character");
+                });
+
             modelBuilder.Entity("NexusForever.Database.Character.Model.CharacterBindModel", b =>
                 {
                     b.HasOne("NexusForever.Database.Character.Model.CharacterModel", "Character")
@@ -3141,6 +3185,8 @@ namespace NexusForever.Database.Character.Migrations
                     b.Navigation("ActionSetShortcut");
 
                     b.Navigation("Appearance");
+
+                    b.Navigation("Archive");
 
                     b.Navigation("Bind");
 
