@@ -4,6 +4,8 @@ Newest first. "Live" means running on our test server.
 
 ## 2026-10-21
 
+- **Cheat-death and on-death AMPs** (dc650c17): Last Stand, To the Pain, Unbreakable, Homeward Bound and The Trick now save you from a killing blow and cast their effect; Final Salvo, From the Grave, Cheat Death and the PvP Self-Destruct fire as you die. Their "once every N minutes" lockouts are respected. Not yet tried in game.
+- **Immunities** (4e00a058): Freedom, Unstoppable Force, Self CC Immunity and boss immunities now block the crowd control, knockbacks, interrupts or damage they name.
 - **Damage and healing marks** (85298f28): abilities that make a foe take more damage from you (Analyze Weakness, Cheap Shot, Nano Spike), deal less damage to you (Nerve Induction) or boost healing you give someone (Sigil of Recovery, Fusion Probe) now change the numbers. About 130 class and AMP spell effects use this.
 - **Cooldown reduction and reset effects** (fd3d0f9b): AMPs and abilities that shorten, reset or set another ability's cooldown now do it.
 - **Fixes from a review of today's work** (e4e1245a): the commodity exchange only trades items with a normal credit price (it could sell Renown or Prestige items for a few copper), at most 999 per order; salvage only works on items in your bags (salvaging worn gear kept its stats); a trade is cancelled if an offered stack was split after offering; rune slot inputs, vehicle boarding range (15 m) and a rename race are checked.
