@@ -96,8 +96,7 @@ namespace NexusForever.Game.Entity
         /// </summary>
         public void Update(double lastTick)
         {
-            // TODO: timer
-            //wakeHereTimer.Update(lastTick);
+            wakeHereTimer.Update(lastTick);
 
             if (timeUntilResurrectionTimer != null && timeUntilResurrectionTimer.IsTicking)
                 timeUntilResurrectionTimer.Update(lastTick);
@@ -138,7 +137,7 @@ namespace NexusForever.Game.Entity
                 ShowRezFlags        = ResurrectionType,
                 HasCasterRezRequest = false,
                 TimeUntilForceRezMs = timeUntilForcedResurrection != null ? (uint)timeUntilForcedResurrectionTimer.Duration * 1000u : 0u, 
-                TimeUntilWakeHereMs = wakeHereTimer.IsTicking ? (uint)wakeHereTimer.Duration * 1000u : 0u
+                TimeUntilWakeHereMs = wakeHereTimer.IsTicking ? (uint)(wakeHereTimer.Time * 1000d) : 0u
             });
 
             log.LogTrace($"Player {owner.Guid} has resurrect options {resurrectionType}.");
@@ -231,9 +230,9 @@ namespace NexusForever.Game.Entity
 
             uint cost = GetCostForResurrection();
             owner.CurrencyManager.CurrencySubtractAmount(CurrencyType.Credits, cost);
-            
-            // TODO: timer
-            //wakeHereTimer.Reset();
+
+            // Wake Here is free but has a 30 minute cooldown, after which the holocrypt or a service token is the way back
+            wakeHereTimer.Reset();
 
             return true;
         }
