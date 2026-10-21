@@ -18,6 +18,7 @@ using NexusForever.Game.Abstract.Map.Instance;
 using NexusForever.Game.Abstract.Map.Lock;
 using NexusForever.Game.Abstract.Matching.Match;
 using NexusForever.Game.Abstract.Matching.Queue;
+using NexusForever.Game.Abstract.Pvp;
 using NexusForever.Game.Abstract.Reputation;
 using NexusForever.Game.Abstract.Spell;
 using NexusForever.Game.Achievement;
@@ -262,6 +263,8 @@ namespace NexusForever.Game.Entity
         public IResurrectionManager ResurrectionManager { get; private set; }
 
         public IVendorInfo SelectedVendorInfo { get; set; } // TODO unset this when too far away from vendor
+        public IDuel Duel { get; set; }
+        public bool IgnoreDuelRequests { get; set; }
 
         private bool forceSave;
         private UpdateTimer saveTimer = new(SaveDuration);
@@ -459,6 +462,10 @@ namespace NexusForever.Game.Entity
                 return;
 
             base.Update(lastTick);
+
+            // the challenger's update drives a duel
+            if (Duel?.Challenger == this)
+                Duel.Update(lastTick);
 
             TitleManager.Update(lastTick);
             SpellManager.Update(lastTick);
@@ -1528,6 +1535,8 @@ namespace NexusForever.Game.Entity
         /// </summary>
         private void DestroyDependents()
         {
+            Duel?.Cancel();
+
             // vehicle will be removed if player is the last passenger
             Dismount();
 
@@ -1734,6 +1743,10 @@ namespace NexusForever.Game.Entity
         /// </summary>
         public override bool CanAttack(IUnitEntity target)
         {
+            // duelists fight each other whatever their faction and flags
+            if (target is IPlayer duelist && Duel != null && Duel.IsActive && Duel.Involves(duelist) && duelist != this)
+                return IsAlive && duelist.IsAlive;
+
             // players only fight players when both are flagged for PvP
             if (target is IPlayer player && player != this)
             {
@@ -1752,7 +1765,22 @@ namespace NexusForever.Game.Entity
         /// </remarks>
         public override void ModifyHealth(uint amount, DamageType? type, IUnitEntity source)
         {
+            // a duel ends at 1 health instead of a death
+            bool duelDefeat = type is not (DamageType.Heal or null)
+                && amount >= Health
+                && Health > 0u
+                && Duel != null
+                && Duel.IsActive
+                && source is IPlayer duelist
+                && duelist != this
+                && Duel.Involves(duelist);
+            if (duelDefeat)
+                amount = Health - 1u;
+
             base.ModifyHealth(amount, type, source);
+
+            if (duelDefeat)
+                Duel?.Defeat(this);
 
             if (type == DamageType.Heal)
                 Map.PublicEventManager.UpdateStat(this, PublicEventStat.HealingReceived, amount);

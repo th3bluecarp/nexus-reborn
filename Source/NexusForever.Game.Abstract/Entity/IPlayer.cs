@@ -8,6 +8,7 @@ using NexusForever.Game.Abstract.Guild;
 using NexusForever.Game.Abstract.Housing;
 using NexusForever.Game.Abstract.Map;
 using NexusForever.Game.Abstract.Map.Lock;
+using NexusForever.Game.Abstract.Pvp;
 using NexusForever.Game.Abstract.Reputation;
 using NexusForever.Game.Static.Entity;
 using NexusForever.Game.Static.PVP;
@@ -105,6 +106,16 @@ namespace NexusForever.Game.Abstract.Entity
         IResurrectionManager ResurrectionManager { get; }
 
         IVendorInfo SelectedVendorInfo { get; set; }
+
+        /// <summary>
+        /// Duel this <see cref="IPlayer"/> is in or has been challenged to.
+        /// </summary>
+        IDuel Duel { get; set; }
+
+        /// <summary>
+        /// Duel challenges are refused while set (Ignore Duel Requests option).
+        /// </summary>
+        bool IgnoreDuelRequests { get; set; }
 
         /// <summary>
         /// Save <see cref="IPlayer"/> to database, invoke supplied <see cref="Action"/> once save is complete.
