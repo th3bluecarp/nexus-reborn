@@ -187,6 +187,16 @@ namespace NexusForever.Game.Abstract.Entity
         bool IsImmuneToEffect(SpellEffectType type);
 
         /// <summary>
+        /// Add a DelayDeath trigger: when damage would kill this unit, <paramref name="spell4Id"/> is cast and death is held off for <paramref name="delayMs"/>.
+        /// </summary>
+        void AddDeathTrigger(uint effectId, uint casterGuid, uint entryId, uint mode, uint spell4Id, uint delayMs, uint prerequisiteId, uint cooldownMs);
+
+        /// <summary>
+        /// Remove the DelayDeath trigger added by supplied spell effect and caster.
+        /// </summary>
+        void RemoveDeathTrigger(uint effectId, uint casterGuid);
+
+        /// <summary>
         /// Modify the health of this <see cref="IUnitEntity"/> by the supplied amount.
         /// </summary>
         /// <remarks>

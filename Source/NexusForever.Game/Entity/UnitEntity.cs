@@ -17,6 +17,8 @@ using NexusForever.Game.Abstract.Spell.Proc;
 using NexusForever.Game.Abstract.Spell.Target;
 using NexusForever.Game.Combat;
 using NexusForever.Game.Combat.CrowdControl;
+using NexusForever.Game.Prerequisite;
+using NexusForever.Game.Spell;
 using NexusForever.Game.Static;
 using NexusForever.Game.Static.Entity;
 using NexusForever.Game.Static.PublicEvent;
@@ -150,6 +152,8 @@ namespace NexusForever.Game.Entity
         public override void Update(double lastTick)
         {
             base.Update(lastTick);
+
+            UpdatePendingDeath();
 
             // new spells can be added during updates
             // we need a pending queue to prevent issues with iterating over the spell dictionary
@@ -746,6 +750,92 @@ namespace NexusForever.Game.Entity
             return effectImmunities.Exists(i => i.Type == type);
         }
 
+        private readonly List<(uint EffectId, uint CasterGuid, uint EntryId, uint Mode, uint Spell4Id, uint DelayMs, uint PrerequisiteId, uint CooldownMs)> deathTriggers = [];
+        private readonly Dictionary<uint, DateTime> deathTriggerCooldowns = [];
+        private DateTime deathPreventedUntil;
+        private (DateTime At, IUnitEntity Killer)? pendingDeath;
+        private bool forcedDeath;
+
+        /// <summary>
+        /// Default time between two triggers of a DelayDeath effect that has no lockout of its own (invented, stops a permanent effect making the unit unkillable).
+        /// </summary>
+        private const uint DefaultDeathTriggerCooldownMs = 30000u;
+
+        /// <summary>
+        /// Add a DelayDeath trigger: when damage would kill this unit, <paramref name="spell4Id"/> is cast and death is held off for <paramref name="delayMs"/>.
+        /// </summary>
+        /// <remarks>
+        /// Mode 0 and 1 cheat death (the unit stays at 1 health or more), mode 2 casts the spell and dies once the delay ends.
+        /// </remarks>
+        public void AddDeathTrigger(uint effectId, uint casterGuid, uint entryId, uint mode, uint spell4Id, uint delayMs, uint prerequisiteId, uint cooldownMs)
+        {
+            RemoveDeathTrigger(effectId, casterGuid);
+            deathTriggers.Add((effectId, casterGuid, entryId, mode, spell4Id, delayMs, prerequisiteId, cooldownMs));
+        }
+
+        /// <summary>
+        /// Remove the DelayDeath trigger added by supplied spell effect and caster.
+        /// </summary>
+        public void RemoveDeathTrigger(uint effectId, uint casterGuid)
+        {
+            deathTriggers.RemoveAll(t => t.EffectId == effectId && t.CasterGuid == casterGuid);
+        }
+
+        /// <summary>
+        /// Called when damage would kill this unit, returns true if death is held off.
+        /// </summary>
+        private bool TryDelayDeath(IUnitEntity killer)
+        {
+            DateTime now = DateTime.UtcNow;
+            if (now < deathPreventedUntil)
+                return true;
+
+            foreach ((uint EffectId, uint CasterGuid, uint EntryId, uint Mode, uint Spell4Id, uint DelayMs, uint PrerequisiteId, uint CooldownMs) trigger in deathTriggers.ToArray())
+            {
+                if (deathTriggerCooldowns.TryGetValue(trigger.EntryId, out DateTime ready) && now < ready)
+                    continue;
+
+                if (trigger.PrerequisiteId != 0u && this is IPlayer player && !PrerequisiteManager.Instance.Meets(player, trigger.PrerequisiteId))
+                    continue;
+
+                if (trigger.CooldownMs > 0u || trigger.PrerequisiteId == 0u)
+                    deathTriggerCooldowns[trigger.EntryId] = now.AddMilliseconds(trigger.CooldownMs > 0u ? trigger.CooldownMs : DefaultDeathTriggerCooldownMs);
+
+                // dying spells need a moment to be cast before the unit dies
+                deathPreventedUntil = now.AddMilliseconds(trigger.Mode == 2u ? Math.Max(trigger.DelayMs, 250u) : trigger.DelayMs);
+                if (trigger.Mode == 2u)
+                    pendingDeath = (deathPreventedUntil, killer);
+
+                if (trigger.Spell4Id != 0u)
+                    CastSpell(trigger.Spell4Id, new SpellParameters
+                    {
+                        PrimaryTargetId = Guid,
+                        IsProxy         = true
+                    });
+                return true;
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// Kill this unit once the delay of a dying DelayDeath trigger is over.
+        /// </summary>
+        private void UpdatePendingDeath()
+        {
+            if (pendingDeath == null || DateTime.UtcNow < pendingDeath.Value.At)
+                return;
+
+            IUnitEntity killer = pendingDeath.Value.Killer;
+            pendingDeath = null;
+            if (!IsAlive)
+                return;
+
+            forcedDeath = true;
+            ModifyHealth(Health, DamageType.Physical, killer);
+            forcedDeath = false;
+        }
+
         public void TakeDamage(IUnitEntity attacker, IDamageDescription damageDescription)
         {
             if (!IsAlive || !attacker.IsAlive || attacker == this)
@@ -774,6 +864,9 @@ namespace NexusForever.Game.Entity
                 newHealth += amount;
             else
                 newHealth -= amount;
+
+            if (newHealth <= 0 && Health > 0u && !forcedDeath && TryDelayDeath(source))
+                newHealth = 1;
 
             Health = (uint)Math.Clamp(newHealth, 0u, MaxHealth);
 
