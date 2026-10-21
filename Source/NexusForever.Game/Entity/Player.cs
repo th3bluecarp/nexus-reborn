@@ -271,6 +271,30 @@ namespace NexusForever.Game.Entity
         public float VendorBuyMultiplier { get; set; } = 1f;
         public float VendorSellMultiplier { get; set; } = 1f;
         public float XpBoost { get; set; }
+
+        private readonly Dictionary<Faction, float> reputationOverrides = [];
+
+        /// <summary>
+        /// Set or clear (null) a temporary reputation amount with a faction, used for disposition instead of the real one (ReputationModify disguises).
+        /// </summary>
+        public void SetReputationOverride(Faction factionId, float? amount)
+        {
+            if (amount.HasValue)
+                reputationOverrides[factionId] = amount.Value;
+            else
+                reputationOverrides.Remove(factionId);
+        }
+
+        /// <summary>
+        /// Returns if a temporary reputation amount is set for the faction or one of its parents.
+        /// </summary>
+        public bool HasReputationOverride(Faction factionId)
+        {
+            for (IFactionNode node = FactionManager.Instance.GetFaction(factionId); node != null; node = node.Parent)
+                if (reputationOverrides.ContainsKey(node.FactionId))
+                    return true;
+            return false;
+        }
         public bool IgnoreDuelRequests { get; set; }
         public CombatLogOptions CombatLogDisables { get; set; }
         public bool CombatLogDisableOthers { get; set; }
@@ -1642,6 +1666,10 @@ namespace NexusForever.Game.Entity
         {
             if (node == null)
                 return null;
+
+            // a disguise's temporary standing wins over the real one
+            if (reputationOverrides.TryGetValue(node.FactionId, out float overrideAmount))
+                return FactionNode.GetDisposition(FactionNode.GetFactionLevel(overrideAmount));
 
             // check if current node has required reputation
             IReputation reputation = ReputationManager.GetReputation(node.FactionId);

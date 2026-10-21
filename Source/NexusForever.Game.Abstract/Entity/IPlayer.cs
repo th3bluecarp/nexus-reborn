@@ -13,6 +13,7 @@ using NexusForever.Game.Abstract.Trade;
 using NexusForever.Game.Abstract.Reputation;
 using NexusForever.Game.Static.Entity;
 using NexusForever.Game.Static.PVP;
+using NexusForever.Game.Static.Reputation;
 using NexusForever.Game.Static.Setting;
 using NexusForever.Game.Static.Option;
 using NexusForever.Network.World.Message.Model;
@@ -139,6 +140,16 @@ namespace NexusForever.Game.Abstract.Entity
         /// Extra fraction of earned XP from active XP boost spells (RewardPropertyModifier), 0 without any.
         /// </summary>
         float XpBoost { get; set; }
+
+        /// <summary>
+        /// Set or clear (null) a temporary reputation amount with a faction, used for disposition instead of the real one (ReputationModify disguises).
+        /// </summary>
+        void SetReputationOverride(Faction factionId, float? amount);
+
+        /// <summary>
+        /// Returns if a temporary reputation amount is set for the faction or one of its parents.
+        /// </summary>
+        bool HasReputationOverride(Faction factionId);
 
         /// <summary>
         /// Combat log entry kinds the client asked not to be sent.

@@ -423,6 +423,11 @@ namespace NexusForever.Script.Main.AI
             if (entity.GetDispositionTo(unit.Faction1) != Disposition.Hostile)
                 return;
 
+            // players disguised to this creature's faction (ReputationModify) are left alone
+            if (unit is IPlayer disguised && disguised.HasReputationOverride(entity.Faction1)
+                && disguised.GetDispositionTo(entity.Faction1) != Disposition.Hostile)
+                return;
+
             var spellParameters = spellParametersFactory.Resolve();
             entity.CastSpell(41368, spellParameters);
 
