@@ -662,6 +662,15 @@ namespace NexusForever.Game.Entity
                 && GameTableManager.Instance.WorldLocation2.GetEntry(locationId) is WorldLocation2Entry location)
                 activator.TeleportTo((ushort)location.WorldId, location.Position0, location.Position1, location.Position2);
 
+            // discoveries: what retail spawned under the marker is lost, uncovering one pays out a salvage roll at the player's level
+            if (CreatureInfo?.Entry != null && DiscoveryIndicators.Contains(CreatureInfo.Entry.Id) && this is IUnitEntity indicator && Map != null)
+            {
+                uint? lootId = GetDiscoveryLootId(activator.Level);
+                if (lootId != null)
+                    Map.LootManager.GenerateItemLoot(activator, lootId.Value);
+                indicator.Despawn(DiscoveryRespawnDelay);
+            }
+
             // settler minfrastructure: the repaired object takes the broken one's place for a while
             if (CreatureInfo?.Entry != null && RepairedMinfrastructure.TryGetValue(CreatureInfo.Entry.Id, out uint repairedId)
                 && this is IUnitEntity broken && Map != null)
@@ -693,6 +702,33 @@ namespace NexusForever.Game.Entity
         /// Creature2 id of a transport object to the WorldLocation2 it takes the player to. Retail flew the player with server
         /// scripts that are lost; the destination is the receiver location of the quest that ends there.
         /// </summary>
+        /// <summary>
+        /// Discovery - Tier 1 to 4 - Indicator, the sparkling "Discovery" markers.
+        /// </summary>
+        private static readonly HashSet<uint> DiscoveryIndicators = [11254u, 11255u, 11256u, 11257u];
+
+        /// <summary>
+        /// How long an uncovered discovery marker stays away (invented, the respawn delay brought it back after a minute).
+        /// </summary>
+        private static readonly TimeSpan DiscoveryRespawnDelay = TimeSpan.FromMinutes(30);
+
+        /// <summary>
+        /// Item loot id of a salvage table at the highest level not above supplied level, picked at random among the item types
+        /// (salvage loot ids are 3000000 plus the client Salvage id, see data/salvage.sql).
+        /// </summary>
+        private uint? GetDiscoveryLootId(uint level)
+        {
+            SalvageEntry[] entries = GameTableManager.Instance.Salvage.Entries
+                .Where(e => e.Level > 0u && e.Level <= Math.Max(5u, level) && Map.LootManager.HasItemLoot(3000000u + e.Id))
+                .ToArray();
+            if (entries.Length == 0)
+                return null;
+
+            uint best = entries.Max(e => e.Level);
+            SalvageEntry[] candidates = entries.Where(e => e.Level == best).ToArray();
+            return 3000000u + candidates[Random.Shared.Next(candidates.Length)].Id;
+        }
+
         private static void RepairMinfrastructure(IUnitEntity broken, uint repairedId)
         {
             ICreatureInfo info = LegacyServiceProvider.Provider.GetService<ICreatureInfoManager>().GetCreatureInfo(repairedId);
