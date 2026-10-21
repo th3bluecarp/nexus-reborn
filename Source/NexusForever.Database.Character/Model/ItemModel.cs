@@ -11,6 +11,8 @@
         public uint Charges { get; set; }
         public float Durability { get; set; }
         public uint ExpirationTimeLeft { get; set; }
+        public uint RuneData { get; set; }
+        public string Runes { get; set; }
 
         public CharacterModel Character { get; set; }
         public CharacterMailAttachmentModel MailAttachment { get; set; }

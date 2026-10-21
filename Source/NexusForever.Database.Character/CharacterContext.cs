@@ -2082,6 +2082,16 @@ namespace NexusForever.Database.Character
                     .HasColumnType("int(10) unsigned")
                     .HasDefaultValue(0);
 
+                entity.Property(e => e.RuneData)
+                    .HasColumnName("runeData")
+                    .HasColumnType("int(10) unsigned")
+                    .HasDefaultValue(0);
+
+                entity.Property(e => e.Runes)
+                    .HasColumnName("runes")
+                    .HasColumnType("varchar(100)")
+                    .HasDefaultValue("");
+
                 entity.Property(e => e.ItemId)
                     .HasColumnName("itemId")
                     .HasColumnType("int(10) unsigned")
