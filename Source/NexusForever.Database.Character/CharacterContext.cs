@@ -29,6 +29,7 @@ namespace NexusForever.Database.Character
         public DbSet<CharacterPetCustomisationModel> CharacterPetCustomisation { get; set; }
         public DbSet<CharacterPetFlairModel> CharacterPetFlair { get; set; }
         public DbSet<CharacterRewardTrackModel> CharacterRewardTrack { get; set; }
+        public DbSet<CharacterArchiveModel> CharacterArchive { get; set; }
         public DbSet<CharacterTradeskillModel> CharacterTradeskill { get; set; }
         public DbSet<CharacterTradeskillSchematicModel> CharacterTradeskillSchematic { get; set; }
         public DbSet<CharacterQuestModel> CharacterQuest { get; set; }
@@ -1364,6 +1365,39 @@ namespace NexusForever.Database.Character
                     .WithMany(p => p.RewardTrack)
                     .HasForeignKey(d => d.Id)
                     .HasConstraintName("FK__character_reward_track_id__character_id");
+            });
+
+            modelBuilder.Entity<CharacterArchiveModel>(entity =>
+            {
+                entity.ToTable("character_archive");
+
+                entity.HasKey(e => new { e.Id, e.ArticleId })
+                    .HasName("PRIMARY");
+
+                entity.Property(e => e.Id)
+                    .HasColumnName("id")
+                    .HasColumnType("bigint(20) unsigned")
+                    .HasDefaultValue(0);
+
+                entity.Property(e => e.ArticleId)
+                    .HasColumnName("articleId")
+                    .HasColumnType("smallint(5) unsigned")
+                    .HasDefaultValue(0);
+
+                entity.Property(e => e.UnlockedFlags)
+                    .HasColumnName("unlockedFlags")
+                    .HasColumnType("int(10) unsigned")
+                    .HasDefaultValue(0);
+
+                entity.Property(e => e.ViewedFlags)
+                    .HasColumnName("viewedFlags")
+                    .HasColumnType("int(10) unsigned")
+                    .HasDefaultValue(0);
+
+                entity.HasOne(d => d.Character)
+                    .WithMany(p => p.Archive)
+                    .HasForeignKey(d => d.Id)
+                    .HasConstraintName("FK__character_archive_id__character_id");
             });
 
             modelBuilder.Entity<CharacterTradeskillModel>(entity =>
