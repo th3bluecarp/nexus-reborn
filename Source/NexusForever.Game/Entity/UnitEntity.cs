@@ -719,6 +719,33 @@ namespace NexusForever.Game.Entity
             return multiplier;
         }
 
+        private readonly List<(uint EffectId, uint CasterGuid, SpellEffectType Type)> effectImmunities = [];
+
+        /// <summary>
+        /// Make this unit immune to effects of supplied type from other units, until removed.
+        /// </summary>
+        public void AddEffectImmunity(uint effectId, uint casterGuid, SpellEffectType type)
+        {
+            RemoveEffectImmunity(effectId, casterGuid);
+            effectImmunities.Add((effectId, casterGuid, type));
+        }
+
+        /// <summary>
+        /// Remove the immunity added by supplied spell effect and caster.
+        /// </summary>
+        public void RemoveEffectImmunity(uint effectId, uint casterGuid)
+        {
+            effectImmunities.RemoveAll(i => i.EffectId == effectId && i.CasterGuid == casterGuid);
+        }
+
+        /// <summary>
+        /// Returns if this unit is immune to effects of supplied type from other units.
+        /// </summary>
+        public bool IsImmuneToEffect(SpellEffectType type)
+        {
+            return effectImmunities.Exists(i => i.Type == type);
+        }
+
         public void TakeDamage(IUnitEntity attacker, IDamageDescription damageDescription)
         {
             if (!IsAlive || !attacker.IsAlive || attacker == this)

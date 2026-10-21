@@ -172,6 +172,21 @@ namespace NexusForever.Game.Abstract.Entity
         float GetPersonalModifier(uint category, uint otherGuid);
 
         /// <summary>
+        /// Make this unit immune to effects of supplied type from other units, until removed.
+        /// </summary>
+        void AddEffectImmunity(uint effectId, uint casterGuid, SpellEffectType type);
+
+        /// <summary>
+        /// Remove the immunity added by supplied spell effect and caster.
+        /// </summary>
+        void RemoveEffectImmunity(uint effectId, uint casterGuid);
+
+        /// <summary>
+        /// Returns if this unit is immune to effects of supplied type from other units.
+        /// </summary>
+        bool IsImmuneToEffect(SpellEffectType type);
+
+        /// <summary>
         /// Modify the health of this <see cref="IUnitEntity"/> by the supplied amount.
         /// </summary>
         /// <remarks>

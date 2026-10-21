@@ -125,6 +125,10 @@ namespace NexusForever.Game.Spell.Target
             {
                 IUnitEntity target = Target.GetTarget();
 
+                // SpellEffectImmunity: units protect themselves from effect types other units put on them
+                if (target != null && target != executionContext.Spell.Caster && target.IsImmuneToEffect(Entry.EffectType))
+                    return SpellEffectExecutionResult.PreventEffect;
+
                 SpellEffectExecutionResult result = spellEffectHandlerInvoker.InvokeApplyHandler(executionContext, target, this);
                 if (result == SpellEffectExecutionResult.Ok)
                 {
