@@ -163,6 +163,10 @@ Confidence: **High** = consistent across all the data we checked and no counter 
 
 ## Special cases that stand in for an unknown generic mechanism
 
+- **Settler minfrastructure.** Only the broken or unbuilt objects are in the world data (Broken Banner Exile and so on); retail swapped in the repaired object with a lost server script. 57 broken to repaired pairs matched by Creature2 description (WorldEntity.RepairedMinfrastructure); using the broken one puts the repaired one in its place for 15 minutes (invented), then the broken one returns.
+- **Discoveries.** Discovery - Tier 1 to 4 - Indicator markers only cast Uncovering Discovery (path XP for Explorers, a visual, then despawn); what retail revealed under them was server side and is lost, and no Discovery Stash or chest has a recorded drop table. Uncovering one gives one roll from the salvage loot at the player's level and the marker stays away 30 minutes (both invented, WorldEntity.DiscoveryIndicators).
+- **Sibling loot.** A creature with no drop table uses the table of a creature with the same Creature2 description and faction (LootGroupManager.BorrowSiblingLoot), for example the Northern Wilds Dominion Scout uses the Dominion Gunner's.
+
 These fix a visible symptom without knowing the real rule, the kind of patch that piles up. Each should be replaced when the mechanism is understood.
 
 - **Quest creatures despawn after activation** (WorldEntity.OnActivateSuccess). Narrowed in fbc02afc after decoding SetBusy: it now only applies when the activate spell has neither a DespawnUnit nor a timed SetBusy clear, the cases retail finished with server scripts (the Trapped Survivor spell 1817 has only Activate).
