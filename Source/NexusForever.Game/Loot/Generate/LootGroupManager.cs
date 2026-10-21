@@ -1,4 +1,6 @@
-﻿﻿using System.Collections.Immutable;
+﻿using NexusForever.GameTable.Model;
+using NexusForever.GameTable;
+using System.Collections.Immutable;
 using Microsoft.Extensions.Logging;
 using NexusForever.Database;
 using NexusForever.Database.World;
@@ -48,7 +50,10 @@ namespace NexusForever.Game.Loot.Generate
             foreach (EntityLootModel entityLootModel in databaseManager.GetDatabase<WorldDatabase>().GetEntityLoot())
                 BuildLoot(entityLootModel.Id, entityLootModel.LootGroupId, entityLoot);
 
+            int borrowed = BorrowSiblingLoot();
+
             log.LogInformation($"Loaded LootGroups for {itemLoot.Count} Item(s) and {entityLoot.Count} Creature(s) in {(DateTime.Now - loadStarted).TotalMilliseconds}ms");
+            log.LogInformation($"{borrowed} creature(s) without a drop table use a sibling's.");
         }
 
         private void BuildLootGroups()
@@ -65,6 +70,39 @@ namespace NexusForever.Game.Loot.Generate
                 lootGroup.Initialise(lootGroupModel, builder);
                 lootGroups.Add(lootGroup.Id, lootGroup);
             }
+        }
+
+        /// <summary>
+        /// Creatures with no recorded drop table (Jabbithole saw no kills, for example the Northern Wilds Dominion Scout) use the table
+        /// of a creature built from the same template, same Creature2 description and faction (the scout borrows from the Gunner).
+        /// </summary>
+        private int BorrowSiblingLoot()
+        {
+            var donors = new Dictionary<(string, uint), List<ILootGroup>>();
+            var missing = new List<(uint Id, (string, uint) Key)>();
+            foreach (Creature2Entry creature in GameTableManager.Instance.Creature2.Entries)
+            {
+                if (string.IsNullOrEmpty(creature.Description) || creature.FactionId == 0)
+                    continue;
+
+                (string, uint) key = (creature.Description, (uint)creature.FactionId);
+                if (entityLoot.TryGetValue(creature.Id, out List<ILootGroup> groups))
+                    donors.TryAdd(key, groups);
+                else
+                    missing.Add((creature.Id, key));
+            }
+
+            int borrowed = 0;
+            foreach ((uint id, (string, uint) key) in missing)
+            {
+                if (!donors.TryGetValue(key, out List<ILootGroup> groups))
+                    continue;
+
+                entityLoot[id] = groups;
+                borrowed++;
+            }
+
+            return borrowed;
         }
 
         private void BuildLoot(uint id, ulong lootGroupId, Dictionary<uint, List<ILootGroup>> storage)
