@@ -136,6 +136,11 @@ namespace NexusForever.Game.Abstract.Entity
         float VendorSellMultiplier { get; set; }
 
         /// <summary>
+        /// Extra fraction of earned XP from active XP boost spells (RewardPropertyModifier), 0 without any.
+        /// </summary>
+        float XpBoost { get; set; }
+
+        /// <summary>
         /// Combat log entry kinds the client asked not to be sent.
         /// </summary>
         CombatLogOptions CombatLogDisables { get; set; }

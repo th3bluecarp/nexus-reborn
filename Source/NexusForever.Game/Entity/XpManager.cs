@@ -122,7 +122,9 @@ namespace NexusForever.Game.Entity
             if (player.Level >= maxLevel)
                 return;
 
-            // TODO: Apply XP bonuses from current spells or active events
+            // XP boost buffs and consumables (RewardPropertyModifier spell effects)
+            uint boostXp = reason != ExpReason.Cheat && player.XpBoost > 0f ? (uint)(earnedXp * player.XpBoost) : 0u;
+            earnedXp += boostXp;
 
             // Signature XP rate was 25% extra. 
             uint signatureXp = 0u;

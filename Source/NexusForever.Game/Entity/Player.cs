@@ -270,6 +270,7 @@ namespace NexusForever.Game.Entity
         public IPlayerTrade Trade { get; set; }
         public float VendorBuyMultiplier { get; set; } = 1f;
         public float VendorSellMultiplier { get; set; } = 1f;
+        public float XpBoost { get; set; }
         public bool IgnoreDuelRequests { get; set; }
         public CombatLogOptions CombatLogDisables { get; set; }
         public bool CombatLogDisableOthers { get; set; }
