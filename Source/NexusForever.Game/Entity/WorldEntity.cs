@@ -817,6 +817,13 @@ namespace NexusForever.Game.Entity
             { 67605u, 67610u }, // Halonian Flora Purple
             { 67606u, 67611u }, // Halonian Flora Blue Green
             { 67607u, 67612u }, // Halonian Flora Pink
+            { 56418u, 55028u }, // Bunker-in-a-Box Mk 2 Exile
+            { 56477u, 55029u }, // Bunker-in-a-Box Mk 2 DOM
+            { 51480u, 39143u }, // Unbuilt Generator
+            { 56084u, 39143u }, // Unbuilt Generator
+            { 34130u, 16579u }, // Destroyed Exile Medical Station, the working Settler Medical Station (Settler Health Boost)
+            { 34129u, 16579u }, // Destroyed Dominion Medical Station
+            { 33880u, 33878u }, // Unbuilt Furniture (dining set) Exile Aurin, Aurin Table
         };
 
         /// <summary>
