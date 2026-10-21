@@ -4,6 +4,10 @@ Newest first. "Live" means running on our test server.
 
 ## 2026-10-21
 
+- **Gear durability and vendor repairs** (66cf2d84). Dying now costs your equipped armor and weapons 10 percent durability (our number, retail's is unknown), shown on your gear at once. Repair and Repair All at vendors work and charge exactly the price the vendor window shows (formula read from the game client).
+- **Salvage is wired up** (66cf2d84). The game's Salvage action is the same message that opens loot bags; armor and weapons now break down into their salvage table. The salvage tables themselves are being rebuilt from archived Jabbithole data, so gear salvage yields nothing until that data lands.
+- **Rename a character** from the character select screen (c5cc0eb2). Free; a character that owns a house cannot be renamed yet.
+- **Duels** (971a149b): challenge a targeted player, accept or decline, 5 second countdown, the loser drops to 1 health instead of dying. Forfeit or wandering 50 m away for 10 seconds ends it.
 - **Ride and quest vehicle spells work** (e4d60c36). The SummonVehicle spell effect was ignored. It now spawns the vehicle and seats you as the pilot for the ride spells (hoverbike, warpig, battle bot, securitybot); Exit Vehicle gets you out and the vehicle goes away.
 - **Turn PvP On/Off** from your portrait menu now works (e4d60c36). Players only fight each other when both are flagged. Turning it off is immediate, retail had a cooldown.
 - **Reset Instances** works (e4d60c36): your next dungeon entry starts a fresh copy. The instance you are standing in is kept.

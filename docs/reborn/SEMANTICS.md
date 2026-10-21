@@ -127,6 +127,11 @@ Confidence: **High** = consistent across all the data we checked and no counter 
 | PvP flag off | at once; retail kept you flagged for a cooldown after turning it off (ServerPvpCooldownUpdate) | ClientPvpToggleFlagsHandler (client sends 1 = turn on or keep on, 0 = turn off, read from WildStar64.exe 0x1403b5ef0) |
 | Reset Instances | drops every solo instance lock except the instance you stand in; the portal reset does the same since the message does not say which dungeon | ClientResetInstancesHandler |
 | ability training cost | free; class abilities are granted on level up anyway, the trainer only teaches ones the character qualifies for but lacks | ClientAbilityBookActivateSpellHandler |
+| durability lost on death | 10 percent of maximum on every equipped armor piece and weapon; GameFormula 559 has unexplained floats 0.015, 0.01 and 0.0362 that may be retail's real rates | Inventory.DeathDurabilityLoss |
+| broken gear | keeps its stats at 0 durability, retail removed them | not implemented |
+| repair cost | exact client formula: 0.25 x missing fraction x item value, max durability = power level + 20 (armor and weapons only) | Item.GetRepairCost (WildStar64.exe 0x1403b54a0) |
+| character rename | free, retail needed a rename token; characters that own a house are refused because houses are found by owner name | ClientCharacterRenameHandler |
+| duel | 30 s to accept, 5 s countdown, ends at 1 health, 50 m area with 10 s to come back, 40 m challenge range | Duel |
 
 ## Special cases that stand in for an unknown generic mechanism
 
