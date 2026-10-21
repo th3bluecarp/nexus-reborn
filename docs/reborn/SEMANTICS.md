@@ -68,6 +68,8 @@ Confidence: **High** = consistent across all the data we checked and no counter 
 | NpcExecutionDelay (35) | the casting creature does nothing for the effect duration, a recovery window | Medium | 3,288 effects, 94 percent with no data and 1 to 4 s durations, all on creature spells | DataBits on the other 6 percent unknown |
 | PathXpModify (93) | DataBits00 x 10 path xp | Invented | 5 effects, values 1, 10, 30 | |
 | Teleport with no location | recall to bind point | Medium | Recall - Transmat (8568) is the only such spell | |
+| ModifySpellCooldown (73) | DataBits00 what is changed (0 a base spell, 1 one spell, 2 a spell group from Spell4GroupList where 0 is every spell, 3 a shared cooldown id), DataBits01 its id, DataBits02 the operation (0 and 1 multiply the time left, 2 add milliseconds, 3 set milliseconds), DataBits03 the amount (float) | Medium | cooldown reset and reduction AMPs read sensibly this way | ops 0 and 1 may differ (one may be relative to the full cooldown) |
+| PersonalDmgHealMod (151) | a multiplier held by the target: DataBits00 3 to 5 physical, tech, magic damage the target deals, 6 to 8 the same types it takes, 12 healing and 13 shield healing it receives; DataBits01 1 only against the caster, 2 against everyone; DataBits02 the multiplier (float) | Medium | tooltips: Analyze Weakness 6 to 8 x1.2 "damage taken from the Stalker increased", Nerve Induction 3 to 5 x0.8 "damage dealt to Medic reduced", Deep-Rooted Connection 3 to 5 x100 on the player against the bonded creature, Sigil of Recovery 12 x1.1 | DataBits01 = 2 is a guess (Unsteady Miasma, Ruin); category 9 (flat per hit) is only on a test spell and ignored |
 
 ## Tradeskills
 
