@@ -41,6 +41,15 @@ namespace NexusForever.Game.Account.Reward
                 IRewardProperty rewardProperty = GetRewardProperty(entry);
                 rewardProperty.UpdateValue(modifierEntry.RewardPropertyData, value);
             }
+
+            // the exchange buttons are disabled without CommodityAccess, which the server run market gives everyone
+            RewardPropertyEntry commodityAccess = GameTableManager.Instance.RewardProperty.GetEntry((ulong)RewardPropertyType.CommodityAccess);
+            if (commodityAccess != null)
+            {
+                IRewardProperty rewardProperty = GetRewardProperty(commodityAccess);
+                if ((rewardProperty.GetValue(0u) ?? 0f) == 0f)
+                    rewardProperty.SetValue(0u, 1f);
+            }
         }
 
         private float GetPremiumModiferValue(RewardPropertyEntry entry, RewardPropertyPremiumModifierEntry modifierEntry, IPlayer player)
