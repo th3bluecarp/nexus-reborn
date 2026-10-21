@@ -28,8 +28,21 @@ namespace NexusForever.Game.Entity
             StackCount         = 0x0020,
             Charges            = 0x0040,
             Durability         = 0x0080,
-            ExpirationTimeLeft = 0x0100
+            ExpirationTimeLeft = 0x0100,
+            Runes              = 0x0200
         }
+
+        /// <summary>
+        /// Rune slot elements as the client reads them from RandomGlyphData: 1 Air, 2 Water, 3 Earth, 4 Fire, 5 Logic, 6 Life, 7 Fusion.
+        /// </summary>
+        public const int MaxRuneSlots = 8;
+
+        public uint RuneData => runeData;
+        public IReadOnlyList<uint> Runes => runes;
+        public int RuneSlotCount => runes.Length;
+
+        private uint runeData;
+        private uint[] runes = [];
 
         public uint Id => Info?.Id ?? SpellEntry.Id;
         public IItemInfo Info { get; }
@@ -165,6 +178,15 @@ namespace NexusForever.Game.Entity
                 SpellEntry = GameTableManager.Instance.Spell4Base.GetEntry(model.ItemId);
 
             saveMask = ItemSaveMask.None;
+
+            runeData = model.RuneData;
+            runes    = (model.Runes ?? "").Split(',', StringSplitOptions.RemoveEmptyEntries).Select(r => uint.TryParse(r, out uint id) ? id : 0u).ToArray();
+            if (runes.Length != UnpackRuneSlotCount(runeData))
+                Array.Resize(ref runes, (int)UnpackRuneSlotCount(runeData));
+
+            // gear from before runes existed gets the slots it would have dropped with
+            if (runeData == 0u && GenerateRuneSlots())
+                saveMask |= ItemSaveMask.Runes;
         }
 
         /// <summary>
@@ -183,6 +205,8 @@ namespace NexusForever.Game.Entity
             Info             = info;
 
             saveMask         = ItemSaveMask.Create;
+
+            GenerateRuneSlots();
         }
 
         /// <summary>
@@ -230,7 +254,9 @@ namespace NexusForever.Game.Entity
                     StackCount         = StackCount,
                     Charges            = Charges,
                     Durability         = Durability,
-                    ExpirationTimeLeft = ExpirationTimeLeft
+                    ExpirationTimeLeft = ExpirationTimeLeft,
+                    RuneData           = runeData,
+                    Runes              = string.Join(',', runes)
                 });
             }
             else if ((saveMask & ItemSaveMask.Delete) != 0)
@@ -287,6 +313,13 @@ namespace NexusForever.Game.Entity
                     model.ExpirationTimeLeft = ExpirationTimeLeft;
                     entity.Property(p => p.ExpirationTimeLeft).IsModified = true;
                 }
+                if ((saveMask & ItemSaveMask.Runes) != 0)
+                {
+                    model.RuneData = runeData;
+                    entity.Property(p => p.RuneData).IsModified = true;
+                    model.Runes = string.Join(',', runes);
+                    entity.Property(p => p.Runes).IsModified = true;
+                }
             }
 
             saveMask = ItemSaveMask.None;
@@ -309,14 +342,129 @@ namespace NexusForever.Game.Entity
                 StackCount = StackCount,
                 Charges    = Charges,
                 Durability = Durability,
+                RandomGlyphData = runeData,
                 Unknown58  = new NetworkItem.UnknownStructure[2]
                 {
                     new NetworkItem.UnknownStructure(),
                     new NetworkItem.UnknownStructure()
                 }
             };
+            networkItem.Glyphs.AddRange(runes);
 
             return networkItem;
+        }
+
+        /// <summary>
+        /// Give armor and weapons the rune slots they drop with, following the client (WildStar64.exe 0x14040efb0): items of power
+        /// level GameFormula 1024 Dataint01 (5) or more get ItemRuneInstance.DefinedSocketCount slots, or their quality's DefaultRunes.
+        /// Defined socket elements are kept, the others are random (Air to Life).
+        /// </summary>
+        private bool GenerateRuneSlots()
+        {
+            if (Info?.Entry == null || Info.Entry.Item2FamilyId is not (1u or 2u))
+                return false;
+            if (Info.Entry.PowerLevel < GameTableManager.Instance.GameFormula.GetEntry(1024).Dataint01)
+                return false;
+
+            ItemRuneInstanceEntry instance = Info.Entry.ItemRuneInstanceId != 0u ? GameTableManager.Instance.ItemRuneInstance.GetEntry(Info.Entry.ItemRuneInstanceId) : null;
+            uint count = Math.Min(instance?.DefinedSocketCount ?? Info.QualityEntry?.DefaultRunes ?? 0u, (uint)MaxRuneSlots);
+            if (count == 0u)
+                return false;
+
+            uint[] defined = instance != null
+                ? [instance.DefinedSocketType00, instance.DefinedSocketType01, instance.DefinedSocketType02, instance.DefinedSocketType03,
+                    instance.DefinedSocketType04, instance.DefinedSocketType05, instance.DefinedSocketType06, instance.DefinedSocketType07]
+                : new uint[MaxRuneSlots];
+
+            var types = new uint[count];
+            for (int i = 0; i < count; i++)
+                types[i] = defined[i] >= 7u ? defined[i] - 6u : (uint)Random.Shared.Next(1, 7);
+
+            runeData = PackRuneSlots(types);
+            runes    = new uint[count];
+            return true;
+        }
+
+        /// <summary>
+        /// Maximum number of rune slots: ItemRuneInstance.SocketCountMax, or the quality's MaxRunes, at most 8.
+        /// </summary>
+        public int GetMaxRuneSlots()
+        {
+            if (Info?.Entry == null || Info.Entry.Item2FamilyId is not (1u or 2u))
+                return 0;
+
+            ItemRuneInstanceEntry instance = Info.Entry.ItemRuneInstanceId != 0u ? GameTableManager.Instance.ItemRuneInstance.GetEntry(Info.Entry.ItemRuneInstanceId) : null;
+            uint max = instance != null && instance.SocketCountMax != 0u ? instance.SocketCountMax : Info.QualityEntry?.MaxRunes ?? 0u;
+            return (int)Math.Min(max, (uint)MaxRuneSlots);
+        }
+
+        /// <summary>
+        /// Element of a rune slot, 1 Air, 2 Water, 3 Earth, 4 Fire, 5 Logic, 6 Life, 7 Fusion.
+        /// </summary>
+        public uint GetRuneSlotType(int index)
+        {
+            return index >= 0 && index < MaxRuneSlots ? (runeData >> (7 + 3 * index)) & 7u : 0u;
+        }
+
+        public void SetRune(int index, uint runeItemId)
+        {
+            runes[index] = runeItemId;
+            saveMask    |= ItemSaveMask.Runes;
+        }
+
+        /// <summary>
+        /// Add a rune slot of the supplied element (1 to 7) or a random one (0).
+        /// </summary>
+        public bool AddRuneSlot(uint type)
+        {
+            if (runes.Length >= GetMaxRuneSlots())
+                return false;
+
+            uint[] types = Enumerable.Range(0, runes.Length).Select(i => GetRuneSlotType(i)).Append(type is >= 1u and <= 7u ? type : (uint)Random.Shared.Next(1, 7)).ToArray();
+            runeData = PackRuneSlots(types);
+            Array.Resize(ref runes, types.Length);
+            saveMask |= ItemSaveMask.Runes;
+            return true;
+        }
+
+        /// <summary>
+        /// Change the element of a rune slot to the supplied one (1 to 7) or a random different one (0).
+        /// </summary>
+        public void SetRuneSlotType(int index, uint type)
+        {
+            uint[] types = Enumerable.Range(0, runes.Length).Select(i => GetRuneSlotType(i)).ToArray();
+            if (type is < 1u or > 7u)
+            {
+                uint current = types[index];
+                do
+                    type = (uint)Random.Shared.Next(1, 7);
+                while (type == current);
+            }
+
+            types[index] = type;
+            runeData = PackRuneSlots(types);
+            saveMask |= ItemSaveMask.Runes;
+        }
+
+        /// <summary>
+        /// Pack rune slot elements the way the client reads RandomGlyphData: two 3 bit slot counts, a flag, then 3 bits per slot.
+        /// </summary>
+        private static uint PackRuneSlots(IReadOnlyList<uint> types)
+        {
+            uint count = (uint)types.Count;
+            uint data = count | (count << 3);
+            for (int i = 0; i < types.Count && i < MaxRuneSlots; i++)
+                data |= (types[i] & 7u) << (7 + 3 * i);
+            return data;
+        }
+
+        private static uint UnpackRuneSlotCount(uint data)
+        {
+            uint count = 0u;
+            for (int i = 0; i < MaxRuneSlots; i++)
+                if (((data >> (7 + 3 * i)) & 7u) != 0u)
+                    count = (uint)i + 1u;
+            return count;
         }
 
         /// <summary>

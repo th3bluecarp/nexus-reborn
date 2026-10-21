@@ -70,6 +70,11 @@ namespace NexusForever.Game.Abstract.Entity
         void ApplyDeathDurabilityLoss();
 
         /// <summary>
+        /// Change the runes of an item (install, clear) or its slots, re-apply the stats if it is equipped and update the client.
+        /// </summary>
+        void ItemRunesUpdate(IItem item, Action<IItem> change);
+
+        /// <summary>
         /// Return every equipped or carried item that has lost durability.
         /// </summary>
         IEnumerable<IItem> GetDamagedItems();

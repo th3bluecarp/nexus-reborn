@@ -556,6 +556,7 @@ namespace NexusForever.Network.Message
         ServerItemSwap                  = 0x0568,
         ServerItemMove                  = 0x0569,
         ServerItemError                 = 0x056A,
+        ServerItemRunesUpdate           = 0x056D, // read from WildStar64.exe 0x1400a3e40: item guid, RandomGlyphData, 4 bit count + rune item ids
         BiInputKeySet                   = 0x056F,
         ClientRequestInputKeySet        = 0x0570,
         ClientSetInputKeySet            = 0x0571,

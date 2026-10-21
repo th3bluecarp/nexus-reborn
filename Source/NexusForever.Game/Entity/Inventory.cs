@@ -920,18 +920,61 @@ namespace NexusForever.Game.Entity
 
         private void ApplyProperties(IItem item)
         {
-            foreach (KeyValuePair<Property, float> property in item.Info.Properties)
-                player.AddItemProperty(property.Key, (ItemSlot)item.Info.SlotEntry.Id, property.Value);
-
-            // TODO: Add properties from item's runes
+            foreach ((Property property, float value) in GetItemProperties(item, item.Runes))
+                player.AddItemProperty(property, (ItemSlot)item.Info.SlotEntry.Id, value);
         }
 
         private void RemoveProperties(IItem item)
         {
-            foreach (KeyValuePair<Property, float> property in item.Info.Properties)
-                player.RemoveItemProperty(property.Key, (ItemSlot)item.Info.SlotEntry.Id);
+            RemoveProperties(item, item.Runes);
+        }
 
-            // TODO: Remove properties from item's runes
+        private void RemoveProperties(IItem item, IEnumerable<uint> runes)
+        {
+            foreach (Property property in GetItemProperties(item, runes).Keys)
+                player.RemoveItemProperty(property, (ItemSlot)item.Info.SlotEntry.Id);
+        }
+
+        /// <summary>
+        /// The item's own stats plus the stats of the runes installed in it (rune items carry budget stats like gear).
+        /// </summary>
+        private static Dictionary<Property, float> GetItemProperties(IItem item, IEnumerable<uint> runes)
+        {
+            var properties = new Dictionary<Property, float>(item.Info.Properties);
+            foreach (uint runeId in runes.Where(r => r != 0u))
+            {
+                IItemInfo rune = ItemManager.Instance.GetItemInfo(runeId);
+                if (rune == null)
+                    continue;
+
+                foreach ((Property property, float value) in rune.Properties)
+                    properties[property] = properties.GetValueOrDefault(property) + value;
+            }
+
+            return properties;
+        }
+
+        /// <summary>
+        /// Change the runes of an item (install, clear) or its slots, re-apply the stats if it is equipped and update the client.
+        /// </summary>
+        public void ItemRunesUpdate(IItem item, Action<IItem> change)
+        {
+            bool equipped = item.Location == InventoryLocation.Equipped;
+            uint[] before = item.Runes.ToArray();
+            if (equipped)
+                RemoveProperties(item, before);
+
+            change(item);
+
+            if (equipped)
+                ApplyProperties(item);
+
+            player.Session.EnqueueMessageEncrypted(new ServerItemRunesUpdate
+            {
+                ItemGuid  = item.Guid,
+                RuneData  = item.RuneData,
+                Runes     = item.Runes.ToList()
+            });
         }
 
         public IEnumerator<IBag> GetEnumerator()

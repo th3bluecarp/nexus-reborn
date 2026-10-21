@@ -11,6 +11,7 @@ namespace NexusForever.Game.Abstract.Entity
         uint Id { get; }
         Item2Entry Entry { get; }
         Item2FamilyEntry FamilyEntry { get; }
+        ItemQualityEntry QualityEntry { get; }
         Item2CategoryEntry CategoryEntry { get; }
         Item2TypeEntry TypeEntry { get; }
         ItemSlotEntry SlotEntry { get; }
