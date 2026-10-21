@@ -4,6 +4,7 @@ Newest first. "Live" means running on our test server.
 
 ## 2026-10-21
 
+- **Salvage tables rebuilt from 334 archived items** (dc8dcaec, was 190): steadier odds per level band.
 - **Settler minfrastructure repairs** (923991f8): broken or unbuilt Settler objects (banners, fences, firepits, flower pots, lamps, pylons, mile markers and more, 57 kinds) now turn into their repaired version when you fix them, and stay repaired for 15 minutes before the broken one returns. Before, the broken banner stayed broken and could be clicked forever.
 - **Creatures that dropped nothing** (0846247a): creatures with no recorded drop table, such as the Northern Wilds Dominion Scout, now drop what their sibling creatures of the same kind drop (the scout uses the Dominion Gunner's table).
 - **Discoveries** (e7c18e9c): uncovering a Discovery marker now gives a small find (one roll from the salvage table at your level: materials, rune fragments) and the marker stays gone for 30 minutes. Before it gave nothing and came back a minute later.
