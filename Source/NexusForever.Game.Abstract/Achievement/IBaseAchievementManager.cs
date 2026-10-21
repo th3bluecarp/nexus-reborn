@@ -30,6 +30,11 @@ namespace NexusForever.Game.Abstract.Achievement
         void GrantAchievement(ushort id);
 
         /// <summary>
+        /// Advance one achievement by count whatever its type (AchievementAdvance spell effect).
+        /// </summary>
+        void AdvanceAchievement(IPlayer target, ushort id, uint count);
+
+        /// <summary>
         /// Update or complete any achievements of <see cref="AchievementType"/> as <see cref="IPlayer"/> with supplied object ids.
         /// </summary>
         void CheckAchievements(IPlayer target, AchievementType type, uint objectId, uint objectIdAlt = 0, uint count = 1);

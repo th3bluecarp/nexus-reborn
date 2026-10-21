@@ -117,6 +117,18 @@ namespace NexusForever.Game.Achievement
         public abstract void CheckAchievements(IPlayer target, AchievementType type, uint objectId, uint objectIdAlt = 0u, uint count = 1u);
 
         /// <summary>
+        /// Advance one achievement by count whatever its type (AchievementAdvance spell effect). Its prerequisites still apply.
+        /// </summary>
+        public void AdvanceAchievement(IPlayer target, ushort id, uint count)
+        {
+            IAchievementInfo info = GlobalAchievementManager.Instance.GetAchievement(id);
+            if (info == null)
+                return;
+
+            CheckAchievements(target, [info], info.Entry.ObjectId, info.Entry.ObjectIdAlt, Math.Max(count, 1u));
+        }
+
+        /// <summary>
         /// Update or complete a collection of achievements as <see cref="IPlayer"/> sending the result to the client.
         /// </summary>
         protected void CheckAchievements(IPlayer target, IEnumerable<IAchievementInfo> achievements, uint objectId, uint objectIdAlt, uint count)
