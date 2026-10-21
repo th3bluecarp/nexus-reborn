@@ -4,6 +4,7 @@ Newest first. "Live" means running on our test server.
 
 ## 2026-10-21
 
+- **Wake Here has its 30 minute cooldown** (dce92dff). It was free and unlimited; it is still free, but after using it the holocrypt (or a service token) is the way back for 30 minutes, as in late retail. The death window shows the time left.
 - **XP boost buffs and consumables work** (62a77f66): Combat XP increased and similar boosts add their bonus to the XP you earn, and other boost types show on your character.
 - **Disguises keep creatures calm** (f8118b0a): disguise spells that change your standing with a faction (Hidden in Plain Sight, Hidden in Hay) now stop that faction's creatures from attacking you on sight.
 - **Commodity Exchange** (603a7621): run by the server as an unlimited market. Buy Now and Sell Now work for any stackable item at server prices (vendor price to buy, a fifth of it to sell, never less than a vendor pays).

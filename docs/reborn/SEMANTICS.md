@@ -136,6 +136,7 @@ Confidence: **High** = consistent across all the data we checked and no counter 
 | salvage yields | one item per salvage from the pooled Jabbithole shares of its class and level band; neighbouring bands weigh 0.3 and 0.05, other classes 0.3; materials mapped to the class's material of the same tier | tools/build_salvage.py |
 | ReputationModify | DataBits00 faction, DataBits01 a float reputation amount used instead of the real standing while the effect lasts (values 10000, 32000, 1000001 all read as friendly); server side only, the client is not told | SpellEffectReputationModifyHandler |
 | RewardPropertyModifier | DataBits00 RewardPropertyType, DataBits01 its data, DataBits02 a float bonus (0.5, 1, 2 on the XP boosts, read as +50, +100, +200 percent); only XP is paid out | SpellEffectRewardPropertyModifierHandler |
+| Wake Here | free, 30 minute cooldown (the timer length was already in the code); not kept across relogs | ResurrectionManager (Medium: late retail memory, no data) |
 | trade | 8 items per side, 30 s to accept the invite, 30 m range; items move as they are (durability and charges kept) | PlayerTrade |
 | Galactic Archive unlock rules | type 2 = quest completion (Object00-05 quest ids, High: the quest ids and article topics match). Types 0 and 1 (234 and 208 rules, Object00 values such as 5, 1049, 1385) match no table we checked and are not applied | ArchiveManager |
 
