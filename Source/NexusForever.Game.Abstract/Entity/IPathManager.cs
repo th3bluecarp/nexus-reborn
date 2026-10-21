@@ -30,6 +30,11 @@ namespace NexusForever.Game.Abstract.Entity
         /// </summary>
         void AddXp(uint xp);
 
+        /// <summary>
+        /// Level of the active path.
+        /// </summary>
+        uint GetLevel();
+
         void SendInitialPackets();
         void SendSetUnitPathTypePacket();
         void SendServerPathActivateResult(GenericError result = GenericError.Ok);

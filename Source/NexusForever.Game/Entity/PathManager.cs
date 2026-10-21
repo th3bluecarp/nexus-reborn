@@ -161,6 +161,14 @@ namespace NexusForever.Game.Entity
         /// <summary>
         /// Get the current <see cref="Path"/> level for the <see cref="IPlayer"/>.
         /// </summary>
+        /// <summary>
+        /// Level of the active <see cref="Path"/>.
+        /// </summary>
+        public uint GetLevel()
+        {
+            return GetCurrentLevel(player.Path);
+        }
+
         private uint GetCurrentLevel(Path path)
         {
             return GameTableManager.Instance.PathLevel.Entries
