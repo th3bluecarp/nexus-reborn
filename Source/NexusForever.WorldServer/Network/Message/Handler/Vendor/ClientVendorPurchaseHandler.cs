@@ -51,7 +51,7 @@ namespace NexusForever.WorldServer.Network.Message.Handler.Vendor
 
                     ulong cost = info.GetVendorBuyAmount(i) * vendorPurchase.VendorItemQty;
                     if (currencyType == CurrencyType.Credits)
-                        cost *= (ulong)Math.Ceiling(vendorInfo.BuyPriceMultiplier);
+                        cost = (ulong)Math.Ceiling(cost * Math.Ceiling(vendorInfo.BuyPriceMultiplier) * session.Player.VendorBuyMultiplier);
 
                     vendorItemPurchaseCost.AddCurrencyCost(currencyType, cost);
                 }

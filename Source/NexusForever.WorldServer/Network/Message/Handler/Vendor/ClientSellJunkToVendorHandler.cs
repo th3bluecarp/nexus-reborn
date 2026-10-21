@@ -44,7 +44,7 @@ namespace NexusForever.WorldServer.Network.Message.Handler.Vendor
             foreach (IItem item in junk)
             {
                 uint quantity = item.StackCount;
-                float costMultiplier = vendorInfo.SellPriceMultiplier * quantity;
+                float costMultiplier = vendorInfo.SellPriceMultiplier * quantity * session.Player.VendorSellMultiplier;
 
                 var currencyChange = new List<(CurrencyType CurrencyTypeId, ulong CurrencyAmount)>();
                 for (int i = 0; i < item.Info.Entry.CurrencyTypeIdSellToVendor.Length; i++)

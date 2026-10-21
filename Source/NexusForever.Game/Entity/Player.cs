@@ -268,6 +268,8 @@ namespace NexusForever.Game.Entity
         public IVendorInfo SelectedVendorInfo { get; set; } // TODO unset this when too far away from vendor
         public IDuel Duel { get; set; }
         public IPlayerTrade Trade { get; set; }
+        public float VendorBuyMultiplier { get; set; } = 1f;
+        public float VendorSellMultiplier { get; set; } = 1f;
         public bool IgnoreDuelRequests { get; set; }
         public CombatLogOptions CombatLogDisables { get; set; }
         public bool CombatLogDisableOthers { get; set; }

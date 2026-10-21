@@ -35,7 +35,7 @@ namespace NexusForever.WorldServer.Network.Message.Handler.Vendor
             if (info == null)
                 return;
 
-            float costMultiplier = vendorInfo.SellPriceMultiplier * vendorSell.Quantity;
+            float costMultiplier = vendorInfo.SellPriceMultiplier * vendorSell.Quantity * session.Player.VendorSellMultiplier;
 
             // do all sanity checks before modifying currency
             var currencyChange = new List<(CurrencyType CurrencyTypeId, ulong CurrencyAmount)>();

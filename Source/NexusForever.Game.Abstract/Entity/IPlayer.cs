@@ -126,6 +126,16 @@ namespace NexusForever.Game.Abstract.Entity
         IPlayerTrade Trade { get; set; }
 
         /// <summary>
+        /// Multiplier on vendor purchase prices from VendorPriceModifier spell effects, 1 without any.
+        /// </summary>
+        float VendorBuyMultiplier { get; set; }
+
+        /// <summary>
+        /// Multiplier on what vendors pay from VendorPriceModifier spell effects, 1 without any.
+        /// </summary>
+        float VendorSellMultiplier { get; set; }
+
+        /// <summary>
         /// Combat log entry kinds the client asked not to be sent.
         /// </summary>
         CombatLogOptions CombatLogDisables { get; set; }
