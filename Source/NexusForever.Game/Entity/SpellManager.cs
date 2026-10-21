@@ -502,6 +502,48 @@ namespace NexusForever.Game.Entity
             }
         }
 
+        /// <summary>
+        /// Change the remaining cooldown of every spell on cooldown that matches the target (ModifySpellCooldown): kind 0 a Spell4Base
+        /// id, 1 a Spell4 id, 2 a spell group from the spell's Spell4GroupList (0 every spell), 3 a SpellCoolDown id. The client is told.
+        /// </summary>
+        public void ModifySpellCooldowns(uint kind, uint id, Func<double, double> change)
+        {
+            foreach ((uint spell4Id, double remaining) in spellCooldowns.ToList())
+            {
+                if (remaining <= 0d)
+                    continue;
+
+                Spell4Entry entry = GameTableManager.Instance.Spell4.GetEntry(spell4Id);
+                if (entry == null || !MatchesCooldownTarget(entry, kind, id))
+                    continue;
+
+                _SetSpellCooldown(spell4Id, Math.Max(0d, change(remaining)), true);
+            }
+
+            if (kind == 3u && cooldownIds.TryGetValue(id, out double shared) && shared > 0d)
+                cooldownIds[id] = Math.Max(0d, change(shared));
+        }
+
+        private static bool MatchesCooldownTarget(Spell4Entry entry, uint kind, uint id)
+        {
+            switch (kind)
+            {
+                case 0u:
+                    return entry.Spell4BaseIdBaseSpell == id;
+                case 1u:
+                    return entry.Id == id;
+                case 2u:
+                    if (id == 0u)
+                        return true;
+                    Spell4GroupListEntry groupList = entry.Spell4GroupListId != 0u ? GameTableManager.Instance.Spell4GroupList.GetEntry(entry.Spell4GroupListId) : null;
+                    return groupList != null && groupList.SpellGroupIds.Contains(id);
+                case 3u:
+                    return entry.SpellCoolDownIds.Contains(id);
+                default:
+                    return false;
+            }
+        }
+
         public void ResetAllSpellCooldowns()
         {
             foreach (uint spell4Id in spellCooldowns.Keys.ToList())
