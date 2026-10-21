@@ -14,6 +14,7 @@ Thanks to Jabbithole and the players whose uploads built it.
 | instance_stormtalon.sql, instance_kelvoreth.sql, instance_skullcano.sql, instance_swordmaiden.sql | The dungeons Stormtalon's Lair, Ruins of Kel Voreth, Skullcano and Sanctuary of the Swordmaiden, 160, 118, 251 and 173 spawns (levels 20, 25, 30 and 35), bosses once each, boss ability objects left out. Entity ids 1170000 to 1209999. Not scripted. |
 | loot.sql | Loot tables for 929 creatures, including 59 harvest node types, from the drops Jabbithole recorded per kill, as drops divided by kills plus 5 so creatures seen only a few times do not always drop rare items. Loot group ids from 1000000. Quest items drop only for players with the matching collect objective open, which needs the QuestObjectiveActive loot condition in this fork. |
 | settler.sql | 240 Settler expansion entities: depots at improvement build spots that had none, and hub resource nodes (Salvaged Machine Parts and the like) in the hub resource areas on terrain heights. Entity ids 1090000 to 1099999. Built by tools/build_settler.py. |
+| salvage.sql | Salvage loot for armor and weapons: what salvaging gave, pooled from the Salvaged to tables Jabbithole recorded per item, per item class (light, medium, heavy armor, weapons, gadgets, decor) and level band, with crafting materials given as the target class's material of the same tier. Every client Salvage entry (item type and level) points at its class and band. Loot group and item loot ids from 3000000. Built by tools/build_salvage.py. |
 | item_loot.sql | Contents of loot bag items whose server loot tables are lost, so far the Nexus Survival Kit from the daily login rewards (3 basic medishots and 2 Field Rations, invented). Loot group ids from 2000000. |
 | missions.sql | Path mission objects and quest targets missing from the world database (Galeras, Thayd, Farside, Murkmire, Malgrave, Grimvault, Ellevar, Illium), at archived pins where they exist, otherwise at their mission marker or quest location link (guessed). Entity ids 1080000 to 1089999. |
 | vendors.sql | Stock for 115 vendors, 4,050 items. Vendors are matched by creature and world. |
@@ -24,7 +25,7 @@ All of it is approximate. NPC positions are player reported map pins with the gr
 ## Loading it
 
 1. Set up the world database as usual: run the migrations, then the SQL files of [NexusForever.WorldDatabase](https://github.com/NexusForever/NexusForever.WorldDatabase). This data was tested against commit 7397e7f.
-2. Load spawns.sql, settler.sql, loot.sql, item_loot.sql, missions.sql and vendors.sql into the world database, after the world database files. Our spawns use fixed ids from 900000, so loading the world database files afterwards would number their entities after ours.
+2. Load spawns.sql, settler.sql, loot.sql, item_loot.sql, salvage.sql, missions.sql and vendors.sql into the world database, after the world database files. Our spawns use fixed ids from 900000, so loading the world database files afterwards would number their entities after ours.
 3. Copy creature_spells.json somewhere the world server can read it and set `Realm:CreatureSpellsPath` in WorldServer.json to its path.
 4. Restart the world server.
 
