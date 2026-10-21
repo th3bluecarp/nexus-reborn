@@ -56,8 +56,19 @@ namespace NexusForever.Game.Map
         /// </remarks>
         public void Unload()
         {
-            foreach (IGridEntity entity in entities)
+            foreach (IGridEntity entity in entities.ToList())
+            {
+                // an entity already taken off the map but left in this cell has no map to unload from,
+                // calling RemoveFromMap on it threw every update and left the grid stuck so players could not be added
+                if (entity.Map == null)
+                {
+                    entities.Remove(entity);
+                    log.Warn($"Dropped stale entity {entity.Guid} from cell at X:{Coord.X}, Z:{Coord.Z}.");
+                    continue;
+                }
+
                 entity.RemoveFromMap();
+            }
         }
 
         /// <summary>

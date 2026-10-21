@@ -2,6 +2,10 @@
 
 Newest first. "Live" means running on our test server.
 
+## 2026-10-21
+
+- **Northern Wilds could stop letting you log in** (live). When the game unloaded an empty part of the map, one creature that had already left the map was still listed there, and the unload crashed on it every update. That part of the map got stuck, and logging in there timed out, so the client kept losing connection. The unload now drops such leftovers and carries on.
+
 ## 2026-10-20
 
 - **Settler improvements are permanent** (live, our choice). Built improvements no longer expire after 5 minutes. Retail timing is one switch away (PermanentImprovements), noted in SEMANTICS.
