@@ -19,13 +19,16 @@ namespace NexusForever.WorldServer.Network.Message.Handler.Entity
         private readonly ILogger<ClientEntityInteractionHandler> log;
 
         private readonly IAssetManager assetManager;
+        private readonly IEntityFactory entityFactory;
 
         public ClientEntityInteractionHandler(
             ILogger<ClientEntityInteractionHandler> log,
-            IAssetManager assetManager)
+            IAssetManager assetManager,
+            IEntityFactory entityFactory)
         {
-            this.log          = log;
-            this.assetManager = assetManager;
+            this.log           = log;
+            this.assetManager  = assetManager;
+            this.entityFactory = entityFactory;
         }
 
         #endregion
@@ -79,6 +82,10 @@ namespace NexusForever.WorldServer.Network.Message.Handler.Entity
                     if (!session.Player.PathMissionManager.OpenSettlerDepot(entity))
                         log.LogWarning($"Received unhandled interaction event {entityInteraction.Type} from Entity {entityInteraction.UnitId}");
                     break;
+                case InteractionType.Vehicle: // placed vehicles (battle suits, Rage Logic speeders)
+                    if (!BoardVehicle(session, entity))
+                        log.LogWarning($"Received unhandled interaction event {entityInteraction.Type} from Entity {entityInteraction.UnitId}");
+                    break;
                 case InteractionType.HousingGuildBroker: // "HousingGuildNeighborhoodBrokerOpen"
                 case InteractionType.ConvertItem:
                 case InteractionType.ConvertRep: // "ResourceConversionOpen"
@@ -106,6 +113,26 @@ namespace NexusForever.WorldServer.Network.Message.Handler.Entity
                     log.LogWarning($"Received unhandled interaction event {entityInteraction.Type} from Entity {entityInteraction.UnitId}");
                     break;
             }
+        }
+
+        /// <summary>
+        /// Clicking a placed vehicle spawns a drivable copy where it stands and seats the player as its pilot; the copy goes away
+        /// when the player gets out and the placed one stays for the next use.
+        /// </summary>
+        private bool BoardVehicle(IWorldSession session, IWorldEntity worldEntity)
+        {
+            if (worldEntity?.CreatureInfo?.Entry == null || worldEntity.CreatureInfo.Entry.UnitVehicleId == 0u)
+                return false;
+
+            if (!session.Player.CanMount() || session.Player.Map == null)
+                return true;
+
+            var vehicle = entityFactory.CreateEntity<IVehicleEntity>();
+            vehicle.Initialise(worldEntity.CreatureInfo, worldEntity.CreatureInfo.Entry.UnitVehicleId, 0u);
+            vehicle.Rotation = worldEntity.Rotation;
+            vehicle.EnqueuePassengerAdd(session.Player, VehicleSeatType.Pilot, 0);
+            vehicle.AddToMap(session.Player.Map, worldEntity.Position);
+            return true;
         }
 
         private void HandleVendor(IWorldSession session, IWorldEntity worldEntity)
