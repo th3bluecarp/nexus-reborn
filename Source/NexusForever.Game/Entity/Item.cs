@@ -184,6 +184,17 @@ namespace NexusForever.Game.Entity
             if (runes.Length != UnpackRuneSlotCount(runeData))
                 Array.Resize(ref runes, (int)UnpackRuneSlotCount(runeData));
 
+            // slots saved with an older count packing are packed again the way the client counts them
+            if (runeData != 0u)
+            {
+                uint repacked = PackRuneSlots(Enumerable.Range(0, runes.Length).Select(i => GetRuneSlotType(i)).ToArray());
+                if (repacked != runeData)
+                {
+                    runeData  = repacked;
+                    saveMask |= ItemSaveMask.Runes;
+                }
+            }
+
             // gear from before runes existed gets the slots it would have dropped with
             if (runeData == 0u && GenerateRuneSlots())
                 saveMask |= ItemSaveMask.Runes;
@@ -343,6 +354,8 @@ namespace NexusForever.Game.Entity
                 Charges    = Charges,
                 Durability = Durability,
                 RandomGlyphData = runeData,
+                // the client wipes the rune slots of armor and weapons whose circuit data has no version in its top byte
+                RandomCircuitData = runeData != 0u ? 1ul << 56 : 0ul,
                 Unknown58  = new NetworkItem.UnknownStructure[2]
                 {
                     new NetworkItem.UnknownStructure(),
@@ -447,12 +460,25 @@ namespace NexusForever.Game.Entity
         }
 
         /// <summary>
-        /// Pack rune slot elements the way the client reads RandomGlyphData: two 3 bit slot counts, a flag, then 3 bits per slot.
+        /// Rune slots the item has before any are added: ItemRuneInstance.DefinedSocketCount, or the quality's DefaultRunes.
         /// </summary>
-        private static uint PackRuneSlots(IReadOnlyList<uint> types)
+        private uint GetMinimumRuneSlots()
         {
-            uint count = (uint)types.Count;
-            uint data = count | (count << 3);
+            ItemRuneInstanceEntry instance = Info?.Entry != null && Info.Entry.ItemRuneInstanceId != 0u ? GameTableManager.Instance.ItemRuneInstance.GetEntry(Info.Entry.ItemRuneInstanceId) : null;
+            return Math.Min(instance?.DefinedSocketCount ?? Info?.QualityEntry?.DefaultRunes ?? 0u, (uint)MaxRuneSlots);
+        }
+
+        /// <summary>
+        /// Pack rune slot elements the way the client reads RandomGlyphData: bits 3 to 5 are the slots added beyond the minimum
+        /// (the client shows min(minimum + that, maximum)), bits 0 to 2 bonus slots (0), bit 6 a flag (0), then 3 bits per slot.
+        /// </summary>
+        /// <remarks>
+        /// Read from WildStar64.exe 0x14040cf90 and 0x14056a631.
+        /// </remarks>
+        private uint PackRuneSlots(IReadOnlyList<uint> types)
+        {
+            uint added = (uint)Math.Max(0, types.Count - (int)GetMinimumRuneSlots());
+            uint data = Math.Min(added, 7u) << 3;
             for (int i = 0; i < types.Count && i < MaxRuneSlots; i++)
                 data |= (types[i] & 7u) << (7 + 3 * i);
             return data;
