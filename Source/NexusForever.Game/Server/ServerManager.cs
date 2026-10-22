@@ -57,8 +57,11 @@ namespace NexusForever.Game.Server
 
         private void InitialiseServers()
         {
+            // keep the last ping result: a fresh entry starts offline, so the realm read as unavailable
+            // for the seconds between this reload and the next ping and logins got NoRealmsAvailable
+            Dictionary<byte, bool> online = Servers?.ToDictionary(s => s.Model.Id, s => s.IsOnline) ?? new();
             Servers = DatabaseManager.Instance.GetDatabase<AuthDatabase>().GetServers()
-                .Select(s => (IServerInfo)new ServerInfo(s))
+                .Select(s => (IServerInfo)new ServerInfo(s, online.GetValueOrDefault(s.Id)))
                 .ToImmutableList();
         }
 

@@ -14,8 +14,9 @@ namespace NexusForever.Game.Server
         public uint Address { get; }
         public bool IsOnline { get; private set; }
 
-        public ServerInfo(ServerModel model)
+        public ServerInfo(ServerModel model, bool isOnline = false)
         {
+            IsOnline = isOnline;
             try
             {
                 if (!IPAddress.TryParse(model.Host, out IPAddress ipAddress))
