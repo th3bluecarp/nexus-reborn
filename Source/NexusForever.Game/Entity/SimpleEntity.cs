@@ -41,6 +41,11 @@ namespace NexusForever.Game.Entity
         {
             if (CreatureInfo.Entry.DatacubeId != 0u)
                 activator.DatacubeManager.AddDatacube((ushort)CreatureInfo.Entry.DatacubeId, int.MaxValue);
+
+            // the client sends a plain activate for soldier holdout control points (no activate cast, though they list
+            // spell 1817), so the cast success path that starts path missions never ran and the beacon did nothing
+            if (CreatureInfo.Entry.PathMissionIdSoldier != 0u)
+                activator.PathMissionManager.OnActivate(CreatureInfo.Entry.Id, AssetManager.Instance.GetTargetGroupsForCreatureId(CreatureInfo.Entry.Id));
         }
 
         public override void OnActivateSuccess(IPlayer activator)
