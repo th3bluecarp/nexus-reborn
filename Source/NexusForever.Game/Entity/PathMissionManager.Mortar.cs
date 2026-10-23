@@ -24,11 +24,13 @@ namespace NexusForever.Game.Entity
     /// </remarks>
     public partial class PathMissionManager
     {
-        private record MortarTeam(uint[] Creatures, uint ShellSpell, uint ExplosionSpell, uint ImpactCreature);
+        /// <param name="CrewOffsets">Crew spots as X/Z offsets from the depot display point, picked by hand to stay clear of
+        /// the props around each depot (at Icefury the depot sits 4 m west of the point and a Vitalium Crystal 5 m east).</param>
+        private record MortarTeam(uint[] Creatures, uint ShellSpell, uint ExplosionSpell, uint ImpactCreature, Vector2[] CrewOffsets);
 
         private static readonly Dictionary<uint, MortarTeam> mortarTeams = new()
         {
-            [10] = new MortarTeam([18810u, 18813u], 27289u, 27299u, 18742u)
+            [10] = new MortarTeam([18810u, 18813u], 27289u, 27299u, 18742u, [new Vector2(-3f, -7f), new Vector2(3f, -7f)])
         };
 
         private const double MortarInterval    = 10d;
@@ -108,9 +110,13 @@ namespace NexusForever.Game.Entity
                 if (creatureInfo == null)
                     continue;
 
-                // either side of the depot
-                float angle = MathF.PI * i;
-                Vector3 position = depot + new Vector3(MathF.Cos(angle) * 4f, 0f, MathF.Sin(angle) * 4f);
+                Vector2 offset = team.CrewOffsets[i % team.CrewOffsets.Length];
+                float x = depot.X + offset.X;
+                float z = depot.Z + offset.Y;
+                // the camp floor is level with the depot point (props within 10 m sit at -724.2 to -725.0), terrain height could be under it
+                var position = new Vector3(x, depot.Y, z);
+                // face the depot
+                float angle = MathF.Atan2(-offset.X, -offset.Y);
 
                 IWorldEntity entity = entityFactory.CreateWorldEntity(creatureInfo.Entry.CreationTypeEnum);
                 entity.Initialise(creatureInfo);
