@@ -584,7 +584,7 @@ namespace NexusForever.Game.Map
         {
             Debug.Assert(entity.Map != null);
 
-            GetGrid(entity.Position).RemoveEntity(entity);
+            RemoveFromGrid(entity);
 
             log.Trace($"Removed entity {entity.Guid} from map {Entry.Id}.");
 
@@ -600,6 +600,21 @@ namespace NexusForever.Game.Map
             remove?.Invoke();
         }
 
+        /// <summary>
+        /// Remove <see cref="IGridEntity"/> from the grid that holds it, which is not always the grid at its position.
+        /// </summary>
+        private void RemoveFromGrid(IGridEntity entity)
+        {
+            if (GetGrid(entity.Position)?.RemoveEntity(entity) == true)
+                return;
+
+            foreach ((uint gridX, uint gridZ) in activeGrids)
+                if (GetGrid(gridX, gridZ).RemoveEntity(entity))
+                    return;
+
+            log.Warn($"Entity {entity.Guid} was in no grid of map {Entry.Id} when removed.");
+        }
+
         protected virtual void RelocateEntity(IGridEntity entity, Vector3 vector)
         {
             Debug.Assert(entity.Map != null);
@@ -611,7 +626,7 @@ namespace NexusForever.Game.Map
             if (newGrid.Coord.X != oldGrid.Coord.X
                 || newGrid.Coord.Z != oldGrid.Coord.Z)
             {
-                oldGrid.RemoveEntity(entity);
+                RemoveFromGrid(entity);
                 newGrid.AddEntity(entity, vector);
             }
             else

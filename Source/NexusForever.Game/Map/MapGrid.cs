@@ -88,6 +88,14 @@ namespace NexusForever.Game.Map
                 }
                 case MapUnloadStatus.UnloadingEntities:
                 {
+                    // the count can drift from the cells when an entity is removed through another grid, the
+                    // grid then never finished unloading and players could not be added to it again
+                    if (entityCount != 0 && cells.All(c => c.EntityCount == 0))
+                    {
+                        log.Warn($"Grid at X:{Coord.X}, Z:{Coord.Z} had entity count {entityCount} with empty cells, finishing unload.");
+                        entityCount = 0;
+                    }
+
                     if (entityCount == 0)
                         UnloadStatus = MapUnloadStatus.Complete;
                     break;
@@ -174,9 +182,14 @@ namespace NexusForever.Game.Map
         /// <summary>
         /// Remove <see cref="IGridEntity"/> from the <see cref="IMapGrid"/>.
         /// </summary>
-        public void RemoveEntity(IGridEntity entity)
+        public bool RemoveEntity(IGridEntity entity)
         {
-            GetCell(entity.Position).RemoveEntity(entity);
+            // the entity's position can be outside the cell it was filed in (a relocate skipped while unloading)
+            IMapCell cell = FindCell(entity);
+            if (cell == null)
+                return false;
+
+            cell.RemoveEntity(entity);
 
             checked
             {
@@ -184,6 +197,15 @@ namespace NexusForever.Game.Map
             }
 
             log.Trace($"Removed entity {entity.Guid} to grid at X:{Coord.X}, Z:{Coord.Z}.");
+            return true;
+        }
+
+        private IMapCell FindCell(IGridEntity entity)
+        {
+            IMapCell cell = GetCell(entity.Position);
+            if (cell.Contains(entity))
+                return cell;
+            return cells.FirstOrDefault(c => c.Contains(entity));
         }
 
         /// <summary>
@@ -194,7 +216,7 @@ namespace NexusForever.Game.Map
             if (UnloadStatus.HasValue)
                 return;
 
-            IMapCell oldCell = GetCell(entity.Position);
+            IMapCell oldCell = FindCell(entity) ?? GetCell(entity.Position);
             IMapCell newCell = GetCell(vector);
 
             // new position is in the same cell, no need to transfer entity to another cell

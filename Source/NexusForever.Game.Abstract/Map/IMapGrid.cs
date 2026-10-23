@@ -47,7 +47,7 @@ namespace NexusForever.Game.Abstract.Map
         /// <summary>
         /// Remove <see cref="IGridEntity"/> from the <see cref="IMapGrid"/>.
         /// </summary>
-        void RemoveEntity(IGridEntity entity);
+        bool RemoveEntity(IGridEntity entity);
 
         /// <summary>
         /// Relocate <see cref="IGridEntity"/> in the <see cref="IMapGrid"/> to <see cref="Vector3"/>.

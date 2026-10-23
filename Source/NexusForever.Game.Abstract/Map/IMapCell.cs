@@ -30,6 +30,16 @@ namespace NexusForever.Game.Abstract.Map
         void RemoveEntity(IGridEntity entity);
 
         /// <summary>
+        /// Returns if <see cref="IGridEntity"/> is in the <see cref="IMapCell"/>.
+        /// </summary>
+        bool Contains(IGridEntity entity);
+
+        /// <summary>
+        /// Number of <see cref="IGridEntity"/>'s in the <see cref="IMapCell"/>.
+        /// </summary>
+        int EntityCount { get; }
+
+        /// <summary>
         /// Return all <see cref="IGridEntity"/>'s in the <see cref="IMapCell"/> that satisfy <see cref="ISearchCheck{T}"/>.
         /// </summary>
         IEnumerable<T> Search<T>(ISearchCheck<T> check) where T : IGridEntity;

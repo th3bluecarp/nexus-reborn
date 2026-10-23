@@ -18,6 +18,8 @@ namespace NexusForever.Game.Map
 
         private readonly HashSet<IGridEntity> entities = new();
 
+        public int EntityCount => entities.Count;
+
         /// <summary>
         /// Return <see cref="IMapCell"/> at supplied <see cref="Vector3"/>.
         /// </summary>
@@ -87,6 +89,11 @@ namespace NexusForever.Game.Map
         {
             entities.Remove(entity);
             log.Trace($"Removed entity {entity.Guid} from cell at X:{Coord.X}, Z:{Coord.Z}.");
+        }
+
+        public bool Contains(IGridEntity entity)
+        {
+            return entities.Contains(entity);
         }
 
         /// <summary>
