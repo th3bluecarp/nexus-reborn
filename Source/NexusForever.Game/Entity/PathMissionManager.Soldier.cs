@@ -30,6 +30,7 @@ namespace NexusForever.Game.Entity
             public PathSoldierEventEntry Event { get; init; }
             public Vector3 Center { get; init; }
             public uint[] Pool { get; init; }
+            public Vector3[] SpawnPoints { get; init; }
             public int Waves { get; init; }
             public int WaveIndex { get; set; } = -1;
             public double Elapsed { get; set; }
@@ -42,6 +43,8 @@ namespace NexusForever.Game.Entity
         private const float HoldoutSpawnMin    = 14f;
         private const float HoldoutSpawnMax    = 18f;
         private const double HoldoutQuickWave  = 3d;
+        private const float HoldoutPointMin    = 8f;
+        private const float HoldoutPointMax    = 40f;
 
         private Holdout holdout;
 
@@ -74,6 +77,14 @@ namespace NexusForever.Game.Entity
                 .Select(g => g.Key)
                 .ToArray();
 
+            // waves come from where creatures already stand: a ring around the player put them inside the rock in caves
+            // (Coldburrow) and at the wrong height on slopes
+            Vector3[] spawnPoints = player.Map.Search(center, HoldoutPointMax, check)
+                .Where(u => u is not IPlayer && u.SummonerGuid == null)
+                .Select(u => u.Position)
+                .Where(p => Vector3.Distance(p, center) >= HoldoutPointMin && Vector3.Distance(p, center) <= HoldoutPointMax)
+                .ToArray();
+
             int waves = Math.Max(GameTableManager.Instance.PathSoldierEventWave.Entries
                 .Where(w => w.PathSoldierEventId == soldierEvent.Id)
                 .Select(w => w.WaveIndex)
@@ -86,6 +97,7 @@ namespace NexusForever.Game.Entity
                 Event    = soldierEvent,
                 Center   = center,
                 Pool     = pool,
+                SpawnPoints = spawnPoints,
                 Waves    = waves,
                 NextWave = soldierEvent.InitialSpawnTime / 1000d
             };
@@ -176,9 +188,21 @@ namespace NexusForever.Game.Entity
                 if (creatureInfo == null)
                     continue;
 
-                float angle    = (float)(Random.Shared.NextDouble() * Math.PI * 2d);
-                float distance = HoldoutSpawnMin + (float)Random.Shared.NextDouble() * (HoldoutSpawnMax - HoldoutSpawnMin);
-                Vector3 position = current.Center + new Vector3(MathF.Cos(angle) * distance, 0f, MathF.Sin(angle) * distance);
+                float angle;
+                Vector3 position;
+                if (current.SpawnPoints.Length > 0)
+                {
+                    // a little spread so a wave does not stack on one spot
+                    position = current.SpawnPoints[Random.Shared.Next(current.SpawnPoints.Length)]
+                        + new Vector3((float)Random.Shared.NextDouble() * 2f - 1f, 0f, (float)Random.Shared.NextDouble() * 2f - 1f);
+                    angle = MathF.Atan2(position.Z - current.Center.Z, position.X - current.Center.X);
+                }
+                else
+                {
+                    angle = (float)(Random.Shared.NextDouble() * Math.PI * 2d);
+                    float distance = HoldoutSpawnMin + (float)Random.Shared.NextDouble() * (HoldoutSpawnMax - HoldoutSpawnMin);
+                    position = current.Center + new Vector3(MathF.Cos(angle) * distance, 0f, MathF.Sin(angle) * distance);
+                }
 
                 IWorldEntity entity = entityFactory.CreateWorldEntity(creatureInfo.Entry.CreationTypeEnum);
                 entity.Initialise(creatureInfo);

@@ -415,6 +415,10 @@ namespace NexusForever.Game.Entity
         /// </summary>
         private void UpdateVision()
         {
+            // a visibility update queued before the entity left the map
+            if (Map == null)
+                return;
+
             var check = new SearchCheckRange<IGridEntity>();
             check.Initialise(Position, Map.VisionRange);
 
