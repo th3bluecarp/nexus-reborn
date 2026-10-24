@@ -78,6 +78,11 @@ namespace NexusForever.Game.Entity
         private readonly IPlayer player;
         private readonly Dictionary<ushort, PathMission> missions = [];
         private PathEpisodeEntry currentEpisode;
+
+        // ServerPathInitialise makes the client throw away its path data and start a new one, so an episode sent before it
+        // leaves the path tracker holding missions that no longer exist (client crash in OnPlayerPathRefresh at login)
+        private bool pathInitialised;
+
         private readonly UpdateTimer locationTimer = new(TimeSpan.FromSeconds(1d));
 
         public PathMissionManager(IPlayer owner, CharacterModel model)
@@ -295,7 +300,7 @@ namespace NexusForever.Game.Entity
         /// </summary>
         public void OnZoneUpdate(WorldZoneEntry zone)
         {
-            if (player.Map == null || zone == null)
+            if (player.Map == null || zone == null || !pathInitialised)
                 return;
 
             var zoneIds = new HashSet<uint>();
@@ -399,6 +404,7 @@ namespace NexusForever.Game.Entity
         {
             // the zone can be set before or after the initial packets, send the episode either way
             currentEpisode = null;
+            pathInitialised = true;
             OnZoneUpdate(player.Zone);
         }
 
