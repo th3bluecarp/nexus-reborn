@@ -19,7 +19,9 @@ namespace NexusForever.Game.Entity
     /// <remarks>
     /// The control point is the creature whose Creature2.PathMissionIdSoldier is the mission. PathSoldierEvent gives the start
     /// delay, the time between waves and the event length, PathSoldierEventWave the number of waves. The wave creatures were
-    /// in the lost server scripts: here each wave brings 2 more enemies than the one before (2 to 5), picked from the hostile
+    /// in the lost server scripts. A few holdouts still have their own creatures in the client table (see holdoutRosters, the
+    /// Northern Wilds ones: Fierce Yeti Icefang and the Frost Giant for M156), and those are used. For the rest each wave brings
+    /// 2 more enemies than the one before (2 to 5), picked from the hostile
     /// creatures living within 150 m of the control point, spawned 14 to 18 m away and sent at the soldier. The last wave of a
     /// wave event is a boss: one of the wave raised to the Prime rank (Creature2Difficulty 5) and a level up.
     /// PathSoldierEvent.PathSoldierEventType (client enum, Holdout 0 Defend 1 Timed 2 TimedDefend 3 TowerDefense 4 WhackAMole 5
@@ -44,7 +46,26 @@ namespace NexusForever.Game.Entity
             // spawns join the map on a later tick, a wave is not beaten before they had time to arrive
             public double WaveSpawnedAt { get; set; } = double.MinValue;
             public bool IsTimed => Event.PathSoldierEventType is 2u or 3u or 6u or 8u;
+            // the mission's own creatures from the client table, Pool is then sorted from the weakest rank up
+            public bool HasRoster { get; init; }
+            public uint[] Bosses { get; init; } = [];
         }
+
+        // Creature2 rows made for one holdout, named in Description like "Northern Wilds Holdout - M156 - Bruiser [NW-hCBC]" or
+        // "Northern Wilds Holdout Boss - M156 - Tank" (the Frost Giant). Rows marked [DELETE], [STUB], [PROTOTYPE] or (DEPR)
+        // are old drafts and skipped. Only a few holdouts were named this way, the rest use the nearby creatures.
+        private static readonly Lazy<Dictionary<uint, (uint[] Regulars, uint[] Bosses)>> holdoutRosters = new(() =>
+        {
+            var regex = new System.Text.RegularExpressions.Regex(@"Holdout( Boss)? - M(\d+) - ");
+            return GameTableManager.Instance.Creature2.Entries
+                .Where(e => e.Description != null && !e.Description.StartsWith("[") && !e.Description.StartsWith("("))
+                .Select(e => (Entry: e, Match: regex.Match(e.Description)))
+                .Where(x => x.Match.Success)
+                .GroupBy(x => uint.Parse(x.Match.Groups[2].Value))
+                .ToDictionary(g => g.Key, g => (
+                    g.Where(x => !x.Match.Groups[1].Success).OrderBy(x => x.Entry.Creature2DifficultyId).Select(x => x.Entry.Id).ToArray(),
+                    g.Where(x => x.Match.Groups[1].Success).Select(x => x.Entry.Id).ToArray()));
+        });
 
         private const uint HoldoutBossDifficulty = 5u;
 
@@ -102,12 +123,17 @@ namespace NexusForever.Game.Entity
                 .Distinct()
                 .Count(), 3);
 
+            bool hasRoster = holdoutRosters.Value.TryGetValue(mission.Entry.Id, out (uint[] Regulars, uint[] Bosses) roster)
+                && roster.Regulars.Length > 0;
+
             holdout = new Holdout
             {
                 Mission  = mission,
                 Event    = soldierEvent,
                 Center   = center,
-                Pool     = pool,
+                Pool     = hasRoster ? roster.Regulars : pool,
+                HasRoster = hasRoster,
+                Bosses   = hasRoster ? roster.Bosses : [],
                 SpawnPoints = spawnPoints,
                 Waves    = waves,
                 NextWave = soldierEvent.InitialSpawnTime / 1000d
@@ -213,14 +239,26 @@ namespace NexusForever.Game.Entity
             var entityFactory       = LegacyServiceProvider.Provider.GetService<IEntityFactory>();
             int count = Math.Min(2 + holdout.WaveIndex, 5);
             Holdout current = holdout;
+
+            // with the mission's own creatures the waves climb the ranks: wave n draws from the weakest n/Waves of the roster,
+            // and the boss wave brings the mission's boss creatures in front of the rest
+            uint[] bosses = boss ? current.Bosses : [];
+            int reach = current.HasRoster
+                ? Math.Clamp((int)Math.Ceiling(current.Pool.Length * (current.WaveIndex + 1) / (double)current.Waves), 1, current.Pool.Length)
+                : current.Pool.Length;
+            count = Math.Max(count, bosses.Length);
+
             for (int i = 0; i < count; i++)
             {
-                ICreatureInfo creatureInfo = creatureInfoManager.GetCreatureInfo(current.Pool[Random.Shared.Next(current.Pool.Length)]);
+                uint spawnId = i < bosses.Length ? bosses[i] : current.Pool[Random.Shared.Next(reach)];
+                ICreatureInfo creatureInfo = creatureInfoManager.GetCreatureInfo(spawnId);
                 if (creatureInfo == null)
                     continue;
 
-                // the first of the boss wave leads it: Prime rank (more health and damage) and a level above the rest
-                if (boss && i == 0 && (creatureInfo.DifficultyEntry == null || creatureInfo.DifficultyEntry.Id < HoldoutBossDifficulty))
+                // no boss creature known: the first of the boss wave leads it, Prime rank (more health and damage) and a level
+                // above the rest (timed events with a roster have no boss, their last wave is the roster's strongest)
+                if (boss && i == 0 && current.Bosses.Length == 0 && !(current.HasRoster && current.IsTimed)
+                    && (creatureInfo.DifficultyEntry == null || creatureInfo.DifficultyEntry.Id < HoldoutBossDifficulty))
                 {
                     Creature2DifficultyEntry bossDifficulty = GameTableManager.Instance.Creature2Difficulty.GetEntry(HoldoutBossDifficulty);
                     if (bossDifficulty != null)
