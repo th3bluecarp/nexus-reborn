@@ -92,6 +92,15 @@ namespace NexusForever.Game.Entity
 
                 mission.State    = (PathMissionState)missionModel.State;
                 mission.Progress = missionModel.Progress;
+
+                // a holdout is only Started while its event runs and the event does not survive a logout. The client crashes in
+                // OnPlayerPathRefresh when it logs in to a Started holdout with no event behind it
+                if (mission.Kind == MissionKind.Holdout && mission.State == PathMissionState.Started)
+                {
+                    mission.State   = PathMissionState.Unlocked;
+                    mission.IsDirty = true;
+                }
+
                 missions.Add(missionModel.MissionId, mission);
             }
         }

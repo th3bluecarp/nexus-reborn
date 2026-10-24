@@ -2,6 +2,10 @@
 
 Newest first. "Live" means running on our test server.
 
+## 2026-10-24
+
+- **Login crash after a Soldier holdout**: leaving a holdout without finishing it (logging out, walking away, dying) left the mission marked as in progress. The next login then crashed the game client while it loaded the path missions. Lost holdouts now go back to ready to start, and any holdout left in progress is reset when the character loads.
+
 ## 2026-10-21
 
 - **Settler mortar team** (PENDING): building the "Exile Mortar Strike Team" at the Camp Icefury depot now brings two Exile mortar crew to the depot, and they shell hostile enemies near the camp every 10 seconds with the game's own mortar shell and explosion (half the target's health and a knockdown). Kills count for you. Before, building it did nothing visible. Timing and range are our guesses.

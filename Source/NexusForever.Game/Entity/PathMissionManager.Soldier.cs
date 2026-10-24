@@ -232,6 +232,12 @@ namespace NexusForever.Game.Entity
 
             if (result == PlayerPathSoldierResult.Success)
                 Advance(ended.Mission, 1u);
+            else if (ended.Mission.State == PathMissionState.Started)
+            {
+                // a lost holdout can be tried again. Left Started it crashes the client at the next login
+                ended.Mission.State   = PathMissionState.Unlocked;
+                ended.Mission.IsDirty = true;
+            }
         }
 
         public void OnEntityVisible(IWorldEntity entity)
