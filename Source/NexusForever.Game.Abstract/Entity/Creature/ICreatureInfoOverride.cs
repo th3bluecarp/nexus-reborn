@@ -15,6 +15,11 @@ namespace NexusForever.Game.Abstract.Entity.Creature
         ICreatureInfoOverride SetLevelOverride(uint? level);
 
         /// <summary>
+        /// Set the <see cref="Creature2DifficultyEntry"/> override for <see cref="ICreatureInfo"/>.
+        /// </summary>
+        ICreatureInfoOverride SetDifficultyEntryOverride(Creature2DifficultyEntry difficultyEntry);
+
+        /// <summary>
         /// Set the <see cref="Creature2DisplayInfoEntry"/> override for <see cref="ICreatureInfo"/>.
         /// </summary>
         ICreatureInfoOverride SetDisplayInfoEntryOverride(Creature2DisplayInfoEntry displayInfoEntry);

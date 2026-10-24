@@ -4,6 +4,7 @@ Newest first. "Live" means running on our test server.
 
 ## 2026-10-24
 
+- **Soldier holdouts play by their type**: a Holdout (like the Yeti one) is now won by beating every wave, and running out of time fails it (before, the timer running out counted as a win). Timed events (like Conquer the Dominion) are still won by lasting the clock. The boss wave now has a real boss: one enemy at Prime rank and a level higher. When you clear a wave early, the on-screen wave timer now shows the 3 seconds until the next one, not the full gap.
 - **Login crash as a Soldier**: at login the server sent the path episode and missions a moment before telling the client which path you are on. That message makes the client start its path data over, and the mission tracker was left holding missions that no longer existed, so it crashed while loading in. Settlers got lucky because the tracker rebuilds itself when the path changes. The episode now goes out only after the path message.
 - **Login crash after a Soldier holdout**: leaving a holdout without finishing it (logging out, walking away, dying) left the mission marked as in progress. The next login then crashed the game client while it loaded the path missions. Lost holdouts now go back to ready to start, and any holdout left in progress is reset when the character loads.
 

@@ -7,7 +7,7 @@ namespace NexusForever.Game.Entity.Creature
     public class CreatureInfoOverride : ICreatureInfoOverride
     {
         public Creature2Entry Entry => baseCreatureInfo.Entry;
-        public Creature2DifficultyEntry DifficultyEntry => baseCreatureInfo.DifficultyEntry;
+        public Creature2DifficultyEntry DifficultyEntry => difficultyEntry ?? baseCreatureInfo.DifficultyEntry;
         public Creature2ArcheTypeEntry ArcheTypeEntry => baseCreatureInfo.ArcheTypeEntry;
         public Creature2TierEntry TierEntry => baseCreatureInfo.TierEntry;
         public Creature2ModelInfoEntry ModelEntry => baseCreatureInfo.ModelEntry;
@@ -16,6 +16,7 @@ namespace NexusForever.Game.Entity.Creature
 
         private ICreatureInfo baseCreatureInfo;
         private uint? level;
+        private Creature2DifficultyEntry difficultyEntry;
         private Creature2DisplayInfoEntry displayInfoEntry;
         private Creature2OutfitInfoEntry outfitInfoEntry;
 
@@ -34,6 +35,15 @@ namespace NexusForever.Game.Entity.Creature
         public ICreatureInfoOverride SetLevelOverride(uint? level)
         {
             this.level = level;
+            return this;
+        }
+
+        /// <summary>
+        /// Set the <see cref="Creature2DifficultyEntry"/> override for <see cref="ICreatureInfo"/>.
+        /// </summary>
+        public ICreatureInfoOverride SetDifficultyEntryOverride(Creature2DifficultyEntry difficultyEntry)
+        {
+            this.difficultyEntry = difficultyEntry;
             return this;
         }
 

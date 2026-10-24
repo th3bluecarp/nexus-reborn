@@ -2,6 +2,7 @@ using System.Numerics;
 using Microsoft.Extensions.DependencyInjection;
 using NexusForever.Game.Abstract.Entity;
 using NexusForever.Game.Abstract.Entity.Creature;
+using NexusForever.Game.Entity.Creature;
 using NexusForever.Game.Map.Search;
 using NexusForever.Game.Static.PlayerPath;
 using NexusForever.GameTable;
@@ -19,8 +20,12 @@ namespace NexusForever.Game.Entity
     /// The control point is the creature whose Creature2.PathMissionIdSoldier is the mission. PathSoldierEvent gives the start
     /// delay, the time between waves and the event length, PathSoldierEventWave the number of waves. The wave creatures were
     /// in the lost server scripts: here each wave brings 2 more enemies than the one before (2 to 5), picked from the hostile
-    /// creatures living within 150 m of the control point, spawned 14 to 18 m away and sent at the soldier. The holdout is won
-    /// when every wave is beaten or the event time runs out, and lost on death or when the soldier goes more than 60 m away.
+    /// creatures living within 150 m of the control point, spawned 14 to 18 m away and sent at the soldier. The last wave of a
+    /// wave event is a boss: one of the wave raised to the Prime rank (Creature2Difficulty 5) and a level up.
+    /// PathSoldierEvent.PathSoldierEventType (client enum, Holdout 0 Defend 1 Timed 2 TimedDefend 3 TowerDefense 4 WhackAMole 5
+    /// WhackAMoleTimed 6 StopTheThieves 7 StopTheThievesTimed 8) decides the win: timed events are won by lasting until the
+    /// event time runs out, the others by beating every wave before it does (running out of time is FailTimeOut). Both lose on
+    /// death or when the soldier goes more than 60 m away.
     /// </remarks>
     public partial class PathMissionManager
     {
@@ -36,7 +41,12 @@ namespace NexusForever.Game.Entity
             public double Elapsed { get; set; }
             public double NextWave { get; set; }
             public List<uint> Spawned { get; } = [];
+            // spawns join the map on a later tick, a wave is not beaten before they had time to arrive
+            public double WaveSpawnedAt { get; set; } = double.MinValue;
+            public bool IsTimed => Event.PathSoldierEventType is 2u or 3u or 6u or 8u;
         }
+
+        private const uint HoldoutBossDifficulty = 5u;
 
         private const float HoldoutPoolRange   = 150f;
         private const float HoldoutLeaveRange  = 60f;
@@ -45,6 +55,7 @@ namespace NexusForever.Game.Entity
         private const double HoldoutQuickWave  = 3d;
         private const float HoldoutPointMin    = 8f;
         private const float HoldoutPointMax    = 40f;
+        private const double HoldoutArriveTime = 2d;
 
         private Holdout holdout;
 
@@ -136,18 +147,36 @@ namespace NexusForever.Game.Entity
                 return;
             }
 
-            bool waveAlive = holdout.Spawned.Any(guid => player.Map.GetEntity<IUnitEntity>(guid)?.IsAlive == true);
+            bool waveAlive = holdout.Elapsed - holdout.WaveSpawnedAt < HoldoutArriveTime || holdout.Spawned.Any(guid => player.Map.GetEntity<IUnitEntity>(guid)?.IsAlive == true);
             bool lastWave  = holdout.WaveIndex >= holdout.Waves - 1;
 
-            if ((lastWave && !waveAlive) || holdout.Elapsed * 1000d >= holdout.Event.MaxEventTime)
+            if (holdout.Elapsed * 1000d >= holdout.Event.MaxEventTime)
+            {
+                EndHoldout(holdout.IsTimed ? PlayerPathSoldierResult.Success : PlayerPathSoldierResult.FailTimeOut);
+                return;
+            }
+
+            if (!holdout.IsTimed && lastWave && !waveAlive)
             {
                 EndHoldout(PlayerPathSoldierResult.Success);
                 return;
             }
 
-            // with nobody left the next wave comes sooner
-            if (!lastWave && holdout.WaveIndex >= 0 && !waveAlive)
-                holdout.NextWave = Math.Min(holdout.NextWave, holdout.Elapsed + HoldoutQuickWave);
+            // with nobody left the next wave comes sooner, the client's wave timer is told so it does not keep counting the
+            // full gap (timed events keep their schedule, they are about lasting the clock)
+            if (!holdout.IsTimed && !lastWave && holdout.WaveIndex >= 0 && !waveAlive
+                && holdout.NextWave > holdout.Elapsed + HoldoutQuickWave)
+            {
+                holdout.NextWave = holdout.Elapsed + HoldoutQuickWave;
+                player.Session.EnqueueMessageEncrypted(new ServerPathSoldierHoldoutStatus
+                {
+                    PathSoldierEventId = holdout.Event.Id,
+                    Mode               = PlayerPathSoldierEventMode.Active,
+                    WaveIndex          = holdout.WaveIndex,
+                    DelayTime          = (int)(HoldoutQuickWave * 1000d),
+                    StartTimeOffset    = (int)(holdout.Elapsed * 1000d)
+                });
+            }
 
             if (!lastWave && holdout.Elapsed >= holdout.NextWave)
                 SpawnHoldoutWave();
@@ -178,6 +207,8 @@ namespace NexusForever.Game.Entity
             if (holdout.Pool.Length == 0)
                 return;
 
+            holdout.WaveSpawnedAt = holdout.Elapsed;
+
             var creatureInfoManager = LegacyServiceProvider.Provider.GetService<ICreatureInfoManager>();
             var entityFactory       = LegacyServiceProvider.Provider.GetService<IEntityFactory>();
             int count = Math.Min(2 + holdout.WaveIndex, 5);
@@ -187,6 +218,17 @@ namespace NexusForever.Game.Entity
                 ICreatureInfo creatureInfo = creatureInfoManager.GetCreatureInfo(current.Pool[Random.Shared.Next(current.Pool.Length)]);
                 if (creatureInfo == null)
                     continue;
+
+                // the first of the boss wave leads it: Prime rank (more health and damage) and a level above the rest
+                if (boss && i == 0 && (creatureInfo.DifficultyEntry == null || creatureInfo.DifficultyEntry.Id < HoldoutBossDifficulty))
+                {
+                    Creature2DifficultyEntry bossDifficulty = GameTableManager.Instance.Creature2Difficulty.GetEntry(HoldoutBossDifficulty);
+                    if (bossDifficulty != null)
+                        creatureInfo = new CreatureInfoOverride()
+                            .SetCreatureInfoOverride(creatureInfo)
+                            .SetDifficultyEntryOverride(bossDifficulty)
+                            .SetLevelOverride(creatureInfo.GetLevel() + 1u);
+                }
 
                 float angle;
                 Vector3 position;
