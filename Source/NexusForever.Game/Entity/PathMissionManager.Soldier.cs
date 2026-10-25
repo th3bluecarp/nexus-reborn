@@ -49,6 +49,13 @@ namespace NexusForever.Game.Entity
             // the mission's own creatures from the client table, Pool is then sorted from the weakest rank up
             public bool HasRoster { get; init; }
             public uint[] Bosses { get; init; } = [];
+            public bool IsDefend => Event.PathSoldierEventType is 1u or 3u;
+            // defend events: the friendly units the soldier guards, the event is lost when all of them die
+            public uint[] DefendIds { get; init; } = [];
+            public List<uint> Defenders { get; } = [];
+            public float MaxDefendHealth { get; set; }
+            public int DefendersPlaced { get; set; }
+            public bool DefendersReady => Defenders.Count > 0 && DefendersPlaced == DefendIds.Length;
         }
 
         // Creature2 rows made for one holdout, named in Description like "Northern Wilds Holdout - M156 - Bruiser [NW-hCBC]" or
@@ -67,6 +74,22 @@ namespace NexusForever.Game.Entity
                     g.Where(x => x.Match.Groups[1].Success).Select(x => x.Entry.Id).ToArray()));
         });
 
+        // the units a defend holdout guards, friendly (faction 1086) Creature2 rows named after the mission, like
+        // "M33 - Injured Survivor 1 - Northern Wilds - Skeech Holdout" or "M1721 - Sunhorn Fawn - Celestion - Tract 1 (Holdout Defend)".
+        // Only used when the event is a defend type, which keeps out the Farside flares (M1570, M1572) named the same way.
+        private const uint HoldoutDefendFaction = 1086u;
+
+        private static readonly Lazy<Dictionary<uint, uint[]>> holdoutDefendTargets = new(() =>
+        {
+            var regex = new System.Text.RegularExpressions.Regex(@"^M(\d+) - .*Holdout");
+            return GameTableManager.Instance.Creature2.Entries
+                .Where(e => e.Description != null && (uint)e.FactionId == HoldoutDefendFaction && e.PathMissionIdSoldier == 0u)
+                .Select(e => (Entry: e, Match: regex.Match(e.Description)))
+                .Where(x => x.Match.Success)
+                .GroupBy(x => uint.Parse(x.Match.Groups[1].Value))
+                .ToDictionary(g => g.Key, g => g.OrderBy(x => x.Entry.Id).Select(x => x.Entry.Id).ToArray());
+        });
+
         private const uint HoldoutBossDifficulty = 5u;
 
         private const float HoldoutPoolRange   = 150f;
@@ -77,6 +100,7 @@ namespace NexusForever.Game.Entity
         private const float HoldoutPointMin    = 8f;
         private const float HoldoutPointMax    = 40f;
         private const double HoldoutArriveTime = 2d;
+        private const float HoldoutDefendRange = 3f;
 
         private Holdout holdout;
 
@@ -126,6 +150,9 @@ namespace NexusForever.Game.Entity
             bool hasRoster = holdoutRosters.Value.TryGetValue(mission.Entry.Id, out (uint[] Regulars, uint[] Bosses) roster)
                 && roster.Regulars.Length > 0;
 
+            bool isDefend = soldierEvent.PathSoldierEventType is 1u or 3u;
+            uint[] defendIds = isDefend && holdoutDefendTargets.Value.TryGetValue(mission.Entry.Id, out uint[] targets) ? targets : [];
+
             holdout = new Holdout
             {
                 Mission  = mission,
@@ -134,6 +161,7 @@ namespace NexusForever.Game.Entity
                 Pool     = hasRoster ? roster.Regulars : pool,
                 HasRoster = hasRoster,
                 Bosses   = hasRoster ? roster.Bosses : [],
+                DefendIds = defendIds,
                 SpawnPoints = spawnPoints,
                 Waves    = waves,
                 NextWave = soldierEvent.InitialSpawnTime / 1000d
@@ -145,13 +173,78 @@ namespace NexusForever.Game.Entity
                 mission.IsDirty = true;
             }
 
-            player.Session.EnqueueMessageEncrypted(new ServerPathSoldierHoldoutStatus
+            player.Session.EnqueueMessageEncrypted(HoldoutStatus(PlayerPathSoldierEventMode.InitialDelay, (int)soldierEvent.InitialSpawnTime));
+
+            SpawnHoldoutDefenders();
+        }
+
+        /// <summary>
+        /// Status for the client's holdout tracker, with the defend units so it can show their health.
+        /// </summary>
+        private ServerPathSoldierHoldoutStatus HoldoutStatus(PlayerPathSoldierEventMode mode, int delayTime, bool isBoss = false)
+        {
+            var status = new ServerPathSoldierHoldoutStatus
             {
-                PathSoldierEventId = soldierEvent.Id,
-                Mode               = PlayerPathSoldierEventMode.InitialDelay,
-                DelayTime          = (int)soldierEvent.InitialSpawnTime,
-                WaveIndex          = 0
-            });
+                PathSoldierEventId = holdout.Event.Id,
+                Mode               = mode,
+                WaveIndex          = Math.Max(holdout.WaveIndex, 0),
+                IsBoss             = isBoss,
+                DelayTime          = delayTime,
+                StartTimeOffset    = mode == PlayerPathSoldierEventMode.InitialDelay ? 0 : (int)(holdout.Elapsed * 1000d)
+            };
+
+            if (holdout.DefendersReady)
+            {
+                status.Units = holdout.Defenders
+                    .Select(guid => new TowerDefenseUnit { UnitId = guid, Type = TowerDefenseUnitType.Defend })
+                    .ToList();
+                status.MaxDefendHealth = holdout.MaxDefendHealth;
+            }
+
+            return status;
+        }
+
+        /// <summary>
+        /// Puts the units a defend holdout guards around the control point. The client is told about them once all are in.
+        /// </summary>
+        private void SpawnHoldoutDefenders()
+        {
+            if (holdout.DefendIds.Length == 0)
+                return;
+
+            var creatureInfoManager = LegacyServiceProvider.Provider.GetService<ICreatureInfoManager>();
+            var entityFactory       = LegacyServiceProvider.Provider.GetService<IEntityFactory>();
+            Holdout current = holdout;
+
+            for (int i = 0; i < current.DefendIds.Length; i++)
+            {
+                ICreatureInfo creatureInfo = creatureInfoManager.GetCreatureInfo(current.DefendIds[i]);
+                if (creatureInfo == null)
+                {
+                    current.DefendersPlaced++;
+                    continue;
+                }
+
+                // close to the soldier, where the ground is known to be: further out they ended up inside the rock in caves
+                float angle = MathF.PI * 2f * i / current.DefendIds.Length;
+                Vector3 position = current.Center + new Vector3(MathF.Cos(angle) * HoldoutDefendRange, 0f, MathF.Sin(angle) * HoldoutDefendRange);
+
+                IWorldEntity entity = entityFactory.CreateWorldEntity(creatureInfo.Entry.CreationTypeEnum);
+                entity.Initialise(creatureInfo);
+                entity.Rotation = new Vector3(angle + MathF.PI, 0f, 0f);
+                entity.AddToMap(player.Map, position, (map, guid, vector) =>
+                {
+                    current.Defenders.Add(guid);
+                    current.DefendersPlaced++;
+                    if (holdout != current || !current.DefendersReady)
+                        return;
+
+                    current.MaxDefendHealth = current.Defenders.Sum(g => (float)(map.GetEntity<IUnitEntity>(g)?.MaxHealth ?? 0u));
+                    player.Session.EnqueueMessageEncrypted(current.WaveIndex < 0
+                        ? HoldoutStatus(PlayerPathSoldierEventMode.InitialDelay, Math.Max((int)(current.NextWave * 1000d - current.Elapsed * 1000d), 0))
+                        : HoldoutStatus(PlayerPathSoldierEventMode.Active, (int)(current.NextWave * 1000d - current.Elapsed * 1000d)));
+                });
+            }
         }
 
         private void UpdateHoldout(double lastTick)
@@ -170,6 +263,12 @@ namespace NexusForever.Game.Entity
             if (Vector3.Distance(player.Position, holdout.Center) > HoldoutLeaveRange)
             {
                 EndHoldout(PlayerPathSoldierResult.FailLeaveArea);
+                return;
+            }
+
+            if (holdout.DefendersReady && holdout.Defenders.All(guid => player.Map.GetEntity<IUnitEntity>(guid)?.IsAlive != true))
+            {
+                EndHoldout(PlayerPathSoldierResult.FailDefenceDeath);
                 return;
             }
 
@@ -194,14 +293,7 @@ namespace NexusForever.Game.Entity
                 && holdout.NextWave > holdout.Elapsed + HoldoutQuickWave)
             {
                 holdout.NextWave = holdout.Elapsed + HoldoutQuickWave;
-                player.Session.EnqueueMessageEncrypted(new ServerPathSoldierHoldoutStatus
-                {
-                    PathSoldierEventId = holdout.Event.Id,
-                    Mode               = PlayerPathSoldierEventMode.Active,
-                    WaveIndex          = holdout.WaveIndex,
-                    DelayTime          = (int)(HoldoutQuickWave * 1000d),
-                    StartTimeOffset    = (int)(holdout.Elapsed * 1000d)
-                });
+                player.Session.EnqueueMessageEncrypted(HoldoutStatus(PlayerPathSoldierEventMode.Active, (int)(HoldoutQuickWave * 1000d)));
             }
 
             if (!lastWave && holdout.Elapsed >= holdout.NextWave)
@@ -220,15 +312,7 @@ namespace NexusForever.Game.Entity
                 WaveIndex          = (uint)holdout.WaveIndex,
                 IsBoss             = boss
             });
-            player.Session.EnqueueMessageEncrypted(new ServerPathSoldierHoldoutStatus
-            {
-                PathSoldierEventId = holdout.Event.Id,
-                Mode               = PlayerPathSoldierEventMode.Active,
-                WaveIndex          = holdout.WaveIndex,
-                IsBoss             = boss,
-                DelayTime          = (int)holdout.Event.MaxTimeBetweenWaves,
-                StartTimeOffset    = (int)(holdout.Elapsed * 1000d)
-            });
+            player.Session.EnqueueMessageEncrypted(HoldoutStatus(PlayerPathSoldierEventMode.Active, (int)holdout.Event.MaxTimeBetweenWaves, boss));
 
             if (holdout.Pool.Length == 0)
                 return;
@@ -287,11 +371,18 @@ namespace NexusForever.Game.Entity
                 IWorldEntity entity = entityFactory.CreateWorldEntity(creatureInfo.Entry.CreationTypeEnum);
                 entity.Initialise(creatureInfo);
                 entity.Rotation = new Vector3(angle + MathF.PI, 0f, 0f);
+                // in a defend event every other attacker goes for the defended units, the soldier pulls them off by fighting them
+                bool goesForDefenders = i % 2 == 1;
                 entity.AddToMap(player.Map, position, (map, guid, vector) =>
                 {
                     current.Spawned.Add(guid);
-                    if (map.GetEntity<IUnitEntity>(guid) is IUnitEntity unit && player.Map == map)
-                        unit.ThreatManager.UpdateThreat(player, 10);
+                    if (map.GetEntity<IUnitEntity>(guid) is not IUnitEntity unit || player.Map != map)
+                        return;
+
+                    IUnitEntity[] defenders = goesForDefenders
+                        ? current.Defenders.Select(g => map.GetEntity<IUnitEntity>(g)).Where(d => d?.IsAlive == true).ToArray()
+                        : [];
+                    unit.ThreatManager.UpdateThreat(defenders.Length > 0 ? defenders[Random.Shared.Next(defenders.Length)] : player, 10);
                 });
             }
         }
@@ -301,7 +392,7 @@ namespace NexusForever.Game.Entity
             Holdout ended = holdout;
             holdout = null;
 
-            foreach (uint guid in ended.Spawned)
+            foreach (uint guid in ended.Spawned.Concat(ended.Defenders))
                 player.Map?.GetEntity<IWorldEntity>(guid)?.RemoveFromMap();
 
             player.Session.EnqueueMessageEncrypted(new ServerPathSoldierHoldoutEnd
