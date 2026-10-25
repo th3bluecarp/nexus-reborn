@@ -27,7 +27,8 @@ namespace NexusForever.Game.Entity
     /// PathSoldierEvent.PathSoldierEventType (client enum, Holdout 0 Defend 1 Timed 2 TimedDefend 3 TowerDefense 4 WhackAMole 5
     /// WhackAMoleTimed 6 StopTheThieves 7 StopTheThievesTimed 8) decides the win: timed events are won by lasting until the
     /// event time runs out, the others by beating every wave before it does (running out of time is FailTimeOut). Both lose on
-    /// death or when the soldier goes more than 60 m away.
+    /// death or when the soldier goes more than 60 m away. Defend events (types 1 and 3) also spawn the friendly units to guard
+    /// when the client table names them (holdoutDefendTargets), and are lost when all of them die.
     /// </remarks>
     public partial class PathMissionManager
     {

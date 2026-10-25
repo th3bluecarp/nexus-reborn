@@ -2,6 +2,10 @@
 
 Newest first. "Live" means running on our test server.
 
+## 2026-10-25
+
+- **Defend holdouts have something to defend**: Coldburrow Skeech now spawns its three Injured Survivors around the control point. Some of the Skeech go for them instead of you, fighting them pulls them off, and the holdout is lost if all three die. The holdout tracker gets the survivors so it can show their health. The same applies to the other defend holdouts whose targets are in the game files: the Everstar Grove Exile Survivor, two Wilderrun ones and the Celestion cub and fawn. Untested in game.
+
 ## 2026-10-24
 
 - **The real holdout enemies in Northern Wilds**: the game files still hold the creatures made for three Soldier holdouts, so they now spawn instead of random nearby enemies. Conquer the Yeti: Fierce Yeti Icefang waves, and its boss is a **Frost Giant** (Prime rank). Coldburrow Skeech: Fierce Skeech Scratchers, Bashers and Shamans and Dagun Trackers, with the Skeech Dagunlord and Chillfang as bosses. Conquer the Dominion: Fierce Dominion Swordsmen, Gunners, Seers, Heavy Gunners and Scrappers, led by a Dominion Swordsmaster. Waves get tougher as they go. Other holdouts still use nearby enemies.
