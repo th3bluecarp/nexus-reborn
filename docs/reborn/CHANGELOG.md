@@ -2,6 +2,10 @@
 
 Newest first. "Live" means running on our test server.
 
+## 2026-10-26
+
+- **Holdout enemies actually come at you**: the creatures made for the Northern Wilds holdouts (the Yeti, Skeech and Dominion waves and their bosses) are marked "no AI" in the game files, because on retail the holdout script moved them. They spawned and just stood there, up to 40 m away. They now fight with the normal creature AI and come for you (or the survivors).
+
 ## 2026-10-25
 
 - **Defend holdouts have something to defend**: Coldburrow Skeech now spawns its three Injured Survivors around the control point. Some of the Skeech go for them instead of you, fighting them pulls them off, and the holdout is lost if all three die. The holdout tracker gets the survivors so it can show their health. The same applies to the other defend holdouts whose targets are in the game files: the Everstar Grove Exile Survivor, two Wilderrun ones and the Celestion cub and fawn. Untested in game.
