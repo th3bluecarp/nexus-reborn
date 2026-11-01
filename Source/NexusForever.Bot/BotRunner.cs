@@ -3212,10 +3212,10 @@ internal sealed class BotRunner
             {
                 log.Info($"location objective {objective.Index}: activating portal creature {portalCreatureId} guid {portal.Guid}");
                 // portals have no activation spell: the plain ClientActivateUnit reaches the server's OnActivate directly
+                // one plain activation only: the server teleports the player (a map transfer, the portal is gone from view),
+                // and a follow-up ActivateUnitCast for the vanished unit made the server drop the session (13:41 run)
                 await RequireWorld().SendEncryptedAsync(GameMessageOpcode.ClientActivateUnit,
                     PacketCodec.ClientActivateUnit(portal.Guid), cancellationToken);
-                if (!await TryWaitForObjectiveProgressAsync(objective.Index, before, TimeSpan.FromSeconds(10), cancellationToken))
-                    await RunActivationFlowAsync(objective.Index, before, portal, TimeSpan.FromSeconds(20), cancellationToken);
             }
             else
                 log.Info($"location objective {objective.Index}: portal creature {portalCreatureId} not visible within {EntityStreamTimeout.TotalSeconds:0} s");
