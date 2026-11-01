@@ -4,6 +4,7 @@ Newest first. "Live" means running on our test server.
 
 ## 2026-11-01
 
+- **The killing blow always counts for quest credit**: kill rewards went only to players on the target's threat list, so a creature that never fought back (the arkship Virtual Battle Beasts, any passive target) gave no quest credit or XP to its killer. Found by the quest bot (10518: 18 kills, 1 credited).
 - **Respawns were ghosts**: a respawned creature or quest object (killed, or despawned after a player used it) was put back on the map without its OnAddToMap callback, so it had no guid, no map and was never sent to players; survivors, flares and cannons stayed gone until the grid reloaded or the server restarted. Found by the quest bot (3480 could not find survivors after 3479; flares gone for an hour). Fixed in BaseMap.UpdateDelayedAdds, UnitEntity.Respawn and the repaired-minfrastructure swap.
 
 ## 2026-10-31

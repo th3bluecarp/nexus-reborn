@@ -1059,6 +1059,12 @@ namespace NexusForever.Game.Entity
                 Map.PublicEventManager.UpdateStat(killerPlayer, PublicEventStat.Kills, 1);
 
             var rewarded = new HashSet<IPlayer>();
+            // the killing blow always counts: a target that never fought back (training dummies, passive creatures) has no
+            // threat list, and quest kill credit used to come only from the threat list (2026-11-01, found by the quest bot)
+            if (killer is IPlayer killingPlayer)
+                rewarded.Add(killingPlayer);
+            else if (killer?.SummonerGuid is uint killerSummoner && GetVisible<IUnitEntity>(killerSummoner) is IPlayer killerPetOwner)
+                rewarded.Add(killerPetOwner);
             foreach (IHostileEntity hostile in ThreatManager)
             {
                 IUnitEntity entity = GetVisible<IUnitEntity>(hostile.HatedUnitId);
