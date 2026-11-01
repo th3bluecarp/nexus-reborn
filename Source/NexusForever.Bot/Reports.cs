@@ -13,6 +13,7 @@ internal sealed class RunReport
     public List<StepReport> Steps { get; } = [];
     public List<string> Cheats { get; } = [];
     public List<ObjectiveReport> Objectives { get; } = [];
+    public List<QuestRunReport> Quests { get; } = [];
     public string Result { get; set; } = "FAIL";
     public string? Failure { get; set; }
 
@@ -32,6 +33,21 @@ internal sealed class RunReport
     }
 }
 
+internal sealed class QuestRunReport
+{
+    public ushort QuestId { get; init; }
+    public string Title { get; init; } = "";
+    public string CharacterName { get; set; } = "";
+    public DateTimeOffset StartTimestamp { get; init; } = DateTimeOffset.UtcNow;
+    public DateTimeOffset EndTimestamp { get; set; }
+    public List<StepReport> Steps { get; } = [];
+    public List<string> Cheats { get; } = [];
+    public List<ObjectiveReport> Objectives { get; } = [];
+    public string Result { get; set; } = "FAIL";
+    public string? Failure { get; set; }
+    public bool Skipped { get; set; }
+}
+
 internal sealed class StepReport
 {
     public required string Name { get; init; }
@@ -48,6 +64,7 @@ internal sealed class ObjectiveReport
     public uint Count { get; init; }
     public uint Progress { get; set; }
     public bool Ok { get; set; }
+    public string? Failure { get; set; }
 }
 
 internal sealed class BotFailureException(string message) : Exception(message);

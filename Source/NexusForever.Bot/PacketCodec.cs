@@ -13,6 +13,8 @@ internal sealed record RealmInfo(uint AccountId, byte[] SessionKey, ushort Port,
 internal sealed record CharacterCreateResult(ulong CharacterId, uint WorldId, byte Result);
 internal sealed record QuestStateUpdate(ushort QuestId, QuestState State, uint QuestObjectiveId);
 internal sealed record QuestObjectiveUpdate(ushort QuestId, uint Index, uint Completed);
+internal sealed record SpellCastStart(uint ServerUniqueId, uint CasterId, uint? ClientUniqueId);
+internal sealed record QuestInitInfo(IReadOnlySet<ushort> CompletedQuestIds);
 
 internal static class PacketCodec
 {
@@ -110,6 +112,13 @@ internal static class PacketCodec
         writer.Write(guid);
     });
 
+    public static byte[] ClientSpellClientSideInteraction(uint serverUniqueId) => Write(writer =>
+    {
+        writer.Write(serverUniqueId);
+        writer.Write((byte)1, 3);
+        writer.Write(0u);
+    });
+
     public static byte[] ClientCastSpell(uint uniqueId, ushort bagIndex, uint targetGuid) => Write(writer =>
     {
         writer.Write(uniqueId);
@@ -155,6 +164,64 @@ internal static class PacketCodec
 
     public static QuestObjectiveUpdate ParseQuestObjective(byte[] body) => Read(body, reader =>
         new QuestObjectiveUpdate(reader.ReadUShort(15), reader.ReadUInt(), reader.ReadUInt()));
+
+    public static SpellCastStart ParseSpellStart(byte[] body) => Read(body, reader =>
+    {
+        uint serverUniqueId = reader.ReadUInt();
+        _ = reader.ReadUInt(18);
+        _ = reader.ReadUInt(18);
+        _ = reader.ReadUInt(18);
+        uint casterId = reader.ReadUInt();
+        return new SpellCastStart(serverUniqueId, casterId, null);
+    });
+
+    public static SpellCastStart ParseSpellConfirmCast(byte[] body) => Read(body, reader =>
+    {
+        uint clientUniqueId = reader.ReadUInt();
+        uint serverUniqueId = reader.ReadUInt();
+        uint casterId = reader.ReadUInt();
+        return new SpellCastStart(serverUniqueId, casterId, clientUniqueId);
+    });
+
+    public static (uint UnitId, bool Dead) ParseEntityDeathState(byte[] body) => Read(body, reader =>
+        (reader.ReadUInt(), reader.ReadBit()));
+
+    public static QuestInitInfo ParseQuestInit(byte[] body) => Read(body, reader =>
+    {
+        var completed = new HashSet<ushort>();
+
+        uint completedCount = reader.ReadUInt();
+        for (uint i = 0; i < completedCount; i++)
+        {
+            completed.Add(reader.ReadUShort(15));
+            _ = reader.ReadBit();
+        }
+
+        uint inactiveCount = reader.ReadUInt();
+        for (uint i = 0; i < inactiveCount; i++)
+        {
+            _ = reader.ReadUShort(15);
+            _ = reader.ReadByte(4);
+        }
+
+        uint activeCount = reader.ReadUInt();
+        for (uint i = 0; i < activeCount; i++)
+        {
+            _ = reader.ReadUShort(15);
+            _ = reader.ReadByte(4);
+            _ = reader.ReadUInt();
+            _ = reader.ReadUInt();
+            uint objectiveCount = reader.ReadUInt();
+            for (uint objective = 0; objective < objectiveCount; objective++)
+                _ = reader.ReadUInt();
+            _ = reader.ReadUInt();
+            for (uint objective = 0; objective < objectiveCount; objective++)
+                _ = reader.ReadUInt();
+        }
+
+        _ = reader.ReadULong();
+        return new QuestInitInfo(completed);
+    });
 
     public static byte ParseCharacterDeleteResult(byte[] body) => Read(body, reader => reader.ReadByte(6));
 

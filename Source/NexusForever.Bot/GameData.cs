@@ -29,6 +29,7 @@ internal sealed class BotGameData
     private readonly GameTable<Creature2Entry> creatures;
     private readonly GameTable<CharacterCreationEntry> characterCreations;
     private readonly GameTable<WorldLocation2Entry> worldLocations;
+    private readonly GameTable<TargetGroupEntry> targetGroups;
     private readonly TextTable english;
 
     public BotGameData(string tablePath)
@@ -41,6 +42,7 @@ internal sealed class BotGameData
         creatures = Load<Creature2Entry>(tablePath, "Creature2.tbl");
         characterCreations = Load<CharacterCreationEntry>(tablePath, "CharacterCreation.tbl");
         worldLocations = Load<WorldLocation2Entry>(tablePath, "WorldLocation2.tbl");
+        targetGroups = Load<TargetGroupEntry>(tablePath, "TargetGroup.tbl");
         english = new TextTable(RequiredPath(tablePath, "en-US.bin"));
     }
 
@@ -81,16 +83,76 @@ internal sealed class BotGameData
             .Distinct()
             .ToArray();
 
-        if (givers.Length == 0)
-            throw new BotFailureException($"No Creature2 quest giver was found for quest {id}.");
-        if (receivers.Length == 0)
-            throw new BotFailureException($"No Creature2 quest receiver was found for quest {id}.");
-
         string title = english.GetEntry(entry.LocalizedTextIdTitle) ?? $"Quest {id}";
         return new QuestDefinition(id, title, entry, questObjectives, givers, receivers);
     }
 
-    public CharacterCreationEntry GetBotCharacterCreation()
+    public IReadOnlyList<QuestDefinition> GetQuestClosure(ushort requestedId, bool includePrerequisites)
+    {
+        var result = new List<QuestDefinition>();
+        var visited = new HashSet<ushort>();
+        var visiting = new HashSet<ushort>();
+
+        void Visit(ushort id)
+        {
+            if (visited.Contains(id))
+                return;
+            if (!visiting.Add(id))
+                throw new BotFailureException($"Quest prerequisite cycle includes quest {id}.");
+
+            QuestDefinition definition = GetQuest(id);
+            if (includePrerequisites)
+            {
+                uint[] prerequisiteIds = definition.Entry.PrerequisiteQuests.Where(value => value != 0).ToArray();
+                if ((definition.Entry.PrerequisiteFlags & 1u) != 0 && prerequisiteIds.Length > 1)
+                    prerequisiteIds = [prerequisiteIds[0]];
+                foreach (uint prerequisiteId in prerequisiteIds)
+                {
+                    if (prerequisiteId > ushort.MaxValue)
+                        throw new BotFailureException($"Quest {id} has invalid prerequisite quest id {prerequisiteId}.");
+                    Visit((ushort)prerequisiteId);
+                }
+            }
+
+            visiting.Remove(id);
+            visited.Add(id);
+            result.Add(definition);
+        }
+
+        Visit(requestedId);
+        return result;
+    }
+
+    public IReadOnlyList<uint> ResolveTargetGroup(uint id)
+    {
+        var result = new List<uint>();
+        ResolveTargetGroup(id, new HashSet<uint>(), result);
+        return result.Distinct().ToArray();
+    }
+
+    private void ResolveTargetGroup(uint id, HashSet<uint> visited, List<uint> result)
+    {
+        if (!visited.Add(id))
+            return;
+
+        TargetGroupEntry? entry = targetGroups.GetEntry(id);
+        if (entry is null)
+            return;
+
+        switch ((TargetGroupType)entry.Type)
+        {
+            case TargetGroupType.CreatureIdGroup:
+                result.AddRange(entry.DataEntries.Where(value => value != 0));
+                break;
+            case TargetGroupType.OtherTargetGroup:
+            case TargetGroupType.OtherTargetGroupCreatures:
+                foreach (uint childId in entry.DataEntries.Where(value => value != 0))
+                    ResolveTargetGroup(childId, visited, result);
+                break;
+        }
+    }
+
+    public CharacterCreationEntry GetBotCharacterCreation(BotCharacterStart start)
     {
         CharacterCreationEntry[] candidates = characterCreations.Entries
             .Where(entry => entry.Enabled
@@ -100,9 +162,11 @@ internal sealed class BotGameData
                 && entry.Sex == Sex.Male)
             .ToArray();
 
-        return candidates.FirstOrDefault(entry => entry.CharacterCreationStartEnum == CharacterCreationStart.Nexus)
-            ?? candidates.FirstOrDefault(entry => entry.CharacterCreationStartEnum == CharacterCreationStart.Arkship)
-            ?? throw new BotFailureException("No enabled Exile Human male Warrior Nexus or Arkship CharacterCreation entry was found.");
+        CharacterCreationStart required = start == BotCharacterStart.Arkship
+            ? CharacterCreationStart.Arkship
+            : CharacterCreationStart.Nexus;
+        return candidates.FirstOrDefault(entry => entry.CharacterCreationStartEnum == required)
+            ?? throw new BotFailureException($"No enabled Exile Human male Warrior {required} CharacterCreation entry was found.");
     }
 
     public WorldLocation2Entry GetWorldLocation(uint id)

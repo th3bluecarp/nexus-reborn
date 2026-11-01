@@ -16,7 +16,7 @@ internal static class QuestInfo
         var quests = new GameTable<Quest2Entry>(Path.Combine(tables, "Quest2.tbl"));
         var objectives = new GameTable<QuestObjectiveEntry>(Path.Combine(tables, "QuestObjective.tbl"));
         var creatures = new GameTable<Creature2Entry>(Path.Combine(tables, "Creature2.tbl"));
-        var targetGroups = new GameTable<TargetGroupEntry>(Path.Combine(tables, "TargetGroup.tbl"));
+        var gameData = new BotGameData(tables);
         var english = new TextTable(Path.Combine(tables, "en-US.bin"));
         var prerequisites = new GameTable<PrerequisiteEntry>(Path.Combine(tables, "Prerequisite.tbl"));
 
@@ -57,30 +57,12 @@ internal static class QuestInfo
                 if (o == null) { Console.WriteLine($"  objective {index++}: id {objectiveId} NOT FOUND"); continue; }
                 string extra = "";
                 if ((QuestObjectiveType)o.Type is QuestObjectiveType.KillTargetGroup or QuestObjectiveType.KillTargetGroups or QuestObjectiveType.ActivateTargetGroup or QuestObjectiveType.TalkToTargetGroup)
-                    extra = " creatures=[" + string.Join(",", ResolveTargetGroup(targetGroups, o.Data, new HashSet<uint>()).Select(c => $"{c} {english.GetEntry(creatures.GetEntry(c)?.LocalizedTextIdName ?? 0)}")) + "]";
+                    extra = " creatures=[" + string.Join(",", gameData.ResolveTargetGroup(o.Data).Select(c => $"{c} {english.GetEntry(creatures.GetEntry(c)?.LocalizedTextIdName ?? 0)}")) + "]";
                 else if (o.Data != 0 && creatures.GetEntry(o.Data) is { } c)
                     extra = $" creature=\"{english.GetEntry(c.LocalizedTextIdName)}\"";
                 Console.WriteLine($"  objective {index++}: id={objectiveId} type={(QuestObjectiveType)o.Type}({o.Type}) data={o.Data} count={o.Count} flags=0x{o.Flags:X} loc={o.WorldLocationsIdIndicator00} \"{english.GetEntry(o.LocalizedTextIdFull)}\"{extra}");
             }
         }
         return 0;
-    }
-
-    private static IEnumerable<uint> ResolveTargetGroup(GameTable<TargetGroupEntry> table, uint id, HashSet<uint> visited)
-    {
-        if (!visited.Add(id)) yield break;
-        TargetGroupEntry? entry = table.GetEntry(id);
-        if (entry == null) yield break;
-        switch ((TargetGroupType)entry.Type)
-        {
-            case TargetGroupType.CreatureIdGroup:
-                foreach (uint c in entry.DataEntries.Where(d => d != 0)) yield return c;
-                break;
-            case TargetGroupType.OtherTargetGroup:
-            case TargetGroupType.OtherTargetGroupCreatures:
-                foreach (uint g in entry.DataEntries.Where(d => d != 0))
-                    foreach (uint c in ResolveTargetGroup(table, g, visited)) yield return c;
-                break;
-        }
     }
 }

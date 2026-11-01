@@ -6,6 +6,8 @@ internal sealed record PrepOptions(string Database, string Email);
 
 internal sealed record RunOptions(
     ushort QuestId,
+    bool Chain,
+    BotCharacterStart Start,
     Endpoint Auth,
     Endpoint World,
     string Database,
@@ -14,6 +16,12 @@ internal sealed record RunOptions(
     Guid Token,
     string Report,
     string Log);
+
+internal enum BotCharacterStart
+{
+    Arkship,
+    Nexus
+}
 
 internal sealed record Endpoint(string Host, int? Port)
 {
@@ -61,7 +69,7 @@ internal static class CliOptions
         Usage:
           NexusForever.Bot prep --db <connection-string> --email <email>
           NexusForever.Bot info --tables <path> --quest <id[,id...]> [--chain 1]
-          NexusForever.Bot run --quest <id> --auth <host:port> --world <host[:port]> --db <connection-string> --tables <path> --email <email> --token <guid> --report <file.json> --log <file.log>
+          NexusForever.Bot run --quest <id> [--chain 0|1] [--start arkship|nexus] --auth <host:port> --world <host[:port]> --db <connection-string> --tables <path> --email <email> --token <guid> --report <file.json> --log <file.log>
         """;
 
     public static object Parse(string[] args)
@@ -95,15 +103,31 @@ internal static class CliOptions
 
     private static RunOptions ParseRun(Dictionary<string, string> values)
     {
-        RequireOnly(values, "quest", "auth", "world", "db", "tables", "email", "token", "report", "log");
+        RequireOnly(values, "quest", "chain", "start", "auth", "world", "db", "tables", "email", "token", "report", "log");
 
         if (!ushort.TryParse(Required(values, "quest"), out ushort questId) || questId == 0)
             throw new ArgumentException("--quest must be a positive 16-bit integer.");
         if (!Guid.TryParse(Required(values, "token"), out Guid token))
             throw new ArgumentException("--token must be a GUID.");
 
+        bool chain = values.TryGetValue("chain", out string? chainValue) switch
+        {
+            false => false,
+            true when chainValue is "1" or "true" => true,
+            true when chainValue is "0" or "false" => false,
+            _ => throw new ArgumentException("--chain must be 0 or 1.")
+        };
+        BotCharacterStart start = values.GetValueOrDefault("start", "arkship").ToLowerInvariant() switch
+        {
+            "arkship" => BotCharacterStart.Arkship,
+            "nexus" => BotCharacterStart.Nexus,
+            _ => throw new ArgumentException("--start must be arkship or nexus.")
+        };
+
         return new RunOptions(
             questId,
+            chain,
+            start,
             Endpoint.Parse(Required(values, "auth")),
             Endpoint.Parse(Required(values, "world")),
             Required(values, "db"),
