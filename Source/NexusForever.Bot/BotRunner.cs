@@ -9,7 +9,7 @@ namespace NexusForever.Bot;
 
 internal sealed class BotRunner
 {
-    private static readonly TimeSpan DefaultStepTimeout = TimeSpan.FromSeconds(20);
+    private static readonly TimeSpan DefaultStepTimeout = TimeSpan.FromSeconds(75); // cross-world teleports wait on the server loading map grids
     private static readonly TimeSpan CombatTimeout = TimeSpan.FromSeconds(90);
     private static readonly TimeSpan WholeRunTimeout = TimeSpan.FromMinutes(10);
 
