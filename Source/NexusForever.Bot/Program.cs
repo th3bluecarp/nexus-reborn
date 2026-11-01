@@ -16,6 +16,8 @@ internal static class Program
                     Console.WriteLine(token);
                     return 0;
                 }
+                case InfoOptions info:
+                    return QuestInfo.Run(info);
                 case RunOptions run:
                 {
                     var report = new RunReport { QuestId = run.QuestId };

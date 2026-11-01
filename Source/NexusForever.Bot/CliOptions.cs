@@ -60,6 +60,7 @@ internal static class CliOptions
     public const string Usage = """
         Usage:
           NexusForever.Bot prep --db <connection-string> --email <email>
+          NexusForever.Bot info --tables <path> --quest <id[,id...]> [--chain 1]
           NexusForever.Bot run --quest <id> --auth <host:port> --world <host[:port]> --db <connection-string> --tables <path> --email <email> --token <guid> --report <file.json> --log <file.log>
         """;
 
@@ -73,8 +74,17 @@ internal static class CliOptions
         {
             "prep" => ParsePrep(values),
             "run" => ParseRun(values),
+            "info" => ParseInfo(values),
             _ => throw new ArgumentException(Usage)
         };
+    }
+
+    private static InfoOptions ParseInfo(Dictionary<string, string> values)
+    {
+        RequireOnly(values, "tables", "quest", "chain");
+        List<ushort> ids = Required(values, "quest").Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries).Select(ushort.Parse).ToList();
+        bool chain = values.TryGetValue("chain", out string? c) && c is "1" or "true";
+        return new InfoOptions(Required(values, "tables"), ids, chain);
     }
 
     private static PrepOptions ParsePrep(Dictionary<string, string> values)
