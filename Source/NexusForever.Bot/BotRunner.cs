@@ -57,6 +57,8 @@ internal sealed class BotRunner
     private readonly Dictionary<uint, LootNotification> lootNotifications = [];
     private readonly Dictionary<uint, Dictionary<uint, LootItemInfo>> lootGrants = [];
     private readonly List<LootEvidence> combatLoot = [];
+    private readonly HashSet<uint> lootedItemIds = [];
+    private GenericError? lastGenericError;
     private readonly Dictionary<ushort, PathMissionStatus> pathMissionStates = [];
     private readonly List<uint> questNpcAttemptCreatureIds = [];
     private readonly List<string> questNpcAttemptDetails = [];
@@ -2614,6 +2616,11 @@ internal sealed class BotRunner
             return null;
         if (nearby is not null)
             return nearby;
+        TrackedEntity? approached = await TryApproachVisibleCombatTargetAsync(creatureIds, excludedGuids, cancellationToken);
+        if (IsObjectiveComplete(objective))
+            return null;
+        if (approached is not null)
+            return approached;
 
         while (ChooseNextCombatSpawn(candidates, spawnVisits) is Spawn spawn)
         {
@@ -2636,7 +2643,61 @@ internal sealed class BotRunner
                 return null;
             if (nearby is not null)
                 return nearby;
+            approached = await TryApproachVisibleCombatTargetAsync(creatureIds, excludedGuids, cancellationToken);
+            if (IsObjectiveComplete(objective))
+                return null;
+            if (approached is not null)
+                return approached;
         }
+    }
+
+    /// <summary>
+    /// A wanted creature that is streamed in but outside the 40 m fight radius (the Dominion Ultrabot stood 55 m from its
+    /// database spawn point): teleport next to its live position instead of waiting at the spawn.
+    /// </summary>
+    private async Task<TrackedEntity?> TryApproachVisibleCombatTargetAsync(
+        IReadOnlySet<uint> creatureIds,
+        IReadOnlySet<uint> excludedGuids,
+        CancellationToken cancellationToken)
+    {
+        if (currentWorldId != questWorldId || worldLoadPending)
+            return null;
+        TrackedEntity? far = entities.FindNearestVisibleNonPlayer(creatureIds, lastPosition, 400f, excludedGuids);
+        if (far?.Position is not Vector3 position)
+            return null;
+        float distance = Vector3.Distance(lastPosition, position);
+        log.Info($"combat target guid={far.Guid} creature {far.CreatureId} is visible {distance:0.0} m away; teleporting to it");
+        await SendCheatAsync(PacketCodec.TeleportCommand(position), cancellationToken);
+        await WaitForLocalTeleportAsync(cancellationToken);
+        lastPosition = new Vector3(position.X + 2f, position.Y, position.Z + 2f);
+        return FindVisibleCombatTarget(questWorldId, creatureIds, excludedGuids) ?? entities.Get(far.Guid) ?? far;
+    }
+
+    /// <summary>
+    /// Delete looted items the current quest does not need so a turn in with item rewards has bag room.
+    /// </summary>
+    private async Task<int> FreeBagSpaceAsync(QuestDefinition definition, CancellationToken cancellationToken)
+    {
+        var keep = new HashSet<uint>(definition.Objectives.Select(objective => objective.Data));
+        keep.UnionWith(definition.Entry.PushedItemIds.Where(id => id != 0u));
+        if (definition.Entry.PrerequisiteItem != 0u)
+            keep.Add(definition.Entry.PrerequisiteItem);
+        InventoryItemInfo[] junk = inventory.Values
+            .Where(item => item.Location == InventoryLocation.Inventory && lootedItemIds.Contains(item.ItemId) && !keep.Contains(item.ItemId))
+            .ToArray();
+        foreach (InventoryItemInfo item in junk)
+        {
+            await RequireWorld().SendEncryptedAsync(GameMessageOpcode.ClientItemDelete,
+                PacketCodec.ClientItemDelete(item.Location, item.BagIndex), cancellationToken);
+        }
+        log.Info($"bag space: requested deletion of {junk.Length} looted item(s) not needed by quest {definition.Id}");
+        DateTimeOffset deadline = DateTimeOffset.UtcNow + TimeSpan.FromSeconds(5);
+        while (junk.Any(item => inventory.ContainsKey(item.Guid)) && DateTimeOffset.UtcNow < deadline)
+        {
+            if (await TryReadWorldPacketAsync(deadline - DateTimeOffset.UtcNow, cancellationToken) is null)
+                break;
+        }
+        return junk.Count(item => !inventory.ContainsKey(item.Guid));
     }
 
     private Spawn? ChooseNextCombatSpawn(
@@ -3174,12 +3235,22 @@ internal sealed class BotRunner
             {
                 await RequireWorld().SendEncryptedAsync(GameMessageOpcode.ClientEntityInteract,
                     PacketCodec.ClientEntityInteract(entity.Guid, InteractionType.TalkTo), token);
-                await RequireWorld().SendEncryptedAsync(GameMessageOpcode.ClientQuestComplete,
-                    PacketCodec.ClientQuestComplete(definition.Id), token);
-                return await TryWaitForQuestStateAsync(
-                    QuestState.Completed,
-                    QuestNpcConfirmationTimeout,
-                    token);
+                for (int attempt = 0; attempt < 2; attempt++)
+                {
+                    lastGenericError = null;
+                    await RequireWorld().SendEncryptedAsync(GameMessageOpcode.ClientQuestComplete,
+                        PacketCodec.ClientQuestComplete(definition.Id), token);
+                    if (await TryWaitForQuestStateAsync(QuestState.Completed, QuestNpcConfirmationTimeout, token))
+                        return true;
+                    // QuestComplete returns without a packet when the reward items have no bag room: drop looted junk and retry
+                    if (lastGenericError != GenericError.ItemInventoryFull || attempt > 0)
+                        return false;
+                    int freed = await FreeBagSpaceAsync(definition, token);
+                    questNpcAttemptDetails.Add($"turn in refused with ItemInventoryFull; deleted {freed} looted item(s) and retried");
+                    if (freed == 0)
+                        return false;
+                }
+                return false;
             },
             cancellationToken);
         if (receiver is null)
@@ -3676,6 +3747,8 @@ internal sealed class BotRunner
                             lootGrants[grant.OwnerUnitId] = grants;
                         }
                         grants[grant.Item.LootUnitId] = grant.Item;
+                        if (grant.Item.Type == LootItemType.StaticItem)
+                            lootedItemIds.Add(grant.Item.StaticId);
                     }
                     break;
                 }
@@ -3816,6 +3889,14 @@ internal sealed class BotRunner
                     }
                     break;
                 }
+                case GameMessageOpcode.ServerGenericError:
+                {
+                    GenericError error = PacketCodec.ParseGenericError(packet.Body);
+                    lastGenericError = error;
+                    log.Info($"server generic error: {error}");
+                    currentQuestReport?.ServerMessages.Add($"generic error: {error}");
+                    break;
+                }
                 case GameMessageOpcode.ServerChat:
                 {
                     string text = PacketCodec.ParseServerChatText(packet.Body);
@@ -3918,11 +3999,15 @@ internal sealed class BotRunner
 
     private uint GetRawProgress(int index) => objectiveProgress.GetValueOrDefault((uint)index);
 
+    // mirrors QuestObjective.IsDynamic on the server: kill objectives with Count > 1 count in thousandths unless flag 0x0200
+    // is set, then plain kills (The Face of the Enemy 10518: 5 Battle Beasts credited 1..5, the bot waited for 1000)
     private static bool IsDynamicKillObjective(QuestObjectiveDefinition objective)
         => objective.Type is QuestObjectiveType.KillCreature
             or QuestObjectiveType.KillCreature2
             or QuestObjectiveType.KillTargetGroup
-            or QuestObjectiveType.KillTargetGroups;
+            or QuestObjectiveType.KillTargetGroups
+            && objective.Count > 1u
+            && (objective.Flags & 0x0200u) == 0u;
 
     private static bool IsChecklistObjective(QuestObjectiveDefinition objective)
         => objective.Type is QuestObjectiveType.ActivateTargetGroupChecklist or QuestObjectiveType.Unknown10;

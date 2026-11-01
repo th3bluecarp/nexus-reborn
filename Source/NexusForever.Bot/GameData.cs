@@ -17,7 +17,8 @@ internal sealed record QuestObjectiveDefinition(
     uint WorldLocationId,
     uint RewardTargetGroupId,
     uint EquipItemId,
-    string Text);
+    string Text,
+    uint Flags = 0u);
 
 internal sealed record QuestDefinition(
     ushort Id,
@@ -186,7 +187,8 @@ internal sealed class BotGameData
                 locationId,
                 objective.TargetGroupIdRewardPane,
                 type == QuestObjectiveType.ActivateEntity && objective.Data == 0u ? EquipItemFromText(text) : 0u,
-                text));
+                text,
+                objective.Flags));
         }
 
         uint[] givers = creatures.Entries

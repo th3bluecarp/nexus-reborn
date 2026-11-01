@@ -10,6 +10,7 @@ using NexusForever.Game.Static.Quest;
 using NexusForever.Game.Static.Spell;
 using NexusForever.GameTable.Model;
 using NexusForever.Network;
+using NexusForever.Network.World.Message.Static;
 using NexusForever.Network.World.Entity.Command;
 
 namespace NexusForever.Bot;
@@ -178,6 +179,11 @@ internal static class PacketCodec
 
     public static byte[] ClientActivateUnit(uint guid) => Write(writer => writer.Write(guid));
     public static byte[] ClientEntitySelect(uint guid) => Write(writer => writer.Write(guid));
+    public static byte[] ClientItemDelete(InventoryLocation location, uint bagIndex) => Write(writer =>
+    {
+        writer.Write(location, 9);
+        writer.Write(bagIndex);
+    });
     public static byte[] ClientLootItem(uint ownerUnitId, uint lootUnitId) => Write(writer =>
     {
         writer.Write(ownerUnitId);
@@ -298,6 +304,8 @@ internal static class PacketCodec
 
     public static QuestObjectiveUpdate ParseQuestObjective(byte[] body) => Read(body, reader =>
         new QuestObjectiveUpdate(reader.ReadUShort(15), reader.ReadUInt(), reader.ReadUInt()));
+
+    public static GenericError ParseGenericError(byte[] body) => Read(body, reader => reader.ReadEnum<GenericError>(8));
 
     public static SpellCastStart ParseSpellStart(byte[] body) => Read(body, reader =>
     {
@@ -530,6 +538,9 @@ internal static class PacketCodec
         string coordinates = string.Create(CultureInfo.InvariantCulture, $"!tele coordinates {spawn.X + 2f:R} {spawn.Y:R} {spawn.Z + 2f:R}");
         return includeWorld ? $"{coordinates} {spawn.WorldId}" : coordinates;
     }
+
+    public static string TeleportCommand(Vector3 position)
+        => string.Create(CultureInfo.InvariantCulture, $"!tele coordinates {position.X + 2f:R} {position.Y:R} {position.Z + 2f:R}");
 
     public static string TeleportCommand(WorldLocation2Entry location, bool includeWorld, float offsetX = 0f)
     {
