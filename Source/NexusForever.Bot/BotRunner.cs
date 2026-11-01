@@ -3211,7 +3211,11 @@ internal sealed class BotRunner
             if (portal is not null)
             {
                 log.Info($"location objective {objective.Index}: activating portal creature {portalCreatureId} guid {portal.Guid}");
-                await RunActivationFlowAsync(objective.Index, before, portal, TimeSpan.FromSeconds(20), cancellationToken);
+                // portals have no activation spell: the plain ClientActivateUnit reaches the server's OnActivate directly
+                await RequireWorld().SendEncryptedAsync(GameMessageOpcode.ClientActivateUnit,
+                    PacketCodec.ClientActivateUnit(portal.Guid), cancellationToken);
+                if (!await TryWaitForObjectiveProgressAsync(objective.Index, before, TimeSpan.FromSeconds(10), cancellationToken))
+                    await RunActivationFlowAsync(objective.Index, before, portal, TimeSpan.FromSeconds(20), cancellationToken);
             }
             else
                 log.Info($"location objective {objective.Index}: portal creature {portalCreatureId} not visible within {EntityStreamTimeout.TotalSeconds:0} s");

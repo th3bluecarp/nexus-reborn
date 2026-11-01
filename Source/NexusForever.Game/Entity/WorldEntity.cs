@@ -588,7 +588,11 @@ namespace NexusForever.Game.Entity
             }
 
             if (spell4Id == 0)
-                throw new InvalidOperationException($"Spell4Id should not be 0. Unhandled Creature ActivateCast {CreatureInfo.Entry.Id}");
+            {
+                // no activation spell (the arkship portals 73741/73745): a direct activation, handled by the entity scripts
+                OnActivate(activator);
+                return;
+            }
 
             // someone else is using it, or it is cooling down (SetBusy effect)
             if (this is IUnitEntity { IsBusy: true })
