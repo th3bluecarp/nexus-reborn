@@ -10,7 +10,7 @@ namespace NexusForever.Bot;
 internal sealed class BotRunner
 {
     private static readonly TimeSpan DefaultStepTimeout = TimeSpan.FromSeconds(75); // cross-world teleports wait on the server loading map grids
-    private static readonly TimeSpan CombatTimeout = TimeSpan.FromSeconds(90);
+    private static readonly TimeSpan CombatTimeout = TimeSpan.FromSeconds(300);
     private static readonly TimeSpan WholeRunTimeout = TimeSpan.FromMinutes(10);
 
     private readonly RunOptions options;
@@ -637,6 +637,8 @@ internal sealed class BotRunner
     {
         if (!levelCheatUsed)
         {
+            // the command applies to the current target (GetTargetOrInvoker<IPlayer>): a targeted yeti makes it "Invalid target"
+            await RequireWorld().SendEncryptedAsync(GameMessageOpcode.ClientEntitySelect, PacketCodec.ClientEntitySelect(playerGuid), cancellationToken);
             await SendCheatAsync("!character level 10", cancellationToken);
             await DrainWorldPacketsAsync(TimeSpan.FromSeconds(1), cancellationToken);
             levelCheatUsed = true;
