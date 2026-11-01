@@ -20,7 +20,11 @@ namespace NexusForever.Script.Main.Tutorial.Script.Part2
         public void OnActivate(IPlayer activator)
         {
             (ushort worldId, float x, float y, float z) = Destination;
-            activator.TeleportTo(worldId, x, y, z);
+            // same world: relocate in place (a TeleportTo into the same world runs a full map transfer and reload)
+            if (activator.Map?.Entry.Id == worldId)
+                activator.TeleportToLocal(new System.Numerics.Vector3(x, y, z));
+            else
+                activator.TeleportTo(worldId, x, y, z);
         }
     }
 
