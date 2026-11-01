@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Numerics;
 using NexusForever.Game.Static.Entity;
 using NexusForever.Game.Static.Quest;
@@ -11,7 +12,7 @@ internal sealed class BotRunner
 {
     private static readonly TimeSpan DefaultStepTimeout = TimeSpan.FromSeconds(75); // cross-world teleports wait on the server loading map grids
     private static readonly TimeSpan CombatTimeout = TimeSpan.FromSeconds(300);
-    private static readonly TimeSpan WholeRunTimeout = TimeSpan.FromMinutes(10);
+    private static readonly TimeSpan PerQuestTimeout = TimeSpan.FromMinutes(8);
 
     private readonly RunOptions options;
     private readonly RunReport report;
@@ -20,6 +21,7 @@ internal sealed class BotRunner
     private readonly Dictionary<uint, uint> objectiveProgress = [];
     private readonly Dictionary<ushort, QuestDefinition> questDefinitions = [];
     private readonly HashSet<ushort> completedQuests = [];
+    private readonly HashSet<ushort> finishedQuests = [];
     private readonly HashSet<ushort> reportedSkippedQuests = [];
     private readonly HashSet<uint> respondedCsiSpellIds = [];
 
@@ -27,7 +29,10 @@ internal sealed class BotRunner
     private QuestDefinition? quest;
     private QuestRunReport? currentQuestReport;
     private QuestObjectiveDefinition? activeObjective;
+    private ResurrectionShow? resurrectionShow;
+    private DateTimeOffset resurrectionShowReceivedAt;
     private IReadOnlyList<Spawn> spawns = [];
+    private IReadOnlyList<QuestDefinition> questPlan = [];
     private ProtocolClient? world;
     private RealmInfo? realm;
     private ulong characterId;
@@ -37,7 +42,6 @@ internal sealed class BotRunner
     private ushort questWorldId;
     private bool worldLoadPending;
     private bool enteredWorldSent;
-    private bool questStarted;
     private bool levelCheatUsed;
     private bool botDied;
     private QuestState questState;
@@ -55,8 +59,9 @@ internal sealed class BotRunner
 
     public async Task<int> RunAsync()
     {
-        using var wholeRun = new CancellationTokenSource(WholeRunTimeout);
+        using var wholeRun = new CancellationTokenSource(TimeSpan.FromMinutes(options.MaxMinutes));
         int exitCode = 2;
+        bool setupComplete = false;
 
         try
         {
@@ -65,24 +70,26 @@ internal sealed class BotRunner
             await TimedStep.RunAsync(report, "connect world", DefaultStepTimeout, wholeRun.Token, ConnectWorldAsync);
             await TimedStep.RunAsync(report, "create character", DefaultStepTimeout, wholeRun.Token, CreateCharacterAsync);
             await TimedStep.RunAsync(report, "enter world", DefaultStepTimeout, wholeRun.Token, EnterWorldAsync);
+            setupComplete = true;
 
             StartKeepAlive(wholeRun.Token);
 
             await RunRequestedQuestAsync(wholeRun.Token);
 
-            report.Result = "PASS";
-            report.Failure = null;
-            exitCode = 0;
+            bool failed = report.Quests.Any(questReport => questReport.Result == "FAIL");
+            report.Result = failed ? "FAIL" : "PASS";
+            report.Failure = failed ? $"{report.Quests.Count(questReport => questReport.Result == "FAIL")} quest(s) failed" : null;
+            exitCode = failed ? 1 : 0;
         }
         catch (Exception exception)
         {
             string failure = exception is OperationCanceledException && wholeRun.IsCancellationRequested
-                ? "whole run timeout after 10 minutes"
+                ? $"whole run timeout after {options.MaxMinutes} minutes"
                 : exception.Message;
             report.Result = "FAIL";
             report.Failure = failure;
             log.Info($"FAIL: {failure}");
-            exitCode = questStarted ? 1 : 2;
+            exitCode = setupComplete ? 1 : 2;
         }
         finally
         {
@@ -99,13 +106,13 @@ internal sealed class BotRunner
     private async Task<string> LoadQuestDataAsync(CancellationToken cancellationToken)
     {
         gameData = await Task.Run(() => new BotGameData(options.Tables)).WaitAsync(cancellationToken);
-        IReadOnlyList<QuestDefinition> closure = gameData.GetQuestClosure(options.QuestId, options.Chain);
-        foreach (QuestDefinition definition in closure)
+        questPlan = gameData.GetRunPlan(options);
+        foreach (QuestDefinition definition in questPlan)
             questDefinitions.Add(definition.Id, definition);
 
-        QuestDefinition requested = questDefinitions[options.QuestId];
-        report.Title = requested.Title;
-        foreach (QuestObjectiveDefinition objective in requested.Objectives)
+        QuestDefinition requested = questPlan[0];
+        report.Title = options.ZoneId is uint zoneId ? $"Zone {zoneId} ({options.Faction})" : requested.Title;
+        foreach (QuestObjectiveDefinition objective in options.ZoneId is null && options.QuestIds.Count == 1 ? requested.Objectives : [])
         {
             report.Objectives.Add(new ObjectiveReport
             {
@@ -116,34 +123,19 @@ internal sealed class BotRunner
             });
         }
 
-        IEnumerable<uint> objectiveCreatures = closure.SelectMany(definition => definition.Objectives)
+        IEnumerable<uint> objectiveCreatures = questPlan.SelectMany(definition => definition.Objectives)
             .SelectMany(GetObjectiveCreatureIds);
-        uint[] creatureIds = closure.SelectMany(definition => definition.GiverCreatureIds)
-            .Concat(closure.SelectMany(definition => definition.ReceiverCreatureIds))
+        uint[] creatureIds = questPlan.SelectMany(definition => definition.GiverCreatureIds)
+            .Concat(questPlan.SelectMany(definition => definition.ReceiverCreatureIds))
             .Concat(objectiveCreatures)
             .Distinct()
             .ToArray();
         spawns = await BotDatabase.LoadSpawnsAsync(options.Database, creatureIds, cancellationToken);
-        ushort? requestedWorld = null;
-        if (!options.Chain)
-            requestedWorld = DetermineQuestWorld(requested);
-        else
-        {
-            try
-            {
-                requestedWorld = DetermineQuestWorld(requested);
-            }
-            catch (BotFailureException)
-            {
-                // A chain run may discover from ServerQuestInit that this quest is already complete.
-                // Validate its world only if it actually needs to run.
-            }
-        }
-
         string selfCheck = "";
-        if (requested.Id == 3479)
+        QuestDefinition? quest3479 = questPlan.FirstOrDefault(definition => definition.Id == 3479);
+        if (quest3479 is not null)
         {
-            bool receiverIdMatches = requested.ReceiverCreatureIds.Contains(12959u);
+            bool receiverIdMatches = quest3479.ReceiverCreatureIds.Contains(12959u);
             bool receiverSpawnMatches = spawns.Any(spawn => spawn.CreatureId == 12959u
                 && spawn.WorldId == 426
                 && spawn.DistanceSquared(4486.46f, -724.84f, -5391.26f) <= 100d);
@@ -152,19 +144,25 @@ internal sealed class BotRunner
             selfCheck = "; receiver self-check OK";
         }
 
-        string worldDetail = requestedWorld is null ? "quest world deferred" : $"quest world {requestedWorld}";
-        return $"{requested.Title}; {requested.Objectives.Count} objectives; {closure.Count} quest(s) loaded; {worldDetail}; {spawns.Count} relevant spawns{selfCheck}";
+        string selection = options.ZoneId is uint selectedZone
+            ? $"zone {selectedZone} {options.Faction}"
+            : $"quest list {string.Join(',', options.QuestIds)}";
+        return $"{selection}; {questPlan.Count} quest(s) loaded; {spawns.Count} relevant spawns{selfCheck}";
     }
 
     private IEnumerable<uint> GetObjectiveCreatureIds(QuestObjectiveDefinition objective)
     {
-        if (objective.Type is QuestObjectiveType.KillTargetGroup or QuestObjectiveType.KillTargetGroups)
-            return RequireGameData().ResolveTargetGroup(objective.Data);
+        if (objective.Type is QuestObjectiveType.KillTargetGroup or QuestObjectiveType.KillTargetGroups
+            or QuestObjectiveType.ActivateTargetGroup or QuestObjectiveType.ActivateTargetGroupChecklist
+            or QuestObjectiveType.Unknown10 or QuestObjectiveType.TalkToTargetGroup or QuestObjectiveType.VirtualCollect
+            or QuestObjectiveType.Unknown28)
+            return RequireGameData().ResolveTargetGroup(RequireGameData().GetObjectiveTargetGroup(objective));
         if (objective.Type is QuestObjectiveType.TalkTo
             or QuestObjectiveType.ActivateEntity
             or QuestObjectiveType.KillCreature
             or QuestObjectiveType.KillCreature2
-            or QuestObjectiveType.SucceedCSI)
+            or QuestObjectiveType.SucceedCSI
+            or QuestObjectiveType.GatheResource)
             return [objective.Data];
         return [];
     }
@@ -216,7 +214,7 @@ internal sealed class BotRunner
 
     private async Task<string> CreateCharacterAsync(CancellationToken cancellationToken)
     {
-        CharacterCreationEntry creation = RequireGameData().GetBotCharacterCreation(options.Start);
+        CharacterCreationEntry creation = RequireGameData().GetBotCharacterCreation(options.Start, options.Faction);
         for (int attempt = 1; attempt <= 5; attempt++)
         {
             report.CharacterName = $"Bot {Random.Shared.Next(0, 10000):0000}";
@@ -257,59 +255,218 @@ internal sealed class BotRunner
 
     private async Task RunRequestedQuestAsync(CancellationToken cancellationToken)
     {
-        var visiting = new HashSet<ushort>();
-        var executed = new HashSet<ushort>();
-
-        async Task RunWithPrerequisitesAsync(QuestDefinition definition)
+        foreach (QuestDefinition definition in questPlan)
         {
-            if (executed.Contains(definition.Id))
-                return;
-            if (!visiting.Add(definition.Id))
-                throw new BotFailureException($"Quest prerequisite cycle includes quest {definition.Id}.");
-
+            cancellationToken.ThrowIfCancellationRequested();
             if (completedQuests.Contains(definition.Id))
             {
                 AddSkippedQuestReport(definition);
-                visiting.Remove(definition.Id);
-                executed.Add(definition.Id);
-                return;
+                finishedQuests.Add(definition.Id);
+                continue;
             }
 
-            if (options.Chain)
+            ushort? missingPrerequisite = GetMissingPrerequisite(definition);
+            if (missingPrerequisite is not null)
             {
-                ushort[] prerequisiteIds = definition.Entry.PrerequisiteQuests
-                    .Where(value => value != 0)
-                    .Select(value => checked((ushort)value))
-                    .ToArray();
-                bool any = (definition.Entry.PrerequisiteFlags & 1u) != 0;
-                if (any)
-                {
-                    ushort? completedId = prerequisiteIds.FirstOrDefault(id => completedQuests.Contains(id));
-                    if (completedId is > 0)
-                    {
-                        if (!questDefinitions.TryGetValue(completedId.Value, out QuestDefinition? completedDefinition))
-                        {
-                            completedDefinition = RequireGameData().GetQuest(completedId.Value);
-                            questDefinitions.Add(completedDefinition.Id, completedDefinition);
-                        }
-                        AddSkippedQuestReport(completedDefinition);
-                    }
-                    else if (prerequisiteIds.Length > 0)
-                        await RunWithPrerequisitesAsync(questDefinitions[prerequisiteIds[0]]);
-                }
-                else
-                {
-                    foreach (ushort prerequisiteId in prerequisiteIds)
-                        await RunWithPrerequisitesAsync(questDefinitions[prerequisiteId]);
-                }
+                AddBlockedQuestReport(definition, missingPrerequisite.Value);
+                finishedQuests.Add(definition.Id);
+                continue;
             }
 
-            visiting.Remove(definition.Id);
-            await RunQuestAsync(definition, cancellationToken);
-            executed.Add(definition.Id);
+            using var questBudget = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
+            questBudget.CancelAfter(PerQuestTimeout);
+            try
+            {
+                await RunQuestAsync(definition, questBudget.Token);
+            }
+            catch (Exception exception) when (!cancellationToken.IsCancellationRequested)
+            {
+                QuestRunReport failedReport = currentQuestReport
+                    ?? throw new InvalidOperationException($"Quest {definition.Id} failed without a report.");
+                if (exception is OperationCanceledException && questBudget.IsCancellationRequested)
+                {
+                    failedReport.Failure = "per-quest timeout after 8 minutes";
+                    failedReport.Steps.Add(new StepReport
+                    {
+                        Name = "quest budget",
+                        Ok = false,
+                        ElapsedMs = (long)PerQuestTimeout.TotalMilliseconds,
+                        Detail = failedReport.Failure
+                    });
+                }
+                await TryRecoverFromDeathAsync(failedReport, cancellationToken);
+                await TryAbandonFailedQuestAsync(definition, failedReport, cancellationToken);
+                try
+                {
+                    await DrainWorldPacketsAsync(TimeSpan.FromMilliseconds(500), cancellationToken);
+                }
+                catch (Exception drainException)
+                {
+                    log.Info($"quest {definition.Id} trailing packet drain stopped: {drainException.Message}");
+                }
+                log.Info($"quest {definition.Id} FAIL: {failedReport.Failure}");
+            }
+            finally
+            {
+                finishedQuests.Add(definition.Id);
+                if (currentQuestReport is not null)
+                    currentQuestReport.EndTimestamp = DateTimeOffset.UtcNow;
+                currentQuestReport = null;
+            }
+        }
+    }
+
+    private async Task TryAbandonFailedQuestAsync(
+        QuestDefinition definition,
+        QuestRunReport questReport,
+        CancellationToken cancellationToken)
+    {
+        if (questState is not (QuestState.Accepted or QuestState.Achieved))
+            return;
+
+        bool cannotAbandon = (definition.Entry.Flags & 0x4000u) != 0u
+            || questState == QuestState.Achieved && (definition.Entry.Flags & 0x8000u) != 0u;
+        if (cannotAbandon)
+        {
+            questReport.Steps.Add(new StepReport
+            {
+                Name = "abandon failed quest",
+                Ok = true,
+                ElapsedMs = 0,
+                Detail = "quest flags prohibit abandonment; continuing with the quest still active"
+            });
+            return;
         }
 
-        await RunWithPrerequisitesAsync(questDefinitions[options.QuestId]);
+        Stopwatch stopwatch = Stopwatch.StartNew();
+        try
+        {
+            await RequireWorld().SendEncryptedAsync(GameMessageOpcode.ClientQuestAbandon,
+                PacketCodec.ClientQuestAbandon(definition.Id), cancellationToken);
+            DateTimeOffset deadline = DateTimeOffset.UtcNow.AddSeconds(5);
+            while (questState is not (QuestState.Abandoned or QuestState.Mentioned))
+            {
+                TimeSpan remaining = deadline - DateTimeOffset.UtcNow;
+                if (remaining <= TimeSpan.Zero || await TryReadWorldPacketAsync(remaining, cancellationToken) is null)
+                    throw new BotFailureException("server did not confirm abandonment within 5 seconds");
+            }
+            questReport.Steps.Add(new StepReport
+            {
+                Name = "abandon failed quest",
+                Ok = true,
+                ElapsedMs = stopwatch.ElapsedMilliseconds,
+                Detail = $"server reported state {questState}"
+            });
+        }
+        catch (Exception exception)
+        {
+            questReport.Steps.Add(new StepReport
+            {
+                Name = "abandon failed quest",
+                Ok = false,
+                ElapsedMs = stopwatch.ElapsedMilliseconds,
+                Detail = exception.Message
+            });
+            log.Info($"quest {definition.Id} abandon cleanup failed: {exception.Message}");
+        }
+    }
+
+    private async Task TryRecoverFromDeathAsync(QuestRunReport questReport, CancellationToken cancellationToken)
+    {
+        if (!botDied)
+            return;
+
+        Stopwatch stopwatch = Stopwatch.StartNew();
+        try
+        {
+            DateTimeOffset showDeadline = DateTimeOffset.UtcNow.AddSeconds(15);
+            while (resurrectionShow is null)
+            {
+                TimeSpan remaining = showDeadline - DateTimeOffset.UtcNow;
+                if (remaining <= TimeSpan.Zero || await TryReadWorldPacketAsync(remaining, cancellationToken) is null)
+                    throw new BotFailureException("server did not offer resurrection within 15 seconds");
+            }
+
+            ResurrectionType type = (resurrectionShow.Flags & ResurrectionType.WakeHere) != 0
+                ? ResurrectionType.WakeHere
+                : (resurrectionShow.Flags & ResurrectionType.Holocrypt) != 0
+                    ? ResurrectionType.Holocrypt
+                    : (resurrectionShow.Flags & ResurrectionType.ExitInstance) != 0
+                        ? ResurrectionType.ExitInstance
+                        : ResurrectionType.None;
+            if (type == ResurrectionType.None)
+                throw new BotFailureException($"server offered no usable resurrection type ({resurrectionShow.Flags})");
+            uint elapsedSinceOfferMs = (uint)Math.Min(uint.MaxValue,
+                Math.Max(0d, (DateTimeOffset.UtcNow - resurrectionShowReceivedAt).TotalMilliseconds));
+            uint remainingRezMs = resurrectionShow.TimeUntilRezMs > elapsedSinceOfferMs
+                ? resurrectionShow.TimeUntilRezMs - elapsedSinceOfferMs
+                : 0u;
+            if (remainingRezMs > 30_000u)
+                throw new BotFailureException($"resurrection is unavailable for another {remainingRezMs} ms");
+            if (remainingRezMs > 0u)
+                await Task.Delay(TimeSpan.FromMilliseconds(remainingRezMs + 100u), cancellationToken);
+
+            await RequireWorld().SendEncryptedAsync(GameMessageOpcode.ClientResurrectAccept,
+                PacketCodec.ClientResurrectAccept(resurrectionShow.GhostId, type), cancellationToken);
+            DateTimeOffset aliveDeadline = DateTimeOffset.UtcNow.AddSeconds(15);
+            while (botDied)
+            {
+                TimeSpan remaining = aliveDeadline - DateTimeOffset.UtcNow;
+                if (remaining <= TimeSpan.Zero || await TryReadWorldPacketAsync(remaining, cancellationToken) is null)
+                    throw new BotFailureException("server did not confirm resurrection within 15 seconds");
+            }
+
+            questReport.Steps.Add(new StepReport
+            {
+                Name = "recover from death",
+                Ok = true,
+                ElapsedMs = stopwatch.ElapsedMilliseconds,
+                Detail = $"resurrected with {type}"
+            });
+        }
+        catch (Exception exception)
+        {
+            questReport.Steps.Add(new StepReport
+            {
+                Name = "recover from death",
+                Ok = false,
+                ElapsedMs = stopwatch.ElapsedMilliseconds,
+                Detail = exception.Message
+            });
+            log.Info($"death recovery failed: {exception.Message}");
+        }
+    }
+
+    private ushort? GetMissingPrerequisite(QuestDefinition definition)
+    {
+        ushort[] prerequisites = definition.Entry.PrerequisiteQuests
+            .Where(value => value != 0u)
+            .Select(value => checked((ushort)value))
+            .ToArray();
+        if (prerequisites.Length == 0)
+            return null;
+        if ((definition.Entry.PrerequisiteFlags & 1u) != 0u)
+            return prerequisites.Any(completedQuests.Contains) ? null : prerequisites[0];
+        return prerequisites.FirstOrDefault(id => !completedQuests.Contains(id)) is ushort missing && missing != 0
+            ? missing
+            : null;
+    }
+
+    private void AddBlockedQuestReport(QuestDefinition definition, ushort prerequisiteId)
+    {
+        QuestRunReport questReport = CreateQuestReport(definition);
+        string failure = $"blocked by prerequisite {prerequisiteId}";
+        questReport.Result = "FAIL";
+        questReport.Failure = failure;
+        questReport.EndTimestamp = DateTimeOffset.UtcNow;
+        questReport.Steps.Add(new StepReport
+        {
+            Name = "accept quest",
+            Ok = false,
+            ElapsedMs = 0,
+            Detail = failure
+        });
+        report.Quests.Add(questReport);
     }
 
     private void AddSkippedQuestReport(QuestDefinition definition)
@@ -319,7 +476,7 @@ internal sealed class BotRunner
 
         var questReport = CreateQuestReport(definition);
         questReport.Skipped = true;
-        questReport.Result = "PASS";
+        questReport.Result = "SKIPPED";
         questReport.EndTimestamp = DateTimeOffset.UtcNow;
         foreach (ObjectiveReport objective in questReport.Objectives)
         {
@@ -345,7 +502,6 @@ internal sealed class BotRunner
         {
             ConfigureQuest(definition);
             await RunQuestStepAsync("accept quest", DefaultStepTimeout, cancellationToken, AcceptQuestAsync);
-            questStarted = true;
 
             foreach (QuestObjectiveDefinition objective in definition.Objectives)
             {
@@ -353,6 +509,8 @@ internal sealed class BotRunner
                     or QuestObjectiveType.KillCreature2
                     or QuestObjectiveType.KillTargetGroup
                     or QuestObjectiveType.KillTargetGroups
+                    or QuestObjectiveType.VirtualCollect
+                    or QuestObjectiveType.GatheResource
                     ? CombatTimeout
                     : objective.Type == QuestObjectiveType.SucceedCSI
                         ? TimeSpan.FromSeconds(60)
@@ -370,6 +528,16 @@ internal sealed class BotRunner
         {
             questReport.Result = "FAIL";
             questReport.Failure = exception.Message;
+            if (!questReport.Steps.Any(step => !step.Ok))
+            {
+                questReport.Steps.Add(new StepReport
+                {
+                    Name = "prepare quest",
+                    Ok = false,
+                    ElapsedMs = 0,
+                    Detail = exception.Message
+                });
+            }
             throw;
         }
         finally
@@ -384,7 +552,9 @@ internal sealed class BotRunner
         quest = definition;
         questState = QuestState.Unknown;
         objectiveProgress.Clear();
-        botDied = false;
+        if (botDied)
+            throw new BotFailureException("bot remains dead after the previous quest");
+        resurrectionShow = null;
 
         questWorldId = DetermineQuestWorld(definition);
     }
@@ -420,18 +590,13 @@ internal sealed class BotRunner
         };
         foreach (QuestObjectiveDefinition objective in definition.Objectives)
         {
-            ObjectiveReport item;
-            if (definition.Id == options.QuestId)
-                item = report.Objectives.Single(value => value.Index == objective.Index);
-            else
-                item = new ObjectiveReport
-                {
-                    Index = objective.Index,
-                    Type = objective.Type.ToString(),
-                    Data = objective.Data,
-                    Count = objective.Count
-                };
-            questReport.Objectives.Add(item);
+            questReport.Objectives.Add(new ObjectiveReport
+            {
+                Index = objective.Index,
+                Type = objective.Type.ToString(),
+                Data = objective.Data,
+                Count = objective.Count
+            });
         }
         return questReport;
     }
@@ -445,7 +610,7 @@ internal sealed class BotRunner
         int stepCount = report.Steps.Count;
         try
         {
-            string reportName = options.Chain ? $"quest {RequireQuest().Id}: {name}" : name;
+            string reportName = questPlan.Count > 1 ? $"quest {RequireQuest().Id}: {name}" : name;
             return await TimedStep.RunAsync(report, reportName, timeout, cancellationToken, action);
         }
         finally
@@ -492,8 +657,23 @@ internal sealed class BotRunner
                 case QuestObjectiveType.TalkTo:
                     await RunInteractionObjectiveAsync(objective, InteractionType.TalkTo, cancellationToken);
                     break;
+                case QuestObjectiveType.TalkToTargetGroup:
+                    await RunTargetGroupInteractionObjectiveAsync(objective, cancellationToken);
+                    break;
                 case QuestObjectiveType.ActivateEntity:
                     await RunActivateObjectiveAsync(objective, cancellationToken);
+                    break;
+                case QuestObjectiveType.ActivateTargetGroup:
+                case QuestObjectiveType.ActivateTargetGroupChecklist:
+                case QuestObjectiveType.Unknown10:
+                case QuestObjectiveType.Unknown28:
+                    await RunTargetGroupActivateObjectiveAsync(objective, cancellationToken);
+                    break;
+                case QuestObjectiveType.VirtualCollect:
+                    await RunVirtualCollectObjectiveAsync(objective, cancellationToken);
+                    break;
+                case QuestObjectiveType.GatheResource:
+                    await RunGatherResourceObjectiveAsync(objective, cancellationToken);
                     break;
                 case QuestObjectiveType.SucceedCSI:
                     await RunSucceedCsiObjectiveAsync(objective, cancellationToken);
@@ -509,7 +689,7 @@ internal sealed class BotRunner
                     await RunLocationObjectiveAsync(objective, cancellationToken);
                     break;
                 default:
-                    throw new BotFailureException($"unsupported objective type {(uint)objective.Type}");
+                    throw new BotFailureException($"unsupported objective type {objective.Type}({(uint)objective.Type})");
             }
 
             objectiveReport.Ok = true;
@@ -533,37 +713,176 @@ internal sealed class BotRunner
         InteractionType interactionType,
         CancellationToken cancellationToken)
     {
+        var attemptedSpawns = new HashSet<uint>();
+        IReadOnlyList<Spawn> candidates = SpawnsFor([objective.Data], questWorldId);
         while (!IsObjectiveComplete(objective))
         {
+            if (objective.Data == 0u)
+                throw new BotFailureException($"{objective.Type} objective has no creature id");
             uint before = GetRawProgress(objective.Index);
-            Spawn spawn = ChooseNearestSpawn([objective.Data], questWorldId);
-            TrackedEntity entity = await TeleportAndFindAsync(spawn, cancellationToken);
+            Spawn spawn = ChooseNearestSpawn([objective.Data], questWorldId, attemptedSpawns);
+            attemptedSpawns.Add(spawn.Id);
+            TrackedEntity? entity = await TeleportAndTryFindAsync(spawn, TimeSpan.FromSeconds(5), cancellationToken);
+            if (entity is null)
+                continue;
             await RequireWorld().SendEncryptedAsync(GameMessageOpcode.ClientEntityInteract,
                 PacketCodec.ClientEntityInteract(entity.Guid, interactionType), cancellationToken);
-            await WaitForObjectiveProgressAsync(objective.Index, before, cancellationToken);
+            if (!await TryWaitForObjectiveProgressAsync(objective.Index, before, TimeSpan.FromSeconds(8), cancellationToken)
+                && attemptedSpawns.Count >= candidates.Count)
+                throw new BotFailureException($"interaction with creature {objective.Data} produced no objective progress");
+        }
+    }
+
+    private async Task RunTargetGroupInteractionObjectiveAsync(
+        QuestObjectiveDefinition objective,
+        CancellationToken cancellationToken)
+    {
+        uint[] creatureIds = GetObjectiveCreatureIds(objective).ToArray();
+        if (creatureIds.Length == 0)
+            throw new BotFailureException($"target group {objective.Data} resolved to no creature ids");
+
+        var attemptedSpawns = new HashSet<uint>();
+        IReadOnlyList<Spawn> candidates = SpawnsFor(creatureIds, questWorldId);
+        while (!IsObjectiveComplete(objective))
+        {
+            Spawn spawn = ChooseNearestSpawn(creatureIds, questWorldId, attemptedSpawns);
+            attemptedSpawns.Add(spawn.Id);
+            uint before = GetRawProgress(objective.Index);
+            TrackedEntity? entity = await TeleportAndTryFindAsync(spawn, TimeSpan.FromSeconds(5), cancellationToken);
+            if (entity is null)
+                continue;
+            await RequireWorld().SendEncryptedAsync(GameMessageOpcode.ClientEntityInteract,
+                PacketCodec.ClientEntityInteract(entity.Guid, InteractionType.TalkTo), cancellationToken);
+            if (!await TryWaitForObjectiveProgressAsync(objective.Index, before, TimeSpan.FromSeconds(8), cancellationToken)
+                && attemptedSpawns.Count >= candidates.Count)
+                throw new BotFailureException($"talking to target group {objective.Data} produced no objective progress");
         }
     }
 
     private async Task RunActivateObjectiveAsync(QuestObjectiveDefinition objective, CancellationToken cancellationToken)
     {
+        if (objective.Data == 0u)
+            throw new BotFailureException("ActivateEntity objective has no creature id in Data or objective text");
+        var attemptedSpawns = new HashSet<uint>();
+        IReadOnlyList<Spawn> candidates = SpawnsFor([objective.Data], questWorldId);
         while (!IsObjectiveComplete(objective))
         {
             uint before = GetRawProgress(objective.Index);
-            Spawn spawn = ChooseNearestSpawn([objective.Data], questWorldId);
-            TrackedEntity entity = await TeleportAndFindAsync(spawn, cancellationToken);
-            await RequireWorld().SendEncryptedAsync(GameMessageOpcode.ClientActivateUnit,
-                PacketCodec.ClientActivateUnit(entity.Guid), cancellationToken);
-
-            bool advanced = await TryWaitForObjectiveProgressAsync(objective.Index, before, TimeSpan.FromSeconds(5), cancellationToken);
-            if (!advanced)
-            {
-                await RequireWorld().SendEncryptedAsync(GameMessageOpcode.ClientEntityInteract,
-                    PacketCodec.ClientEntityInteract(entity.Guid, InteractionType.Interact), cancellationToken);
-                await RequireWorld().SendEncryptedAsync(GameMessageOpcode.ClientActivateUnitCast,
-                    PacketCodec.ClientActivateUnitCast(spellCastId++, entity.Guid), cancellationToken);
-                await WaitForObjectiveProgressAsync(objective.Index, before, cancellationToken);
-            }
+            Spawn spawn = ChooseNearestSpawn([objective.Data], questWorldId, attemptedSpawns);
+            attemptedSpawns.Add(spawn.Id);
+            TrackedEntity? entity = await TeleportAndTryFindAsync(spawn, TimeSpan.FromSeconds(5), cancellationToken);
+            if (entity is null)
+                continue;
+            if (!await RunActivationFlowAsync(objective.Index, before, entity, TimeSpan.FromSeconds(8), cancellationToken)
+                && attemptedSpawns.Count >= candidates.Count)
+                throw new BotFailureException($"activation of creature {objective.Data} produced no objective progress");
         }
+    }
+
+    private async Task RunTargetGroupActivateObjectiveAsync(QuestObjectiveDefinition objective, CancellationToken cancellationToken)
+    {
+        uint[] creatureIds = GetObjectiveCreatureIds(objective).ToArray();
+        if (creatureIds.Length == 0)
+            throw new BotFailureException($"target group {objective.Data} resolved to no creature ids");
+
+        bool checklist = IsChecklistObjective(objective);
+        var attemptedSpawns = new HashSet<uint>();
+        IReadOnlyList<Spawn> candidates = SpawnsFor(creatureIds, questWorldId);
+        if (candidates.Count == 0)
+            throw new BotFailureException($"No spawn in world {questWorldId} for target group {objective.Data}.");
+
+        while (!IsObjectiveComplete(objective))
+        {
+            if (checklist && attemptedSpawns.Count >= candidates.Count)
+                throw new BotFailureException($"target group {objective.Data} has fewer distinct usable entities than checklist count {objective.Count}");
+
+            Spawn spawn = ChooseNearestSpawn(creatureIds, questWorldId, attemptedSpawns);
+            attemptedSpawns.Add(spawn.Id);
+            TrackedEntity? entity = await TeleportAndTryFindAsync(spawn, TimeSpan.FromSeconds(5), cancellationToken);
+            if (entity is null)
+                continue;
+            uint before = GetRawProgress(objective.Index);
+            bool advanced = await RunActivationFlowAsync(objective.Index, before, entity, TimeSpan.FromSeconds(8), cancellationToken);
+            if (!advanced && attemptedSpawns.Count >= candidates.Count)
+                throw new BotFailureException(checklist
+                    ? $"checklist entities for target group {objective.Data} produced no further progress"
+                    : $"activation targets for group {objective.Data} produced no further progress");
+        }
+    }
+
+    private async Task RunVirtualCollectObjectiveAsync(QuestObjectiveDefinition objective, CancellationToken cancellationToken)
+    {
+        uint[] creatureIds = GetObjectiveCreatureIds(objective).ToArray();
+        if (creatureIds.Length == 0)
+            throw new BotFailureException($"target group {objective.Data} resolved to no creature ids");
+
+        var attemptedSpawns = new HashSet<uint>();
+        while (!IsObjectiveComplete(objective))
+        {
+            Spawn spawn = ChooseNearestSpawn(creatureIds, questWorldId, attemptedSpawns);
+            attemptedSpawns.Add(spawn.Id);
+            TrackedEntity entity = await TeleportAndFindAsync(spawn, cancellationToken);
+            uint before = GetRawProgress(objective.Index);
+            bool advanced = await RunActivationFlowAsync(objective.Index, before, entity, TimeSpan.FromSeconds(8), cancellationToken);
+            if (advanced)
+                continue;
+
+            await RequireWorld().SendEncryptedAsync(GameMessageOpcode.ClientEntitySelect,
+                PacketCodec.ClientEntitySelect(entity.Guid), cancellationToken);
+            _ = await FightUntilProgressAsync(objective.Index, before, entity.Guid, cancellationToken);
+        }
+    }
+
+    private async Task RunGatherResourceObjectiveAsync(QuestObjectiveDefinition objective, CancellationToken cancellationToken)
+    {
+        if (objective.Data == 0u)
+            throw new BotFailureException("GatheResource objective has no creature id");
+        var attemptedSpawns = new HashSet<uint>();
+        while (!IsObjectiveComplete(objective))
+        {
+            Spawn spawn = ChooseNearestSpawn([objective.Data], questWorldId, attemptedSpawns);
+            attemptedSpawns.Add(spawn.Id);
+            TrackedEntity entity = await TeleportAndFindAsync(spawn, cancellationToken);
+            uint before = GetRawProgress(objective.Index);
+            bool advanced = await RunActivationFlowAsync(objective.Index, before, entity, TimeSpan.FromSeconds(8), cancellationToken);
+            if (advanced)
+                continue;
+            await RequireWorld().SendEncryptedAsync(GameMessageOpcode.ClientEntitySelect,
+                PacketCodec.ClientEntitySelect(entity.Guid), cancellationToken);
+            _ = await FightUntilProgressAsync(objective.Index, before, entity.Guid, cancellationToken);
+        }
+    }
+
+    private async Task<bool> RunActivationFlowAsync(
+        int objectiveIndex,
+        uint before,
+        TrackedEntity entity,
+        TimeSpan progressTimeout,
+        CancellationToken cancellationToken)
+    {
+        DateTimeOffset deadline = DateTimeOffset.UtcNow + progressTimeout;
+        uint clientUniqueId = spellCastId++;
+        await RequireWorld().SendEncryptedAsync(GameMessageOpcode.ClientActivateUnitCast,
+            PacketCodec.ClientActivateUnitCast(clientUniqueId, entity.Guid), cancellationToken);
+        SpellCastStart? spellStart = await TryWaitForCsiSpellStartAsync(
+            clientUniqueId,
+            TimeSpan.FromSeconds(Math.Min(5d, progressTimeout.TotalSeconds)),
+            cancellationToken);
+        if (spellStart is not null)
+        {
+            await RequireWorld().SendEncryptedAsync(GameMessageOpcode.ClientSpellClientSideInteraction,
+                PacketCodec.ClientSpellClientSideInteraction(spellStart.ServerUniqueId), cancellationToken);
+            respondedCsiSpellIds.Add(spellStart.ServerUniqueId);
+        }
+
+        await RequireWorld().SendEncryptedAsync(GameMessageOpcode.ClientActivateUnit,
+            PacketCodec.ClientActivateUnit(entity.Guid), cancellationToken);
+        await RequireWorld().SendEncryptedAsync(GameMessageOpcode.ClientEntityInteract,
+            PacketCodec.ClientEntityInteract(entity.Guid, InteractionType.Interact), cancellationToken);
+        TimeSpan remaining = deadline - DateTimeOffset.UtcNow;
+        return GetRawProgress(objectiveIndex) > before
+            || remaining > TimeSpan.Zero
+                && await TryWaitForObjectiveProgressAsync(objectiveIndex, before, remaining, cancellationToken);
     }
 
     private async Task RunSucceedCsiObjectiveAsync(QuestObjectiveDefinition objective, CancellationToken cancellationToken)
@@ -635,10 +954,8 @@ internal sealed class BotRunner
 
     private async Task RunKillObjectiveAsync(QuestObjectiveDefinition objective, CancellationToken cancellationToken)
     {
-        if (!levelCheatUsed)
+        if (!levelCheatUsed && CanUseLevelCheat())
         {
-            // the command applies to the current target (GetTargetOrInvoker<IPlayer>): a targeted yeti makes it "Invalid target"
-            await RequireWorld().SendEncryptedAsync(GameMessageOpcode.ClientEntitySelect, PacketCodec.ClientEntitySelect(playerGuid), cancellationToken);
             await SendCheatAsync("!character level 10", cancellationToken);
             await DrainWorldPacketsAsync(TimeSpan.FromSeconds(1), cancellationToken);
             levelCheatUsed = true;
@@ -662,6 +979,10 @@ internal sealed class BotRunner
                 throw new BotFailureException($"target {objective.Data} died without a quest objective update");
         }
     }
+
+    private bool CanUseLevelCheat()
+        => questPlan.Where(definition => definition.HasLevelUpperBound)
+            .All(definition => finishedQuests.Contains(definition.Id));
 
     private async Task<bool> FightUntilProgressAsync(int objectiveIndex, uint before, uint targetGuid, CancellationToken cancellationToken)
     {
@@ -934,23 +1255,31 @@ internal sealed class BotRunner
                 {
                     uint destroyedGuid = PacketCodec.ParseEntityDestroy(packet.Body);
                     entities.Remove(destroyedGuid);
-                    if (activeObjective is not null && !worldLoadPending && destroyedGuid == playerGuid)
+                    if (!worldLoadPending && destroyedGuid == playerGuid)
                     {
                         botDied = true;
-                        throw new BotFailureException("bot died");
+                        if (activeObjective is not null)
+                            throw new BotFailureException("bot died");
                     }
                     break;
                 }
                 case GameMessageOpcode.ServerEntityDeathState:
                 {
                     (uint unitId, bool dead) = PacketCodec.ParseEntityDeathState(packet.Body);
-                    if (activeObjective is not null && unitId == playerGuid && dead)
+                    if (unitId == playerGuid && dead)
                     {
                         botDied = true;
-                        throw new BotFailureException("bot died");
+                        if (activeObjective is not null)
+                            throw new BotFailureException("bot died");
                     }
+                    if (unitId == playerGuid && !dead)
+                        botDied = false;
                     break;
                 }
+                case GameMessageOpcode.ServerResurrectionShow:
+                    resurrectionShow = PacketCodec.ParseResurrectionShow(packet.Body);
+                    resurrectionShowReceivedAt = DateTimeOffset.UtcNow;
+                    break;
                 case GameMessageOpcode.ServerQuestInit:
                 {
                     QuestInitInfo init = PacketCodec.ParseQuestInit(packet.Body);
@@ -977,8 +1306,12 @@ internal sealed class BotRunner
                     break;
                 }
                 case GameMessageOpcode.ServerChat:
-                    log.Info($"server chat: {PacketCodec.ParseServerChatText(packet.Body)}");
+                {
+                    string text = PacketCodec.ParseServerChatText(packet.Body);
+                    log.Info($"server chat: {text}");
+                    currentQuestReport?.ServerMessages.Add(text);
                     break;
+                }
                 case GameMessageOpcode.ServerQueueStatus:
                 {
                     var queue = PacketCodec.ParseQueueStatus(packet.Body);
@@ -1003,7 +1336,9 @@ internal sealed class BotRunner
         if (item is null || definition is null)
             return;
 
-        item.Progress = IsDynamicKillObjective(definition)
+        item.Progress = IsChecklistObjective(definition)
+            ? Math.Min(definition.Count, (uint)BitOperations.PopCount(rawProgress))
+            : IsDynamicKillObjective(definition)
             && definition.Count > 1
             ? Math.Min(definition.Count, (rawProgress * definition.Count + 999u) / 1000u)
             : Math.Min(definition.Count, rawProgress);
@@ -1012,6 +1347,8 @@ internal sealed class BotRunner
     private bool IsObjectiveComplete(QuestObjectiveDefinition objective)
     {
         uint raw = GetRawProgress(objective.Index);
+        if (IsChecklistObjective(objective))
+            return (uint)BitOperations.PopCount(raw) >= objective.Count;
         if (IsDynamicKillObjective(objective)
             && objective.Count > 1)
             return raw >= 1000u;
@@ -1026,18 +1363,32 @@ internal sealed class BotRunner
             or QuestObjectiveType.KillTargetGroup
             or QuestObjectiveType.KillTargetGroups;
 
+    private static bool IsChecklistObjective(QuestObjectiveDefinition objective)
+        => objective.Type is QuestObjectiveType.ActivateTargetGroupChecklist or QuestObjectiveType.Unknown10;
+
     private ObjectiveReport RequireObjectiveReport(int index)
         => currentQuestReport?.Objectives.SingleOrDefault(item => item.Index == index)
             ?? throw new InvalidOperationException($"Objective report {index} is unavailable.");
 
     private Spawn ChooseNearestSpawn(IEnumerable<uint> creatureIds, ushort worldId, ISet<uint>? excluded = null)
     {
-        IReadOnlyList<Spawn> candidates = SpawnsFor(creatureIds, worldId)
-            .Where(spawn => excluded is null || !excluded.Contains(spawn.Id))
+        IReadOnlyList<Spawn> allCandidates = SpawnsFor(creatureIds, worldId)
             .OrderBy(spawn => spawn.DistanceSquared(lastPosition.X, lastPosition.Y, lastPosition.Z))
             .ToArray();
-        if (candidates.Count == 0 && excluded is not null)
-            return ChooseNearestSpawn(creatureIds, worldId);
+        IReadOnlyList<Spawn> candidates = allCandidates
+            .Where(spawn => excluded is null || !excluded.Contains(spawn.Id))
+            .ToArray();
+        if (candidates.Count == 0 && excluded is not null && allCandidates.Count > 0)
+        {
+            // Start a new pass without immediately selecting the entity nearest the last attempted one.
+            excluded.Clear();
+            if (allCandidates.Count > 1)
+            {
+                excluded.Add(allCandidates[0].Id);
+                return allCandidates[1];
+            }
+            return allCandidates[0];
+        }
         return candidates.FirstOrDefault()
             ?? throw new BotFailureException($"No spawn in world {worldId} for creature(s) {string.Join(',', creatureIds)}.");
     }

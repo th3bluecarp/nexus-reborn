@@ -1,5 +1,7 @@
 using System.Diagnostics;
+using System.Text;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace NexusForever.Bot;
 
@@ -14,12 +16,29 @@ internal sealed class RunReport
     public List<string> Cheats { get; } = [];
     public List<ObjectiveReport> Objectives { get; } = [];
     public List<QuestRunReport> Quests { get; } = [];
+    public RunSummary Summary { get; private set; } = new();
     public string Result { get; set; } = "FAIL";
     public string? Failure { get; set; }
 
     public async Task WriteAsync(string path)
     {
         EndTimestamp = DateTimeOffset.UtcNow;
+        Summary = new RunSummary
+        {
+            Total = Quests.Count,
+            Passed = Quests.Count(quest => quest.Result == "PASS"),
+            Failed = Quests.Count(quest => quest.Result == "FAIL"),
+            Skipped = Quests.Count(quest => quest.Result == "SKIPPED"),
+            UnsupportedTypes = Quests.SelectMany(quest => quest.Objectives)
+                .Where(objective => objective.Failure?.StartsWith("unsupported objective type ", StringComparison.Ordinal) == true)
+                .Select(objective => objective.Type)
+                .Distinct()
+                .OrderBy(value => value)
+                .ToArray(),
+            StartedAt = StartTimestamp,
+            FinishedAt = EndTimestamp,
+            Character = CharacterName
+        };
         string? directory = Path.GetDirectoryName(Path.GetFullPath(path));
         if (!string.IsNullOrEmpty(directory))
             Directory.CreateDirectory(directory);
@@ -30,11 +49,52 @@ internal sealed class RunReport
             WriteIndented = true
         };
         await File.WriteAllTextAsync(path, JsonSerializer.Serialize(this, options) + Environment.NewLine);
+        await File.WriteAllTextAsync(Path.ChangeExtension(path, ".md"), BuildMarkdown());
     }
+
+    private string BuildMarkdown()
+    {
+        var builder = new StringBuilder();
+        builder.AppendLine($"# Quest run report");
+        builder.AppendLine();
+        builder.AppendLine($"{Summary.Total} quests: {Summary.Passed} passed, {Summary.Failed} failed, {Summary.Skipped} skipped. Character: {Escape(CharacterName)}. Elapsed: {(EndTimestamp - StartTimestamp).TotalSeconds:0.0}s.");
+        builder.AppendLine();
+        builder.AppendLine("| quest | title | result | failed at | detail |");
+        builder.AppendLine("|---:|---|---|---|---|");
+        foreach (QuestRunReport quest in Quests)
+        {
+            StepReport? failedStep = quest.Steps.FirstOrDefault(step => !step.Ok);
+            ObjectiveReport? failedObjective = quest.Objectives.FirstOrDefault(objective => !objective.Ok && objective.Failure is not null);
+            string failedAt = failedStep?.Name ?? (failedObjective is null ? "" : $"objective {failedObjective.Index}");
+            string detail = quest.Failure ?? (quest.Result == "SKIPPED" ? "already completed" : "");
+            builder.AppendLine($"| {quest.QuestId} | {Escape(quest.Title)} | {quest.Result} | {Escape(failedAt)} | {Escape(detail)} |");
+        }
+        builder.AppendLine();
+        builder.AppendLine("Cheats per quest:");
+        builder.AppendLine();
+        foreach (QuestRunReport quest in Quests)
+            builder.AppendLine($"- {quest.QuestId} {Escape(quest.Title)}: {quest.Cheats.Count}");
+        return builder.ToString();
+    }
+
+    private static string Escape(string value) => value.Replace("|", "\\|").Replace("\r", " ").Replace("\n", " ");
+}
+
+internal sealed class RunSummary
+{
+    public int Total { get; init; }
+    public int Passed { get; init; }
+    public int Failed { get; init; }
+    public int Skipped { get; init; }
+    public IReadOnlyList<string> UnsupportedTypes { get; init; } = [];
+    public DateTimeOffset StartedAt { get; init; }
+    public DateTimeOffset FinishedAt { get; init; }
+    public string Character { get; init; } = "";
 }
 
 internal sealed class QuestRunReport
 {
+    [JsonPropertyName("id")]
     public ushort QuestId { get; init; }
     public string Title { get; init; } = "";
     public string CharacterName { get; set; } = "";
@@ -42,10 +102,12 @@ internal sealed class QuestRunReport
     public DateTimeOffset EndTimestamp { get; set; }
     public List<StepReport> Steps { get; } = [];
     public List<string> Cheats { get; } = [];
+    public List<string> ServerMessages { get; } = [];
     public List<ObjectiveReport> Objectives { get; } = [];
     public string Result { get; set; } = "FAIL";
     public string? Failure { get; set; }
     public bool Skipped { get; set; }
+    public long ElapsedMs => EndTimestamp == default ? 0L : Math.Max(0L, (long)(EndTimestamp - StartTimestamp).TotalMilliseconds);
 }
 
 internal sealed class StepReport

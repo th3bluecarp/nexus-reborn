@@ -51,29 +51,30 @@ internal sealed class ProtocolClient : IAsyncDisposable
         byte[] inner = new byte[sizeof(ushort) + body.Length];
         BinaryPrimitives.WriteUInt16LittleEndian(inner, (ushort)opcode);
         body.CopyTo(inner.AsSpan(sizeof(ushort)));
-        byte[] encrypted = crypt.Encrypt(inner, inner.Length);
-
-        byte[] wrapperBody = new byte[sizeof(uint) + encrypted.Length];
-        BinaryPrimitives.WriteUInt32LittleEndian(wrapperBody, checked((uint)encrypted.Length + sizeof(uint)));
-        encrypted.CopyTo(wrapperBody.AsSpan(sizeof(uint)));
-
-        GameMessageOpcode wrapper = GameMessageOpcode.ClientEncrypted;
-        byte[] frame = BuildFrame(wrapper, wrapperBody);
 
         await sendLock.WaitAsync(cancellationToken);
+        byte[] frame;
         try
         {
             if (stream is null)
                 throw new InvalidOperationException("Protocol client is not connected.");
+
+            // Keep frame construction, encryption, logging, and the socket write in one serialized
+            // path so keep-alive and quest packets reach the wire and packet log in the same order.
+            byte[] encrypted = crypt.Encrypt(inner, inner.Length);
+            byte[] wrapperBody = new byte[sizeof(uint) + encrypted.Length];
+            BinaryPrimitives.WriteUInt32LittleEndian(wrapperBody, checked((uint)encrypted.Length + sizeof(uint)));
+            encrypted.CopyTo(wrapperBody.AsSpan(sizeof(uint)));
+            frame = BuildFrame(GameMessageOpcode.ClientEncrypted, wrapperBody);
             await stream.WriteAsync(frame, cancellationToken);
+            log.Packet("C->S", (ushort)opcode, inner.Length, "inner");
+            log.Packet("C->S", (ushort)GameMessageOpcode.ClientEncrypted, frame.Length, "frame");
         }
         finally
         {
             sendLock.Release();
         }
 
-        log.Packet("C->S", (ushort)opcode, inner.Length, "inner");
-        log.Packet("C->S", (ushort)wrapper, frame.Length, "frame");
     }
 
     public ValueTask<ProtocolPacket> ReadAsync(CancellationToken cancellationToken)

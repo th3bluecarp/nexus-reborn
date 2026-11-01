@@ -20,7 +20,7 @@ internal static class Program
                     return QuestInfo.Run(info);
                 case RunOptions run:
                 {
-                    var report = new RunReport { QuestId = run.QuestId };
+                    var report = new RunReport { QuestId = run.QuestIds.FirstOrDefault() };
                     await using var log = new BotLog(run.Log);
                     var runner = new BotRunner(run, report, log);
                     return await runner.RunAsync();

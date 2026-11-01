@@ -15,6 +15,7 @@ internal sealed record QuestStateUpdate(ushort QuestId, QuestState State, uint Q
 internal sealed record QuestObjectiveUpdate(ushort QuestId, uint Index, uint Completed);
 internal sealed record SpellCastStart(uint ServerUniqueId, uint CasterId, uint? ClientUniqueId);
 internal sealed record QuestInitInfo(IReadOnlySet<ushort> CompletedQuestIds);
+internal sealed record ResurrectionShow(uint GhostId, ResurrectionType Flags, uint TimeUntilRezMs);
 
 internal static class PacketCodec
 {
@@ -103,6 +104,14 @@ internal static class PacketCodec
         writer.Write(false);
     });
 
+    public static byte[] ClientQuestAbandon(ushort questId) => Write(writer => writer.Write(questId, 15));
+
+    public static byte[] ClientResurrectAccept(uint unitId, ResurrectionType type) => Write(writer =>
+    {
+        writer.Write(unitId);
+        writer.Write(type, 32);
+    });
+
     public static byte[] ClientActivateUnit(uint guid) => Write(writer => writer.Write(guid));
     public static byte[] ClientEntitySelect(uint guid) => Write(writer => writer.Write(guid));
 
@@ -185,6 +194,19 @@ internal static class PacketCodec
 
     public static (uint UnitId, bool Dead) ParseEntityDeathState(byte[] body) => Read(body, reader =>
         (reader.ReadUInt(), reader.ReadBit()));
+
+    public static ResurrectionShow ParseResurrectionShow(byte[] body) => Read(body, reader =>
+    {
+        uint ghostId = reader.ReadUInt();
+        _ = reader.ReadUInt();
+        uint timeUntilRezMs = reader.ReadUInt();
+        _ = reader.ReadBit();
+        ResurrectionType flags = reader.ReadEnum<ResurrectionType>(8);
+        _ = reader.ReadBit();
+        _ = reader.ReadUInt();
+        _ = reader.ReadUInt();
+        return new ResurrectionShow(ghostId, flags, timeUntilRezMs);
+    });
 
     public static QuestInitInfo ParseQuestInit(byte[] body) => Read(body, reader =>
     {

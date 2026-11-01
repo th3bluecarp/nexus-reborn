@@ -5,7 +5,9 @@ namespace NexusForever.Bot;
 internal sealed record PrepOptions(string Database, string Email);
 
 internal sealed record RunOptions(
-    ushort QuestId,
+    IReadOnlyList<ushort> QuestIds,
+    uint? ZoneId,
+    BotFaction Faction,
     bool Chain,
     BotCharacterStart Start,
     Endpoint Auth,
@@ -15,12 +17,18 @@ internal sealed record RunOptions(
     string Email,
     Guid Token,
     string Report,
-    string Log);
+    string Log,
+    int MaxMinutes);
+
+internal enum BotFaction
+{
+    Exile,
+    Dominion
+}
 
 internal enum BotCharacterStart
 {
-    Arkship,
-    Nexus
+    Arkship
 }
 
 internal sealed record Endpoint(string Host, int? Port)
@@ -69,7 +77,7 @@ internal static class CliOptions
         Usage:
           NexusForever.Bot prep --db <connection-string> --email <email>
           NexusForever.Bot info --tables <path> --quest <id[,id...]> [--chain 1]
-          NexusForever.Bot run --quest <id> [--chain 0|1] [--start arkship|nexus] --auth <host:port> --world <host[:port]> --db <connection-string> --tables <path> --email <email> --token <guid> --report <file.json> --log <file.log>
+          NexusForever.Bot run (--zone <id> --faction exile|dominion | --quest <id[,id...]>) [--chain 0|1] [--start arkship] [--max-minutes <n>] --auth <host:port> --world <host[:port]> --db <connection-string> --tables <path> --email <email> --token <guid> --report <file.json> --log <file.log>
         """;
 
     public static object Parse(string[] args)
@@ -103,10 +111,41 @@ internal static class CliOptions
 
     private static RunOptions ParseRun(Dictionary<string, string> values)
     {
-        RequireOnly(values, "quest", "chain", "start", "auth", "world", "db", "tables", "email", "token", "report", "log");
+        RequireOnly(values, "quest", "zone", "faction", "chain", "start", "max-minutes", "auth", "world", "db", "tables", "email", "token", "report", "log");
 
-        if (!ushort.TryParse(Required(values, "quest"), out ushort questId) || questId == 0)
-            throw new ArgumentException("--quest must be a positive 16-bit integer.");
+        bool hasQuest = values.TryGetValue("quest", out string? questValue);
+        bool hasZone = values.TryGetValue("zone", out string? zoneValue);
+        if (hasQuest == hasZone)
+            throw new ArgumentException("Specify exactly one of --quest or --zone.");
+
+        List<ushort> questIds = [];
+        uint? zoneId = null;
+        if (hasQuest)
+        {
+            foreach (string item in questValue!.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries))
+            {
+                if (!ushort.TryParse(item, out ushort questId) || questId == 0)
+                    throw new ArgumentException("--quest must be a comma-separated list of positive 16-bit integers.");
+                questIds.Add(questId);
+            }
+            if (questIds.Count == 0 || questIds.Count != questIds.Distinct().Count())
+                throw new ArgumentException("--quest must contain one or more distinct quest ids.");
+        }
+        else
+        {
+            if (!uint.TryParse(zoneValue, out uint parsedZone) || parsedZone == 0)
+                throw new ArgumentException("--zone must be a positive integer.");
+            zoneId = parsedZone;
+        }
+
+        BotFaction faction = values.GetValueOrDefault("faction", "exile").ToLowerInvariant() switch
+        {
+            "exile" => BotFaction.Exile,
+            "dominion" => BotFaction.Dominion,
+            _ => throw new ArgumentException("--faction must be exile or dominion.")
+        };
+        if (hasZone && !values.ContainsKey("faction"))
+            throw new ArgumentException("--faction is required with --zone.");
         if (!Guid.TryParse(Required(values, "token"), out Guid token))
             throw new ArgumentException("--token must be a GUID.");
 
@@ -120,12 +159,15 @@ internal static class CliOptions
         BotCharacterStart start = values.GetValueOrDefault("start", "arkship").ToLowerInvariant() switch
         {
             "arkship" => BotCharacterStart.Arkship,
-            "nexus" => BotCharacterStart.Nexus,
-            _ => throw new ArgumentException("--start must be arkship or nexus.")
+            _ => throw new ArgumentException("--start must be arkship; zone runs always use the novice PreTutorial start.")
         };
+        if (!int.TryParse(values.GetValueOrDefault("max-minutes", "180"), out int maxMinutes) || maxMinutes <= 0)
+            throw new ArgumentException("--max-minutes must be a positive integer.");
 
         return new RunOptions(
-            questId,
+            questIds,
+            zoneId,
+            faction,
             chain,
             start,
             Endpoint.Parse(Required(values, "auth")),
@@ -135,7 +177,8 @@ internal static class CliOptions
             Required(values, "email"),
             token,
             Required(values, "report"),
-            Required(values, "log"));
+            Required(values, "log"),
+            maxMinutes);
     }
 
     private static Dictionary<string, string> ParsePairs(string[] args)
