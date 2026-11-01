@@ -32,6 +32,13 @@ internal static class QuestInfo
             order.Add(id);
         }
         foreach (ushort id in options.Quests) Visit(id);
+        if (options.Quests.Count == 1 && options.Quests[0] == 0)
+        {
+            var creations = new GameTable<CharacterCreationEntry>(Path.Combine(tables, "CharacterCreation.tbl"));
+            foreach (CharacterCreationEntry c in creations.Entries.Where(c => c.FactionId == NexusForever.Game.Static.Reputation.Faction.Exile && c.RaceId == NexusForever.Game.Static.Entity.Race.Human))
+                Console.WriteLine($"creation {c.Id} class={c.ClassId} sex={c.Sex} start={c.CharacterCreationStartEnum}({(uint)c.CharacterCreationStartEnum}) enabled={c.Enabled} xp={c.Xp} costumeOnly={c.CostumeOnly}");
+            return 0;
+        }
 
         foreach (ushort id in order)
         {
