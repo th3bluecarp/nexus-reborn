@@ -12,8 +12,8 @@ internal static class Program
                 case PrepOptions prep:
                 {
                     using var timeout = new CancellationTokenSource(TimeSpan.FromSeconds(30));
-                    Guid token = await BotDatabase.PrepAsync(prep, timeout.Token);
-                    Console.WriteLine(token);
+                    uint accountId = await BotDatabase.PrepAsync(prep, timeout.Token);
+                    Console.WriteLine($"prepared account {accountId} with SRP6 credentials and no game token");
                     return 0;
                 }
                 case InfoOptions info:

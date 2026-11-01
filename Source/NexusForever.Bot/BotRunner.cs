@@ -67,6 +67,7 @@ internal sealed class BotRunner
     private uint spellCastId = 1;
     private byte activeActionSet;
     private bool activeActionSetKnown;
+    private Guid gameToken;
     private uint? pendingCombatClientId;
     private SpellCastResult? pendingCombatCastResult;
     private uint? pendingCombatServerId;
@@ -97,6 +98,7 @@ internal sealed class BotRunner
         this.options = options;
         this.report = report;
         this.log = log;
+        gameToken = options.Token ?? Guid.Empty;
     }
 
     public async Task<int> RunAsync()
@@ -108,6 +110,8 @@ internal sealed class BotRunner
         try
         {
             await TimedStep.RunAsync(report, "load quest data", DefaultStepTimeout, wholeRun.Token, LoadQuestDataAsync);
+            if (options.Sts is not null)
+                await LoginToStsAsync(wholeRun.Token);
             await TimedStep.RunAsync(report, "authenticate", DefaultStepTimeout, wholeRun.Token, AuthenticateAsync);
             await TimedStep.RunAsync(report, "connect world", DefaultStepTimeout, wholeRun.Token, ConnectWorldAsync);
             await TimedStep.RunAsync(report, "create character", DefaultStepTimeout, wholeRun.Token, CreateCharacterAsync);
@@ -242,11 +246,14 @@ internal sealed class BotRunner
 
     private async Task<string> AuthenticateAsync(CancellationToken cancellationToken)
     {
+        if (gameToken == Guid.Empty)
+            throw new BotFailureException("No game token is available from STS or --token.");
+
         await using var auth = new ProtocolClient(log);
         await auth.ConnectAsync(options.Auth, 23115, cancellationToken);
         await ReadUntilAsync(auth, packet => packet.Opcode == GameMessageOpcode.ServerHello, cancellationToken);
         await auth.SendEncryptedAsync(GameMessageOpcode.ClientHelloAuth,
-            PacketCodec.ClientHelloAuth(options.Email, options.Token), cancellationToken);
+            PacketCodec.ClientHelloAuth(options.Email.Trim().ToLowerInvariant(), gameToken), cancellationToken);
 
         bool accepted = false;
         while (realm is null)
@@ -268,6 +275,40 @@ internal sealed class BotRunner
         if (!accepted)
             throw new BotFailureException("received realm information without ServerAuthAccepted");
         return $"account {realm.AccountId}; realm {realm.RealmName}; advertised port {realm.Port}";
+    }
+
+    private async Task LoginToStsAsync(CancellationToken cancellationToken)
+    {
+        Endpoint endpoint = options.Sts ?? throw new InvalidOperationException("STS endpoint is unavailable.");
+        string password = options.Password ?? throw new InvalidOperationException("STS password is unavailable.");
+        await using var sts = new StsClient(endpoint, options.Email, password);
+
+        await RunStsStepAsync("sts connect", cancellationToken, sts.ConnectAsync);
+        await RunStsStepAsync("sts login start", cancellationToken, sts.LoginStartAsync);
+        await RunStsStepAsync("sts key data", cancellationToken, sts.SendKeyDataAsync);
+        await RunStsStepAsync("sts login finish", cancellationToken, sts.LoginFinishAsync);
+        await RunStsStepAsync("sts game token", cancellationToken, sts.RequestGameTokenAsync);
+        gameToken = sts.GameToken;
+    }
+
+    private async Task RunStsStepAsync(
+        string name,
+        CancellationToken cancellationToken,
+        Func<CancellationToken, Task<string>> action)
+    {
+        int reportIndex = report.Steps.Count;
+        try
+        {
+            await TimedStep.RunAsync(report, name, DefaultStepTimeout, cancellationToken, action);
+        }
+        finally
+        {
+            if (report.Steps.Count > reportIndex)
+            {
+                StepReport step = report.Steps[reportIndex];
+                log.Info($"{name}: {(step.Ok ? "OK" : "FAIL")} ({step.ElapsedMs} ms): {step.Detail}");
+            }
+        }
     }
 
     private async Task<string> ConnectWorldAsync(CancellationToken cancellationToken)

@@ -1,4 +1,5 @@
 using MySqlConnector;
+using NexusForever.Cryptography;
 
 namespace NexusForever.Bot;
 
@@ -19,10 +20,10 @@ internal static class BotDatabase
     private const string CharacterDatabase = "nexus_forever_character";
     private const string WorldDatabase = "nexus_forever_world";
 
-    public static async Task<Guid> PrepAsync(PrepOptions options, CancellationToken cancellationToken)
+    public static async Task<uint> PrepAsync(PrepOptions options, CancellationToken cancellationToken)
     {
-        Guid token = Guid.NewGuid();
-        string storedToken = Convert.ToHexString(token.ToByteArray());
+        string email = options.Email.Trim().ToLowerInvariant();
+        (string salt, string verifier) = PasswordProvider.GenerateSaltAndVerifier(email, options.Password);
         uint accountId;
 
         await using (var connection = new MySqlConnection(ForDatabase(options.Database, AuthDatabase)))
@@ -32,22 +33,25 @@ internal static class BotDatabase
 
             await using (var select = new MySqlCommand("SELECT id FROM account WHERE email = @email ORDER BY id LIMIT 1 FOR UPDATE", connection, transaction))
             {
-                select.Parameters.AddWithValue("@email", options.Email);
+                select.Parameters.AddWithValue("@email", email);
                 object? existing = await select.ExecuteScalarAsync(cancellationToken);
                 if (existing is null)
                 {
                     await using var insert = new MySqlCommand(
-                        "INSERT INTO account (email, s, v, gameToken, sessionKey) VALUES (@email, '', '', @token, '')", connection, transaction);
-                    insert.Parameters.AddWithValue("@email", options.Email);
-                    insert.Parameters.AddWithValue("@token", storedToken);
+                        "INSERT INTO account (email, s, v, gameToken, sessionKey) VALUES (@email, @salt, @verifier, '', '')", connection, transaction);
+                    insert.Parameters.AddWithValue("@email", email);
+                    insert.Parameters.AddWithValue("@salt", salt);
+                    insert.Parameters.AddWithValue("@verifier", verifier);
                     await insert.ExecuteNonQueryAsync(cancellationToken);
                     accountId = checked((uint)insert.LastInsertedId);
                 }
                 else
                 {
                     accountId = Convert.ToUInt32(existing);
-                    await using var update = new MySqlCommand("UPDATE account SET gameToken = @token WHERE id = @id", connection, transaction);
-                    update.Parameters.AddWithValue("@token", storedToken);
+                    await using var update = new MySqlCommand(
+                        "UPDATE account SET s = @salt, v = @verifier, gameToken = '', sessionKey = '' WHERE id = @id", connection, transaction);
+                    update.Parameters.AddWithValue("@salt", salt);
+                    update.Parameters.AddWithValue("@verifier", verifier);
                     update.Parameters.AddWithValue("@id", accountId);
                     await update.ExecuteNonQueryAsync(cancellationToken);
                 }
@@ -75,7 +79,7 @@ internal static class BotDatabase
             await command.ExecuteNonQueryAsync(cancellationToken);
         }
 
-        return token;
+        return accountId;
     }
 
     public static async Task<IReadOnlyList<Spawn>> LoadSpawnsAsync(

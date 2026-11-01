@@ -2,7 +2,7 @@ using System.Net;
 
 namespace NexusForever.Bot;
 
-internal sealed record PrepOptions(string Database, string Email);
+internal sealed record PrepOptions(string Database, string Email, string Password);
 
 internal sealed record RunOptions(
     IReadOnlyList<ushort> QuestIds,
@@ -10,12 +10,14 @@ internal sealed record RunOptions(
     BotFaction Faction,
     bool Chain,
     BotCharacterStart Start,
+    Endpoint? Sts,
     Endpoint Auth,
     Endpoint World,
     string Database,
     string Tables,
     string Email,
-    Guid Token,
+    string? Password,
+    Guid? Token,
     string Report,
     string Log,
     int MaxMinutes);
@@ -75,9 +77,9 @@ internal static class CliOptions
 {
     public const string Usage = """
         Usage:
-          NexusForever.Bot prep --db <connection-string> --email <email>
+          NexusForever.Bot prep --db <connection-string> --email <email> --password <password>
           NexusForever.Bot info --tables <path> --quest <id[,id...]> [--chain 1]
-          NexusForever.Bot run (--zone <id> --faction exile|dominion | --quest <id[,id...]>) [--chain 0|1] [--start arkship] [--max-minutes <n>] --auth <host:port> --world <host[:port]> --db <connection-string> --tables <path> --email <email> --token <guid> --report <file.json> --log <file.log>
+          NexusForever.Bot run (--zone <id> --faction exile|dominion | --quest <id[,id...]>) [--chain 0|1] [--start arkship] [--max-minutes <n>] (--sts <host:port> --password <password> | --token <guid>) --auth <host:port> --world <host[:port]> --db <connection-string> --tables <path> --email <email> --report <file.json> --log <file.log>
         """;
 
     public static object Parse(string[] args)
@@ -105,13 +107,13 @@ internal static class CliOptions
 
     private static PrepOptions ParsePrep(Dictionary<string, string> values)
     {
-        RequireOnly(values, "db", "email");
-        return new PrepOptions(Required(values, "db"), Required(values, "email"));
+        RequireOnly(values, "db", "email", "password");
+        return new PrepOptions(Required(values, "db"), Required(values, "email"), Required(values, "password"));
     }
 
     private static RunOptions ParseRun(Dictionary<string, string> values)
     {
-        RequireOnly(values, "quest", "zone", "faction", "chain", "start", "max-minutes", "auth", "world", "db", "tables", "email", "token", "report", "log");
+        RequireOnly(values, "quest", "zone", "faction", "chain", "start", "max-minutes", "sts", "auth", "world", "db", "tables", "email", "password", "token", "report", "log");
 
         bool hasQuest = values.TryGetValue("quest", out string? questValue);
         bool hasZone = values.TryGetValue("zone", out string? zoneValue);
@@ -146,8 +148,25 @@ internal static class CliOptions
         };
         if (hasZone && !values.ContainsKey("faction"))
             throw new ArgumentException("--faction is required with --zone.");
-        if (!Guid.TryParse(Required(values, "token"), out Guid token))
-            throw new ArgumentException("--token must be a GUID.");
+        Endpoint? sts = values.TryGetValue("sts", out string? stsValue) ? Endpoint.Parse(stsValue) : null;
+        string? password = values.TryGetValue("password", out string? passwordValue) && !string.IsNullOrWhiteSpace(passwordValue)
+            ? passwordValue
+            : null;
+        Guid? token = null;
+        if (values.TryGetValue("token", out string? tokenValue))
+        {
+            if (!Guid.TryParse(tokenValue, out Guid parsedToken))
+                throw new ArgumentException("--token must be a GUID.");
+            token = parsedToken;
+        }
+        if (sts is not null && password is null)
+            throw new ArgumentException("--password is required with --sts.");
+        if (sts is null && password is not null)
+            throw new ArgumentException("--password requires --sts.");
+        if (sts is null && token is null)
+            throw new ArgumentException("Specify --sts with --password, or use --token as a debugging fallback.");
+        if (sts is not null && token is not null)
+            throw new ArgumentException("--sts and --token are alternatives; STS failures do not fall back to a supplied token.");
 
         bool chain = values.TryGetValue("chain", out string? chainValue) switch
         {
@@ -170,11 +189,13 @@ internal static class CliOptions
             faction,
             chain,
             start,
+            sts,
             Endpoint.Parse(Required(values, "auth")),
             Endpoint.Parse(Required(values, "world")),
             Required(values, "db"),
             Required(values, "tables"),
             Required(values, "email"),
+            password,
             token,
             Required(values, "report"),
             Required(values, "log"),
