@@ -32,7 +32,8 @@ internal enum BotFaction
 
 internal enum BotCharacterStart
 {
-    Arkship
+    Arkship,
+    Nexus
 }
 
 internal sealed record Endpoint(string Host, int? Port)
@@ -81,7 +82,7 @@ internal static class CliOptions
         Usage:
           NexusForever.Bot prep --db <connection-string> --email <email> --password <password>
           NexusForever.Bot info --tables <path> (--quest <id[,id...]> [--chain 1] [--db <connection-string>] | --path <zone-id>)
-          NexusForever.Bot run (--zone <id> --faction exile|dominion [--paths 0|1] | --quest <id[,id...]|none>) [--keep-character <name>] [--chain 0|1] [--start arkship] [--max-minutes <n>] (--sts <host:port> --password <password> | --token <guid>) --auth <host:port> --world <host[:port]> --db <connection-string> --tables <path> --email <email> --report <file.json> --log <file.log>
+          NexusForever.Bot run (--zone <id> --faction exile|dominion [--paths 0|1] | --quest <id[,id...]|none>) [--keep-character <name>] [--chain 0|1] [--start arkship|nexus] [--max-minutes <n>] (--sts <host:port> --password <password> | --token <guid>) --auth <host:port> --world <host[:port]> --db <connection-string> --tables <path> --email <email> --report <file.json> --log <file.log>
         """;
 
     public static object Parse(string[] args)
@@ -209,7 +210,8 @@ internal static class CliOptions
         BotCharacterStart start = values.GetValueOrDefault("start", "arkship").ToLowerInvariant() switch
         {
             "arkship" => BotCharacterStart.Arkship,
-            _ => throw new ArgumentException("--start must be arkship; zone runs always use the novice PreTutorial start.")
+            "nexus" => BotCharacterStart.Nexus,
+            _ => throw new ArgumentException("--start must be arkship or nexus; zone runs always use the novice PreTutorial start.")
         };
         if (!int.TryParse(values.GetValueOrDefault("max-minutes", "180"), out int maxMinutes) || maxMinutes <= 0)
             throw new ArgumentException("--max-minutes must be a positive integer.");

@@ -509,8 +509,8 @@ internal sealed class BotGameData
                 && entry.Sex == Sex.Male)
             .ToArray();
 
-        _ = start;
-        CharacterCreationStart required = CharacterCreationStart.PreTutorial; // "Novice" start: entry 467, level 1, world 3460.
+        // "Novice" start: entry 467, level 1, world 3460 (arkship). Nexus start: entry 339, level 3, straight into Northern Wilds.
+        CharacterCreationStart required = start == BotCharacterStart.Nexus ? CharacterCreationStart.Nexus : CharacterCreationStart.PreTutorial;
         return candidates.FirstOrDefault(entry => entry.CharacterCreationStartEnum == required)
             ?? throw new BotFailureException($"No enabled {requiredFaction} male Warrior {required} CharacterCreation entry was found.");
     }
