@@ -2,6 +2,11 @@
 
 Newest first. "Live" means running on our test server.
 
+## 2026-10-31
+
+- **Headless quest bot (Phase 0 passed)**: new `Source/NexusForever.Bot` console client speaks the real protocol (auth, world, encryption, character create, world loads, entity tracking, chat commands) and completed quest 3479 "From the Wreckage" end to end against the live server: accepted from Bosun Redmark, rescued 3 Trapped Survivors through the client-side interaction packets, killed 8 yetis from target group 7288, turned in at Deadeye Brightland (state 3). Teleports and one `!character level 10` are the only shortcuts, listed as "cheats" in the JSON report. `info --quest <ids>` prints prerequisites, objectives, givers and target groups from the game tables.
+- **Finding**: quests 3479, 10100, 10101 (Prerequisite 4106) and 8944 (6232) carry a "Level LessThanOrEqual 1" prerequisite; the server evaluates it as player level ≤ 1, so any character above level 1 (every skip-tutorial character, and anyone who levelled on the arkship) is refused with "without meeting the prerequisites". These are the four Northern Wilds quests nobody has completed on this server. The bot passes only because it uses a level-1 novice-start character. Not changed yet; the comparison direction needs checking against retail behaviour.
+
 ## 2026-10-26
 
 - **Holdout enemies actually come at you**: the creatures made for the Northern Wilds holdouts (the Yeti, Skeech and Dominion waves and their bosses) are marked "no AI" in the game files, because on retail the holdout script moved them. They spawned and just stood there, up to 40 m away. They now fight with the normal creature AI and come for you (or the survivors).
