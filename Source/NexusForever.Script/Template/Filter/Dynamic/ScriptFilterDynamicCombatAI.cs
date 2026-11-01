@@ -1,4 +1,5 @@
 ﻿using NexusForever.GameTable;
+using NexusForever.GameTable.Model;
 using NexusForever.GameTable.Static;
 
 namespace NexusForever.Script.Template.Filter.Dynamic
