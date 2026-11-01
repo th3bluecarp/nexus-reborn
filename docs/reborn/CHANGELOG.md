@@ -4,6 +4,7 @@ Newest first. "Live" means running on our test server.
 
 ## 2026-11-01
 
+- **Quest bot: three nightly failures were bot bugs, not server bugs**: kill objectives with Count > 1 are only percentage counters (0..1000) when QuestObjective flag 0x0200 is clear, so The Face of the Enemy (5 Battle Beasts, flag set) counted 1..5 while the bot waited for 1000; a wanted creature streamed in beyond the 40 m fight radius (the Dominion Ultrabot, 55 m from its database spawn) is now approached by teleport; a quest turn in that the server answers with ServerGenericError ItemInventoryFull (bags full of loot, QuestComplete returns without a packet) now deletes looted items the quest does not need and retries. Bot branch merged into main.
 - **The killing blow always counts for quest credit**: kill rewards went only to players on the target's threat list, so a creature that never fought back (the arkship Virtual Battle Beasts, any passive target) gave no quest credit or XP to its killer. Found by the quest bot (10518: 18 kills, 1 credited).
 - **Respawns were ghosts**: a respawned creature or quest object (killed, or despawned after a player used it) was put back on the map without its OnAddToMap callback, so it had no guid, no map and was never sent to players; survivors, flares and cannons stayed gone until the grid reloaded or the server restarted. Found by the quest bot (3480 could not find survivors after 3479; flares gone for an hour). Fixed in BaseMap.UpdateDelayedAdds, UnitEntity.Respawn and the repaired-minfrastructure swap.
 
