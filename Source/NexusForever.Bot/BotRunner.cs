@@ -3236,6 +3236,17 @@ internal sealed class BotRunner
     private async Task<string> TurnInQuestAsync(CancellationToken cancellationToken)
     {
         QuestDefinition definition = RequireQuest();
+        if (definition.ReceiverCreatureIds.Count == 0)
+        {
+            // no receiver creature (The Face of the Enemy 10518, flags 0x804000): the client turns these in over the
+            // communicator, ClientQuestComplete with IsCommunicatorMsg set
+            await RequireWorld().SendEncryptedAsync(GameMessageOpcode.ClientQuestComplete,
+                PacketCodec.ClientQuestComplete(definition.Id, communicator: true), cancellationToken);
+            if (await TryWaitForQuestStateAsync(QuestState.Completed, QuestNpcConfirmationTimeout, cancellationToken))
+                return "completed over the communicator (no receiver creature); state 3";
+            throw new BotFailureException(
+                $"communicator turn-in (no receiver creature) produced no Completed state within {QuestNpcConfirmationTimeout.TotalSeconds:0} s; quest flags 0x{definition.Entry.Flags:X}; last generic error={lastGenericError?.ToString() ?? "none"}");
+        }
         if (definition.Entry.PrerequisiteItem != 0u
             && !spawns.Any(spawn => spawn.WorldId == questWorldId && definition.ReceiverCreatureIds.Contains(spawn.CreatureId)))
         {
