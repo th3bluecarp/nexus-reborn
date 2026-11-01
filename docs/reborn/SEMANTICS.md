@@ -41,6 +41,7 @@ Confidence: **High** = consistent across all the data we checked and no counter 
 | EnterArea (22) | complete when inside the objective's indicator world location (radius at least 10 m) | Low | 166 of 180 low level objectives have an indicator | retail used trigger volumes (Data); indicator may be the area or just a map hint, so it can complete early or late | QuestManager.UpdateAreaObjectives |
 | Unknown28 (rescue) | progress when the player activates a creature of TargetGroupIdRewardPane, the cage | Medium | all 3 reward pane groups are cages or cage panels with an activate spell; 5 objectives all describe rescuing from cages | Data (17 to 218) unknown | WorldEntity.OnActivateSuccess |
 | CompleteEvent | progress when a public event is won by the player's team | Medium | Data matches PublicEvent ids | partial credit for losing teams unknown | PublicEvent.Finish |
+| Arkship first quest | novice (PreTutorial) characters get the tutorial root quest as Mentioned at creation: 10518 The Face of the Enemy (Exile), 10524 (Dominion) | Medium | no creature gives it and no communicator message delivers it, yet it is the prerequisite root of Bon Voyage; on retail it is pushed on first login | retail may auto-accept it rather than mention it | a packet log of a fresh character | ClientCharacterCreateHandler |
 
 ## Spell effects
 
