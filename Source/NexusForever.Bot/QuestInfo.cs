@@ -88,11 +88,15 @@ internal static class QuestInfo
             {
                 QuestObjectiveEntry? o = objectives.GetEntry(objectiveId);
                 if (o == null) { Console.WriteLine($"  objective {index++}: id {objectiveId} NOT FOUND"); continue; }
-                string extra = "";
+                var extra = new StringBuilder();
                 if ((QuestObjectiveType)o.Type is QuestObjectiveType.KillTargetGroup or QuestObjectiveType.KillTargetGroups or QuestObjectiveType.ActivateTargetGroup or QuestObjectiveType.TalkToTargetGroup)
-                    extra = " creatures=[" + string.Join(",", gameData.ResolveTargetGroup(o.Data).Select(c => $"{c} {english.GetEntry(creatures.GetEntry(c)?.LocalizedTextIdName ?? 0)}")) + "]";
+                    extra.Append(" creatures=[" + string.Join(",", gameData.ResolveTargetGroup(o.Data).Select(c => $"{c} {english.GetEntry(creatures.GetEntry(c)?.LocalizedTextIdName ?? 0)}")) + "]");
                 else if (o.Data != 0 && creatures.GetEntry(o.Data) is { } c)
-                    extra = $" creature=\"{english.GetEntry(c.LocalizedTextIdName)}\"";
+                    extra.Append($" creature=\"{english.GetEntry(c.LocalizedTextIdName)}\"");
+                uint[] rewardPaneCreatures = gameData.ResolveTargetGroup(o.TargetGroupIdRewardPane).ToArray();
+                extra.Append($" rewardPane={o.TargetGroupIdRewardPane} [{string.Join(',', rewardPaneCreatures)}]");
+                if (!gameData.IsCreature(o.Data))
+                    extra.Append($" dataAsTargetGroup=[{string.Join(',', gameData.ResolveTargetGroup(o.Data))}]");
                 Console.WriteLine($"  objective {index++}: id={objectiveId} type={(QuestObjectiveType)o.Type}({o.Type}) data={o.Data} count={o.Count} flags=0x{o.Flags:X} loc={o.WorldLocationsIdIndicator00} \"{english.GetEntry(o.LocalizedTextIdFull)}\"{extra}");
             }
         }

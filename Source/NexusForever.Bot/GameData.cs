@@ -17,6 +17,7 @@ internal sealed record QuestObjectiveDefinition(
     uint Count,
     uint WorldLocationId,
     uint RewardTargetGroupId,
+    uint EquipItemId,
     string Text);
 
 internal sealed record QuestDefinition(
@@ -109,6 +110,7 @@ internal sealed class BotGameData
                 objective.Count,
                 locationId,
                 objective.TargetGroupIdRewardPane,
+                type == QuestObjectiveType.ActivateEntity && objective.Data == 0u ? EquipItemFromText(text) : 0u,
                 text));
         }
 
@@ -233,6 +235,14 @@ internal sealed class BotGameData
         ResolveTargetGroup(id, new HashSet<uint>(), result);
         return result.Distinct().ToArray();
     }
+
+    public bool IsCreature(uint id) => id != 0u && creatures.GetEntry(id) is not null;
+
+    public IReadOnlyList<uint> GetCreatureIdsFromText(string text)
+        => Regex.Matches(text, @"creature=([0-9]{1,9})", RegexOptions.IgnoreCase)
+            .Select(match => uint.Parse(match.Groups[1].Value))
+            .Distinct()
+            .ToArray();
 
     public uint GetObjectiveTargetGroup(QuestObjectiveDefinition objective)
     {
@@ -388,6 +398,18 @@ internal sealed class BotGameData
     private static uint CreatureFromText(string text)
     {
         uint[] ids = Regex.Matches(text, @"creature=([0-9]{1,9})", RegexOptions.IgnoreCase)
+            .Select(match => uint.Parse(match.Groups[1].Value))
+            .Distinct()
+            .ToArray();
+        return ids.Length == 1 ? ids[0] : 0u;
+    }
+
+    private static uint EquipItemFromText(string text)
+    {
+        if (!text.TrimStart().StartsWith("Equip", StringComparison.OrdinalIgnoreCase))
+            return 0u;
+
+        uint[] ids = Regex.Matches(text, @"item=([0-9]{1,9})", RegexOptions.IgnoreCase)
             .Select(match => uint.Parse(match.Groups[1].Value))
             .Distinct()
             .ToArray();

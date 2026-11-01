@@ -4,6 +4,7 @@ using NexusForever.Game.Static;
 using NexusForever.Game.Static.Chat;
 using NexusForever.Game.Static.Entity;
 using NexusForever.Game.Static.Quest;
+using NexusForever.Game.Static.Spell;
 using NexusForever.GameTable.Model;
 using NexusForever.Network;
 
@@ -14,6 +15,7 @@ internal sealed record CharacterCreateResult(ulong CharacterId, uint WorldId, by
 internal sealed record QuestStateUpdate(ushort QuestId, QuestState State, uint QuestObjectiveId);
 internal sealed record QuestObjectiveUpdate(ushort QuestId, uint Index, uint Completed);
 internal sealed record SpellCastStart(uint ServerUniqueId, uint CasterId, uint PrimaryTargetId, uint? ClientUniqueId);
+internal sealed record SpellCastResult(uint ClientUniqueId, uint Spell4Id, CastResult Result);
 internal sealed record QuestInitInfo(IReadOnlySet<ushort> CompletedQuestIds);
 internal sealed record ResurrectionShow(
     uint GhostId,
@@ -203,6 +205,11 @@ internal static class PacketCodec
         return new SpellCastStart(serverUniqueId, casterId, 0u, clientUniqueId);
     });
 
+    public static SpellCastResult ParseSpellCastResult(byte[] body) => Read(body, reader =>
+        new SpellCastResult(reader.ReadUInt(), reader.ReadUInt(18), reader.ReadEnum<CastResult>(9)));
+
+    public static uint ParseSpellFinish(byte[] body) => Read(body, reader => reader.ReadUInt());
+
     public static (uint UnitId, bool Dead) ParseEntityDeathState(byte[] body) => Read(body, reader =>
         (reader.ReadUInt(), reader.ReadBit()));
 
@@ -296,9 +303,9 @@ internal static class PacketCodec
         return includeWorld ? $"{coordinates} {spawn.WorldId}" : coordinates;
     }
 
-    public static string TeleportCommand(WorldLocation2Entry location, bool includeWorld)
+    public static string TeleportCommand(WorldLocation2Entry location, bool includeWorld, float offsetX = 0f)
     {
-        string coordinates = string.Create(CultureInfo.InvariantCulture, $"!tele coordinates {location.Position0:R} {location.Position1:R} {location.Position2:R}");
+        string coordinates = string.Create(CultureInfo.InvariantCulture, $"!tele coordinates {location.Position0 + offsetX:R} {location.Position1:R} {location.Position2:R}");
         return includeWorld ? $"{coordinates} {location.WorldId}" : coordinates;
     }
 
