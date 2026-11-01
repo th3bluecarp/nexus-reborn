@@ -905,6 +905,14 @@ internal sealed class BotRunner
                     break;
                 case GameMessageOpcode.ServerPlayerChanged:
                     playerGuid = PacketCodec.ParsePlayerChanged(packet.Body);
+                    // ServerPlayerCreate only comes on the FIRST map add (Player.SendPacketsAfterAddToMap: PreviousMap == null);
+                    // after a teleport the server ends the add with ServerPlayerChanged, so that is the "world loaded" signal too.
+                    if (worldLoadPending && !enteredWorldSent)
+                    {
+                        await RequireWorld().SendEncryptedAsync(GameMessageOpcode.ClientEnteredWorld,
+                            PacketCodec.ClientEnteredWorld(), cancellationToken);
+                        enteredWorldSent = true;
+                    }
                     break;
                 case GameMessageOpcode.ServerPlayerCreate when worldLoadPending && !enteredWorldSent:
                     await RequireWorld().SendEncryptedAsync(GameMessageOpcode.ClientEnteredWorld,
