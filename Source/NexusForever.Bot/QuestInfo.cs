@@ -39,6 +39,26 @@ internal static class QuestInfo
                 Console.WriteLine($"creation {c.Id} class={c.ClassId} sex={c.Sex} start={c.CharacterCreationStartEnum}({(uint)c.CharacterCreationStartEnum}) enabled={c.Enabled} xp={c.Xp} costumeOnly={c.CostumeOnly}");
             return 0;
         }
+        if (options.Quests.Count == 1 && options.Quests[0] == 65535)
+        {
+            // prerequisite research: every Prerequisite row with a Level(1) check, who uses it, and the quest con level
+            var byQuest = new Dictionary<uint, List<Quest2Entry>>();
+            foreach (Quest2Entry q in quests.Entries.Where(q => q.PrerequisiteId != 0))
+            { if (!byQuest.ContainsKey(q.PrerequisiteId)) byQuest[q.PrerequisiteId] = new(); byQuest[q.PrerequisiteId].Add(q); }
+            var hist = new Dictionary<string, int>();
+            foreach (PrerequisiteEntry p in prerequisites.Entries)
+                for (int i = 0; i < p.PrerequisiteTypeId.Length; i++)
+                {
+                    if ((uint)p.PrerequisiteTypeId[i] != 1) continue;
+                    string key = $"{p.PrerequisiteComparisonId[i]} value={p.Value[i]} obj={p.ObjectId[i]}";
+                    hist[key] = hist.GetValueOrDefault(key) + 1;
+                    if (byQuest.TryGetValue(p.Id, out var qs))
+                        foreach (Quest2Entry q in qs.Take(3))
+                            Console.WriteLine($"LEVELCHECK prereq={p.Id} {key} mode={p.Flags} quest={q.Id} \"{english.GetEntry(q.LocalizedTextIdTitle)}\" conLevel={q.ConLevel} prereqLevel={q.PrerequisiteLevel} zone={q.WorldZoneId}");
+                }
+            foreach (var kv in hist.OrderByDescending(k => k.Value)) Console.WriteLine($"HIST {kv.Value,5}  {kv.Key}");
+            return 0;
+        }
 
         foreach (ushort id in order)
         {
