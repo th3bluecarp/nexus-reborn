@@ -14,6 +14,11 @@ internal sealed record Spawn(uint Id, uint CreatureId, ushort WorldId, float X, 
     }
 }
 
+internal sealed record ItemDropSources(
+    uint ItemId,
+    IReadOnlyList<uint> CreatureIds,
+    IReadOnlyList<uint> ContainerItemIds);
+
 internal static class BotDatabase
 {
     private const string AuthDatabase = "nexus_forever_auth";
@@ -146,6 +151,65 @@ internal static class BotDatabase
         while (await reader.ReadAsync(cancellationToken))
             result.Add(reader.GetFieldValue<uint>(0));
         return result;
+    }
+
+    public static async Task<IReadOnlyDictionary<uint, ItemDropSources>> LoadItemDropSourcesAsync(
+        string connectionString,
+        IEnumerable<uint> itemIds,
+        CancellationToken cancellationToken)
+    {
+        uint[] ids = itemIds.Where(id => id != 0u).Distinct().Order().ToArray();
+        var result = new Dictionary<uint, ItemDropSources>();
+        if (ids.Length == 0)
+            return result;
+
+        await using var connection = new MySqlConnection(ForDatabase(connectionString, WorldDatabase));
+        await connection.OpenAsync(cancellationToken);
+
+        foreach (uint itemId in ids)
+        {
+            uint[] creatureIds = await LoadLootOwnersAsync(connection, "entity_loot", itemId, cancellationToken);
+            uint[] containerItemIds = await LoadLootOwnersAsync(connection, "item_loot", itemId, cancellationToken);
+            result[itemId] = new ItemDropSources(itemId, creatureIds, containerItemIds);
+        }
+        return result;
+    }
+
+    private static async Task<uint[]> LoadLootOwnersAsync(
+        MySqlConnection connection,
+        string ownerTable,
+        uint itemId,
+        CancellationToken cancellationToken)
+    {
+        // LootGroupManager attaches entity_loot/item_loot only to root groups. Walk from every
+        // group containing the static item through its parents so nested group items resolve to
+        // the same owner the server loads.
+        await using var command = connection.CreateCommand();
+        command.CommandText =
+            $"""
+            WITH RECURSIVE item_groups (id) AS
+            (
+                SELECT li.id
+                FROM loot_item li
+                WHERE li.type = 0 AND li.staticId = @itemId
+                UNION DISTINCT
+                SELECT lg.parentId
+                FROM loot_group lg
+                INNER JOIN item_groups child ON child.id = lg.id
+                WHERE lg.parentId IS NOT NULL
+            )
+            SELECT DISTINCT owner.id
+            FROM {ownerTable} owner
+            INNER JOIN item_groups groups_with_item ON groups_with_item.id = owner.lootGroupId
+            ORDER BY owner.id
+            """;
+        command.Parameters.AddWithValue("@itemId", itemId);
+
+        var owners = new List<uint>();
+        await using MySqlDataReader reader = await command.ExecuteReaderAsync(cancellationToken);
+        while (await reader.ReadAsync(cancellationToken))
+            owners.Add(reader.GetFieldValue<uint>(0));
+        return owners.ToArray();
     }
 
     private static string ForDatabase(string connectionString, string database)

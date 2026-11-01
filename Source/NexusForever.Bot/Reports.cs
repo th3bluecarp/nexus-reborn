@@ -150,6 +150,13 @@ internal sealed class KillEvidence
     public uint EnemyCasts { get; init; }
     public uint DamageTaken { get; init; }
     public long? FirstEnemyActionMs { get; init; }
+    public List<LootEvidence> Loot { get; } = [];
+}
+
+internal sealed class LootEvidence
+{
+    public uint ItemId { get; init; }
+    public uint Count { get; init; }
 }
 
 internal sealed class BotFailureException(string message) : Exception(message);

@@ -4,6 +4,7 @@ using NexusForever.Game.Static;
 using NexusForever.Game.Static.Chat;
 using NexusForever.Game.Static.Entity;
 using NexusForever.Game.Static.Entity.Movement.Command;
+using NexusForever.Game.Static.Loot;
 using NexusForever.Game.Static.Quest;
 using NexusForever.Game.Static.Spell;
 using NexusForever.GameTable.Model;
@@ -33,6 +34,22 @@ internal sealed record ResurrectionShow(
     uint TimeUntilWakeHereMs,
     uint TimeUntilForceRezMs);
 internal sealed record EntityStatInteger(uint UnitId, Stat Stat, uint Value);
+internal sealed record InventoryItemInfo(
+    ulong Guid,
+    uint ItemId,
+    InventoryLocation Location,
+    uint BagIndex,
+    uint StackCount);
+internal sealed record PlayerCreateInfo(byte ActiveSpec, IReadOnlyList<InventoryItemInfo> Inventory);
+internal sealed record LootItemInfo(
+    uint LootUnitId,
+    LootItemType Type,
+    uint StaticId,
+    uint Amount,
+    bool CanLoot,
+    bool Delivered);
+internal sealed record LootNotification(uint OwnerUnitId, IReadOnlyList<LootItemInfo> Items);
+internal sealed record LootGrant(uint OwnerUnitId, uint LooterUnitId, LootItemInfo Item);
 
 internal static class PacketCodec
 {
@@ -114,6 +131,13 @@ internal static class PacketCodec
         writer.Write(questId, 15);
     });
 
+    public static byte[] ClientQuestAccept(ushort questId, InventoryLocation location, uint bagIndex) => Write(writer =>
+    {
+        writer.Write(location, 9);
+        writer.Write(bagIndex);
+        writer.Write(questId, 15);
+    });
+
     public static byte[] ClientQuestComplete(ushort questId) => Write(writer =>
     {
         writer.Write(questId, 15);
@@ -131,6 +155,12 @@ internal static class PacketCodec
 
     public static byte[] ClientActivateUnit(uint guid) => Write(writer => writer.Write(guid));
     public static byte[] ClientEntitySelect(uint guid) => Write(writer => writer.Write(guid));
+    public static byte[] ClientLootItem(uint ownerUnitId, uint lootUnitId) => Write(writer =>
+    {
+        writer.Write(ownerUnitId);
+        writer.Write(lootUnitId);
+        writer.Write(false); // ClientLootItem.Request: false collects the item.
+    });
 
     public static byte[] ClientEntityCommand(Vector3 position, Vector3 rotation) => Write(writer =>
     {
@@ -203,11 +233,12 @@ internal static class PacketCodec
 
     public static uint ParsePlayerChanged(byte[] body) => Read(body, reader => reader.ReadUInt());
 
-    public static byte ParsePlayerCreateActiveSpec(byte[] body) => Read(body, reader =>
+    public static PlayerCreateInfo ParsePlayerCreate(byte[] body) => Read(body, reader =>
     {
         uint inventoryCount = reader.ReadUInt();
+        var inventory = new List<InventoryItemInfo>(checked((int)inventoryCount));
         for (uint i = 0; i < inventoryCount; i++)
-            SkipInventoryItem(reader);
+            inventory.Add(ReadInventoryItem(reader));
         for (int i = 0; i < 16; i++)
             _ = reader.ReadULong();
         _ = reader.ReadUInt();
@@ -215,7 +246,7 @@ internal static class PacketCodec
         _ = reader.ReadUInt();
         _ = reader.ReadUInt();
         _ = reader.ReadUInt();
-        return reader.ReadByte(3);
+        return new PlayerCreateInfo(reader.ReadByte(3), inventory);
     });
 
     public static ActionSetInfo ParseActionSet(byte[] body) => Read(body, reader =>
@@ -299,6 +330,40 @@ internal static class PacketCodec
 
     public static EntityStatInteger ParseEntityStatInteger(byte[] body) => Read(body, reader =>
         new EntityStatInteger(reader.ReadUInt(), reader.ReadEnum<Stat>(5), reader.ReadUInt()));
+
+    public static LootNotification ParseLootNotify(byte[] body) => Read(body, reader =>
+    {
+        uint ownerUnitId = reader.ReadUInt();
+        _ = reader.ReadUInt(); // ParentUnitId
+        _ = reader.ReadBit(); // Explosion
+        uint count = reader.ReadUInt();
+        var items = new List<LootItemInfo>(checked((int)count));
+        for (uint i = 0; i < count; i++)
+            items.Add(ReadLootItem(reader));
+        return new LootNotification(ownerUnitId, items);
+    });
+
+    public static LootGrant ParseLootGrant(byte[] body) => Read(body, reader =>
+        new LootGrant(reader.ReadUInt(), reader.ReadUInt(), ReadLootItem(reader)));
+
+    public static uint ParseLootRemove(byte[] body) => Read(body, reader => reader.ReadUInt());
+
+    public static InventoryItemInfo ParseItemAdd(byte[] body) => Read(body, ReadInventoryItem);
+
+    public static (ulong Guid, uint StackCount) ParseItemStackCountUpdate(byte[] body) => Read(body, reader =>
+    {
+        ulong guid = reader.ReadULong();
+        uint stackCount = reader.ReadUInt();
+        _ = reader.ReadByte(6); // ItemUpdateReason
+        return (guid, stackCount);
+    });
+
+    public static ulong ParseItemDelete(byte[] body) => Read(body, reader =>
+    {
+        ulong guid = reader.ReadULong();
+        _ = reader.ReadByte(6); // ItemUpdateReason
+        return guid;
+    });
 
     public static QuestInitInfo ParseQuestInit(byte[] body) => Read(body, reader =>
     {
@@ -386,14 +451,14 @@ internal static class PacketCodec
         return action(reader);
     }
 
-    private static void SkipInventoryItem(GamePacketReader reader)
+    private static InventoryItemInfo ReadInventoryItem(GamePacketReader reader)
     {
+        ulong guid = reader.ReadULong();
         _ = reader.ReadULong();
-        _ = reader.ReadULong();
-        _ = reader.ReadUInt(18);
-        _ = reader.ReadEnum<InventoryLocation>(9);
-        _ = reader.ReadUInt();
-        _ = reader.ReadUInt();
+        uint itemId = reader.ReadUInt(18);
+        InventoryLocation location = reader.ReadEnum<InventoryLocation>(9);
+        uint bagIndex = reader.ReadUInt();
+        uint stackCount = reader.ReadUInt();
         _ = reader.ReadUInt();
         _ = reader.ReadULong();
         _ = reader.ReadUInt();
@@ -425,5 +490,29 @@ internal static class PacketCodec
         }
         _ = reader.ReadUInt();
         _ = reader.ReadByte(6);
+        return new InventoryItemInfo(guid, itemId, location, bagIndex, stackCount);
+    }
+
+    private static LootItemInfo ReadLootItem(GamePacketReader reader)
+    {
+        uint lootUnitId = reader.ReadUInt();
+        LootItemType type = reader.ReadEnum<LootItemType>(32);
+        uint staticId = reader.ReadUInt();
+        uint amount = reader.ReadUInt();
+        bool canLoot = reader.ReadBit();
+        _ = reader.ReadBit(); // RequiresRoll
+        _ = reader.ReadBit(); // OnlyMasterLootable
+        bool delivered = reader.ReadBit();
+        _ = reader.ReadUInt(); // RollTime
+        _ = reader.ReadULong(); // RandomCircuitData
+        _ = reader.ReadUInt(); // RandomGlyphData
+        _ = reader.ReadUInt(); // ItemQuality2Id
+        uint masterCount = reader.ReadUInt();
+        for (uint i = 0; i < masterCount; i++)
+        {
+            _ = reader.ReadUShort(14); // Identity.RealmId
+            _ = reader.ReadULong(); // Identity.Id
+        }
+        return new LootItemInfo(lootUnitId, type, staticId, amount, canLoot, delivered);
     }
 }

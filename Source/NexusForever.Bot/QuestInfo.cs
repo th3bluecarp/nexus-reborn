@@ -5,12 +5,12 @@ using NexusForever.GameTable.Model;
 
 namespace NexusForever.Bot;
 
-internal sealed record InfoOptions(string Tables, IReadOnlyList<ushort> Quests, bool Chain);
+internal sealed record InfoOptions(string Tables, IReadOnlyList<ushort> Quests, bool Chain, string? Database);
 
 /// <summary>Prints quest prerequisites, objectives, givers and receivers straight from the game tables (no server needed).</summary>
 internal static class QuestInfo
 {
-    public static int Run(InfoOptions options)
+    public static async Task<int> RunAsync(InfoOptions options)
     {
         string tables = options.Tables;
         var quests = new GameTable<Quest2Entry>(Path.Combine(tables, "Quest2.tbl"));
@@ -34,6 +34,17 @@ internal static class QuestInfo
             order.Add(id);
         }
         foreach (ushort id in options.Quests) Visit(id);
+        IReadOnlyDictionary<uint, ItemDropSources> itemDropSources = new Dictionary<uint, ItemDropSources>();
+        if (options.Database is not null)
+        {
+            uint[] itemIds = order
+                .Select(id => quests.GetEntry(id)?.PrerequisiteItem ?? 0u)
+                .Where(itemId => itemId != 0u)
+                .Distinct()
+                .ToArray();
+            using var timeout = new CancellationTokenSource(TimeSpan.FromSeconds(30));
+            itemDropSources = await BotDatabase.LoadItemDropSourcesAsync(options.Database, itemIds, timeout.Token);
+        }
         if (options.Quests.Count == 1 && options.Quests[0] == 0)
         {
             var creations = new GameTable<CharacterCreationEntry>(Path.Combine(tables, "CharacterCreation.tbl"));
@@ -70,6 +81,23 @@ internal static class QuestInfo
             sb.Append($"quest {id} \"{english.GetEntry(entry.LocalizedTextIdTitle)}\" zone={entry.WorldZoneId} flags=0x{entry.Flags:X} type={entry.Type} conLevel={entry.ConLevel}");
             sb.Append($" | prereq: level={entry.PrerequisiteLevel} flags={entry.PrerequisiteFlags} quests=[{string.Join(",", entry.PrerequisiteQuests.Where(q => q != 0))}] race={entry.PrerequisiteRace} class={entry.PrerequisiteClass} item={entry.PrerequisiteItem} faction={entry.QuestPlayerFactionEnum}");
             Console.WriteLine(sb);
+            if (entry.PrerequisiteItem != 0u)
+            {
+                uint activationQuest = gameData.GetItemActivationQuest(entry.PrerequisiteItem);
+                if (itemDropSources.TryGetValue(entry.PrerequisiteItem, out ItemDropSources? sources))
+                {
+                    string creaturesText = sources.CreatureIds.Count == 0
+                        ? "none"
+                        : string.Join(", ", sources.CreatureIds.Select(creatureId =>
+                            $"{creatureId} {english.GetEntry(creatures.GetEntry(creatureId)?.LocalizedTextIdName ?? 0)}"));
+                    string containersText = sources.ContainerItemIds.Count == 0
+                        ? "none"
+                        : string.Join(",", sources.ContainerItemIds);
+                    Console.WriteLine($"  item start: item={entry.PrerequisiteItem} activationQuest={activationQuest} dropSources=[{creaturesText}] containerItems=[{containersText}]");
+                }
+                else
+                    Console.WriteLine($"  item start: item={entry.PrerequisiteItem} activationQuest={activationQuest} dropSources=unavailable (--db not supplied)");
+            }
             if (entry.PrerequisiteId != 0)
             {
                 PrerequisiteEntry? p = prerequisites.GetEntry(entry.PrerequisiteId);

@@ -1,6 +1,7 @@
 using System.Diagnostics;
 using System.Numerics;
 using NexusForever.Game.Static.Entity;
+using NexusForever.Game.Static.Loot;
 using NexusForever.Game.Static.Quest;
 using NexusForever.Game.Static.Spell;
 using NexusForever.GameTable.Model;
@@ -22,6 +23,7 @@ internal sealed class BotRunner
     private static readonly TimeSpan CombatLocalTargetSearchTimeout = TimeSpan.FromSeconds(5);
     private static readonly TimeSpan CombatSpawnTargetSearchTimeout = TimeSpan.FromSeconds(10);
     private static readonly TimeSpan EntityStreamTimeout = TimeSpan.FromSeconds(15);
+    private static readonly TimeSpan CorpseLootTimeout = TimeSpan.FromSeconds(5);
     private const float CombatTargetMovementThreshold = 2f;
     private const float CombatStandOffDistance = 2f;
     private const int MaximumCombatSpawnVisits = 2;
@@ -46,6 +48,11 @@ internal sealed class BotRunner
     private readonly HashSet<uint> finishedCombatSpellIds = [];
     private readonly Dictionary<ushort, DateTimeOffset> combatSlotBusyUntil = [];
     private readonly HashSet<ushort> combatSlotDiscoveryLoggedQuests = [];
+    private readonly Dictionary<uint, ItemDropSources> itemDropSources = [];
+    private readonly Dictionary<ulong, InventoryItemInfo> inventory = [];
+    private readonly Dictionary<uint, LootNotification> lootNotifications = [];
+    private readonly Dictionary<uint, Dictionary<uint, LootItemInfo>> lootGrants = [];
+    private readonly List<LootEvidence> combatLoot = [];
 
     private BotGameData? gameData;
     private QuestDefinition? quest;
@@ -177,6 +184,13 @@ internal sealed class BotRunner
         foreach (QuestDefinition definition in questPlan)
             questDefinitions.Add(definition.Id, definition);
 
+        IReadOnlyDictionary<uint, ItemDropSources> loadedItemSources = await BotDatabase.LoadItemDropSourcesAsync(
+            options.Database,
+            questPlan.Select(definition => definition.Entry.PrerequisiteItem),
+            cancellationToken);
+        foreach ((uint itemId, ItemDropSources sources) in loadedItemSources)
+            itemDropSources[itemId] = sources;
+
         QuestDefinition requested = questPlan[0];
         report.Title = options.ZoneId is uint zoneId ? $"Zone {zoneId} ({options.Faction})" : requested.Title;
         foreach (QuestObjectiveDefinition objective in options.ZoneId is null && options.QuestIds.Count == 1 ? requested.Objectives : [])
@@ -192,9 +206,11 @@ internal sealed class BotRunner
 
         IEnumerable<uint> objectiveCreatures = questPlan.SelectMany(definition => definition.Objectives)
             .SelectMany(GetObjectiveCreatureIds);
+        IEnumerable<uint> itemSourceCreatures = itemDropSources.Values.SelectMany(sources => sources.CreatureIds);
         uint[] creatureIds = questPlan.SelectMany(definition => definition.GiverCreatureIds)
             .Concat(questPlan.SelectMany(definition => definition.ReceiverCreatureIds))
             .Concat(objectiveCreatures)
+            .Concat(itemSourceCreatures)
             .Distinct()
             .ToArray();
         spawns = await BotDatabase.LoadSpawnsAsync(options.Database, creatureIds, cancellationToken);
@@ -403,7 +419,9 @@ internal sealed class BotRunner
         foreach (QuestDefinition definition in questPlan)
         {
             cancellationToken.ThrowIfCancellationRequested();
-            if (definition.Entry.PrerequisiteItem != 0u)
+            if (definition.Entry.PrerequisiteItem != 0u
+                && (!itemDropSources.TryGetValue(definition.Entry.PrerequisiteItem, out ItemDropSources? sources)
+                    || sources.CreatureIds.Count == 0))
             {
                 AddItemStartedQuestReport(definition);
                 finishedQuests.Add(definition.Id);
@@ -709,7 +727,7 @@ internal sealed class BotRunner
         var questReport = CreateQuestReport(definition);
         questReport.Skipped = true;
         questReport.Result = "SKIPPED";
-        questReport.Failure = $"starts from item {definition.Entry.PrerequisiteItem} (item quests not supported yet)";
+        questReport.Failure = $"SKIPPED: item {definition.Entry.PrerequisiteItem} has no drop source in the world database";
         questReport.EndTimestamp = DateTimeOffset.UtcNow;
         questReport.Steps.Add(new StepReport
         {
@@ -730,7 +748,10 @@ internal sealed class BotRunner
         {
             ConfigureQuest(definition);
             await LevelForAcceptanceIfNeededAsync(definition, cancellationToken);
-            await RunQuestStepAsync("accept quest", DefaultStepTimeout, cancellationToken, AcceptQuestAsync);
+            if (definition.Entry.PrerequisiteItem != 0u)
+                await LevelForQuestIfNeededAsync(definition, cancellationToken);
+            TimeSpan acceptTimeout = definition.Entry.PrerequisiteItem == 0u ? DefaultStepTimeout : CombatTimeout;
+            await RunQuestStepAsync("accept quest", acceptTimeout, cancellationToken, AcceptQuestAsync);
             await LevelForQuestIfNeededAsync(definition, cancellationToken);
 
             foreach (QuestObjectiveDefinition objective in definition.Objectives)
@@ -825,6 +846,27 @@ internal sealed class BotRunner
 
     private ushort DetermineQuestWorld(QuestDefinition definition)
     {
+        if (definition.Entry.PrerequisiteItem != 0u)
+        {
+            ItemDropSources sources = itemDropSources.GetValueOrDefault(definition.Entry.PrerequisiteItem)
+                ?? throw new BotFailureException($"item {definition.Entry.PrerequisiteItem} has no drop source in the world database");
+            Spawn[] sourceSpawns = spawns.Where(spawn => sources.CreatureIds.Contains(spawn.CreatureId)).ToArray();
+            if (sourceSpawns.Length == 0)
+                throw new BotFailureException($"No world spawn was found for item {definition.Entry.PrerequisiteItem} drop source(s) {string.Join(',', sources.CreatureIds)}.");
+            if (sourceSpawns.Any(spawn => spawn.WorldId == currentWorldId))
+                return currentWorldId;
+
+            HashSet<ushort> receiverWorlds = spawns
+                .Where(spawn => definition.ReceiverCreatureIds.Contains(spawn.CreatureId))
+                .Select(spawn => spawn.WorldId)
+                .ToHashSet();
+            return sourceSpawns
+                .OrderBy(spawn => receiverWorlds.Contains(spawn.WorldId) ? 0 : 1)
+                .ThenBy(spawn => spawn.Id)
+                .Select(spawn => spawn.WorldId)
+                .First();
+        }
+
         if (questState == QuestState.Mentioned)
             return DetermineObjectiveWorld(definition) ?? currentWorldId;
 
@@ -1053,6 +1095,9 @@ internal sealed class BotRunner
     private async Task<string> AcceptQuestAsync(CancellationToken cancellationToken)
     {
         QuestDefinition definition = RequireQuest();
+        if (definition.Entry.PrerequisiteItem != 0u)
+            return await AcquireItemAndAcceptQuestAsync(definition, cancellationToken);
+
         if (questState == QuestState.Mentioned)
         {
             await MoveToMentionedQuestWorldAsync(definition, cancellationToken);
@@ -1084,6 +1129,111 @@ internal sealed class BotRunner
         await WaitForQuestStateAsync(QuestState.Accepted, cancellationToken);
         return $"accepted from creature {entity.CreatureId} guid {entity.Guid}";
     }
+
+    private async Task<string> AcquireItemAndAcceptQuestAsync(
+        QuestDefinition definition,
+        CancellationToken cancellationToken)
+    {
+        uint itemId = definition.Entry.PrerequisiteItem;
+        uint activationQuest = RequireGameData().GetItemActivationQuest(itemId);
+        if (activationQuest != definition.Id)
+            throw new BotFailureException($"item {itemId} activates quest {activationQuest}, not quest {definition.Id}");
+
+        ItemDropSources sources = itemDropSources.GetValueOrDefault(itemId)
+            ?? throw new BotFailureException($"item {itemId} has no drop source in the world database");
+        if (sources.CreatureIds.Count == 0)
+            throw new BotFailureException($"item {itemId} has no drop source in the world database");
+
+        int kills = 0;
+        InventoryItemInfo? item = FindInventoryItem(itemId);
+        if (item is null)
+        {
+            IReadOnlyList<Spawn> candidates = SpawnsFor(sources.CreatureIds, questWorldId);
+            if (candidates.Count == 0)
+                throw new BotFailureException($"No spawn in world {questWorldId} for item {itemId} drop source(s) {string.Join(',', sources.CreatureIds)}.");
+
+            IReadOnlySet<uint> creatureIds = sources.CreatureIds.ToHashSet();
+            var spawnVisits = new Dictionary<uint, int>();
+            var finishedTargetGuids = new HashSet<uint>();
+            while ((item = FindInventoryItem(itemId)) is null)
+            {
+                TrackedEntity? target = await TryFindVisibleCombatTargetAsync(
+                    creatureIds, finishedTargetGuids, CombatLocalTargetSearchTimeout, cancellationToken);
+                if (target is null)
+                {
+                    Spawn? spawn = ChooseNextCombatSpawn(candidates, spawnVisits);
+                    if (spawn is null)
+                    {
+                        spawnVisits.Clear();
+                        continue;
+                    }
+                    spawnVisits[spawn.Id] = spawnVisits.GetValueOrDefault(spawn.Id) + 1;
+                    target = await TeleportAndTryFindCombatTargetAsync(
+                        spawn, creatureIds, finishedTargetGuids, CombatSpawnTargetSearchTimeout, cancellationToken);
+                    if (target is null)
+                        continue;
+                }
+
+                await RequireWorld().SendEncryptedAsync(GameMessageOpcode.ClientEntitySelect,
+                    PacketCodec.ClientEntitySelect(target.Guid), cancellationToken);
+                bool killed = await FightUntilDeathAsync(target.Guid, cancellationToken);
+                if (killed)
+                {
+                    kills++;
+                    finishedTargetGuids.Add(target.Guid);
+                }
+            }
+        }
+
+        await RequireWorld().SendEncryptedAsync(GameMessageOpcode.ClientQuestAccept,
+            PacketCodec.ClientQuestAccept(definition.Id, item.Location, item.BagIndex), cancellationToken);
+        await WaitForQuestStateAsync(QuestState.Accepted, cancellationToken);
+        ushort acquisitionWorld = questWorldId;
+        questWorldId = DetermineItemQuestProgressWorld(definition);
+        return $"item {itemId} from creature(s) [{string.Join(',', sources.CreatureIds)}] after {kills} kill(s); accepted from {item.Location} slot {item.BagIndex}; acquisition world {acquisitionWorld}, quest world {questWorldId}";
+    }
+
+    private ushort DetermineItemQuestProgressWorld(QuestDefinition definition)
+    {
+        var objectiveWorlds = new List<ushort>();
+        foreach (QuestObjectiveDefinition objective in definition.Objectives)
+        {
+            if (objective.WorldLocationId != 0u)
+                objectiveWorlds.Add(checked((ushort)RequireGameData().GetWorldLocation(objective.WorldLocationId).WorldId));
+
+            HashSet<uint> creatureIds = GetObjectiveCreatureIds(objective).ToHashSet();
+            objectiveWorlds.AddRange(spawns
+                .Where(spawn => creatureIds.Contains(spawn.CreatureId))
+                .Select(spawn => spawn.WorldId));
+        }
+
+        ushort[] receiverWorlds = spawns
+            .Where(spawn => definition.ReceiverCreatureIds.Contains(spawn.CreatureId))
+            .Select(spawn => spawn.WorldId)
+            .Distinct()
+            .ToArray();
+        ushort[] sharedWorlds = objectiveWorlds.Intersect(receiverWorlds).Distinct().ToArray();
+        if (sharedWorlds.Length > 0)
+            return sharedWorlds.Contains(currentWorldId) ? currentWorldId : sharedWorlds[0];
+        if (objectiveWorlds.Count > 0)
+            return objectiveWorlds.Contains(currentWorldId)
+                ? currentWorldId
+                : objectiveWorlds.GroupBy(worldId => worldId).OrderByDescending(group => group.Count()).ThenBy(group => group.Key).First().Key;
+        if (receiverWorlds.Length > 0)
+            return receiverWorlds.Contains(currentWorldId) ? currentWorldId : receiverWorlds[0];
+        return currentWorldId;
+    }
+
+    private InventoryItemInfo? FindInventoryItem(uint itemId)
+        => inventory.Values
+            .Where(item => item.ItemId == itemId && item.Location == InventoryLocation.Inventory && item.StackCount > 0u)
+            .OrderBy(item => item.BagIndex)
+            .FirstOrDefault();
+
+    private uint GetInventoryItemCount(uint itemId)
+        => (uint)inventory.Values
+            .Where(item => item.ItemId == itemId && item.Location == InventoryLocation.Inventory)
+            .Aggregate(0ul, (total, item) => total + item.StackCount);
 
     private async Task MoveToMentionedQuestWorldAsync(
         QuestDefinition definition,
@@ -1741,7 +1891,13 @@ internal sealed class BotRunner
             .First();
     }
 
-    private async Task<bool> FightUntilProgressAsync(int objectiveIndex, uint before, uint targetGuid, CancellationToken cancellationToken)
+    private Task<bool> FightUntilProgressAsync(int objectiveIndex, uint before, uint targetGuid, CancellationToken cancellationToken)
+        => FightUntilCombatGoalAsync(objectiveIndex, before, targetGuid, cancellationToken);
+
+    private Task<bool> FightUntilDeathAsync(uint targetGuid, CancellationToken cancellationToken)
+        => FightUntilCombatGoalAsync(null, 0u, targetGuid, cancellationToken);
+
+    private async Task<bool> FightUntilCombatGoalAsync(int? objectiveIndex, uint before, uint targetGuid, CancellationToken cancellationToken)
     {
         BeginCombatEvidence(targetGuid);
         bool targetFinished = false;
@@ -1753,7 +1909,7 @@ internal sealed class BotRunner
 
             while (true)
             {
-                if (GetRawProgress(objectiveIndex) > before)
+                if (CombatGoalProgressed(objectiveIndex, before))
                 {
                     targetFinished = true;
                     return true;
@@ -1879,6 +2035,8 @@ internal sealed class BotRunner
         }
         finally
         {
+            if (targetFinished)
+                combatLoot.AddRange(await LootCorpseAsync(targetGuid, cancellationToken));
             FinishCombatEvidence(objectiveIndex, targetGuid, targetFinished);
         }
     }
@@ -1976,7 +2134,7 @@ internal sealed class BotRunner
     }
 
     private async Task<(CombatCastTransition Transition, CombatFacing Facing)> WaitForCombatCastTransitionAsync(
-        int objectiveIndex,
+        int? objectiveIndex,
         uint before,
         uint targetGuid,
         CombatFacing facing,
@@ -1987,7 +2145,7 @@ internal sealed class BotRunner
         DateTimeOffset? finishDeadline = null;
         while (true)
         {
-            if (GetRawProgress(objectiveIndex) > before)
+            if (CombatGoalProgressed(objectiveIndex, before))
                 return (CombatCastTransition.Progressed, facing);
             if (combatTargetDestroyed)
                 return (CombatCastTransition.TargetDestroyed, facing);
@@ -2043,13 +2201,92 @@ internal sealed class BotRunner
         combatFirstEnemyActionMs = null;
         combatTargetDestroyed = false;
         combatTargetConfirmedDead = false;
+        combatLoot.Clear();
     }
 
-    private void FinishCombatEvidence(int objectiveIndex, uint targetGuid, bool targetFinished)
+    private bool CombatGoalProgressed(int? objectiveIndex, uint before)
+        => objectiveIndex is int index && GetRawProgress(index) > before;
+
+    private async Task<IReadOnlyList<LootEvidence>> LootCorpseAsync(
+        uint corpseGuid,
+        CancellationToken cancellationToken)
     {
-        if (targetFinished)
+        DateTimeOffset deadline = DateTimeOffset.UtcNow + CorpseLootTimeout;
+        LootNotification? notification;
+        while (!lootNotifications.TryGetValue(corpseGuid, out notification))
         {
-            ObjectiveReport objective = RequireObjectiveReport(objectiveIndex);
+            TimeSpan remaining = deadline - DateTimeOffset.UtcNow;
+            if (remaining <= TimeSpan.Zero || await TryReadWorldPacketAsync(remaining, cancellationToken) is null)
+                return [];
+        }
+
+        LootItemInfo[] requested = notification.Items
+            .Where(item => item.CanLoot && !item.Delivered)
+            .ToArray();
+        if (requested.Length == 0)
+        {
+            lootNotifications.Remove(corpseGuid);
+            return [];
+        }
+
+        Dictionary<uint, uint> countsBefore = requested
+            .Where(item => item.Type == LootItemType.StaticItem)
+            .Select(item => item.StaticId)
+            .Distinct()
+            .ToDictionary(itemId => itemId, GetInventoryItemCount);
+
+        foreach (LootItemInfo lootItem in requested)
+        {
+            await RequireWorld().SendEncryptedAsync(GameMessageOpcode.ClientLootItem,
+                PacketCodec.ClientLootItem(corpseGuid, lootItem.LootUnitId), cancellationToken);
+        }
+        log.Info($"loot corpse {corpseGuid}: requested {requested.Length} item(s) with ClientLootItem");
+
+        while (true)
+        {
+            Dictionary<uint, LootItemInfo>? grants = lootGrants.GetValueOrDefault(corpseGuid);
+            bool everyGrantReceived = requested.All(item => grants?.ContainsKey(item.LootUnitId) == true);
+            LootItemInfo[] grantedItems = requested
+                .Where(item => grants?.ContainsKey(item.LootUnitId) == true && item.Type == LootItemType.StaticItem)
+                .ToArray();
+            bool inventoryReflected = grantedItems
+                .GroupBy(item => item.StaticId)
+                .All(group => GetInventoryItemCount(group.Key) >= countsBefore.GetValueOrDefault(group.Key)
+                    + (uint)group.Aggregate(0ul, (total, item) => total + item.Amount));
+            if (everyGrantReceived && inventoryReflected)
+                break;
+
+            TimeSpan remaining = deadline - DateTimeOffset.UtcNow;
+            if (remaining <= TimeSpan.Zero || await TryReadWorldPacketAsync(remaining, cancellationToken) is null)
+                break;
+        }
+
+        Dictionary<uint, LootItemInfo>? receivedGrants = lootGrants.GetValueOrDefault(corpseGuid);
+        var evidence = new List<LootEvidence>();
+        foreach (IGrouping<uint, LootItemInfo> group in requested
+            .Where(item => item.Type == LootItemType.StaticItem
+                && receivedGrants?.ContainsKey(item.LootUnitId) == true)
+            .GroupBy(item => item.StaticId))
+        {
+            uint after = GetInventoryItemCount(group.Key);
+            uint before = countsBefore.GetValueOrDefault(group.Key);
+            uint inventoryDelta = after > before ? after - before : 0u;
+            uint granted = (uint)group.Aggregate(0ul, (total, item) => total + item.Amount);
+            uint received = Math.Min(inventoryDelta, granted);
+            if (received > 0u)
+                evidence.Add(new LootEvidence { ItemId = group.Key, Count = received });
+        }
+
+        lootNotifications.Remove(corpseGuid);
+        lootGrants.Remove(corpseGuid);
+        return evidence;
+    }
+
+    private void FinishCombatEvidence(int? objectiveIndex, uint targetGuid, bool targetFinished)
+    {
+        if (targetFinished && objectiveIndex is int index)
+        {
+            ObjectiveReport objective = RequireObjectiveReport(index);
             var evidence = new KillEvidence
             {
                 TargetGuid = targetGuid,
@@ -2058,6 +2295,7 @@ internal sealed class BotRunner
                 DamageTaken = combatDamageTaken,
                 FirstEnemyActionMs = combatFirstEnemyActionMs
             };
+            evidence.Loot.AddRange(combatLoot);
             objective.Kills.Add(evidence);
             objective.FoughtBack = objective.Kills.All(kill => kill.FoughtBack);
             objective.EnemyCasts = objective.Kills.Aggregate(0u, (total, kill) => total + kill.EnemyCasts);
@@ -2120,6 +2358,17 @@ internal sealed class BotRunner
     private async Task<string> TurnInQuestAsync(CancellationToken cancellationToken)
     {
         QuestDefinition definition = RequireQuest();
+        if (definition.Entry.PrerequisiteItem != 0u
+            && !spawns.Any(spawn => spawn.WorldId == questWorldId && definition.ReceiverCreatureIds.Contains(spawn.CreatureId)))
+        {
+            Spawn? receiverAnchor = spawns
+                .Where(spawn => definition.ReceiverCreatureIds.Contains(spawn.CreatureId))
+                .OrderBy(spawn => spawn.WorldId == currentWorldId ? 0 : 1)
+                .ThenBy(spawn => spawn.Id)
+                .FirstOrDefault();
+            if (receiverAnchor is not null)
+                questWorldId = receiverAnchor.WorldId;
+        }
         Spawn receiver = ChooseNearestSpawn(definition.ReceiverCreatureIds, questWorldId);
         TrackedEntity entity = await TeleportAndTryFindWithRetryAsync(receiver, cancellationToken)
             ?? throw new BotFailureException($"receiver spawn was not visible; {FormatNearbyTrackedCreatures()}");
@@ -2378,8 +2627,12 @@ internal sealed class BotRunner
                 case GameMessageOpcode.ServerPlayerCreate:
                     try
                     {
-                        activeActionSet = PacketCodec.ParsePlayerCreateActiveSpec(packet.Body);
+                        PlayerCreateInfo playerCreate = PacketCodec.ParsePlayerCreate(packet.Body);
+                        activeActionSet = playerCreate.ActiveSpec;
                         activeActionSetKnown = true;
+                        inventory.Clear();
+                        foreach (InventoryItemInfo item in playerCreate.Inventory)
+                            inventory[item.Guid] = item;
                         LogCombatSlotDiscovery();
                     }
                     catch (Exception exception)
@@ -2448,7 +2701,7 @@ internal sealed class BotRunner
                     if (!worldLoadPending && destroyedGuid == playerGuid)
                     {
                         botDied = true;
-                        if (activeObjective is not null)
+                        if (activeObjective is not null || combatTargetGuid is not null)
                             throw new BotFailureException("bot died");
                     }
                     break;
@@ -2468,7 +2721,7 @@ internal sealed class BotRunner
                     if (unitId == playerGuid && dead)
                     {
                         botDied = true;
-                        if (activeObjective is not null)
+                        if (activeObjective is not null || combatTargetGuid is not null)
                             throw new BotFailureException("bot died");
                     }
                     if (unitId == playerGuid && !dead)
@@ -2554,6 +2807,50 @@ internal sealed class BotRunner
                     }
                     break;
                 }
+                case GameMessageOpcode.ServerLootNotify:
+                {
+                    LootNotification notification = PacketCodec.ParseLootNotify(packet.Body);
+                    lootNotifications[notification.OwnerUnitId] = notification;
+                    log.Info($"loot notify owner {notification.OwnerUnitId}: {notification.Items.Count} item(s)");
+                    break;
+                }
+                case GameMessageOpcode.ServerLootGrant:
+                {
+                    LootGrant grant = PacketCodec.ParseLootGrant(packet.Body);
+                    if (grant.LooterUnitId == playerGuid)
+                    {
+                        if (!lootGrants.TryGetValue(grant.OwnerUnitId, out Dictionary<uint, LootItemInfo>? grants))
+                        {
+                            grants = [];
+                            lootGrants[grant.OwnerUnitId] = grants;
+                        }
+                        grants[grant.Item.LootUnitId] = grant.Item;
+                    }
+                    break;
+                }
+                case GameMessageOpcode.ServerLootRemove:
+                {
+                    uint ownerUnitId = PacketCodec.ParseLootRemove(packet.Body);
+                    lootNotifications.Remove(ownerUnitId);
+                    log.Debug($"loot removed owner {ownerUnitId}");
+                    break;
+                }
+                case GameMessageOpcode.ServerItemAdd:
+                {
+                    InventoryItemInfo item = PacketCodec.ParseItemAdd(packet.Body);
+                    inventory[item.Guid] = item;
+                    break;
+                }
+                case GameMessageOpcode.ServerItemStackCountUpdate:
+                {
+                    (ulong guid, uint stackCount) = PacketCodec.ParseItemStackCountUpdate(packet.Body);
+                    if (inventory.TryGetValue(guid, out InventoryItemInfo? item))
+                        inventory[guid] = item with { StackCount = stackCount };
+                    break;
+                }
+                case GameMessageOpcode.ServerItemDelete:
+                    inventory.Remove(PacketCodec.ParseItemDelete(packet.Body));
+                    break;
                 case GameMessageOpcode.ServerQuestInit:
                 {
                     QuestInitInfo init = PacketCodec.ParseQuestInit(packet.Body);

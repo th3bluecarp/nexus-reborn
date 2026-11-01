@@ -78,7 +78,7 @@ internal static class CliOptions
     public const string Usage = """
         Usage:
           NexusForever.Bot prep --db <connection-string> --email <email> --password <password>
-          NexusForever.Bot info --tables <path> --quest <id[,id...]> [--chain 1]
+          NexusForever.Bot info --tables <path> --quest <id[,id...]> [--chain 1] [--db <connection-string>]
           NexusForever.Bot run (--zone <id> --faction exile|dominion | --quest <id[,id...]>) [--chain 0|1] [--start arkship] [--max-minutes <n>] (--sts <host:port> --password <password> | --token <guid>) --auth <host:port> --world <host[:port]> --db <connection-string> --tables <path> --email <email> --report <file.json> --log <file.log>
         """;
 
@@ -99,10 +99,10 @@ internal static class CliOptions
 
     private static InfoOptions ParseInfo(Dictionary<string, string> values)
     {
-        RequireOnly(values, "tables", "quest", "chain");
+        RequireOnly(values, "tables", "quest", "chain", "db");
         List<ushort> ids = Required(values, "quest").Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries).Select(ushort.Parse).ToList();
         bool chain = values.TryGetValue("chain", out string? c) && c is "1" or "true";
-        return new InfoOptions(Required(values, "tables"), ids, chain);
+        return new InfoOptions(Required(values, "tables"), ids, chain, values.GetValueOrDefault("db"));
     }
 
     private static PrepOptions ParsePrep(Dictionary<string, string> values)

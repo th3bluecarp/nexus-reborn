@@ -55,6 +55,7 @@ internal sealed class BotGameData
     private readonly GameTable<Quest2Entry> quests;
     private readonly GameTable<QuestObjectiveEntry> objectives;
     private readonly GameTable<Creature2Entry> creatures;
+    private readonly GameTable<Item2Entry> items;
     private readonly GameTable<CharacterCreationEntry> characterCreations;
     private readonly GameTable<WorldLocation2Entry> worldLocations;
     private readonly GameTable<TargetGroupEntry> targetGroups;
@@ -70,6 +71,7 @@ internal sealed class BotGameData
         quests = Load<Quest2Entry>(tablePath, "Quest2.tbl");
         objectives = Load<QuestObjectiveEntry>(tablePath, "QuestObjective.tbl");
         creatures = Load<Creature2Entry>(tablePath, "Creature2.tbl");
+        items = Load<Item2Entry>(tablePath, "Item2.tbl");
         characterCreations = Load<CharacterCreationEntry>(tablePath, "CharacterCreation.tbl");
         worldLocations = Load<WorldLocation2Entry>(tablePath, "WorldLocation2.tbl");
         targetGroups = Load<TargetGroupEntry>(tablePath, "TargetGroup.tbl");
@@ -129,6 +131,13 @@ internal sealed class BotGameData
 
         string title = english.GetEntry(entry.LocalizedTextIdTitle) ?? $"Quest {id}";
         return new QuestDefinition(id, title, entry, questObjectives, givers, receivers);
+    }
+
+    public uint GetItemActivationQuest(uint itemId)
+    {
+        Item2Entry entry = items.GetEntry(itemId)
+            ?? throw new BotFailureException($"Item2 entry {itemId} was not found.");
+        return entry.Quest2IdActivation;
     }
 
     public IReadOnlyList<uint> GetPrerequisiteBranchGiverCreatureIds(RunOptions options)

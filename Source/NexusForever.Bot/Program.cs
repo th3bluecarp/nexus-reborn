@@ -17,7 +17,7 @@ internal static class Program
                     return 0;
                 }
                 case InfoOptions info:
-                    return QuestInfo.Run(info);
+                    return await QuestInfo.RunAsync(info);
                 case RunOptions run:
                 {
                     var report = new RunReport { QuestId = run.QuestIds.FirstOrDefault() };
