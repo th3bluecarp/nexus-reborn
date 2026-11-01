@@ -2518,6 +2518,19 @@ internal sealed class BotRunner
                 .ToArray();
             if (creatureSpawns.Length == 0)
             {
+                // no database spawn (script-spawned or escort NPC such as 16622 for More Important Than Revenge): use it if it is
+                // already streamed in next to the bot
+                TrackedEntity? visible = entities.FindCreature(creatureId);
+                if (visible is not null)
+                {
+                    int visibleIndex = questNpcAttemptDetails.Count;
+                    questNpcAttemptDetails.Add($"{role} creature {creatureId}: no spawns in world {worldId}, using visible guid {visible.Guid}");
+                    bool visibleConfirmed = await tryUse(visible, cancellationToken);
+                    questNpcAttemptDetails[visibleIndex] += visibleConfirmed ? ", confirmed" : ", no quest-state confirmation";
+                    if (visibleConfirmed)
+                        return new QuestNpcUseResult(visible, FormatQuestNpcAttempts());
+                    continue;
+                }
                 questNpcAttemptDetails.Add($"{role} creature {creatureId}: no spawns in world {worldId}");
                 continue;
             }
