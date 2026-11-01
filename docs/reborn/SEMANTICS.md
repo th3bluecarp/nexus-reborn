@@ -29,6 +29,8 @@ Confidence: **High** = consistent across all the data we checked and no counter 
 | Spell59 | **not implemented**: ObjectId a Spell4 id (253 of 260), Value 1 to 5 with numeric comparisons, probably a stack count; no way to count stacks yet | | | | |
 | Unknown47, ChallengeRequirement (69), ChallengeLocked (74), PlayerPathMission (54), PathMissionRequirement (67) | **not implemented** | | Value is a spell / challenge / mission id | several readings fit equally well | | unhandled on purpose |
 
+- **Level prerequisite rows with an ObjectId** (4106 on quests 3479, 10100, 10101: "Level LessThanOrEqual 1, ObjectId 4065"; 6232 on 8944: "LessThanOrEqual 1, ObjectId 1"): read as a player-level check they lock these quests to level-1 characters, and 8944 also requires PrerequisiteLevel 4, which no character can satisfy together. Every other Level row has ObjectId 0 and reads consistently as player level (15273 = level 7 exactly). Jabbithole lists all four quests at minimum level 1. PrerequisiteCheckLevel treats a Level row with an ObjectId as met. Confidence: Invented (what the ObjectId means is unknown). Found by the headless quest bot 2026-10-31.
+
 ## Quest objectives
 
 | Field | Our meaning | Confidence | Evidence | Alternatives / risks | Code |
