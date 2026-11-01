@@ -2595,7 +2595,9 @@ internal sealed class BotRunner
             throw new BotFailureException($"target group {objective.Data} resolved to no creature ids");
         IReadOnlyList<Spawn> candidates = SpawnsFor(creatureIds, questWorldId);
         if (candidates.Count == 0)
-            throw new BotFailureException($"No spawn in world {questWorldId} for combat target(s) {string.Join(',', creatureIds)}.");
+            // script-spawned enemies (the arkship Virtual Legionnaires drop in when a Sim-Turret dies) have no database spawn:
+            // keep watching for them until the objective budget runs out instead of giving up at once
+            log.Info($"no spawn in world {questWorldId} for combat target(s) {string.Join(',', creatureIds)}; waiting for script-spawned entities");
 
         IReadOnlySet<uint> objectiveCreatureIds = creatureIds.ToHashSet();
         var spawnVisits = new Dictionary<uint, int>();
