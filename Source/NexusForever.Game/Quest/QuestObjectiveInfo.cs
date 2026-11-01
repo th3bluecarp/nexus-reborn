@@ -19,6 +19,13 @@ namespace NexusForever.Game.Quest
         public uint Data { get; }
         public uint EquipItemId { get; }
 
+        /// <summary>
+        /// The single creature named in the objective text ($(creature=N)), 0 when none or several. Activating or killing it
+        /// counts even when Data names another id (The Face of the Enemy mine 3: Data 5968 is an unnamed Creature2 row, the
+        /// mine the player detonates is 73668).
+        /// </summary>
+        public uint TextCreatureId { get; }
+
         public QuestObjectiveInfo(QuestObjectiveEntry entry)
         {
             Entry = entry;
@@ -31,6 +38,8 @@ namespace NexusForever.Game.Quest
                 : entry.Data;
             if (Type == QuestObjectiveType.ActivateEntity && entry.Data == 0u)
                 EquipItemId = EquipItemFromText(entry.LocalizedTextIdFull);
+            if (Type is QuestObjectiveType.ActivateEntity or QuestObjectiveType.SucceedCSI or QuestObjectiveType.KillCreature)
+                TextCreatureId = CreatureFromText(entry.LocalizedTextIdFull);
         }
 
         // objectives with Data 0 that name exactly one creature in their text, as $(creature=27196): 274 ActivateEntity, 15 SucceedCSI, 1 KillCreature

@@ -522,7 +522,18 @@ namespace NexusForever.Game.Quest
                     + string.Join(", ", objectives.Select(o => $"[{o.Index} type {o.ObjectiveInfo.Type} data {o.ObjectiveInfo.Data} progress {o.Progress} complete {o.IsComplete()} canUpdate {CanUpdateObjective(o)}]")));
 
             ObjectiveUpdate(o => o.ObjectiveInfo.Entry.Type == (uint)type
-                && (o.ObjectiveInfo.Data == data || NamesTargetGroupOf(type, o, data)), progress);
+                && (o.ObjectiveInfo.Data == data || NamesTextCreature(o, data) || NamesTargetGroupOf(type, o, data)), progress);
+        }
+
+        /// <summary>
+        /// Returns if the objective text names the supplied creature while Data points elsewhere (an unnamed placeholder
+        /// Creature2 row such as 5968 on The Face of the Enemy's third sim-mine).
+        /// </summary>
+        private static bool NamesTextCreature(IQuestObjective objective, uint creatureId)
+        {
+            return objective.ObjectiveInfo.TextCreatureId != 0u
+                && objective.ObjectiveInfo.TextCreatureId == creatureId
+                && objective.ObjectiveInfo.Data != creatureId;
         }
 
         /// <summary>
