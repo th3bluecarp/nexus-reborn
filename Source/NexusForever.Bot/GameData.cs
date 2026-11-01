@@ -638,7 +638,7 @@ internal sealed class BotGameData
             _ => true
         };
 
-    private static uint CreatureFromText(string text)
+    internal static uint CreatureFromText(string text)
     {
         uint[] ids = Regex.Matches(text, @"creature=([0-9]{1,9})", RegexOptions.IgnoreCase)
             .Select(match => uint.Parse(match.Groups[1].Value))

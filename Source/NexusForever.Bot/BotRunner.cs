@@ -3195,6 +3195,27 @@ internal sealed class BotRunner
         WorldLocation2Entry location = RequireGameData().GetWorldLocation(objective.WorldLocationId);
         uint before = GetRawProgress(objective.Index);
         await TeleportToLocationAsync(location, 0f, cancellationToken);
+        // "Right-click the $(creature=73741) ... to continue to the Protostar Model Skyplot" (10525, EnterZone 4965): the
+        // zone is entered through a portal object, so activate the creature the text names once it is streamed in
+        uint portalCreatureId = BotGameData.CreatureFromText(objective.Text);
+        if (portalCreatureId != 0u && !IsObjectiveComplete(objective))
+        {
+            DateTimeOffset deadline = DateTimeOffset.UtcNow + EntityStreamTimeout;
+            TrackedEntity? portal = entities.FindCreature(portalCreatureId);
+            while (portal is null && DateTimeOffset.UtcNow < deadline)
+            {
+                if (await TryReadWorldPacketAsync(deadline - DateTimeOffset.UtcNow, cancellationToken) is null)
+                    break;
+                portal = entities.FindCreature(portalCreatureId);
+            }
+            if (portal is not null)
+            {
+                log.Info($"location objective {objective.Index}: activating portal creature {portalCreatureId} guid {portal.Guid}");
+                await RunActivationFlowAsync(objective.Index, before, portal, TimeSpan.FromSeconds(20), cancellationToken);
+            }
+            else
+                log.Info($"location objective {objective.Index}: portal creature {portalCreatureId} not visible within {EntityStreamTimeout.TotalSeconds:0} s");
+        }
         await WaitForObjectiveProgressAsync(objective.Index, before, cancellationToken);
     }
 
