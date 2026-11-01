@@ -1297,6 +1297,10 @@ internal sealed class BotRunner
         QuestRunReport questReport = currentQuestReport;
         try
         {
+            // a death at the very end of the previous quest can leave the bot dead here (3487 Shellshock -> 3670 Calm Before
+            // the Storm "bot remains dead"): give the resurrection one more 60 s budget before the quest is written off
+            if (botDied)
+                await TryRecoverFromDeathAsync(questReport, cancellationToken);
             ConfigureQuest(definition);
             await LevelForAcceptanceIfNeededAsync(definition, cancellationToken);
             if (definition.Entry.PrerequisiteItem != 0u)
