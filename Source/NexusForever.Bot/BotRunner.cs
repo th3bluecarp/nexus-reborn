@@ -228,9 +228,9 @@ internal sealed class BotRunner
         foreach ((uint itemId, ItemDropSources sources) in loadedItemSources)
             itemDropSources[itemId] = sources;
 
-        QuestDefinition requested = questPlan[0];
-        report.Title = options.ZoneId is uint zoneId ? $"Zone {zoneId} ({options.Faction})" : requested.Title;
-        foreach (QuestObjectiveDefinition objective in options.ZoneId is null && options.QuestIds.Count == 1 ? requested.Objectives : [])
+        QuestDefinition? requested = questPlan.Count > 0 ? questPlan[0] : null;
+        report.Title = options.ZoneId is uint zoneId ? $"Zone {zoneId} ({options.Faction})" : requested?.Title ?? "Character only (--quest none)";
+        foreach (QuestObjectiveDefinition objective in options.ZoneId is null && options.QuestIds.Count == 1 && requested is not null ? requested.Objectives : [])
         {
             report.Objectives.Add(new ObjectiveReport
             {
