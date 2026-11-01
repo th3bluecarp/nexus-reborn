@@ -4,6 +4,7 @@ Newest first. "Live" means running on our test server.
 
 ## 2026-11-01
 
+- **Sim-Turrets are hostile**: their creature data says FriendlyToAll, so even as creatures no ability would target them; the tutorial turrets now spawn with the Battle Beasts' hostile faction (SEMANTICS: Sim-Turrets are hostile).
 - **AI turrets can be fought**: turret entities were bare world objects without health, so the arkship Sim-Turrets ("Interrupt the Sim-Turret, then destroy it") took no damage from any ability; they are creatures now (SEMANTICS: AI turrets are creatures).
 - **Quest bot, morning fixes**: quest NPCs with no database spawn are used when already visible (More Important Than Revenge's receiver stood 0.2 m away); a quest that starts with the bot dead retries the resurrection instead of failing; `--quest none --keep-character <name>` leaves a named character on the account for GUI tests; `info` prints objective world-location coordinates.
 - **GUI click-through started**: the real WildStar client, driven from Tower on the test PC, logs in, plays the arkship tutorial (area objectives, the tracker's direction-arrow link, a right-click on the Hoverboard Projector) and the server credits every step. Finding: the client cannot log in to an email-style account while the headless bot can (STS key proof mismatch, open).
