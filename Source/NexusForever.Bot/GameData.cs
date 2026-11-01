@@ -163,7 +163,7 @@ internal sealed class BotGameData
             .ToArray();
 
         CharacterCreationStart required = start == BotCharacterStart.Arkship
-            ? CharacterCreationStart.Arkship
+            ? CharacterCreationStart.PreTutorial   // "Novice" start: entry 467, 0 XP, arkship world 3460 (the Arkship(0) row is disabled)
             : CharacterCreationStart.Nexus;
         return candidates.FirstOrDefault(entry => entry.CharacterCreationStartEnum == required)
             ?? throw new BotFailureException($"No enabled Exile Human male Warrior {required} CharacterCreation entry was found.");
