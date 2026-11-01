@@ -18,7 +18,10 @@ internal sealed record TrackedEntity(
     EntityCreateFlag CreateFlags,
     byte? QuestChecklistIdx,
     uint? Level,
-    uint? Health);
+    uint? Health,
+    uint? MaxHealth);
+
+internal sealed record EntityPropertiesUpdate(uint UnitId, uint? MaxHealth);
 
 internal sealed class EntityTracker
 {
@@ -70,6 +73,12 @@ internal sealed class EntityTracker
             entities[guid] = entity with { Health = health };
     }
 
+    public void UpdateMaxHealth(uint guid, uint maxHealth)
+    {
+        if (entities.TryGetValue(guid, out TrackedEntity? entity))
+            entities[guid] = entity with { MaxHealth = maxHealth };
+    }
+
     public TrackedEntity? FindCreature(uint creatureId, Spawn? expected = null)
     {
         IEnumerable<TrackedEntity> matches = entities.Values.Where(entity => entity.CreatureId == creatureId);
@@ -94,6 +103,7 @@ internal sealed class EntityTracker
     {
         double radiusSquared = radius * radius;
         return entities.Values
+            .Select(entity => Get(entity.Guid) ?? entity)
             .Where(entity => entity.Type == EntityType.NonPlayer
                 && entity.CreatureId is uint creatureId
                 && creatureIds.Contains(creatureId)
@@ -120,6 +130,7 @@ internal sealed class EntityTracker
     {
         float radiusSquared = radius * radius;
         return entities.Values
+            .Select(entity => Get(entity.Guid) ?? entity)
             .Where(entity => entity.Type == EntityType.NonPlayer
                 && entity.CreatureId is uint creatureId
                 && creatureFilter(creatureId)
@@ -211,6 +222,17 @@ internal sealed class EntityTracker
             }
         }
 
+        uint? maxHealth = null;
+        byte propertyCount = reader.ReadByte();
+        for (int i = 0; i < propertyCount; i++)
+        {
+            Property property = reader.ReadEnum<Property>(8);
+            _ = reader.ReadSingle();
+            float value = reader.ReadSingle();
+            if (property == Property.BaseHealth)
+                maxHealth = ToUnsignedProperty(value);
+        }
+
         var entity = new TrackedEntity(
             guid,
             type,
@@ -219,9 +241,32 @@ internal sealed class EntityTracker
             createFlags,
             questChecklistIdx,
             level,
-            health);
+            health,
+            maxHealth);
         entities[guid] = entity;
         return entity;
+    }
+
+    public EntityPropertiesUpdate ParsePropertiesUpdate(byte[] body)
+    {
+        using var stream = new MemoryStream(body, writable: false);
+        using var reader = new GamePacketReader(stream);
+
+        uint guid = reader.ReadUInt();
+        uint? maxHealth = null;
+        byte propertyCount = reader.ReadByte();
+        for (int i = 0; i < propertyCount; i++)
+        {
+            Property property = reader.ReadEnum<Property>(8);
+            _ = reader.ReadSingle();
+            float propertyValue = reader.ReadSingle();
+            if (property == Property.BaseHealth)
+                maxHealth = ToUnsignedProperty(propertyValue);
+        }
+
+        if (maxHealth is uint maxHealthValue)
+            UpdateMaxHealth(guid, maxHealthValue);
+        return new EntityPropertiesUpdate(guid, maxHealth);
     }
 
     public (uint Guid, Vector3? Position) ParseCommands(byte[] body)
@@ -326,6 +371,11 @@ internal sealed class EntityTracker
         float result = value % modulus;
         return result < 0f ? result + modulus : result;
     }
+
+    private static uint? ToUnsignedProperty(float value)
+        => float.IsFinite(value) && value >= 0f && value <= uint.MaxValue
+            ? (uint)value
+            : null;
 
     private static (Stat Stat, uint? IntegerValue) ReadStat(GamePacketReader reader)
     {

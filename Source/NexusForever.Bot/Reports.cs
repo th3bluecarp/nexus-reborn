@@ -260,7 +260,8 @@ internal static class TimedStep
         string name,
         TimeSpan timeout,
         CancellationToken runCancellation,
-        Func<CancellationToken, Task<string>> action)
+        Func<CancellationToken, Task<string>> action,
+        Func<string?>? timeoutDetail = null)
     {
         Stopwatch stopwatch = Stopwatch.StartNew();
         using var timeoutSource = CancellationTokenSource.CreateLinkedTokenSource(runCancellation);
@@ -276,6 +277,11 @@ internal static class TimedStep
             string detail = exception is OperationCanceledException && !runCancellation.IsCancellationRequested
                 ? $"timeout after {timeout.TotalSeconds:0} s"
                 : exception.Message;
+            if (exception is OperationCanceledException && !runCancellation.IsCancellationRequested
+                && timeoutDetail?.Invoke() is { Length: > 0 } extraDetail)
+            {
+                detail += $"; {extraDetail}";
+            }
             report.Steps.Add(new StepReport { Name = name, Ok = false, ElapsedMs = stopwatch.ElapsedMilliseconds, Detail = detail });
             if (exception is OperationCanceledException && !runCancellation.IsCancellationRequested)
                 throw new BotFailureException($"{name}: {detail}");

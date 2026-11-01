@@ -25,7 +25,9 @@ internal sealed class BotRunner
     private static readonly TimeSpan CombatLocalTargetSearchTimeout = TimeSpan.FromSeconds(5);
     private static readonly TimeSpan CombatSpawnTargetSearchTimeout = TimeSpan.FromSeconds(10);
     private static readonly TimeSpan EntityStreamTimeout = TimeSpan.FromSeconds(15);
+    private static readonly TimeSpan QuestNpcConfirmationTimeout = TimeSpan.FromSeconds(15);
     private static readonly TimeSpan CorpseLootTimeout = TimeSpan.FromSeconds(5);
+    private static readonly TimeSpan SingleTargetKillRetryTimeout = TimeSpan.FromSeconds(660);
     private const float CombatTargetMovementThreshold = 2f;
     private const float CombatStandOffDistance = 2f;
     private const int MaximumCombatSpawnVisits = 2;
@@ -56,6 +58,10 @@ internal sealed class BotRunner
     private readonly Dictionary<uint, Dictionary<uint, LootItemInfo>> lootGrants = [];
     private readonly List<LootEvidence> combatLoot = [];
     private readonly Dictionary<ushort, PathMissionStatus> pathMissionStates = [];
+    private readonly List<uint> questNpcAttemptCreatureIds = [];
+    private readonly List<string> questNpcAttemptDetails = [];
+    private readonly List<string> holdoutProgressPackets = [];
+    private readonly List<string> resurrectionPacketsAfterAccept = [];
 
     private BotGameData? gameData;
     private QuestDefinition? quest;
@@ -80,6 +86,8 @@ internal sealed class BotRunner
     private bool botDied;
     private uint currentLevel = 1u;
     private uint? currentHealth;
+    private uint? currentMaxHealth;
+    private bool playerInCombat;
     private uint? combatTargetGuid;
     private DateTimeOffset combatStartedAt;
     private uint combatEnemyCasts;
@@ -87,6 +95,8 @@ internal sealed class BotRunner
     private long? combatFirstEnemyActionMs;
     private bool resurrectionRecoveryActive;
     private string? resurrectionConfirmation;
+    private bool resurrectionAcceptSent;
+    private int resurrectionPacketOverflow;
     private QuestState questState;
     private ushort chatMessageId;
     private uint spellCastId = 1;
@@ -105,6 +115,9 @@ internal sealed class BotRunner
     private bool pathInitialiseReceived;
     private ushort currentPathEpisodeId;
     private PlayerPathSoldierResult? holdoutResult;
+    private ushort? activeHoldoutEventId;
+    private int? currentHoldoutWave;
+    private string? holdoutPreparationDetail;
 
     private enum ActivationOutcome
     {
@@ -115,6 +128,7 @@ internal sealed class BotRunner
 
     private sealed record ActivationCastResponse(SpellCastStart? Start, SpellCastResult? Result);
     private sealed record CombatFacing(Vector3 TargetPosition, DateTimeOffset SentAt);
+    private sealed record QuestNpcUseResult(TrackedEntity Entity, string Attempts);
 
     private sealed class CombatTargetUnavailableException(string message) : Exception(message);
 
@@ -466,8 +480,11 @@ internal sealed class BotRunner
                 finishedQuests.Add(definition.Id);
                 continue;
             }
+            TimeSpan questTimeout = HasSingleTargetKillRetry(definition)
+                ? PerQuestTimeout + CombatTimeout + TimeSpan.FromSeconds(60)
+                : PerQuestTimeout;
             using var questBudget = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
-            questBudget.CancelAfter(PerQuestTimeout);
+            questBudget.CancelAfter(questTimeout);
             try
             {
                 await RunQuestAsync(definition, questBudget.Token);
@@ -478,12 +495,12 @@ internal sealed class BotRunner
                     ?? throw new InvalidOperationException($"Quest {definition.Id} failed without a report.");
                 if (exception is OperationCanceledException && questBudget.IsCancellationRequested)
                 {
-                    failedReport.Failure = "per-quest timeout after 8 minutes";
+                    failedReport.Failure = $"per-quest timeout after {questTimeout.TotalMinutes:0.#} minutes";
                     failedReport.Steps.Add(new StepReport
                     {
                         Name = "quest budget",
                         Ok = false,
-                        ElapsedMs = (long)PerQuestTimeout.TotalMilliseconds,
+                        ElapsedMs = (long)questTimeout.TotalMilliseconds,
                         Detail = failedReport.Failure
                     });
                 }
@@ -596,20 +613,47 @@ internal sealed class BotRunner
                         break;
                 }
 
-                if (GetPathMissionStatus(definition.Id)?.Completed != true)
+                if (definition.Type != PathMissionType.Holdout
+                    && GetPathMissionStatus(definition.Id)?.Completed != true)
                     throw new BotFailureException("server did not report the mission complete");
                 currentMissionReport.Result = "PASS";
-                PathMissionStatus status = GetPathMissionStatus(definition.Id)!;
-                currentMissionReport.Detail = $"complete; progress={status.Progress}/{definition.Count}; episode={definition.Episode.Id}";
+                PathMissionStatus? status = GetPathMissionStatus(definition.Id);
+                currentMissionReport.Detail = definition.Type == PathMissionType.Holdout
+                    ? $"holdout end={holdoutResult}; progress={status?.Progress.ToString() ?? "not-received"}/{definition.Count}; episode={definition.Episode.Id}"
+                    : $"complete; progress={status!.Progress}/{definition.Count}; episode={definition.Episode.Id}";
+                if (definition.Type == PathMissionType.Holdout)
+                    currentMissionReport.Detail += FormatHoldoutMissionDetail();
                 log.Info($"path mission {definition.Id} PASS: {currentMissionReport.Detail}");
             }
             catch (Exception exception) when (!cancellationToken.IsCancellationRequested)
             {
                 currentMissionReport.Result = "FAIL";
                 currentMissionReport.FailedAt = phase;
-                currentMissionReport.Detail = exception is OperationCanceledException && missionBudget.IsCancellationRequested
-                    ? "mission timeout after 6 minutes"
-                    : exception.Message;
+                bool holdoutDeath = definition.Type == PathMissionType.Holdout
+                    && (botDied || holdoutResult == PlayerPathSoldierResult.FailDeath);
+                currentMissionReport.Detail = holdoutDeath
+                    ? $"FAIL: died in wave {FormatCurrentHoldoutWave()}"
+                    : exception is OperationCanceledException && missionBudget.IsCancellationRequested
+                        ? "mission timeout after 6 minutes"
+                        : exception.Message;
+                if (holdoutDeath && !botDied)
+                {
+                    try
+                    {
+                        DateTimeOffset deathDeadline = DateTimeOffset.UtcNow.AddSeconds(2);
+                        while (!botDied && DateTimeOffset.UtcNow < deathDeadline)
+                        {
+                            TimeSpan remaining = deathDeadline - DateTimeOffset.UtcNow;
+                            if (remaining <= TimeSpan.Zero
+                                || await TryReadWorldPacketAsync(remaining, cancellationToken) is null)
+                                break;
+                        }
+                    }
+                    catch (BotFailureException deathException)
+                    {
+                        log.Info($"path mission {definition.Id}: death confirmation: {deathException.Message}");
+                    }
+                }
                 if (botDied)
                 {
                     var recoveryReport = new QuestRunReport
@@ -631,6 +675,8 @@ internal sealed class BotRunner
                 {
                     log.Info($"path mission {definition.Id} trailing packet drain stopped: {drainException.Message}");
                 }
+                if (definition.Type == PathMissionType.Holdout)
+                    currentMissionReport.Detail += FormatHoldoutMissionDetail();
                 log.Info($"path mission {definition.Id} FAIL at {phase}: {currentMissionReport.Detail}");
             }
             finally
@@ -638,6 +684,10 @@ internal sealed class BotRunner
                 currentMissionReport.EndTimestamp = DateTimeOffset.UtcNow;
                 currentMissionReport = null;
                 holdoutResult = null;
+                activeHoldoutEventId = null;
+                currentHoldoutWave = null;
+                holdoutProgressPackets.Clear();
+                holdoutPreparationDetail = null;
             }
         }
     }
@@ -745,8 +795,11 @@ internal sealed class BotRunner
             definition.HoldoutConsoleCreatureIds,
             definition,
             cancellationToken);
+        holdoutProgressPackets.Clear();
+        currentHoldoutWave = null;
+        activeHoldoutEventId = checked((ushort)definition.Entry.ObjectId);
+        holdoutPreparationDetail = await PrepareForHoldoutAsync(cancellationToken);
         IReadOnlySet<uint> existingNonPlayers = entities.GetVisibleNonPlayerGuids();
-        Vector3 holdoutCenter = lastPosition;
         holdoutResult = null;
         await RequireWorld().SendEncryptedAsync(GameMessageOpcode.ClientActivateUnit,
             PacketCodec.ClientActivateUnit(console.Guid), cancellationToken);
@@ -754,27 +807,100 @@ internal sealed class BotRunner
 
         var ignoredGuids = existingNonPlayers.ToHashSet();
         ignoredGuids.Add(console.Guid);
-        while (!IsPathMissionComplete(definition.Id))
+        while (holdoutResult is null)
         {
-            if (holdoutResult is PlayerPathSoldierResult result && result != PlayerPathSoldierResult.Success)
-                throw new BotFailureException($"holdout ended with {result}");
-
-            TrackedEntity? target = entities.FindNearestVisibleNonPlayer(
-                holdoutCenter,
-                40f,
-                ignoredGuids,
-                RequireGameData().IsHoldoutHostile);
+            TrackedEntity? target = await FindNextHoldoutTargetAsync(ignoredGuids, cancellationToken);
             if (target is null)
-            {
-                _ = await TryReadWorldPacketAsync(TimeSpan.FromSeconds(2), cancellationToken);
                 continue;
-            }
 
             await RequireWorld().SendEncryptedAsync(GameMessageOpcode.ClientEntitySelect,
                 PacketCodec.ClientEntitySelect(target.Guid), cancellationToken);
-            if (!await FightUntilDeathAsync(target.Guid, cancellationToken))
+            if (!await FightUntilDeathAsync(target.Guid, cancellationToken, lootCorpse: false))
                 ignoredGuids.Add(target.Guid);
         }
+
+        if (holdoutResult != PlayerPathSoldierResult.Success)
+            throw new BotFailureException($"holdout ended with {holdoutResult}");
+
+        DateTimeOffset completionDeadline = DateTimeOffset.UtcNow.AddSeconds(5);
+        while (!IsPathMissionComplete(definition.Id))
+        {
+            TimeSpan remaining = completionDeadline - DateTimeOffset.UtcNow;
+            if (remaining <= TimeSpan.Zero
+                || await TryReadWorldPacketAsync(remaining, cancellationToken) is null)
+                break;
+        }
+    }
+
+    private async Task<TrackedEntity?> FindNextHoldoutTargetAsync(
+        IReadOnlySet<uint> ignoredGuids,
+        CancellationToken cancellationToken)
+    {
+        DateTimeOffset deadline = DateTimeOffset.UtcNow.AddSeconds(2);
+        while (true)
+        {
+            if (holdoutResult is not null)
+                return null;
+            TrackedEntity? target = entities.FindNearestVisibleNonPlayer(
+                lastPosition,
+                40f,
+                ignoredGuids,
+                RequireGameData().IsHoldoutHostile);
+            if (target is not null)
+                return target;
+
+            TimeSpan remaining = deadline - DateTimeOffset.UtcNow;
+            if (remaining <= TimeSpan.Zero
+                || await TryReadWorldPacketAsync(remaining, cancellationToken) is null)
+                return null;
+        }
+    }
+
+    private async Task<string> PrepareForHoldoutAsync(CancellationToken cancellationToken)
+    {
+        uint levelBefore = currentLevel;
+        uint? maxHealthBefore = currentMaxHealth;
+        bool raisedLevel = currentLevel < 15u;
+        if (raisedLevel)
+        {
+            await SendCheatAsync("!character level 15", cancellationToken);
+            currentLevel = 15u;
+            await DrainWorldPacketsAsync(TimeSpan.FromSeconds(1), cancellationToken);
+        }
+
+        Stopwatch healthWait = Stopwatch.StartNew();
+        DateTimeOffset deadline = DateTimeOffset.UtcNow.AddSeconds(60);
+        while (currentHealth is not uint health
+            || currentMaxHealth is not uint maxHealth
+            || maxHealth == 0u
+            || health < maxHealth
+            || botDied
+            || raisedLevel && currentMaxHealth == maxHealthBefore)
+        {
+            TimeSpan remaining = deadline - DateTimeOffset.UtcNow;
+            if (remaining <= TimeSpan.Zero
+                || await TryReadWorldPacketAsync(remaining, cancellationToken) is null)
+            {
+                throw new BotFailureException(
+                    $"holdout preparation did not confirm alive at full health within 60 s (dead={botDied}; health={currentHealth?.ToString() ?? "unknown"}/{currentMaxHealth?.ToString() ?? "unknown"})");
+            }
+        }
+
+        return $"level {levelBefore}->{currentLevel}; health {currentHealth}/{currentMaxHealth} full after {healthWait.Elapsed.TotalSeconds:0.0}s";
+    }
+
+    private string FormatCurrentHoldoutWave()
+        => currentHoldoutWave?.ToString() ?? "unknown";
+
+    private string FormatHoldoutMissionDetail()
+    {
+        string preparation = holdoutPreparationDetail is null
+            ? "not-recorded"
+            : holdoutPreparationDetail;
+        string progress = holdoutProgressPackets.Count == 0
+            ? "none"
+            : string.Join(" | ", holdoutProgressPackets);
+        return $"; preparation={preparation}; wave progress packets=[{progress}]";
     }
 
     private async Task<TrackedEntity> FindPathCreatureAsync(
@@ -939,6 +1065,9 @@ internal sealed class BotRunner
             return;
 
         Stopwatch stopwatch = Stopwatch.StartNew();
+        resurrectionAcceptSent = false;
+        resurrectionPacketsAfterAccept.Clear();
+        resurrectionPacketOverflow = 0;
         using var recoveryBudget = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
         recoveryBudget.CancelAfter(TimeSpan.FromSeconds(60));
         CancellationToken recoveryToken = recoveryBudget.Token;
@@ -979,6 +1108,7 @@ internal sealed class BotRunner
             resurrectionConfirmation = null;
             await RequireWorld().SendEncryptedAsync(GameMessageOpcode.ClientResurrectAccept,
                 PacketCodec.ClientResurrectAccept(offer.GhostId, type), recoveryToken);
+            resurrectionAcceptSent = true;
             while (botDied && resurrectionConfirmation is null)
             {
                 if (await TryReadWorldPacketAsync(TimeSpan.FromSeconds(5), recoveryToken) is null)
@@ -993,7 +1123,7 @@ internal sealed class BotRunner
                 Name = "recover from death",
                 Ok = true,
                 ElapsedMs = stopwatch.ElapsedMilliseconds,
-                Detail = $"resurrected with {type}; waited={remainingWaitMs + (remainingWaitMs > 0u ? 200u : 0u)}ms; confirmed by {resurrectionConfirmation ?? "DeathState false"}; {FormatResurrectionOffer(offer)}"
+                Detail = $"resurrected with {type}; waited={remainingWaitMs + (remainingWaitMs > 0u ? 200u : 0u)}ms; confirmed by {resurrectionConfirmation ?? "DeathState false"}; {FormatResurrectionOffer(offer)}; {FormatResurrectionPacketTrail()}"
             });
         }
         catch (Exception exception)
@@ -1006,13 +1136,14 @@ internal sealed class BotRunner
                 Name = "recover from death",
                 Ok = false,
                 ElapsedMs = stopwatch.ElapsedMilliseconds,
-                Detail = $"{reason}; {FormatResurrectionOffer(resurrectionShow)}"
+                Detail = $"{reason}; {FormatResurrectionOffer(resurrectionShow)}; {FormatResurrectionPacketTrail()}"
             });
-            log.Info($"death recovery failed: {reason}; {FormatResurrectionOffer(resurrectionShow)}");
+            log.Info($"death recovery failed: {reason}; {FormatResurrectionOffer(resurrectionShow)}; {FormatResurrectionPacketTrail()}");
         }
         finally
         {
             resurrectionRecoveryActive = false;
+            resurrectionAcceptSent = false;
         }
     }
 
@@ -1020,6 +1151,29 @@ internal sealed class BotRunner
         => offer is null
             ? "ShowRezFlags=<not received>; TimeUntilRezMs=<unknown>; TimeUntilWakeHereMs=<unknown>; TimeUntilForceRezMs=<unknown>"
             : $"ShowRezFlags={offer.Flags}(0x{(byte)offer.Flags:X2}); TimeUntilRezMs={offer.TimeUntilRezMs}; TimeUntilWakeHereMs={offer.TimeUntilWakeHereMs}; TimeUntilForceRezMs={offer.TimeUntilForceRezMs}; Dead={offer.Dead}; HasCasterRezRequest={offer.HasCasterRezRequest}; RezCost={offer.RezCost}";
+
+    private void RecordResurrectionPacketAfterAccept(GameMessageOpcode opcode)
+    {
+        if (!resurrectionRecoveryActive || !resurrectionAcceptSent)
+            return;
+        if (resurrectionPacketsAfterAccept.Count < 64)
+            resurrectionPacketsAfterAccept.Add(opcode.ToString());
+        else
+            resurrectionPacketOverflow++;
+    }
+
+    private string FormatResurrectionPacketTrail()
+    {
+        if (!resurrectionAcceptSent && resurrectionPacketsAfterAccept.Count == 0)
+            return "packets after ClientResurrectAccept=<accept not sent>";
+        string packets = resurrectionPacketsAfterAccept.Count == 0
+            ? "none"
+            : string.Join(" -> ", resurrectionPacketsAfterAccept);
+        string overflow = resurrectionPacketOverflow == 0
+            ? ""
+            : $" -> ...(+{resurrectionPacketOverflow})";
+        return $"packets after ClientResurrectAccept=[{packets}{overflow}]";
+    }
 
     private async Task CompleteResurrectionRelocationAsync(
         ResurrectionType type,
@@ -1145,6 +1299,14 @@ internal sealed class BotRunner
             if (definition.Entry.PrerequisiteItem != 0u)
                 await LevelForQuestIfNeededAsync(definition, cancellationToken);
             TimeSpan acceptTimeout = definition.Entry.PrerequisiteItem == 0u ? DefaultStepTimeout : CombatTimeout;
+            if (definition.Entry.PrerequisiteItem == 0u && questState != QuestState.Mentioned)
+            {
+                int giverSpawnCount = SpawnsFor(definition.GiverCreatureIds, questWorldId).Count;
+                int receiverSpawnCount = RequireGameData().GetCommunicatorOffers(definition.Id).Count > 0
+                    ? spawns.Count(spawn => definition.ReceiverCreatureIds.Contains(spawn.CreatureId))
+                    : 0;
+                acceptTimeout = AllowEveryQuestNpcSpawnAttempt(giverSpawnCount + receiverSpawnCount, acceptTimeout);
+            }
             await RunQuestStepAsync("accept quest", acceptTimeout, cancellationToken, AcceptQuestAsync);
             await LevelForQuestIfNeededAsync(definition, cancellationToken);
 
@@ -1172,12 +1334,17 @@ internal sealed class BotRunner
                 {
                     timeout = AllowEveryObjectiveSpawnAttempt(objective, timeout);
                 }
+                if (IsSingleTargetKillRetryObjective(objective))
+                    timeout = SingleTargetKillRetryTimeout;
                 await RunQuestStepAsync($"objective {objective.Index}", timeout, cancellationToken,
-                    token => RunObjectiveWithDeathRetryAsync(objective, definition, token));
+                    token => RunObjectiveWithRetriesAsync(objective, definition, token));
             }
 
             await RunQuestStepAsync("quest achieved", DefaultStepTimeout, cancellationToken, WaitForAchievedAsync);
-            await RunQuestStepAsync("turn in quest", DefaultStepTimeout, cancellationToken, TurnInQuestAsync);
+            TimeSpan turnInTimeout = AllowEveryQuestNpcSpawnAttempt(
+                spawns.Count(spawn => definition.ReceiverCreatureIds.Contains(spawn.CreatureId)),
+                DefaultStepTimeout);
+            await RunQuestStepAsync("turn in quest", turnInTimeout, cancellationToken, TurnInQuestAsync);
             questReport.Result = "PASS";
             questReport.Failure = null;
         }
@@ -1210,6 +1377,14 @@ internal sealed class BotRunner
     {
         int spawnCount = SpawnsFor(GetObjectiveCreatureIds(objective), questWorldId).Count;
         double everySpawnSeconds = spawnCount * EntityStreamTimeout.TotalSeconds * 2d + 15d;
+        return TimeSpan.FromSeconds(Math.Max(baseline.TotalSeconds, everySpawnSeconds));
+    }
+
+    private static TimeSpan AllowEveryQuestNpcSpawnAttempt(int spawnCount, TimeSpan baseline)
+    {
+        double everySpawnSeconds = spawnCount
+            * (EntityStreamTimeout.TotalSeconds * 2d + QuestNpcConfirmationTimeout.TotalSeconds)
+            + 5d;
         return TimeSpan.FromSeconds(Math.Max(baseline.TotalSeconds, everySpawnSeconds));
     }
 
@@ -1372,6 +1547,107 @@ internal sealed class BotRunner
             or QuestObjectiveType.KillTargetGroups
             or QuestObjectiveType.VirtualCollect);
 
+    private static bool HasSingleTargetKillRetry(QuestDefinition definition)
+        => definition.Objectives.Any(IsSingleTargetKillRetryObjective);
+
+    private static bool IsSingleTargetKillRetryObjective(QuestObjectiveDefinition objective)
+        => objective.Type == QuestObjectiveType.KillCreature && objective.Count == 1u;
+
+    private async Task<string> RunObjectiveWithRetriesAsync(
+        QuestObjectiveDefinition objective,
+        QuestDefinition definition,
+        CancellationToken cancellationToken)
+    {
+        if (!IsSingleTargetKillRetryObjective(objective))
+            return await RunObjectiveWithDeathRetryAsync(objective, definition, cancellationToken);
+
+        using (var firstAttempt = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken))
+        {
+            firstAttempt.CancelAfter(CombatTimeout);
+            try
+            {
+                return await RunObjectiveWithDeathRetryAsync(objective, definition, firstAttempt.Token);
+            }
+            catch (Exception exception) when (firstAttempt.IsCancellationRequested
+                && !cancellationToken.IsCancellationRequested)
+            {
+                log.Info($"quest {definition.Id} objective {objective.Index}: first 300 s single-target KillCreature budget expired ({exception.Message}); preparing one retry");
+            }
+        }
+
+        await RunQuestStepAsync(
+            "raise level for single-target retry",
+            TimeSpan.FromSeconds(10),
+            cancellationToken,
+            async token =>
+            {
+                uint before = currentLevel;
+                if (currentLevel < 15u)
+                {
+                    await SendCheatAsync("!character level 15", token);
+                    currentLevel = 15u;
+                    await DrainWorldPacketsAsync(TimeSpan.FromSeconds(1), token);
+                }
+                return before < 15u
+                    ? $"level {before} -> {currentLevel}; zone cap for the one retry"
+                    : "already level 15; retaining zone cap for the one retry";
+            });
+        await RunQuestStepAsync(
+            "heal before single-target retry",
+            TimeSpan.FromSeconds(40),
+            cancellationToken,
+            async token =>
+            {
+                await RequireWorld().SendEncryptedAsync(
+                    GameMessageOpcode.ClientEntitySelect,
+                    PacketCodec.ClientEntitySelect(0),
+                    token);
+                await DrainWorldPacketsAsync(TimeSpan.FromSeconds(2), token);
+                if (playerInCombat)
+                {
+                    Spawn? safeAnchor = SpawnsFor(definition.ReceiverCreatureIds, questWorldId)
+                        .OrderBy(spawn => spawn.DistanceSquared(lastPosition.X, lastPosition.Y, lastPosition.Z))
+                        .ThenBy(spawn => spawn.Id)
+                        .FirstOrDefault();
+                    if (safeAnchor is not null)
+                        await TeleportToSpawnLocationAsync(safeAnchor, token);
+                }
+
+                Stopwatch outOfCombatWait = Stopwatch.StartNew();
+                DateTimeOffset outOfCombatDeadline = DateTimeOffset.UtcNow.AddSeconds(15);
+                while (playerInCombat)
+                {
+                    TimeSpan remaining = outOfCombatDeadline - DateTimeOffset.UtcNow;
+                    if (remaining <= TimeSpan.Zero
+                        || await TryReadWorldPacketAsync(remaining, token) is null)
+                        throw new BotFailureException("player remained in combat while preparing the single-target retry");
+                }
+                await DrainWorldPacketsAsync(TimeSpan.FromSeconds(15), token);
+                if (botDied)
+                {
+                    QuestRunReport questReport = currentQuestReport
+                        ?? throw new InvalidOperationException("Current quest report is unavailable during death recovery.");
+                    await TryRecoverFromDeathAsync(questReport, token);
+                    if (botDied)
+                        throw new BotFailureException("bot died while healing before the single-target retry");
+                }
+                return $"confirmed out of combat after {outOfCombatWait.Elapsed.TotalSeconds:0.0}s, then waited 15 s to heal; health={currentHealth?.ToString() ?? "unknown"}/{currentMaxHealth?.ToString() ?? "unknown"}";
+            });
+
+        using var retryAttempt = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
+        retryAttempt.CancelAfter(CombatTimeout);
+        try
+        {
+            string detail = await RunObjectiveWithDeathRetryAsync(objective, definition, retryAttempt.Token);
+            return $"{detail}; succeeded on the one fresh 300 s retry";
+        }
+        catch (Exception) when (retryAttempt.IsCancellationRequested
+            && !cancellationToken.IsCancellationRequested)
+        {
+            throw new BotFailureException("single-target KillCreature timed out after the initial and retry 300 s budgets");
+        }
+    }
+
     private async Task<string> RunObjectiveWithDeathRetryAsync(
         QuestObjectiveDefinition objective,
         QuestDefinition definition,
@@ -1452,16 +1728,41 @@ internal sealed class BotRunner
         Func<CancellationToken, Task<string>> action)
     {
         int stepCount = report.Steps.Count;
+        bool questNpcStep = name is "accept quest" or "turn in quest";
+        if (questNpcStep)
+        {
+            questNpcAttemptCreatureIds.Clear();
+            questNpcAttemptDetails.Clear();
+        }
         try
         {
             string reportName = questPlan.Count > 1 ? $"quest {RequireQuest().Id}: {name}" : name;
-            return await TimedStep.RunAsync(report, reportName, timeout, cancellationToken, action);
+            return await TimedStep.RunAsync(
+                report,
+                reportName,
+                timeout,
+                cancellationToken,
+                action,
+                questNpcStep ? FormatQuestNpcTimeoutDetail : null);
         }
         finally
         {
             if (currentQuestReport is not null && report.Steps.Count > stepCount)
             {
                 StepReport topLevel = report.Steps[^1];
+                if (questNpcStep
+                    && !topLevel.Ok
+                    && !topLevel.Detail.Contains("tracked creature ids within 60 m", StringComparison.Ordinal))
+                {
+                    topLevel = new StepReport
+                    {
+                        Name = topLevel.Name,
+                        Ok = false,
+                        ElapsedMs = topLevel.ElapsedMs,
+                        Detail = $"{topLevel.Detail}; {FormatQuestNpcTimeoutDetail()}"
+                    };
+                    report.Steps[^1] = topLevel;
+                }
                 if (name.StartsWith("objective ", StringComparison.Ordinal)
                     && objectiveCastResultDetails.Count > 0
                     && !topLevel.Detail.Contains("; castResults:", StringComparison.Ordinal))
@@ -1501,27 +1802,30 @@ internal sealed class BotRunner
             return "accepted (mentioned)";
         }
 
-        IReadOnlyList<Spawn> giverSpawns = SpawnsFor(definition.GiverCreatureIds, questWorldId);
-        if (giverSpawns.Count == 0)
-            return await AcceptCommunicatorQuestAsync(definition, cancellationToken);
-
-        IReadOnlyList<Spawn> candidates = SpawnsFor(definition.GiverCreatureIds, questWorldId)
-            .OrderBy(spawn => spawn.DistanceSquared(lastPosition.X, lastPosition.Y, lastPosition.Z))
-            .ToArray();
-        Spawn giver = candidates.First();
-        TrackedEntity? entity = await TeleportAndTryFindWithRetryAsync(giver, cancellationToken);
-        if (entity is null)
+        QuestNpcUseResult? giver = await TryEveryQuestNpcAsync(
+            "giver",
+            definition.GiverCreatureIds,
+            questWorldId,
+            async (entity, token) =>
+            {
+                await RequireWorld().SendEncryptedAsync(GameMessageOpcode.ClientEntityInteract,
+                    PacketCodec.ClientEntityInteract(entity.Guid, InteractionType.TalkTo), token);
+                await RequireWorld().SendEncryptedAsync(GameMessageOpcode.ClientQuestAccept,
+                    PacketCodec.ClientQuestAccept(definition.Id), token);
+                return await TryWaitForQuestStateAsync(
+                    QuestState.Accepted,
+                    QuestNpcConfirmationTimeout,
+                    token);
+            },
+            cancellationToken);
+        if (giver is null)
         {
             if (RequireGameData().GetCommunicatorOffers(definition.Id).Count > 0)
                 return await AcceptCommunicatorQuestAsync(definition, cancellationToken);
-            throw new BotFailureException($"giver spawn was not visible and no communicator offer; {FormatNearbyTrackedCreatures()}");
+            throw new BotFailureException(
+                $"no giver accepted the quest and no communicator offer; {FormatQuestNpcAttempts()}; {FormatNearbyTrackedCreatures()}");
         }
-        await RequireWorld().SendEncryptedAsync(GameMessageOpcode.ClientEntityInteract,
-            PacketCodec.ClientEntityInteract(entity.Guid, InteractionType.TalkTo), cancellationToken);
-        await RequireWorld().SendEncryptedAsync(GameMessageOpcode.ClientQuestAccept,
-            PacketCodec.ClientQuestAccept(definition.Id), cancellationToken);
-        await WaitForQuestStateAsync(QuestState.Accepted, cancellationToken);
-        return $"accepted from creature {entity.CreatureId} guid {entity.Guid}";
+        return $"accepted from creature {giver.Entity.CreatureId} guid {giver.Entity.Guid}; {giver.Attempts}";
     }
 
     private async Task<string> AcquireItemAndAcceptQuestAsync(
@@ -1686,21 +1990,27 @@ internal sealed class BotRunner
                 $"communicator {offer.Id} requires level [{offer.MinLevel},{offer.MaxLevel}] but bot is level {currentLevel}");
 
         string offerDetail = FormatCommunicatorOffer(offer);
-        Spawn anchor = ChooseNearestSpawn(definition.ReceiverCreatureIds, questWorldId);
-        _ = await TeleportAndTryFindWithRetryAsync(anchor, cancellationToken)
-            ?? throw new BotFailureException($"receiver spawn was not visible for communicator acceptance; {FormatNearbyTrackedCreatures()}");
-        await RequireWorld().SendEncryptedAsync(GameMessageOpcode.ClientQuestAccept,
-            PacketCodec.ClientQuestAccept(definition.Id), cancellationToken);
-        try
+        QuestNpcUseResult? anchor = await TryEveryQuestNpcAsync(
+            "receiver anchor",
+            definition.ReceiverCreatureIds,
+            questWorldId,
+            async (_, token) =>
+            {
+                await RequireWorld().SendEncryptedAsync(GameMessageOpcode.ClientQuestAccept,
+                    PacketCodec.ClientQuestAccept(definition.Id), token);
+                return await TryWaitForQuestStateAsync(
+                    QuestState.Accepted,
+                    QuestNpcConfirmationTimeout,
+                    token);
+            },
+            cancellationToken);
+        if (anchor is null)
         {
-            await WaitForQuestStateAsync(QuestState.Accepted, cancellationToken);
-        }
-        catch (OperationCanceledException)
-        {
-            throw new BotFailureException($"communicator accept was not confirmed; {offerDetail}");
+            throw new BotFailureException(
+                $"communicator accept was not confirmed; {offerDetail}; {FormatQuestNpcAttempts()}; {FormatNearbyTrackedCreatures()}");
         }
 
-        return $"accepted from communicator; {offerDetail}; anchor creature={anchor.CreatureId}";
+        return $"accepted from communicator; {offerDetail}; anchor creature={anchor.Entity.CreatureId}; {anchor.Attempts}";
     }
 
     private string FormatCommunicatorOffer(CommunicatorOffer offer)
@@ -2187,6 +2497,69 @@ internal sealed class BotRunner
             ? ""
             : $"; castResults: {string.Join(" | ", objectiveCastResultDetails)}";
 
+    private async Task<QuestNpcUseResult?> TryEveryQuestNpcAsync(
+        string role,
+        IReadOnlyList<uint> creatureIds,
+        ushort worldId,
+        Func<TrackedEntity, CancellationToken, Task<bool>> tryUse,
+        CancellationToken cancellationToken)
+    {
+        foreach (uint creatureId in creatureIds.Distinct())
+        {
+            if (!questNpcAttemptCreatureIds.Contains(creatureId))
+                questNpcAttemptCreatureIds.Add(creatureId);
+
+            Spawn[] creatureSpawns = SpawnsFor([creatureId], worldId)
+                .OrderBy(spawn => spawn.DistanceSquared(lastPosition.X, lastPosition.Y, lastPosition.Z))
+                .ThenBy(spawn => spawn.Id)
+                .ToArray();
+            if (creatureSpawns.Length == 0)
+            {
+                questNpcAttemptDetails.Add($"{role} creature {creatureId}: no spawns in world {worldId}");
+                continue;
+            }
+
+            foreach (Spawn spawn in creatureSpawns)
+            {
+                int detailIndex = questNpcAttemptDetails.Count;
+                questNpcAttemptDetails.Add(
+                    $"{role} creature {creatureId} spawn {spawn.Id}: waiting for visibility");
+                TrackedEntity? entity = await TeleportAndTryFindWithRetryAsync(spawn, cancellationToken);
+                if (entity is null)
+                {
+                    questNpcAttemptDetails[detailIndex] =
+                        $"{role} creature {creatureId} spawn {spawn.Id}: not visible after 15 s + re-teleport 15 s ({FormatNearbyTrackedCreatures()})";
+                    continue;
+                }
+
+                questNpcAttemptDetails[detailIndex] =
+                    $"{role} creature {creatureId} spawn {spawn.Id}: visible guid {entity.Guid}, awaiting quest-state confirmation";
+                bool confirmed = await tryUse(entity, cancellationToken);
+                questNpcAttemptDetails[detailIndex] = confirmed
+                    ? $"{role} creature {creatureId} spawn {spawn.Id}: visible guid {entity.Guid}, confirmed"
+                    : $"{role} creature {creatureId} spawn {spawn.Id}: visible guid {entity.Guid}, no quest-state confirmation within {QuestNpcConfirmationTimeout.TotalSeconds:0} s";
+                if (confirmed)
+                    return new QuestNpcUseResult(entity, FormatQuestNpcAttempts());
+            }
+        }
+
+        return null;
+    }
+
+    private string FormatQuestNpcAttempts()
+    {
+        string ids = questNpcAttemptCreatureIds.Count == 0
+            ? "none"
+            : string.Join(',', questNpcAttemptCreatureIds);
+        string details = questNpcAttemptDetails.Count == 0
+            ? "none"
+            : string.Join(" | ", questNpcAttemptDetails);
+        return $"attempted creature ids=[{ids}]; visibility=[{details}]";
+    }
+
+    private string FormatQuestNpcTimeoutDetail()
+        => $"{FormatQuestNpcAttempts()}; {FormatNearbyTrackedCreatures()}";
+
     private string FormatNearbyTrackedCreatures()
     {
         IReadOnlyList<(uint CreatureId, float Distance)> nearby = entities.GetNearbyCreatureIds(lastPosition, 60f, 15);
@@ -2286,12 +2659,25 @@ internal sealed class BotRunner
     }
 
     private Task<bool> FightUntilProgressAsync(int objectiveIndex, uint before, uint targetGuid, CancellationToken cancellationToken)
-        => FightUntilCombatGoalAsync(objectiveIndex, before, targetGuid, cancellationToken);
+        => FightUntilCombatGoalAsync(
+            objectiveIndex,
+            before,
+            targetGuid,
+            lootCorpse: true,
+            cancellationToken: cancellationToken);
 
-    private Task<bool> FightUntilDeathAsync(uint targetGuid, CancellationToken cancellationToken)
-        => FightUntilCombatGoalAsync(null, 0u, targetGuid, cancellationToken);
+    private Task<bool> FightUntilDeathAsync(
+        uint targetGuid,
+        CancellationToken cancellationToken,
+        bool lootCorpse = true)
+        => FightUntilCombatGoalAsync(null, 0u, targetGuid, lootCorpse, cancellationToken);
 
-    private async Task<bool> FightUntilCombatGoalAsync(int? objectiveIndex, uint before, uint targetGuid, CancellationToken cancellationToken)
+    private async Task<bool> FightUntilCombatGoalAsync(
+        int? objectiveIndex,
+        uint before,
+        uint targetGuid,
+        bool lootCorpse,
+        CancellationToken cancellationToken)
     {
         BeginCombatEvidence(targetGuid);
         bool targetFinished = false;
@@ -2303,6 +2689,8 @@ internal sealed class BotRunner
 
             while (true)
             {
+                if (activeHoldoutEventId is not null && holdoutResult is not null)
+                    return false;
                 if (CombatGoalProgressed(objectiveIndex, before))
                 {
                     targetFinished = true;
@@ -2429,7 +2817,7 @@ internal sealed class BotRunner
         }
         finally
         {
-            if (targetFinished)
+            if (targetFinished && lootCorpse)
                 combatLoot.AddRange(await LootCorpseAsync(targetGuid, cancellationToken));
             FinishCombatEvidence(objectiveIndex, targetGuid, targetFinished);
         }
@@ -2778,15 +3166,28 @@ internal sealed class BotRunner
             if (receiverAnchor is not null)
                 questWorldId = receiverAnchor.WorldId;
         }
-        Spawn receiver = ChooseNearestSpawn(definition.ReceiverCreatureIds, questWorldId);
-        TrackedEntity entity = await TeleportAndTryFindWithRetryAsync(receiver, cancellationToken)
-            ?? throw new BotFailureException($"receiver spawn was not visible; {FormatNearbyTrackedCreatures()}");
-        await RequireWorld().SendEncryptedAsync(GameMessageOpcode.ClientEntityInteract,
-            PacketCodec.ClientEntityInteract(entity.Guid, InteractionType.TalkTo), cancellationToken);
-        await RequireWorld().SendEncryptedAsync(GameMessageOpcode.ClientQuestComplete,
-            PacketCodec.ClientQuestComplete(definition.Id), cancellationToken);
-        await WaitForQuestStateAsync(QuestState.Completed, cancellationToken);
-        return $"completed with receiver creature {entity.CreatureId} guid {entity.Guid}; state 3";
+        QuestNpcUseResult? receiver = await TryEveryQuestNpcAsync(
+            "receiver",
+            definition.ReceiverCreatureIds,
+            questWorldId,
+            async (entity, token) =>
+            {
+                await RequireWorld().SendEncryptedAsync(GameMessageOpcode.ClientEntityInteract,
+                    PacketCodec.ClientEntityInteract(entity.Guid, InteractionType.TalkTo), token);
+                await RequireWorld().SendEncryptedAsync(GameMessageOpcode.ClientQuestComplete,
+                    PacketCodec.ClientQuestComplete(definition.Id), token);
+                return await TryWaitForQuestStateAsync(
+                    QuestState.Completed,
+                    QuestNpcConfirmationTimeout,
+                    token);
+            },
+            cancellationToken);
+        if (receiver is null)
+        {
+            throw new BotFailureException(
+                $"no receiver completed the quest; {FormatQuestNpcAttempts()}; {FormatNearbyTrackedCreatures()}");
+        }
+        return $"completed with receiver creature {receiver.Entity.CreatureId} guid {receiver.Entity.Guid}; state 3; {receiver.Attempts}";
     }
 
     private async Task<TrackedEntity?> TeleportAndTryFindAsync(
@@ -2922,6 +3323,28 @@ internal sealed class BotRunner
         }
     }
 
+    private async Task<bool> TryWaitForQuestStateAsync(
+        QuestState expected,
+        TimeSpan timeout,
+        CancellationToken cancellationToken)
+    {
+        DateTimeOffset deadline = DateTimeOffset.UtcNow + timeout;
+        while (true)
+        {
+            if (questState == expected
+                || expected == QuestState.Accepted && questState is QuestState.Achieved or QuestState.Completed
+                || expected == QuestState.Achieved && questState == QuestState.Completed)
+                return true;
+            if (questState is QuestState.Botched or QuestState.Abandoned or QuestState.Ignored)
+                throw new BotFailureException($"quest entered terminal state {questState} while waiting for {expected}");
+
+            TimeSpan remaining = deadline - DateTimeOffset.UtcNow;
+            if (remaining <= TimeSpan.Zero
+                || await TryReadWorldPacketAsync(remaining, cancellationToken) is null)
+                return false;
+        }
+    }
+
     private async Task WaitForObjectiveProgressAsync(int index, uint before, CancellationToken cancellationToken)
     {
         while (GetRawProgress(index) <= before)
@@ -2996,6 +3419,7 @@ internal sealed class BotRunner
     {
         try
         {
+            RecordResurrectionPacketAfterAccept(packet.Opcode);
             switch (packet.Opcode)
             {
                 case GameMessageOpcode.ServerChangeWorld:
@@ -3087,6 +3511,8 @@ internal sealed class BotRunner
                             currentLevel = level;
                         if (entity.Health is uint health)
                             currentHealth = health;
+                        if (entity.MaxHealth is uint maxHealth)
+                            currentMaxHealth = maxHealth;
                         if (resurrectionRecoveryActive)
                         {
                             botDied = false;
@@ -3206,6 +3632,13 @@ internal sealed class BotRunner
                         RecordPlayerHealth(health);
                     break;
                 }
+                case GameMessageOpcode.ServerUnitEnteredCombat:
+                {
+                    UnitCombatState state = PacketCodec.ParseUnitCombatState(packet.Body);
+                    if (state.UnitId == playerGuid)
+                        playerInCombat = state.InCombat;
+                    break;
+                }
                 case GameMessageOpcode.ServerEntityStatUpdateInteger:
                 {
                     EntityStatInteger update = PacketCodec.ParseEntityStatInteger(packet.Body);
@@ -3216,6 +3649,13 @@ internal sealed class BotRunner
                         else if (update.Stat == Stat.Health)
                             RecordPlayerHealth(update.Value);
                     }
+                    break;
+                }
+                case GameMessageOpcode.ServerEntityPropertiesUpdate:
+                {
+                    EntityPropertiesUpdate update = entities.ParsePropertiesUpdate(packet.Body);
+                    if (update.UnitId == playerGuid && update.MaxHealth is uint maxHealth)
+                        currentMaxHealth = maxHealth;
                     break;
                 }
                 case GameMessageOpcode.ServerLootNotify:
@@ -3298,10 +3738,52 @@ internal sealed class BotRunner
                     TrackPathMission(previous with { Completed = true });
                     break;
                 }
+                case GameMessageOpcode.ServerPathSoldierHoldOutNextWave:
+                {
+                    PathSoldierHoldoutWave wave = PacketCodec.ParsePathSoldierHoldoutNextWave(packet.Body);
+                    if (activeHoldoutEventId is null || activeHoldoutEventId == wave.EventId)
+                    {
+                        currentHoldoutWave = checked((int)wave.WaveIndex + 1);
+                        holdoutProgressPackets.Add(
+                            $"next-wave(event={wave.EventId},rawIndex={wave.WaveIndex},wave={currentHoldoutWave},boss={wave.IsBoss.ToString().ToLowerInvariant()})");
+                    }
+                    log.Info($"holdout event {wave.EventId}: next wave rawIndex={wave.WaveIndex}, boss={wave.IsBoss}");
+                    break;
+                }
+                case GameMessageOpcode.ServerPathSoldierHoldoutStatus:
+                {
+                    PathSoldierHoldoutStatus status = PacketCodec.ParsePathSoldierHoldoutStatus(packet.Body);
+                    if (activeHoldoutEventId is null || activeHoldoutEventId == status.EventId)
+                    {
+                        if (status.Mode == PlayerPathSoldierEventMode.Active)
+                            currentHoldoutWave = Math.Max(currentHoldoutWave ?? 0, status.WaveIndex + 1);
+                        holdoutProgressPackets.Add(
+                            $"status(event={status.EventId},mode={status.Mode},rawIndex={status.WaveIndex},wave={FormatCurrentHoldoutWave()},boss={status.IsBoss.ToString().ToLowerInvariant()},delayMs={status.DelayTime},startOffsetMs={status.StartTimeOffset},units={status.UnitCount})");
+                    }
+                    log.Info($"holdout event {status.EventId}: mode={status.Mode}, rawIndex={status.WaveIndex}, boss={status.IsBoss}, delay={status.DelayTime} ms");
+                    break;
+                }
+                case GameMessageOpcode.ServerPathSoldierHoldoutDeath:
+                {
+                    ushort eventId = PacketCodec.ParsePathSoldierHoldoutDeath(packet.Body);
+                    if (activeHoldoutEventId is null || activeHoldoutEventId == eventId)
+                        holdoutProgressPackets.Add($"death(event={eventId},wave={FormatCurrentHoldoutWave()})");
+                    log.Info($"holdout event {eventId}: death in wave {FormatCurrentHoldoutWave()}");
+                    break;
+                }
                 case GameMessageOpcode.ServerPathSoldierHoldoutEnd:
                 {
                     (ushort eventId, PlayerPathSoldierResult result) = PacketCodec.ParsePathSoldierHoldoutEnd(packet.Body);
-                    holdoutResult = result;
+                    if (activeHoldoutEventId is null || activeHoldoutEventId == eventId)
+                    {
+                        holdoutResult = result;
+                        holdoutProgressPackets.Add($"end(event={eventId},result={result},wave={FormatCurrentHoldoutWave()})");
+                    }
+                    else
+                    {
+                        log.Info($"holdout event {eventId} ended with {result}; ignored while active event is {activeHoldoutEventId}");
+                        break;
+                    }
                     log.Info($"holdout event {eventId} ended: {result}");
                     break;
                 }

@@ -35,6 +35,7 @@ internal sealed record ResurrectionShow(
     uint TimeUntilWakeHereMs,
     uint TimeUntilForceRezMs);
 internal sealed record EntityStatInteger(uint UnitId, Stat Stat, uint Value);
+internal sealed record UnitCombatState(uint UnitId, bool InCombat);
 internal sealed record InventoryItemInfo(
     ulong Guid,
     uint ItemId,
@@ -63,6 +64,15 @@ internal sealed record PathMissionStatus(
     PathMissionState? State,
     uint GiverUnitId);
 internal sealed record PathEpisodeProgress(ushort EpisodeId, IReadOnlyList<PathMissionStatus> Missions);
+internal sealed record PathSoldierHoldoutWave(ushort EventId, uint WaveIndex, bool IsBoss);
+internal sealed record PathSoldierHoldoutStatus(
+    ushort EventId,
+    uint UnitCount,
+    bool IsBoss,
+    PlayerPathSoldierEventMode Mode,
+    int DelayTime,
+    int WaveIndex,
+    int StartTimeOffset);
 
 internal static class PacketCodec
 {
@@ -341,6 +351,9 @@ internal static class PacketCodec
     public static (uint UnitId, uint Health) ParseEntityHealthUpdate(byte[] body) => Read(body, reader =>
         (reader.ReadUInt(), reader.ReadUInt()));
 
+    public static UnitCombatState ParseUnitCombatState(byte[] body) => Read(body, reader =>
+        new UnitCombatState(reader.ReadUInt(), reader.ReadBit()));
+
     public static EntityStatInteger ParseEntityStatInteger(byte[] body) => Read(body, reader =>
         new EntityStatInteger(reader.ReadUInt(), reader.ReadEnum<Stat>(5), reader.ReadUInt()));
 
@@ -454,6 +467,39 @@ internal static class PacketCodec
         => Read(body, reader => ReadPathMission(reader, includeState: false));
 
     public static ushort ParsePathMissionAdvanced(byte[] body)
+        => Read(body, reader => reader.ReadUShort(14));
+
+    public static PathSoldierHoldoutWave ParsePathSoldierHoldoutNextWave(byte[] body) => Read(body, reader =>
+        new PathSoldierHoldoutWave(reader.ReadUShort(14), reader.ReadUInt(), reader.ReadBit()));
+
+    public static PathSoldierHoldoutStatus ParsePathSoldierHoldoutStatus(byte[] body) => Read(body, reader =>
+    {
+        ushort eventId = reader.ReadUShort(14);
+        uint unitCount = reader.ReadUInt();
+        for (uint i = 0; i < unitCount; i++)
+        {
+            _ = reader.ReadUInt();
+            _ = reader.ReadEnum<TowerDefenseUnitType>(32);
+        }
+        _ = reader.ReadUInt();
+        bool isBoss = reader.ReadBit();
+        PlayerPathSoldierEventMode mode = reader.ReadEnum<PlayerPathSoldierEventMode>(32);
+        int delayTime = reader.ReadInt();
+        int waveIndex = reader.ReadInt();
+        _ = reader.ReadSingle();
+        _ = reader.ReadSingle();
+        int startTimeOffset = reader.ReadInt();
+        return new PathSoldierHoldoutStatus(
+            eventId,
+            unitCount,
+            isBoss,
+            mode,
+            delayTime,
+            waveIndex,
+            startTimeOffset);
+    });
+
+    public static ushort ParsePathSoldierHoldoutDeath(byte[] body)
         => Read(body, reader => reader.ReadUShort(14));
 
     public static (ushort EventId, PlayerPathSoldierResult Result) ParsePathSoldierHoldoutEnd(byte[] body)
