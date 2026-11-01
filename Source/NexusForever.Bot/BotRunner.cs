@@ -800,6 +800,9 @@ internal sealed class BotRunner
             throw new InvalidOperationException("quest commands are forbidden");
         report.Cheats.Add(command);
         currentQuestReport?.Cheats.Add(command);
+        // GM commands act on the CURRENT TARGET (GetTargetOrInvoker): with a creature still selected after a kill,
+        // "!tele" and "!character level" fail with "Invalid target for this command!" — clear the target first.
+        await RequireWorld().SendEncryptedAsync(GameMessageOpcode.ClientEntitySelect, PacketCodec.ClientEntitySelect(0), cancellationToken);
         await RequireWorld().SendEncryptedAsync(GameMessageOpcode.ClientChat,
             PacketCodec.ClientChat(command, chatMessageId++), cancellationToken);
     }
