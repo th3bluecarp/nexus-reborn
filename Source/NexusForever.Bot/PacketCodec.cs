@@ -3,10 +3,12 @@ using System.Numerics;
 using NexusForever.Game.Static;
 using NexusForever.Game.Static.Chat;
 using NexusForever.Game.Static.Entity;
+using NexusForever.Game.Static.Entity.Movement.Command;
 using NexusForever.Game.Static.Quest;
 using NexusForever.Game.Static.Spell;
 using NexusForever.GameTable.Model;
 using NexusForever.Network;
+using NexusForever.Network.World.Entity.Command;
 
 namespace NexusForever.Bot;
 
@@ -18,7 +20,9 @@ internal sealed record SpellCastStart(uint ServerUniqueId, uint CasterId, uint P
 internal sealed record SpellCastResult(uint ClientUniqueId, uint Spell4Id, CastResult Result);
 internal sealed record ActionSetSlot(ushort BagIndex, ShortcutType ShortcutType, uint ObjectId);
 internal sealed record ActionSetInfo(byte SpecIndex, bool Unlocked, IReadOnlyList<ActionSetSlot> Slots);
-internal sealed record QuestInitInfo(IReadOnlySet<ushort> CompletedQuestIds);
+internal sealed record QuestInitInfo(
+    IReadOnlySet<ushort> CompletedQuestIds,
+    IReadOnlyDictionary<ushort, QuestState> InactiveQuestStates);
 internal sealed record ResurrectionShow(
     uint GhostId,
     uint RezCost,
@@ -127,6 +131,26 @@ internal static class PacketCodec
 
     public static byte[] ClientActivateUnit(uint guid) => Write(writer => writer.Write(guid));
     public static byte[] ClientEntitySelect(uint guid) => Write(writer => writer.Write(guid));
+
+    public static byte[] ClientEntityCommand(Vector3 position, Vector3 rotation) => Write(writer =>
+    {
+        writer.Write(unchecked((uint)Environment.TickCount64));
+        writer.Write(2u);
+
+        writer.Write(EntityCommand.SetPosition, 5);
+        new SetPositionCommand
+        {
+            Position = position,
+            Blend = false
+        }.Write(writer);
+
+        writer.Write(EntityCommand.SetRotation, 5);
+        new SetRotationCommand
+        {
+            Rotation = rotation,
+            Blend = false
+        }.Write(writer);
+    });
 
     public static byte[] ClientActivateUnitCast(uint uniqueId, uint guid) => Write(writer =>
     {
@@ -279,6 +303,7 @@ internal static class PacketCodec
     public static QuestInitInfo ParseQuestInit(byte[] body) => Read(body, reader =>
     {
         var completed = new HashSet<ushort>();
+        var inactive = new Dictionary<ushort, QuestState>();
 
         uint completedCount = reader.ReadUInt();
         for (uint i = 0; i < completedCount; i++)
@@ -290,8 +315,8 @@ internal static class PacketCodec
         uint inactiveCount = reader.ReadUInt();
         for (uint i = 0; i < inactiveCount; i++)
         {
-            _ = reader.ReadUShort(15);
-            _ = reader.ReadByte(4);
+            ushort questId = reader.ReadUShort(15);
+            inactive[questId] = reader.ReadEnum<QuestState>(4);
         }
 
         uint activeCount = reader.ReadUInt();
@@ -310,7 +335,7 @@ internal static class PacketCodec
         }
 
         _ = reader.ReadULong();
-        return new QuestInitInfo(completed);
+        return new QuestInitInfo(completed, inactive);
     });
 
     public static byte ParseCharacterDeleteResult(byte[] body) => Read(body, reader => reader.ReadByte(6));

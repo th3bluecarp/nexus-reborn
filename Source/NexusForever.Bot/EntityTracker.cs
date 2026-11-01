@@ -1,7 +1,9 @@
+using System.Diagnostics;
 using System.Numerics;
 using System.Reflection;
 using NexusForever.Game.Static.Entity;
 using NexusForever.Game.Static.Entity.Movement.Command;
+using NexusForever.Game.Static.Entity.Movement.Spline;
 using NexusForever.Network;
 using NexusForever.Network.World.Entity;
 using NexusForever.Network.World.Entity.Command;
@@ -20,6 +22,13 @@ internal sealed record TrackedEntity(
 
 internal sealed class EntityTracker
 {
+    private sealed record TrackedPositionPath(
+        IReadOnlyList<Vector3> Positions,
+        float Speed,
+        SplineMode Mode,
+        float InitialDistance,
+        long ReceivedTimestamp);
+
     private static readonly IReadOnlyDictionary<EntityCommand, Type> CommandTypes = typeof(SetPositionCommand).Assembly
         .GetTypes()
         .Select(type => (Type: type, Attribute: type.GetCustomAttribute<EntityCommandAttribute>()))
@@ -27,9 +36,27 @@ internal sealed class EntityTracker
         .ToDictionary(pair => pair.Attribute!.Command, pair => pair.Type);
 
     private readonly Dictionary<uint, TrackedEntity> entities = [];
+    private readonly Dictionary<uint, TrackedPositionPath> positionPaths = [];
 
-    public void Clear() => entities.Clear();
-    public void Remove(uint guid) => entities.Remove(guid);
+    public void Clear()
+    {
+        entities.Clear();
+        positionPaths.Clear();
+    }
+
+    public void Remove(uint guid)
+    {
+        entities.Remove(guid);
+        positionPaths.Remove(guid);
+    }
+
+    public TrackedEntity? Get(uint guid)
+    {
+        TrackedEntity? entity = entities.GetValueOrDefault(guid);
+        if (entity is null || !positionPaths.TryGetValue(guid, out TrackedPositionPath? path))
+            return entity;
+        return entity with { Position = CalculatePathPosition(path) };
+    }
 
     public void MarkDead(uint guid)
     {
@@ -146,7 +173,16 @@ internal sealed class EntityTracker
 
             model.Read(reader);
             if (model is SetPositionCommand setPosition)
+            {
                 position = setPosition.Position;
+                positionPaths.Remove(guid);
+            }
+            else if (model is SetPositionPathCommand setPositionPath)
+            {
+                TrackPositionPath(guid, setPositionPath);
+                if (positionPaths.TryGetValue(guid, out TrackedPositionPath? path))
+                    position = CalculatePathPosition(path);
+            }
         }
 
         var entity = new TrackedEntity(
@@ -160,6 +196,109 @@ internal sealed class EntityTracker
             health);
         entities[guid] = entity;
         return entity;
+    }
+
+    public (uint Guid, Vector3? Position) ParseCommands(byte[] body)
+    {
+        using var stream = new MemoryStream(body, writable: false);
+        using var reader = new GamePacketReader(stream);
+
+        uint guid = reader.ReadUInt();
+        _ = reader.ReadUInt();
+        _ = reader.ReadBit();
+        _ = reader.ReadBit();
+
+        byte commandCount = reader.ReadByte(5);
+        Vector3? position = null;
+        for (int i = 0; i < commandCount; i++)
+        {
+            EntityCommand command = reader.ReadEnum<EntityCommand>(5);
+            if (!CommandTypes.TryGetValue(command, out Type? modelType)
+                || Activator.CreateInstance(modelType) is not IEntityCommandModel model)
+                throw new InvalidDataException($"Unknown entity command {(int)command}.");
+
+            model.Read(reader);
+            if (model is SetPositionCommand setPosition)
+            {
+                position = setPosition.Position;
+                positionPaths.Remove(guid);
+            }
+            else if (model is SetPositionPathCommand setPositionPath)
+            {
+                TrackPositionPath(guid, setPositionPath);
+                if (positionPaths.TryGetValue(guid, out TrackedPositionPath? path))
+                    position = CalculatePathPosition(path);
+            }
+        }
+
+        if (position is Vector3 value && entities.TryGetValue(guid, out TrackedEntity? entity))
+            entities[guid] = entity with { Position = value };
+
+        return (guid, position);
+    }
+
+    private void TrackPositionPath(uint guid, SetPositionPathCommand command)
+    {
+        if (command.Positions.Count < 2 || command.Speed <= 0f)
+        {
+            positionPaths.Remove(guid);
+            return;
+        }
+
+        positionPaths[guid] = new TrackedPositionPath(
+            command.Positions.ToArray(),
+            command.Speed,
+            command.Mode,
+            command.Offset / 1000f,
+            Stopwatch.GetTimestamp());
+    }
+
+    private static Vector3 CalculatePathPosition(TrackedPositionPath path)
+    {
+        float totalDistance = 0f;
+        for (int i = 1; i < path.Positions.Count; i++)
+            totalDistance += Vector3.Distance(path.Positions[i - 1], path.Positions[i]);
+        if (totalDistance <= float.Epsilon)
+            return path.Positions[^1];
+
+        float elapsedSeconds = (float)Stopwatch.GetElapsedTime(path.ReceivedTimestamp).TotalSeconds;
+        float distance = path.InitialDistance + elapsedSeconds * path.Speed;
+        distance = path.Mode switch
+        {
+            SplineMode.OneShot => Math.Clamp(distance, 0f, totalDistance),
+            SplineMode.OneShotReverse => totalDistance - Math.Clamp(distance, 0f, totalDistance),
+            SplineMode.Cyclic => PositiveModulo(distance, totalDistance),
+            SplineMode.CyclicReverse => totalDistance - PositiveModulo(distance, totalDistance),
+            SplineMode.BackAndForth => BackAndForthDistance(distance, totalDistance),
+            SplineMode.BackAndForthReverse => totalDistance - BackAndForthDistance(distance, totalDistance),
+            _ => Math.Clamp(distance, 0f, totalDistance)
+        };
+
+        for (int i = 1; i < path.Positions.Count; i++)
+        {
+            Vector3 start = path.Positions[i - 1];
+            Vector3 end = path.Positions[i];
+            float segmentDistance = Vector3.Distance(start, end);
+            if (segmentDistance <= float.Epsilon)
+                continue;
+            if (distance <= segmentDistance)
+                return Vector3.Lerp(start, end, distance / segmentDistance);
+            distance -= segmentDistance;
+        }
+
+        return path.Positions[^1];
+    }
+
+    private static float BackAndForthDistance(float distance, float totalDistance)
+    {
+        float cycleDistance = PositiveModulo(distance, totalDistance * 2f);
+        return cycleDistance <= totalDistance ? cycleDistance : totalDistance * 2f - cycleDistance;
+    }
+
+    private static float PositiveModulo(float value, float modulus)
+    {
+        float result = value % modulus;
+        return result < 0f ? result + modulus : result;
     }
 
     private static (Stat Stat, uint? IntegerValue) ReadStat(GamePacketReader reader)
