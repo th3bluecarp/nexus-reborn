@@ -30,6 +30,22 @@ internal sealed record QuestDefinition(
     uint? LevelUpperBound,
     bool NeedsCombat);
 
+internal sealed record CommunicatorOffer(
+    uint Id,
+    uint WorldId,
+    uint WorldZoneId,
+    uint MinLevel,
+    uint MaxLevel,
+    IReadOnlyList<(ushort QuestId, QuestState State)> QuestConditions,
+    uint PrerequisiteId);
+
+internal sealed record CreatureActivationData(
+    IReadOnlyList<uint> ActivationSpellIds,
+    uint UnitVisualTypeId,
+    uint ActivationFlags,
+    uint ActivateSpellTextId,
+    string ActivateSpellText);
+
 internal sealed class BotGameData
 {
     private readonly GameTable<Quest2Entry> quests;
@@ -39,9 +55,10 @@ internal sealed class BotGameData
     private readonly GameTable<WorldLocation2Entry> worldLocations;
     private readonly GameTable<TargetGroupEntry> targetGroups;
     private readonly GameTable<PrerequisiteEntry> prerequisites;
+    private readonly GameTable<CommunicatorMessagesEntry>? communicatorMessages;
     private readonly TextTable english;
 
-    public BotGameData(string tablePath)
+    public BotGameData(string tablePath, bool allowMissingCommunicatorMessages = false)
     {
         if (!Directory.Exists(tablePath))
             throw new DirectoryNotFoundException($"Game table directory not found: {tablePath}");
@@ -53,6 +70,11 @@ internal sealed class BotGameData
         worldLocations = Load<WorldLocation2Entry>(tablePath, "WorldLocation2.tbl");
         targetGroups = Load<TargetGroupEntry>(tablePath, "TargetGroup.tbl");
         prerequisites = Load<PrerequisiteEntry>(tablePath, "Prerequisite.tbl");
+        string communicatorPath = Path.Combine(tablePath, "CommunicatorMessages.tbl");
+        if (File.Exists(communicatorPath))
+            communicatorMessages = new GameTable<CommunicatorMessagesEntry>(communicatorPath);
+        else if (!allowMissingCommunicatorMessages)
+            throw new FileNotFoundException($"Required game table was not found: {communicatorPath}", communicatorPath);
         english = new TextTable(RequiredPath(tablePath, "en-US.bin"));
     }
 
@@ -271,6 +293,42 @@ internal sealed class BotGameData
             ?? throw new BotFailureException($"WorldLocation2 entry {id} was not found.");
     }
 
+    public IReadOnlyList<CommunicatorOffer> GetCommunicatorOffers(ushort questId)
+    {
+        if (communicatorMessages is null)
+            return [];
+
+        return communicatorMessages.Entries
+            .Where(entry => entry.QuestIdDelivered == questId)
+            .Select(entry => new CommunicatorOffer(
+                entry.Id,
+                entry.WorldId,
+                entry.WorldZoneId,
+                entry.MinLevel,
+                entry.MaxLevel,
+                entry.Quests.Select((id, index) => (Id: id, Index: index))
+                    .Where(item => item.Id != 0u)
+                    .Select(item => (checked((ushort)item.Id), (QuestState)entry.States[item.Index]))
+                    .ToArray(),
+                entry.PrerequisiteId))
+            .OrderBy(entry => entry.Id)
+            .ToArray();
+    }
+
+    public CreatureActivationData GetCreatureActivationData(uint creatureId)
+    {
+        Creature2Entry entry = creatures.GetEntry(creatureId)
+            ?? throw new BotFailureException($"Creature2 entry {creatureId} was not found.");
+        return new CreatureActivationData(
+            entry.Spell4IdActivate.Where(id => id != 0u).ToArray(),
+            entry.UnitVisualTypeId,
+            entry.ActivationFlags,
+            entry.LocalizedTextIdActivateSpellText,
+            english.GetEntry(entry.LocalizedTextIdActivateSpellText) ?? "");
+    }
+
+    public bool HasCommunicatorTable => communicatorMessages is not null;
+
     private static GameTable<T> Load<T>(string directory, string name) where T : class, new()
         => new(RequiredPath(directory, name));
 
@@ -311,7 +369,13 @@ internal sealed class BotGameData
     }
 
     private static int OrderBucket(QuestDefinition definition)
-        => definition.HasLevelUpperBound ? 0 : definition.NeedsCombat ? 2 : 1;
+        => (definition.HasLevelUpperBound, definition.NeedsCombat) switch
+        {
+            (true, false) => 0,
+            (true, true) => 1,
+            (false, false) => 2,
+            (false, true) => 3
+        };
 
     private static bool MatchesFaction(Quest2Entry entry, BotFaction faction)
         => entry.QuestPlayerFactionEnum switch

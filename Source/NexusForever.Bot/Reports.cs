@@ -59,15 +59,23 @@ internal sealed class RunReport
         builder.AppendLine();
         builder.AppendLine($"{Summary.Total} quests: {Summary.Passed} passed, {Summary.Failed} failed, {Summary.Skipped} skipped. Character: {Escape(CharacterName)}. Elapsed: {(EndTimestamp - StartTimestamp).TotalSeconds:0.0}s.");
         builder.AppendLine();
-        builder.AppendLine("| quest | title | result | failed at | detail |");
-        builder.AppendLine("|---:|---|---|---|---|");
+        builder.AppendLine("Interactability evidence is an approximation from entity create flags/checklist data and Creature2 activation fields received or loaded by the bot.");
+        builder.AppendLine();
+        builder.AppendLine("| quest | title | result | failed at | detail | note |");
+        builder.AppendLine("|---:|---|---|---|---|---|");
         foreach (QuestRunReport quest in Quests)
         {
             StepReport? failedStep = quest.Steps.FirstOrDefault(step => !step.Ok);
             ObjectiveReport? failedObjective = quest.Objectives.FirstOrDefault(objective => !objective.Ok && objective.Failure is not null);
             string failedAt = failedStep?.Name ?? (failedObjective is null ? "" : $"objective {failedObjective.Index}");
             string detail = quest.Failure ?? (quest.Result == "SKIPPED" ? "already completed" : "");
-            builder.AppendLine($"| {quest.QuestId} | {Escape(quest.Title)} | {quest.Result} | {Escape(failedAt)} | {Escape(detail)} |");
+            KillEvidence[] passiveKills = quest.Objectives.SelectMany(objective => objective.Kills)
+                .Where(kill => !kill.FoughtBack)
+                .ToArray();
+            string note = passiveKills.Length == 0
+                ? ""
+                : $"combat-AI finding: foughtBack=false for {passiveKills.Length} kill(s)";
+            builder.AppendLine($"| {quest.QuestId} | {Escape(quest.Title)} | {quest.Result} | {Escape(failedAt)} | {Escape(detail)} | {Escape(note)} |");
         }
         builder.AppendLine();
         builder.AppendLine("Cheats per quest:");
@@ -127,6 +135,21 @@ internal sealed class ObjectiveReport
     public uint Progress { get; set; }
     public bool Ok { get; set; }
     public string? Failure { get; set; }
+    public bool? FoughtBack { get; set; }
+    public uint EnemyCasts { get; set; }
+    public uint DamageTaken { get; set; }
+    public long? FirstEnemyActionMs { get; set; }
+    public List<KillEvidence> Kills { get; } = [];
+    public List<string> Interactables { get; } = [];
+}
+
+internal sealed class KillEvidence
+{
+    public uint TargetGuid { get; init; }
+    public bool FoughtBack { get; init; }
+    public uint EnemyCasts { get; init; }
+    public uint DamageTaken { get; init; }
+    public long? FirstEnemyActionMs { get; init; }
 }
 
 internal sealed class BotFailureException(string message) : Exception(message);

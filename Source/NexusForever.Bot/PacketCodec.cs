@@ -13,9 +13,18 @@ internal sealed record RealmInfo(uint AccountId, byte[] SessionKey, ushort Port,
 internal sealed record CharacterCreateResult(ulong CharacterId, uint WorldId, byte Result);
 internal sealed record QuestStateUpdate(ushort QuestId, QuestState State, uint QuestObjectiveId);
 internal sealed record QuestObjectiveUpdate(ushort QuestId, uint Index, uint Completed);
-internal sealed record SpellCastStart(uint ServerUniqueId, uint CasterId, uint? ClientUniqueId);
+internal sealed record SpellCastStart(uint ServerUniqueId, uint CasterId, uint PrimaryTargetId, uint? ClientUniqueId);
 internal sealed record QuestInitInfo(IReadOnlySet<ushort> CompletedQuestIds);
-internal sealed record ResurrectionShow(uint GhostId, ResurrectionType Flags, uint TimeUntilRezMs);
+internal sealed record ResurrectionShow(
+    uint GhostId,
+    uint RezCost,
+    uint TimeUntilRezMs,
+    bool Dead,
+    ResurrectionType Flags,
+    bool HasCasterRezRequest,
+    uint TimeUntilWakeHereMs,
+    uint TimeUntilForceRezMs);
+internal sealed record EntityStatInteger(uint UnitId, Stat Stat, uint Value);
 
 internal static class PacketCodec
 {
@@ -181,7 +190,9 @@ internal static class PacketCodec
         _ = reader.ReadUInt(18);
         _ = reader.ReadUInt(18);
         uint casterId = reader.ReadUInt();
-        return new SpellCastStart(serverUniqueId, casterId, null);
+        _ = reader.ReadUShort();
+        uint primaryTargetId = reader.ReadUInt();
+        return new SpellCastStart(serverUniqueId, casterId, primaryTargetId, null);
     });
 
     public static SpellCastStart ParseSpellConfirmCast(byte[] body) => Read(body, reader =>
@@ -189,7 +200,7 @@ internal static class PacketCodec
         uint clientUniqueId = reader.ReadUInt();
         uint serverUniqueId = reader.ReadUInt();
         uint casterId = reader.ReadUInt();
-        return new SpellCastStart(serverUniqueId, casterId, clientUniqueId);
+        return new SpellCastStart(serverUniqueId, casterId, 0u, clientUniqueId);
     });
 
     public static (uint UnitId, bool Dead) ParseEntityDeathState(byte[] body) => Read(body, reader =>
@@ -198,15 +209,29 @@ internal static class PacketCodec
     public static ResurrectionShow ParseResurrectionShow(byte[] body) => Read(body, reader =>
     {
         uint ghostId = reader.ReadUInt();
-        _ = reader.ReadUInt();
+        uint rezCost = reader.ReadUInt();
         uint timeUntilRezMs = reader.ReadUInt();
-        _ = reader.ReadBit();
+        bool dead = reader.ReadBit();
         ResurrectionType flags = reader.ReadEnum<ResurrectionType>(8);
-        _ = reader.ReadBit();
-        _ = reader.ReadUInt();
-        _ = reader.ReadUInt();
-        return new ResurrectionShow(ghostId, flags, timeUntilRezMs);
+        bool hasCasterRezRequest = reader.ReadBit();
+        uint timeUntilWakeHereMs = reader.ReadUInt();
+        uint timeUntilForceRezMs = reader.ReadUInt();
+        return new ResurrectionShow(
+            ghostId,
+            rezCost,
+            timeUntilRezMs,
+            dead,
+            flags,
+            hasCasterRezRequest,
+            timeUntilWakeHereMs,
+            timeUntilForceRezMs);
     });
+
+    public static (uint UnitId, uint Health) ParseEntityHealthUpdate(byte[] body) => Read(body, reader =>
+        (reader.ReadUInt(), reader.ReadUInt()));
+
+    public static EntityStatInteger ParseEntityStatInteger(byte[] body) => Read(body, reader =>
+        new EntityStatInteger(reader.ReadUInt(), reader.ReadEnum<Stat>(5), reader.ReadUInt()));
 
     public static QuestInitInfo ParseQuestInit(byte[] body) => Read(body, reader =>
     {

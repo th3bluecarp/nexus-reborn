@@ -8,7 +8,15 @@ using NexusForever.Network.World.Entity.Command;
 
 namespace NexusForever.Bot;
 
-internal sealed record TrackedEntity(uint Guid, EntityType Type, uint? CreatureId, Vector3? Position);
+internal sealed record TrackedEntity(
+    uint Guid,
+    EntityType Type,
+    uint? CreatureId,
+    Vector3? Position,
+    EntityCreateFlag CreateFlags,
+    byte? QuestChecklistIdx,
+    uint? Level,
+    uint? Health);
 
 internal sealed class EntityTracker
 {
@@ -46,29 +54,19 @@ internal sealed class EntityTracker
 
         uint guid = reader.ReadUInt();
         EntityType type = reader.ReadEnum<EntityType>(6);
-        uint? creatureId = null;
-
-        switch (type)
-        {
-            case EntityType.NonPlayer:
-                creatureId = reader.ReadUInt(18);
-                _ = reader.ReadByte();
-                break;
-            case EntityType.Player:
-                ReadPlayerModel(reader);
-                break;
-            default:
-            {
-                var partial = new TrackedEntity(guid, type, null, null);
-                entities[guid] = partial;
-                return partial;
-            }
-        }
-
-        _ = reader.ReadByte(8);
+        (uint? creatureId, byte? questChecklistIdx) = ReadEntityModel(reader, type);
+        EntityCreateFlag createFlags = reader.ReadEnum<EntityCreateFlag>(8);
         byte statCount = reader.ReadByte(5);
+        uint? level = null;
+        uint? health = null;
         for (int i = 0; i < statCount; i++)
-            ReadStat(reader);
+        {
+            (Stat stat, uint? integerValue) = ReadStat(reader);
+            if (stat == Stat.Level)
+                level = integerValue;
+            else if (stat == Stat.Health)
+                health = integerValue;
+        }
 
         _ = reader.ReadUInt();
         byte commandCount = reader.ReadByte(5);
@@ -85,30 +83,215 @@ internal sealed class EntityTracker
                 position = setPosition.Position;
         }
 
-        var entity = new TrackedEntity(guid, type, creatureId, position);
+        var entity = new TrackedEntity(
+            guid,
+            type,
+            creatureId,
+            position,
+            createFlags,
+            questChecklistIdx,
+            level,
+            health);
         entities[guid] = entity;
         return entity;
     }
 
-    private static void ReadStat(GamePacketReader reader)
+    private static (Stat Stat, uint? IntegerValue) ReadStat(GamePacketReader reader)
     {
-        _ = reader.ReadByte(5);
+        Stat stat = reader.ReadEnum<Stat>(5);
         StatType type = reader.ReadEnum<StatType>(2);
         switch (type)
         {
             case StatType.Integer:
-                _ = reader.ReadUInt();
-                break;
+                return (stat, reader.ReadUInt());
             case StatType.Float:
                 _ = reader.ReadSingle();
-                break;
+                return (stat, null);
             case StatType.Data:
                 _ = reader.ReadUInt();
                 _ = reader.ReadUInt();
-                break;
+                return (stat, null);
             default:
                 throw new InvalidDataException($"Unknown stat type {(int)type}.");
         }
+    }
+
+    /// <summary>
+    /// Reads the model written by each of the 37 EntityType values. Keeping every model byte-aligned
+    /// is required even for the eight models without a CreatureId because CreateFlags, stats and
+    /// movement commands follow immediately after it in ServerEntityCreate.
+    /// </summary>
+    private static (uint? CreatureId, byte? QuestChecklistIdx) ReadEntityModel(
+        GamePacketReader reader,
+        EntityType type)
+    {
+        uint? creatureId = null;
+        byte? questChecklistIdx = null;
+
+        switch (type)
+        {
+            case EntityType.NonPlayer:
+            case EntityType.CollectableUnit:
+            case EntityType.Simple:
+            case EntityType.Platform:
+            case EntityType.AiTurret:
+            case EntityType.SimpleCollidable:
+                creatureId = reader.ReadUInt(18);
+                questChecklistIdx = reader.ReadByte();
+                break;
+
+            case EntityType.Chest:
+            case EntityType.Destructible:
+            case EntityType.Door:
+            case EntityType.HarvestUnit:
+            case EntityType.CorpseUnit:
+            case EntityType.MailBox:
+            case EntityType.Residence:
+            case EntityType.BindPoint:
+            case EntityType.Hidden:
+            case EntityType.DestructibleDoor:
+            case EntityType.HousingMannequin:
+                creatureId = reader.ReadUInt(18);
+                break;
+
+            case EntityType.Vehicle:
+                creatureId = reader.ReadUInt(18);
+                _ = reader.ReadUShort(14);
+                ReadPassengers(reader);
+                break;
+            case EntityType.Mount:
+                creatureId = reader.ReadUInt(18);
+                _ = reader.ReadUShort(14);
+                _ = reader.ReadUInt();
+                ReadPassengers(reader);
+                break;
+            case EntityType.Taxi:
+                creatureId = reader.ReadUInt(18);
+                _ = reader.ReadUShort(14);
+                _ = reader.ReadUInt();
+                ReadPassengers(reader);
+                break;
+            case EntityType.InstancePortal:
+                creatureId = reader.ReadUInt(18);
+                _ = reader.ReadUInt();
+                break;
+            case EntityType.Plug:
+                _ = reader.ReadUShort(14);
+                _ = reader.ReadUShort(15);
+                _ = reader.ReadByte(6);
+                break;
+            case EntityType.StructuredPlug:
+                creatureId = reader.ReadUInt(18);
+                _ = reader.ReadByte(2);
+                _ = reader.ReadUShort(14);
+                break;
+            case EntityType.PinataLoot:
+                creatureId = reader.ReadUInt(18);
+                _ = reader.ReadUInt();
+                _ = reader.ReadUInt();
+                _ = reader.ReadByte(4);
+                break;
+            case EntityType.Player:
+                ReadPlayerModel(reader);
+                break;
+            case EntityType.Trigger:
+                ReadTriggerModel(reader);
+                break;
+            case EntityType.Ghost:
+                ReadGhostModel(reader);
+                break;
+            case EntityType.Pet:
+                creatureId = reader.ReadUInt(18);
+                _ = reader.ReadUInt();
+                _ = reader.ReadUShort(15);
+                _ = reader.ReadWideString();
+                break;
+            case EntityType.EsperPet:
+                creatureId = reader.ReadUInt(18);
+                _ = reader.ReadUInt();
+                _ = reader.ReadUShort(15);
+                break;
+            case EntityType.WorldUnit:
+            case EntityType.Camera:
+                _ = reader.ReadBit();
+                break;
+            case EntityType.ScannerUnit:
+                creatureId = reader.ReadUInt(18);
+                _ = reader.ReadUInt();
+                _ = reader.ReadWideString();
+                break;
+            case EntityType.Trap:
+                creatureId = reader.ReadUInt(18);
+                _ = reader.ReadUInt();
+                break;
+            case EntityType.Pickup:
+                creatureId = reader.ReadUInt(18);
+                _ = reader.ReadUInt();
+                _ = reader.ReadUInt();
+                break;
+            case EntityType.HousingHarvestPlug:
+            case EntityType.HousingPlant:
+                _ = reader.ReadUShort(15);
+                _ = reader.ReadUShort(14);
+                break;
+            case EntityType.Lockbox:
+                creatureId = reader.ReadUInt(18);
+                ushort structureCount = reader.ReadUShort(16);
+                for (int i = 0; i < structureCount; i++)
+                    _ = reader.ReadUInt();
+                break;
+            default:
+                throw new InvalidDataException($"Unknown entity type {(int)type}.");
+        }
+
+        return (creatureId, questChecklistIdx);
+    }
+
+    private static void ReadPassengers(GamePacketReader reader)
+    {
+        byte passengerCount = reader.ReadByte(3);
+        for (int i = 0; i < passengerCount; i++)
+        {
+            _ = reader.ReadByte(2);
+            _ = reader.ReadByte(3);
+            _ = reader.ReadUInt();
+        }
+    }
+
+    private static void ReadTriggerModel(GamePacketReader reader)
+    {
+        _ = reader.ReadWideString();
+        byte boundCount = reader.ReadByte();
+        for (int i = 0; i < boundCount; i++)
+        {
+            _ = reader.ReadByte(2);
+            for (int coordinate = 0; coordinate < 6; coordinate++)
+                _ = reader.ReadSingle();
+            _ = reader.ReadSingle();
+        }
+    }
+
+    private static void ReadGhostModel(GamePacketReader reader)
+    {
+        _ = reader.ReadULong();
+        _ = reader.ReadUShort(14);
+        _ = reader.ReadWideString();
+        _ = reader.ReadByte(5);
+        _ = reader.ReadByte(5);
+        _ = reader.ReadByte(2);
+        _ = reader.ReadULong();
+        _ = reader.ReadWideString();
+        _ = reader.ReadByte(4);
+
+        byte guildCount = reader.ReadByte(5);
+        for (int i = 0; i < guildCount; i++)
+            _ = reader.ReadULong();
+
+        byte boneCount = reader.ReadByte(6);
+        for (int i = 0; i < boneCount; i++)
+            _ = reader.ReadSingle();
+
+        _ = reader.ReadUShort(14);
     }
 
     private static void ReadPlayerModel(GamePacketReader reader)

@@ -16,9 +16,11 @@ internal static class QuestInfo
         var quests = new GameTable<Quest2Entry>(Path.Combine(tables, "Quest2.tbl"));
         var objectives = new GameTable<QuestObjectiveEntry>(Path.Combine(tables, "QuestObjective.tbl"));
         var creatures = new GameTable<Creature2Entry>(Path.Combine(tables, "Creature2.tbl"));
-        var gameData = new BotGameData(tables);
+        var gameData = new BotGameData(tables, allowMissingCommunicatorMessages: true);
         var english = new TextTable(Path.Combine(tables, "en-US.bin"));
         var prerequisites = new GameTable<PrerequisiteEntry>(Path.Combine(tables, "Prerequisite.tbl"));
+        if (!gameData.HasCommunicatorTable)
+            Console.WriteLine($"communicators: unavailable (missing {Path.Combine(tables, "CommunicatorMessages.tbl")})");
 
         var order = new List<ushort>();
         var seen = new HashSet<ushort>();
@@ -77,6 +79,10 @@ internal static class QuestInfo
             IEnumerable<Creature2Entry> receivers = creatures.Entries.Where(c => c.QuestIdReceive.Contains(id));
             Console.WriteLine($"  givers: {string.Join(", ", givers.Select(c => $"{c.Id} {english.GetEntry(c.LocalizedTextIdName)}"))}");
             Console.WriteLine($"  receivers: {string.Join(", ", receivers.Select(c => $"{c.Id} {english.GetEntry(c.LocalizedTextIdName)}"))}");
+            IReadOnlyList<CommunicatorOffer> offers = gameData.GetCommunicatorOffers(id);
+            Console.WriteLine(offers.Count == 0
+                ? "  communicators: none"
+                : $"  communicators: {string.Join("; ", offers.Select(FormatCommunicator))}");
             int index = 0;
             foreach (uint objectiveId in entry.Objectives.Where(o => o != 0))
             {
@@ -91,5 +97,13 @@ internal static class QuestInfo
             }
         }
         return 0;
+    }
+
+    private static string FormatCommunicator(CommunicatorOffer offer)
+    {
+        string questConditions = offer.QuestConditions.Count == 0
+            ? "none"
+            : string.Join(",", offer.QuestConditions.Select(item => $"{item.QuestId}:{item.State}"));
+        return $"id={offer.Id} world={offer.WorldId} zone={offer.WorldZoneId} levels=[{offer.MinLevel},{offer.MaxLevel}] questStates=[{questConditions}] prerequisite={offer.PrerequisiteId}";
     }
 }
