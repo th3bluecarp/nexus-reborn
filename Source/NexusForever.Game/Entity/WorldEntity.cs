@@ -564,7 +564,8 @@ namespace NexusForever.Game.Entity
         /// </summary>
         public virtual void OnActivate(IPlayer activator)
         {
-            // deliberately empty
+            // objects without an activation spell (the arkship portals 73741/73745) are handled by their scripts
+            scriptCollection?.Invoke<IWorldEntityScript>(s => s.OnActivate(activator));
         }
 
         /// <summary>

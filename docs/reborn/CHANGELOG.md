@@ -4,6 +4,7 @@ Newest first. "Live" means running on our test server.
 
 ## 2026-11-01
 
+- **Arkship portals work**: the Skyplot portal and the cryosleep exit had no activation spell, so right-clicking them did nothing; they now teleport the player into the next stage of the simulation (SEMANTICS: arkship portals teleport).
 - **Receiver-less quests can be handed in**: The Face of the Enemy has no creature to turn it in to and no communicator flag, so its remote hand-in was refused; quests without any receiver now accept it (SEMANTICS: receiver-less quests hand in remotely).
 - **Virtual Legionnaires appear**: the last arkship combat objective had no creatures to kill (no world spawn); each destroyed Sim-Turret now releases two Legionnaires (SEMANTICS: Legionnaires drop in when a Sim-Turret dies).
 - **Sim-Turrets are hostile**: their creature data says FriendlyToAll, so even as creatures no ability would target them; the tutorial turrets now spawn with the Battle Beasts' hostile faction (SEMANTICS: Sim-Turrets are hostile).

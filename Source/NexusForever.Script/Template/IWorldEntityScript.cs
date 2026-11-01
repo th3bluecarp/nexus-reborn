@@ -7,6 +7,13 @@ namespace NexusForever.Script.Template
     public interface IWorldEntityScript : IGridEntityScript
     {
         /// <summary>
+        /// Invoked when <see cref="IPlayer"/> activates <see cref="IWorldEntity"/> directly (no activation spell).
+        /// </summary>
+        void OnActivate(IPlayer activator)
+        {
+        }
+
+        /// <summary>
         /// Invoked when <see cref="IWorldEntity"/> is successfully activated by <see cref="IPlayer"/>.
         /// </summary>
         void OnActivateSuccess(IPlayer activator)
