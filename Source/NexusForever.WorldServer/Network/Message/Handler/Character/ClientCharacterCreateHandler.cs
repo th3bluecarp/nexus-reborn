@@ -189,6 +189,19 @@ namespace NexusForever.WorldServer.Network.Message.Handler.Character
                     });
                 }
 
+                // Novice characters start the arkship tutorial; its first quest is pushed to the player on retail (no giver
+                // creature, no communicator message delivers it). Mentioned lets it be accepted from the quest log anywhere.
+                // SEMANTICS: "Arkship first quest" (Medium): 10518 Exile, 10524 Dominion (chain roots of Bon Voyage 10528/10530).
+                if (creationEntry.CharacterCreationStartEnum == CharacterCreationStart.PreTutorial)
+                {
+                    character.Quest.Add(new CharacterQuestModel
+                    {
+                        Id      = character.Id,
+                        QuestId = (Faction)creationEntry.FactionId == Faction.Exile ? (ushort)10518 : (ushort)10524,
+                        State   = (byte)QuestState.Mentioned
+                    });
+                }
+
                 character.ActiveSpec = 0;
 
                 // create initial LAS abilities

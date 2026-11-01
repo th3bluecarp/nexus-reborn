@@ -28,6 +28,7 @@ Confidence: **High** = consistent across all the data we checked and no counter 
 | InfrastructureState (148) | state of settler project ObjectId: 2 built, 1 under way, 0 not started, compared with Value; the player's own project mission (retail shared projects per zone) | Medium | 71 uses, ObjectIds are PathSettlerInfrastructure ids, one project used with both 0 and 2 (before and after) | 1 might mean something else; non settlers never build, so they see the not built state | PrerequisiteCheckInfrastructureState |
 | Spell59 | **not implemented**: ObjectId a Spell4 id (253 of 260), Value 1 to 5 with numeric comparisons, probably a stack count; no way to count stacks yet | | | | |
 | Unknown47, ChallengeRequirement (69), ChallengeLocked (74), PlayerPathMission (54), PathMissionRequirement (67) | **not implemented** | | Value is a spell / challenge / mission id | several readings fit equally well | | unhandled on purpose |
+| Level (1) with ObjectId | rows 4106 (quests 3479, 10100, 10101: LessThanOrEqual 1, ObjectId 4065) and 6232 (8944: LessThanOrEqual 1, ObjectId 1) are not player-level checks; treated as met | Invented | read literally they lock the quests to level-1 characters, and 8944 also needs PrerequisiteLevel 4 (impossible together); every other Level row has ObjectId 0 and reads as player level (15273 = level 7 exactly); Jabbithole lists all four at minimum level 1 | the ObjectId may name a quest or level source we do not understand | a retail log of a level-5 character picking up 3479 | PrerequisiteCheckLevel |
 
 ## Quest objectives
 
@@ -40,6 +41,7 @@ Confidence: **High** = consistent across all the data we checked and no counter 
 | EnterArea (22) | complete when inside the objective's indicator world location (radius at least 10 m) | Low | 166 of 180 low level objectives have an indicator | retail used trigger volumes (Data); indicator may be the area or just a map hint, so it can complete early or late | QuestManager.UpdateAreaObjectives |
 | Unknown28 (rescue) | progress when the player activates a creature of TargetGroupIdRewardPane, the cage | Medium | all 3 reward pane groups are cages or cage panels with an activate spell; 5 objectives all describe rescuing from cages | Data (17 to 218) unknown | WorldEntity.OnActivateSuccess |
 | CompleteEvent | progress when a public event is won by the player's team | Medium | Data matches PublicEvent ids | partial credit for losing teams unknown | PublicEvent.Finish |
+| Arkship first quest | novice (PreTutorial) characters get the tutorial root quest as Mentioned at creation: 10518 The Face of the Enemy (Exile), 10524 (Dominion) | Medium | no creature gives it and no communicator message delivers it, yet it is the prerequisite root of Bon Voyage; on retail it is pushed on first login | retail may auto-accept it rather than mention it | a packet log of a fresh character | ClientCharacterCreateHandler |
 
 ## Spell effects
 

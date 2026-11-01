@@ -2,6 +2,21 @@
 
 Newest first. "Live" means running on our test server.
 
+## 2026-11-01
+
+- **The killing blow always counts for quest credit**: kill rewards went only to players on the target's threat list, so a creature that never fought back (the arkship Virtual Battle Beasts, any passive target) gave no quest credit or XP to its killer. Found by the quest bot (10518: 18 kills, 1 credited).
+- **Respawns were ghosts**: a respawned creature or quest object (killed, or despawned after a player used it) was put back on the map without its OnAddToMap callback, so it had no guid, no map and was never sent to players; survivors, flares and cannons stayed gone until the grid reloaded or the server restarted. Found by the quest bot (3480 could not find survivors after 3479; flares gone for an hour). Fixed in BaseMap.UpdateDelayedAdds, UnitEntity.Respawn and the repaired-minfrastructure swap.
+
+## 2026-10-31
+
+- **Quest bot zone runs, night one**: Northern Wilds end to end by the headless client, 7/36 then 13/36 quests passed, each failure traced and fixed on the side it belongs to (bot: entity models for every type, resurrection, activation sequencing; server: below). Nightly cron 02:00, "Bot runs" tab on wildstar.tower.
+- **Communicator offers compared the wrong level bound**: `CommunicatorMessage.Meets` refused an offer whenever the player was below its MAX level if a MIN level was set.
+- **Level prerequisites with an ObjectId no longer lock quests to level 1**: 3479 From the Wreckage, both Treasures within Treasures and 8944 Ability Training 101 were unobtainable for any character above level 1 (SEMANTICS: Invented).
+- **Novice characters now start the arkship chain**: nothing in the data gives The Face of the Enemy (10518 Exile, 10524 Dominion), so a tutorial-start character could never reach Bon Voyage; it is now Mentioned at creation (SEMANTICS: Medium).
+- **The holdout commit did not compile**: `ScriptFilterDynamicCombatAI` was missing a using, so the live server had been running the build before 9e721405. Fixed and deployed together with the above.
+- **Headless quest bot (Phase 0 passed)**: new `Source/NexusForever.Bot` console client speaks the real protocol (auth, world, encryption, character create, world loads, entity tracking, chat commands) and completed quest 3479 "From the Wreckage" end to end against the live server: accepted from Bosun Redmark, rescued 3 Trapped Survivors through the client-side interaction packets, killed 8 yetis from target group 7288, turned in at Deadeye Brightland (state 3). Teleports and one `!character level 10` are the only shortcuts, listed as "cheats" in the JSON report. `info --quest <ids>` prints prerequisites, objectives, givers and target groups from the game tables.
+- **Finding**: quests 3479, 10100, 10101 (Prerequisite 4106) and 8944 (6232) carry a "Level LessThanOrEqual 1" prerequisite; the server evaluates it as player level ≤ 1, so any character above level 1 (every skip-tutorial character, and anyone who levelled on the arkship) is refused with "without meeting the prerequisites". These are the four Northern Wilds quests nobody has completed on this server. The bot passes only because it uses a level-1 novice-start character. Not changed yet; the comparison direction needs checking against retail behaviour.
+
 ## 2026-10-26
 
 - **Holdout enemies actually come at you**: the creatures made for the Northern Wilds holdouts (the Yeti, Skeech and Dominion waves and their bosses) are marked "no AI" in the game files, because on retail the holdout script moved them. They spawned and just stood there, up to 40 m away. They now fight with the normal creature AI and come for you (or the survivors).

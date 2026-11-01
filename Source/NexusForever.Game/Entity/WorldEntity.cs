@@ -741,7 +741,7 @@ namespace NexusForever.Game.Entity
             if (repaired is IUnitEntity unit)
                 unit.DespawnAfter(MinfrastructureDuration);
 
-            broken.Map.EnqueueAdd(repaired, broken.Position);
+            repaired.AddToMap(broken.Map, broken.Position); // with OnAddToMap, see BaseMap.UpdateDelayedAdds
             broken.Despawn(MinfrastructureDuration);
         }
 

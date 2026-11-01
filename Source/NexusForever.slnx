@@ -1,5 +1,6 @@
 <Solution>
   <Folder Name="/Client/">
+    <Project Path="NexusForever.Bot/NexusForever.Bot.csproj" />
     <Project Path="NexusForever.ClientConnector/NexusForever.ClientConnector.csproj" />
     <Project Path="NexusForever.MapGenerator/NexusForever.MapGenerator.csproj" />
   </Folder>

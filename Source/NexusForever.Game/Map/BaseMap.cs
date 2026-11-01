@@ -267,7 +267,9 @@ namespace NexusForever.Game.Map
                     continue;
 
                 delayedAdds.RemoveAt(i);
-                EnqueueAdd(entity, position);
+                // through the entity so OnAddToMap runs: a bare EnqueueAdd leaves the respawn with guid 0 and no Map (a ghost
+                // nobody is sent; used quest objects and killed creatures never came back until the grid reloaded) — 2026-11-01
+                entity.AddToMap(this, position);
             }
         }
 
