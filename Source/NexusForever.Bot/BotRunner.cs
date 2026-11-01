@@ -228,9 +228,9 @@ internal sealed class BotRunner
         foreach ((uint itemId, ItemDropSources sources) in loadedItemSources)
             itemDropSources[itemId] = sources;
 
-        QuestDefinition requested = questPlan[0];
-        report.Title = options.ZoneId is uint zoneId ? $"Zone {zoneId} ({options.Faction})" : requested.Title;
-        foreach (QuestObjectiveDefinition objective in options.ZoneId is null && options.QuestIds.Count == 1 ? requested.Objectives : [])
+        QuestDefinition? requested = questPlan.Count > 0 ? questPlan[0] : null;
+        report.Title = options.ZoneId is uint zoneId ? $"Zone {zoneId} ({options.Faction})" : requested?.Title ?? "Character only (--quest none)";
+        foreach (QuestObjectiveDefinition objective in options.ZoneId is null && options.QuestIds.Count == 1 && requested is not null ? requested.Objectives : [])
         {
             report.Objectives.Add(new ObjectiveReport
             {
@@ -419,7 +419,8 @@ internal sealed class BotRunner
         CharacterCreationEntry creation = RequireGameData().GetBotCharacterCreation(options.Start, options.Faction);
         for (int attempt = 1; attempt <= 5; attempt++)
         {
-            report.CharacterName = $"Bot {Random.Shared.Next(0, 10000):0000}";
+            // --keep-character: a named character that stays on the account (the GUI click-through logs in as it)
+            report.CharacterName = options.KeepCharacter ?? $"Bot {Random.Shared.Next(0, 10000):0000}";
             await RequireWorld().SendEncryptedAsync(GameMessageOpcode.ClientCharacterCreate,
                 PacketCodec.ClientCharacterCreate(creation, report.CharacterName), cancellationToken);
 
@@ -1296,6 +1297,10 @@ internal sealed class BotRunner
         QuestRunReport questReport = currentQuestReport;
         try
         {
+            // a death at the very end of the previous quest can leave the bot dead here (3487 Shellshock -> 3670 Calm Before
+            // the Storm "bot remains dead"): give the resurrection one more 60 s budget before the quest is written off
+            if (botDied)
+                await TryRecoverFromDeathAsync(questReport, cancellationToken);
             ConfigureQuest(definition);
             await LevelForAcceptanceIfNeededAsync(definition, cancellationToken);
             if (definition.Entry.PrerequisiteItem != 0u)
@@ -2517,6 +2522,19 @@ internal sealed class BotRunner
                 .ToArray();
             if (creatureSpawns.Length == 0)
             {
+                // no database spawn (script-spawned or escort NPC such as 16622 for More Important Than Revenge): use it if it is
+                // already streamed in next to the bot
+                TrackedEntity? visible = entities.FindCreature(creatureId);
+                if (visible is not null)
+                {
+                    int visibleIndex = questNpcAttemptDetails.Count;
+                    questNpcAttemptDetails.Add($"{role} creature {creatureId}: no spawns in world {worldId}, using visible guid {visible.Guid}");
+                    bool visibleConfirmed = await tryUse(visible, cancellationToken);
+                    questNpcAttemptDetails[visibleIndex] += visibleConfirmed ? ", confirmed" : ", no quest-state confirmation";
+                    if (visibleConfirmed)
+                        return new QuestNpcUseResult(visible, FormatQuestNpcAttempts());
+                    continue;
+                }
                 questNpcAttemptDetails.Add($"{role} creature {creatureId}: no spawns in world {worldId}");
                 continue;
             }
@@ -4122,6 +4140,11 @@ internal sealed class BotRunner
     {
         if (characterId == 0 || world is null || !world.Connected)
             return;
+        if (options.KeepCharacter is not null)
+        {
+            log.Info($"keeping character {characterId} \"{report.CharacterName}\" on the account (--keep-character)");
+            return;
+        }
 
         using var cleanupGrace = runCancellation.IsCancellationRequested
             ? new CancellationTokenSource(TimeSpan.FromSeconds(5))

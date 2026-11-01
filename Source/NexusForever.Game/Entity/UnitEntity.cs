@@ -995,7 +995,10 @@ namespace NexusForever.Game.Entity
 
         private TimeSpan? GetRespawnDelay()
         {
-            if (this is IPlayer || SpawnModel == null || Map is IMapInstance)
+            // the arkship (tutorial) instance is shared by every novice of a faction and lives until the server restarts, so its
+            // creatures respawn like the open world; content, PvP and housing instances are short lived and keep their kills
+            // (2026-11-01: the Virtual Battle Beasts stayed corpses after the first character killed them, nothing to kill for the next)
+            if (this is IPlayer || SpawnModel == null || (Map is IMapInstance && Map is not ITutorialMapInstance))
                 return null;
 
             RespawnConfig config = SharedConfiguration.Instance.Get<RealmConfig>()?.Respawn ?? new RespawnConfig();

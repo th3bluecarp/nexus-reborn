@@ -24,6 +24,12 @@ internal static class QuestInfo
         var gameData = new BotGameData(tables, allowMissingCommunicatorMessages: true);
         var english = new TextTable(Path.Combine(tables, "en-US.bin"));
         var prerequisites = new GameTable<PrerequisiteEntry>(Path.Combine(tables, "Prerequisite.tbl"));
+        var locations = new GameTable<WorldLocation2Entry>(Path.Combine(tables, "WorldLocation2.tbl"));
+        string LocText(uint locationId)
+        {
+            WorldLocation2Entry? location = locationId == 0u ? null : locations.GetEntry(locationId);
+            return location is null ? "" : FormattableString.Invariant($" at world {location.WorldId} ({location.Position0:0.0}, {location.Position1:0.0}, {location.Position2:0.0})");
+        }
         if (options.PathZone is uint pathZone)
         {
             PrintPathMissions(gameData, pathZone);
@@ -135,7 +141,7 @@ internal static class QuestInfo
                 extra.Append($" rewardPane={o.TargetGroupIdRewardPane} [{string.Join(',', rewardPaneCreatures)}]");
                 if (!gameData.IsCreature(o.Data))
                     extra.Append($" dataAsTargetGroup=[{string.Join(',', gameData.ResolveTargetGroup(o.Data))}]");
-                Console.WriteLine($"  objective {index++}: id={objectiveId} type={(QuestObjectiveType)o.Type}({o.Type}) data={o.Data} count={o.Count} flags=0x{o.Flags:X} loc={o.WorldLocationsIdIndicator00} \"{english.GetEntry(o.LocalizedTextIdFull)}\"{extra}");
+                Console.WriteLine($"  objective {index++}: id={objectiveId} type={(QuestObjectiveType)o.Type}({o.Type}) data={o.Data} count={o.Count} flags=0x{o.Flags:X} loc={o.WorldLocationsIdIndicator00}{LocText(o.WorldLocationsIdIndicator00)} \"{english.GetEntry(o.LocalizedTextIdFull)}\"{extra}");
             }
         }
         return 0;
