@@ -1020,7 +1020,7 @@ namespace NexusForever.Game.Entity
 
             IWorldEntity entity = CreateRespawnEntity();
             RemoveFromMap();
-            map.EnqueueAdd(entity, new Vector3(SpawnModel.X, SpawnModel.Y, SpawnModel.Z));
+            entity.AddToMap(map, new Vector3(SpawnModel.X, SpawnModel.Y, SpawnModel.Z)); // with OnAddToMap, see BaseMap.UpdateDelayedAdds
         }
 
         /// <summary>

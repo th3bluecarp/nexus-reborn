@@ -2,6 +2,10 @@
 
 Newest first. "Live" means running on our test server.
 
+## 2026-11-01
+
+- **Respawns were ghosts**: a respawned creature or quest object (killed, or despawned after a player used it) was put back on the map without its OnAddToMap callback, so it had no guid, no map and was never sent to players; survivors, flares and cannons stayed gone until the grid reloaded or the server restarted. Found by the quest bot (3480 could not find survivors after 3479; flares gone for an hour). Fixed in BaseMap.UpdateDelayedAdds, UnitEntity.Respawn and the repaired-minfrastructure swap.
+
 ## 2026-10-31
 
 - **Quest bot zone runs, night one**: Northern Wilds end to end by the headless client, 7/36 then 13/36 quests passed, each failure traced and fixed on the side it belongs to (bot: entity models for every type, resurrection, activation sequencing; server: below). Nightly cron 02:00, "Bot runs" tab on wildstar.tower.
