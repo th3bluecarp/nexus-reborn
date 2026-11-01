@@ -419,7 +419,8 @@ internal sealed class BotRunner
         CharacterCreationEntry creation = RequireGameData().GetBotCharacterCreation(options.Start, options.Faction);
         for (int attempt = 1; attempt <= 5; attempt++)
         {
-            report.CharacterName = $"Bot {Random.Shared.Next(0, 10000):0000}";
+            // --keep-character: a named character that stays on the account (the GUI click-through logs in as it)
+            report.CharacterName = options.KeepCharacter ?? $"Bot {Random.Shared.Next(0, 10000):0000}";
             await RequireWorld().SendEncryptedAsync(GameMessageOpcode.ClientCharacterCreate,
                 PacketCodec.ClientCharacterCreate(creation, report.CharacterName), cancellationToken);
 
@@ -4122,6 +4123,11 @@ internal sealed class BotRunner
     {
         if (characterId == 0 || world is null || !world.Connected)
             return;
+        if (options.KeepCharacter is not null)
+        {
+            log.Info($"keeping character {characterId} \"{report.CharacterName}\" on the account (--keep-character)");
+            return;
+        }
 
         using var cleanupGrace = runCancellation.IsCancellationRequested
             ? new CancellationTokenSource(TimeSpan.FromSeconds(5))
