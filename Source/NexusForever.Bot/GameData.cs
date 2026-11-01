@@ -1,7 +1,6 @@
 using System.Text.RegularExpressions;
 using NexusForever.Game.Static;
 using NexusForever.Game.Static.Entity;
-using NexusForever.Game.Static.Prerequisite;
 using NexusForever.Game.Static.Quest;
 using NexusForever.Game.Static.Reputation;
 using NexusForever.GameTable;
@@ -26,10 +25,14 @@ internal sealed record QuestDefinition(
     Quest2Entry Entry,
     IReadOnlyList<QuestObjectiveDefinition> Objectives,
     IReadOnlyList<uint> GiverCreatureIds,
-    IReadOnlyList<uint> ReceiverCreatureIds,
-    bool HasLevelUpperBound,
-    uint? LevelUpperBound,
-    bool NeedsCombat);
+    IReadOnlyList<uint> ReceiverCreatureIds);
+
+internal sealed record PrerequisiteBranchChoice(
+    ushort QuestId,
+    ushort BranchQuestId,
+    string BranchTitle,
+    bool HasGiverSpawn,
+    bool HasCommunicatorOffer);
 
 internal sealed record CommunicatorOffer(
     uint Id,
@@ -55,9 +58,9 @@ internal sealed class BotGameData
     private readonly GameTable<CharacterCreationEntry> characterCreations;
     private readonly GameTable<WorldLocation2Entry> worldLocations;
     private readonly GameTable<TargetGroupEntry> targetGroups;
-    private readonly GameTable<PrerequisiteEntry> prerequisites;
     private readonly GameTable<CommunicatorMessagesEntry>? communicatorMessages;
     private readonly TextTable english;
+    private readonly Dictionary<ushort, PrerequisiteBranchChoice> prerequisiteBranchChoices = [];
 
     public BotGameData(string tablePath, bool allowMissingCommunicatorMessages = false)
     {
@@ -70,7 +73,6 @@ internal sealed class BotGameData
         characterCreations = Load<CharacterCreationEntry>(tablePath, "CharacterCreation.tbl");
         worldLocations = Load<WorldLocation2Entry>(tablePath, "WorldLocation2.tbl");
         targetGroups = Load<TargetGroupEntry>(tablePath, "TargetGroup.tbl");
-        prerequisites = Load<PrerequisiteEntry>(tablePath, "Prerequisite.tbl");
         string communicatorPath = Path.Combine(tablePath, "CommunicatorMessages.tbl");
         if (File.Exists(communicatorPath))
             communicatorMessages = new GameTable<CommunicatorMessagesEntry>(communicatorPath);
@@ -126,22 +128,56 @@ internal sealed class BotGameData
             .ToArray();
 
         string title = english.GetEntry(entry.LocalizedTextIdTitle) ?? $"Quest {id}";
-        uint? levelUpperBound = GetLevelUpperBound(entry);
-        bool needsCombat = questObjectives.Any(objective => objective.Type is
-            QuestObjectiveType.KillCreature or QuestObjectiveType.KillCreature2 or
-            QuestObjectiveType.KillTargetGroup or QuestObjectiveType.KillTargetGroups or
-            QuestObjectiveType.VirtualCollect or QuestObjectiveType.GatheResource);
-        return new QuestDefinition(id, title, entry, questObjectives, givers, receivers,
-            levelUpperBound.HasValue, levelUpperBound, needsCombat);
+        return new QuestDefinition(id, title, entry, questObjectives, givers, receivers);
     }
 
-    public IReadOnlyList<QuestDefinition> GetRunPlan(RunOptions options)
+    public IReadOnlyList<uint> GetPrerequisiteBranchGiverCreatureIds(RunOptions options)
     {
+        IEnumerable<QuestDefinition> roots = options.ZoneId is uint zoneId
+            ? quests.Entries
+                .Where(entry => entry.WorldZoneId == zoneId && MatchesFaction(entry, options.Faction))
+                .Select(entry => GetQuest(checked((ushort)entry.Id)))
+            : options.QuestIds.Select(GetQuest);
+
+        var result = new HashSet<uint>();
+        var visited = new HashSet<ushort>();
+        void Visit(QuestDefinition definition)
+        {
+            if (!visited.Add(definition.Id))
+                return;
+            QuestDefinition[] candidates = definition.Entry.PrerequisiteQuests
+                .Where(id => id != 0u)
+                .Select(id => GetQuest(checked((ushort)id)))
+                .ToArray();
+            if ((definition.Entry.PrerequisiteFlags & 1u) != 0u)
+                result.UnionWith(candidates.SelectMany(candidate => candidate.GiverCreatureIds));
+            foreach (QuestDefinition candidate in candidates)
+                Visit(candidate);
+        }
+
+        foreach (QuestDefinition root in roots)
+            Visit(root);
+        return result.Order().ToArray();
+    }
+
+    public IReadOnlyList<QuestDefinition> GetRunPlan(RunOptions options, IReadOnlySet<uint> spawnedGiverCreatureIds)
+    {
+        prerequisiteBranchChoices.Clear();
         if (options.ZoneId is null)
         {
             if (options.QuestIds.Count == 1 && options.Chain)
-                return GetQuestClosure(options.QuestIds[0], includePrerequisites: true);
-            return options.QuestIds.Select(GetQuest).ToArray();
+                return GetQuestClosure(options.QuestIds[0], includePrerequisites: true, options.Faction, spawnedGiverCreatureIds);
+
+            Dictionary<ushort, QuestDefinition> requested = options.QuestIds
+                .Select(GetQuest)
+                .ToDictionary(definition => definition.Id);
+            Dictionary<ushort, HashSet<ushort>> requestedDependencies = requested.Values.ToDictionary(
+                definition => definition.Id,
+                definition => SelectPrerequisites(definition, options.Faction, spawnedGiverCreatureIds)
+                    .Select(prerequisite => prerequisite.Id)
+                    .Where(requested.ContainsKey)
+                    .ToHashSet());
+            return TopologicalOrder(requested, requestedDependencies);
         }
 
         QuestDefinition[] roots = quests.Entries
@@ -163,7 +199,7 @@ internal sealed class BotGameData
                 throw new BotFailureException($"Quest prerequisite cycle includes quest {definition.Id}.");
 
             definitions.Add(definition.Id, definition);
-            var selected = SelectPrerequisites(definition, options.Faction).ToArray();
+            var selected = SelectPrerequisites(definition, options.Faction, spawnedGiverCreatureIds).ToArray();
             dependencies[definition.Id] = selected.Select(item => item.Id).ToHashSet();
             foreach (QuestDefinition prerequisite in selected)
                 Gather(prerequisite);
@@ -173,60 +209,41 @@ internal sealed class BotGameData
         foreach (QuestDefinition root in roots)
             Gather(root);
 
-        var remaining = definitions.Keys.ToHashSet();
-        var result = new List<QuestDefinition>(remaining.Count);
-        while (remaining.Count > 0)
-        {
-            QuestDefinition? next = remaining
-                .Where(id => dependencies[id].All(dependency => !remaining.Contains(dependency)))
-                .Select(id => definitions[id])
-                .OrderBy(OrderBucket)
-                .ThenBy(definition => definition.Entry.ConLevel)
-                .ThenBy(definition => definition.Id)
-                .FirstOrDefault();
-            if (next is null)
-                throw new BotFailureException("Quest prerequisite graph contains a cycle.");
-            remaining.Remove(next.Id);
-            result.Add(next);
-        }
-
-        return result;
+        return TopologicalOrder(definitions, dependencies);
     }
 
-    public IReadOnlyList<QuestDefinition> GetQuestClosure(ushort requestedId, bool includePrerequisites)
+    public IReadOnlyList<QuestDefinition> GetQuestClosure(
+        ushort requestedId,
+        bool includePrerequisites,
+        BotFaction faction,
+        IReadOnlySet<uint> spawnedGiverCreatureIds)
     {
-        var result = new List<QuestDefinition>();
-        var visited = new HashSet<ushort>();
-        var visiting = new HashSet<ushort>();
-
-        void Visit(ushort id)
+        var definitions = new Dictionary<ushort, QuestDefinition>();
+        var dependencies = new Dictionary<ushort, HashSet<ushort>>();
+        var gathering = new HashSet<ushort>();
+        void Gather(ushort id)
         {
-            if (visited.Contains(id))
+            if (definitions.ContainsKey(id))
                 return;
-            if (!visiting.Add(id))
+            if (!gathering.Add(id))
                 throw new BotFailureException($"Quest prerequisite cycle includes quest {id}.");
 
             QuestDefinition definition = GetQuest(id);
+            definitions.Add(id, definition);
+            QuestDefinition[] selected = includePrerequisites
+                ? SelectPrerequisites(definition, faction, spawnedGiverCreatureIds).ToArray()
+                : [];
+            dependencies[id] = selected.Select(prerequisite => prerequisite.Id).ToHashSet();
             if (includePrerequisites)
             {
-                uint[] prerequisiteIds = definition.Entry.PrerequisiteQuests.Where(value => value != 0).ToArray();
-                if ((definition.Entry.PrerequisiteFlags & 1u) != 0 && prerequisiteIds.Length > 1)
-                    prerequisiteIds = [prerequisiteIds[0]];
-                foreach (uint prerequisiteId in prerequisiteIds)
-                {
-                    if (prerequisiteId > ushort.MaxValue)
-                        throw new BotFailureException($"Quest {id} has invalid prerequisite quest id {prerequisiteId}.");
-                    Visit((ushort)prerequisiteId);
-                }
+                foreach (QuestDefinition prerequisite in selected)
+                    Gather(prerequisite.Id);
             }
-
-            visiting.Remove(id);
-            visited.Add(id);
-            result.Add(definition);
+            gathering.Remove(id);
         }
 
-        Visit(requestedId);
-        return result;
+        Gather(requestedId);
+        return TopologicalOrder(definitions, dependencies);
     }
 
     public IReadOnlyList<uint> ResolveTargetGroup(uint id)
@@ -339,53 +356,68 @@ internal sealed class BotGameData
 
     public bool HasCommunicatorTable => communicatorMessages is not null;
 
+    public PrerequisiteBranchChoice? GetPrerequisiteBranchChoice(ushort questId)
+        => prerequisiteBranchChoices.GetValueOrDefault(questId);
+
     private static GameTable<T> Load<T>(string directory, string name) where T : class, new()
         => new(RequiredPath(directory, name));
 
-    private IEnumerable<QuestDefinition> SelectPrerequisites(QuestDefinition definition, BotFaction faction)
+    private IEnumerable<QuestDefinition> SelectPrerequisites(
+        QuestDefinition definition,
+        BotFaction faction,
+        IReadOnlySet<uint> spawnedGiverCreatureIds)
     {
         QuestDefinition[] candidates = definition.Entry.PrerequisiteQuests
             .Where(id => id != 0u)
             .Select(id => GetQuest(checked((ushort)id)))
             .ToArray();
+        if (candidates.Length == 0)
+            return candidates;
         if ((definition.Entry.PrerequisiteFlags & 1u) == 0u)
             return candidates;
 
         QuestDefinition[] compatible = candidates.Where(candidate => MatchesFaction(candidate.Entry, faction)).ToArray();
-        return (compatible.Length > 0 ? compatible : candidates)
-            .OrderBy(OrderBucket)
+        QuestDefinition selected = (compatible.Length > 0 ? compatible : candidates)
+            .OrderByDescending(candidate => HasAvailableGiver(candidate, spawnedGiverCreatureIds))
             .ThenBy(candidate => candidate.Entry.ConLevel)
             .ThenBy(candidate => candidate.Id)
-            .Take(1);
+            .First();
+        bool hasSpawn = selected.GiverCreatureIds.Any(spawnedGiverCreatureIds.Contains);
+        bool hasCommunicator = GetCommunicatorOffers(selected.Id).Count > 0;
+        prerequisiteBranchChoices[definition.Id] = new PrerequisiteBranchChoice(
+            definition.Id,
+            selected.Id,
+            selected.Title,
+            hasSpawn,
+            hasCommunicator);
+        return [selected];
     }
 
-    private uint? GetLevelUpperBound(Quest2Entry entry)
-    {
-        if (entry.PrerequisiteId == 0u)
-            return null;
-        PrerequisiteEntry? prerequisite = prerequisites.GetEntry(entry.PrerequisiteId);
-        if (prerequisite is null)
-            return null;
+    private bool HasAvailableGiver(QuestDefinition definition, IReadOnlySet<uint> spawnedGiverCreatureIds)
+        => definition.GiverCreatureIds.Any(spawnedGiverCreatureIds.Contains)
+            || GetCommunicatorOffers(definition.Id).Count > 0;
 
-        uint? result = null;
-        for (int i = 0; i < prerequisite.PrerequisiteTypeId.Length; i++)
+    private static IReadOnlyList<QuestDefinition> TopologicalOrder(
+        IReadOnlyDictionary<ushort, QuestDefinition> definitions,
+        IReadOnlyDictionary<ushort, HashSet<ushort>> dependencies)
+    {
+        var remaining = definitions.Keys.ToHashSet();
+        var result = new List<QuestDefinition>(remaining.Count);
+        while (remaining.Count > 0)
         {
-            if (prerequisite.PrerequisiteTypeId[i] != PrerequisiteType.Level
-                || prerequisite.PrerequisiteComparisonId[i] != PrerequisiteComparison.LessThanOrEqual)
-                continue;
-            result = result is null ? prerequisite.Value[i] : Math.Min(result.Value, prerequisite.Value[i]);
+            QuestDefinition? next = remaining
+                .Where(id => dependencies[id].All(dependency => !remaining.Contains(dependency)))
+                .Select(id => definitions[id])
+                .OrderBy(definition => definition.Entry.ConLevel)
+                .ThenBy(definition => definition.Id)
+                .FirstOrDefault();
+            if (next is null)
+                throw new BotFailureException("Quest prerequisite graph contains a cycle.");
+            remaining.Remove(next.Id);
+            result.Add(next);
         }
         return result;
     }
-
-    private static int OrderBucket(QuestDefinition definition)
-        => (definition.HasLevelUpperBound, definition.NeedsCombat) switch
-        {
-            (true, false) => 0,
-            (true, true) => 1,
-            (false, false) => 2,
-            (false, true) => 3
-        };
 
     private static bool MatchesFaction(Quest2Entry entry, BotFaction faction)
         => entry.QuestPlayerFactionEnum switch

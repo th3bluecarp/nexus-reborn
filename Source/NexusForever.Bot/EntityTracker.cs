@@ -47,6 +47,20 @@ internal sealed class EntityTracker
             .FirstOrDefault();
     }
 
+    public int? CountOtherNonPlayers(Spawn targetSpawn, float radius)
+    {
+        TrackedEntity? target = FindCreature(targetSpawn.CreatureId, targetSpawn);
+        if (target?.Position is null)
+            return null;
+
+        double radiusSquared = radius * radius;
+        return entities.Values.Count(entity => entity.Guid != target.Guid
+            && entity.Type == EntityType.NonPlayer
+            && entity.Position is Vector3 position
+            && entity.Health is > 0u
+            && targetSpawn.DistanceSquared(position.X, position.Y, position.Z) <= radiusSquared);
+    }
+
     public TrackedEntity ParseCreate(byte[] body)
     {
         using var stream = new MemoryStream(body, writable: false);

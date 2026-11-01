@@ -16,6 +16,8 @@ internal sealed record QuestStateUpdate(ushort QuestId, QuestState State, uint Q
 internal sealed record QuestObjectiveUpdate(ushort QuestId, uint Index, uint Completed);
 internal sealed record SpellCastStart(uint ServerUniqueId, uint CasterId, uint PrimaryTargetId, uint? ClientUniqueId);
 internal sealed record SpellCastResult(uint ClientUniqueId, uint Spell4Id, CastResult Result);
+internal sealed record ActionSetSlot(ushort BagIndex, ShortcutType ShortcutType, uint ObjectId);
+internal sealed record ActionSetInfo(byte SpecIndex, bool Unlocked, IReadOnlyList<ActionSetSlot> Slots);
 internal sealed record QuestInitInfo(IReadOnlySet<ushort> CompletedQuestIds);
 internal sealed record ResurrectionShow(
     uint GhostId,
@@ -177,6 +179,40 @@ internal static class PacketCodec
 
     public static uint ParsePlayerChanged(byte[] body) => Read(body, reader => reader.ReadUInt());
 
+    public static byte ParsePlayerCreateActiveSpec(byte[] body) => Read(body, reader =>
+    {
+        uint inventoryCount = reader.ReadUInt();
+        for (uint i = 0; i < inventoryCount; i++)
+            SkipInventoryItem(reader);
+        for (int i = 0; i < 16; i++)
+            _ = reader.ReadULong();
+        _ = reader.ReadUInt();
+        _ = reader.ReadUInt();
+        _ = reader.ReadUInt();
+        _ = reader.ReadUInt();
+        _ = reader.ReadUInt();
+        return reader.ReadByte(3);
+    });
+
+    public static ActionSetInfo ParseActionSet(byte[] body) => Read(body, reader =>
+    {
+        byte specIndex = reader.ReadByte(3);
+        bool unlocked = reader.ReadByte(2) != 0;
+        _ = reader.ReadByte(6);
+        byte count = reader.ReadByte(6);
+        var slots = new List<ActionSetSlot>(count);
+        for (int i = 0; i < count; i++)
+        {
+            ShortcutType shortcutType = reader.ReadEnum<ShortcutType>(4);
+            _ = reader.ReadEnum<InventoryLocation>(9);
+            uint bagIndex = reader.ReadUInt();
+            uint objectId = reader.ReadUInt();
+            if (bagIndex <= ushort.MaxValue)
+                slots.Add(new ActionSetSlot((ushort)bagIndex, shortcutType, objectId));
+        }
+        return new ActionSetInfo(specIndex, unlocked, slots);
+    });
+
     public static uint ParseEntityDestroy(byte[] body) => Read(body, reader => reader.ReadUInt());
 
     public static QuestStateUpdate ParseQuestState(byte[] body) => Read(body, reader =>
@@ -297,9 +333,10 @@ internal static class PacketCodec
         return reader.ReadWideString();
     });
 
-    public static string TeleportCommand(Spawn spawn, bool includeWorld)
+    public static string TeleportCommand(Spawn spawn, bool includeWorld, Vector3? destination = null)
     {
-        string coordinates = string.Create(CultureInfo.InvariantCulture, $"!tele coordinates {spawn.X + 2f:R} {spawn.Y:R} {spawn.Z + 2f:R}");
+        Vector3 position = destination ?? new Vector3(spawn.X + 2f, spawn.Y, spawn.Z + 2f);
+        string coordinates = string.Create(CultureInfo.InvariantCulture, $"!tele coordinates {position.X:R} {position.Y:R} {position.Z:R}");
         return includeWorld ? $"{coordinates} {spawn.WorldId}" : coordinates;
     }
 
@@ -323,5 +360,46 @@ internal static class PacketCodec
         using var stream = new MemoryStream(body, writable: false);
         using var reader = new GamePacketReader(stream);
         return action(reader);
+    }
+
+    private static void SkipInventoryItem(GamePacketReader reader)
+    {
+        _ = reader.ReadULong();
+        _ = reader.ReadULong();
+        _ = reader.ReadUInt(18);
+        _ = reader.ReadEnum<InventoryLocation>(9);
+        _ = reader.ReadUInt();
+        _ = reader.ReadUInt();
+        _ = reader.ReadUInt();
+        _ = reader.ReadULong();
+        _ = reader.ReadUInt();
+        _ = reader.ReadULong();
+        _ = reader.ReadSingle();
+        _ = reader.ReadUInt();
+        _ = reader.ReadByte();
+        _ = reader.ReadUInt();
+        _ = reader.ReadUInt();
+        _ = reader.ReadUInt();
+        for (int i = 0; i < 2; i++)
+        {
+            _ = reader.ReadByte(3);
+            _ = reader.ReadUInt();
+            _ = reader.ReadUInt();
+        }
+        _ = reader.ReadUInt(18);
+        byte microchipCount = reader.ReadByte(3);
+        for (int i = 0; i < microchipCount; i++)
+            _ = reader.ReadUInt();
+        byte glyphCount = reader.ReadByte(4);
+        for (int i = 0; i < glyphCount; i++)
+            _ = reader.ReadUInt();
+        byte unknownCount = reader.ReadByte(6);
+        for (int i = 0; i < unknownCount; i++)
+        {
+            _ = reader.ReadUShort(14);
+            _ = reader.ReadULong();
+        }
+        _ = reader.ReadUInt();
+        _ = reader.ReadByte(6);
     }
 }

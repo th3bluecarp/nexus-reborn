@@ -115,6 +115,35 @@ internal static class BotDatabase
         return result;
     }
 
+    public static async Task<IReadOnlySet<uint>> LoadSpawnedCreatureIdsAsync(
+        string connectionString,
+        IEnumerable<uint> creatureIds,
+        CancellationToken cancellationToken)
+    {
+        uint[] ids = creatureIds.Where(id => id != 0u).Distinct().ToArray();
+        if (ids.Length == 0)
+            return new HashSet<uint>();
+
+        await using var connection = new MySqlConnection(ForDatabase(connectionString, WorldDatabase));
+        await connection.OpenAsync(cancellationToken);
+
+        await using var command = connection.CreateCommand();
+        var parameterNames = new List<string>(ids.Length);
+        for (int i = 0; i < ids.Length; i++)
+        {
+            string name = $"@c{i}";
+            parameterNames.Add(name);
+            command.Parameters.AddWithValue(name, ids[i]);
+        }
+
+        command.CommandText = $"SELECT DISTINCT creature FROM entity WHERE creature IN ({string.Join(',', parameterNames)})";
+        var result = new HashSet<uint>();
+        await using MySqlDataReader reader = await command.ExecuteReaderAsync(cancellationToken);
+        while (await reader.ReadAsync(cancellationToken))
+            result.Add(reader.GetFieldValue<uint>(0));
+        return result;
+    }
+
     private static string ForDatabase(string connectionString, string database)
     {
         var builder = new MySqlConnectionStringBuilder(connectionString) { Database = database };
