@@ -788,7 +788,9 @@ namespace NexusForever.Game.Entity
                 // for more see QuestTracker:HelperShowQuestCallbackBtn in LUA which contains the logic to show the complete button in the quest tracker
                 // quests turned in over the communicator carry flag 0x08 (communicator received) or 0x04 (can be called back),
                 // Contact with Thayd (3673) only has 0x04 and its turn in was refused
-                if (!quest.Info.IsCommunicatorReceived() && !quest.Info.CanBeCalledBack())
+                // a quest no creature receives (The Face of the Enemy 10518, flags 0x804000) can only be handed in remotely
+                bool hasReceiver = GlobalQuestManager.Instance.GetQuestReceivers(questId).Any();
+                if (!quest.Info.IsCommunicatorReceived() && !quest.Info.CanBeCalledBack() && hasReceiver)
                     throw new QuestException($"Player {player.CharacterId} tried to complete quest {questId} without communicator message!");
             }
             else
