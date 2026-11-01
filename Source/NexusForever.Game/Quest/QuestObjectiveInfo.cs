@@ -22,8 +22,12 @@ namespace NexusForever.Game.Quest
         public QuestObjectiveInfo(QuestObjectiveEntry entry)
         {
             Entry = entry;
-            Data  = entry.Data == 0u && Type is QuestObjectiveType.ActivateEntity or QuestObjectiveType.SucceedCSI or QuestObjectiveType.KillCreature
-                ? CreatureFromText(entry.LocalizedTextIdFull)
+            // Data 0, or a Data that is neither a creature nor a target group (The Face of the Enemy objective 21318: Data 5968,
+            // text "Detonate the $(creature=73668)"): the creature named in the text is the one the player activates
+            Data  = Type is QuestObjectiveType.ActivateEntity or QuestObjectiveType.SucceedCSI or QuestObjectiveType.KillCreature
+                && (entry.Data == 0u || IsUnknownData(entry.Data))
+                && CreatureFromText(entry.LocalizedTextIdFull) is uint textCreature and not 0u
+                ? textCreature
                 : entry.Data;
             if (Type == QuestObjectiveType.ActivateEntity && entry.Data == 0u)
                 EquipItemId = EquipItemFromText(entry.LocalizedTextIdFull);
@@ -42,6 +46,15 @@ namespace NexusForever.Game.Quest
                 .Distinct()
                 .ToArray();
             return ids.Length == 1 ? ids[0] : 0u;
+        }
+
+        /// <summary>
+        /// Returns if objective data is neither a creature nor a target group.
+        /// </summary>
+        private static bool IsUnknownData(uint data)
+        {
+            return GameTableManager.Instance.Creature2.GetEntry(data) == null
+                && GameTableManager.Instance.TargetGroup.GetEntry(data) == null;
         }
 
         private static uint CreatureFromText(uint textId)
