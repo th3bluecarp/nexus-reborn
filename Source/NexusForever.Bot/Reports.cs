@@ -178,6 +178,12 @@ internal sealed class BotLog : IAsyncDisposable
         Console.WriteLine(message);
     }
 
+    public void Debug(string message)
+    {
+        lock (sync)
+            writer.WriteLine($"{DateTimeOffset.UtcNow:O} DEBUG {message}");
+    }
+
     public void Packet(string direction, ushort opcode, int size, string? layer = null)
     {
         string suffix = layer is null ? "" : $" {layer}";

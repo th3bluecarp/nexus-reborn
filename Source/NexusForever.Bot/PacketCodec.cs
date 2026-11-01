@@ -333,10 +333,9 @@ internal static class PacketCodec
         return reader.ReadWideString();
     });
 
-    public static string TeleportCommand(Spawn spawn, bool includeWorld, Vector3? destination = null)
+    public static string TeleportCommand(Spawn spawn, bool includeWorld)
     {
-        Vector3 position = destination ?? new Vector3(spawn.X + 2f, spawn.Y, spawn.Z + 2f);
-        string coordinates = string.Create(CultureInfo.InvariantCulture, $"!tele coordinates {position.X:R} {position.Y:R} {position.Z:R}");
+        string coordinates = string.Create(CultureInfo.InvariantCulture, $"!tele coordinates {spawn.X + 2f:R} {spawn.Y:R} {spawn.Z + 2f:R}");
         return includeWorld ? $"{coordinates} {spawn.WorldId}" : coordinates;
     }
 

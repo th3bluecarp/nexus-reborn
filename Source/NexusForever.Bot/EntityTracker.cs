@@ -31,6 +31,18 @@ internal sealed class EntityTracker
     public void Clear() => entities.Clear();
     public void Remove(uint guid) => entities.Remove(guid);
 
+    public void MarkDead(uint guid)
+    {
+        if (entities.TryGetValue(guid, out TrackedEntity? entity))
+            entities[guid] = entity with { Health = 0u };
+    }
+
+    public void UpdateHealth(uint guid, uint health)
+    {
+        if (entities.TryGetValue(guid, out TrackedEntity? entity))
+            entities[guid] = entity with { Health = health };
+    }
+
     public TrackedEntity? FindCreature(uint creatureId, Spawn? expected = null)
     {
         IEnumerable<TrackedEntity> matches = entities.Values.Where(entity => entity.CreatureId == creatureId);
@@ -45,6 +57,46 @@ internal sealed class EntityTracker
                 entity.Position.Value.Y,
                 entity.Position.Value.Z))
             .FirstOrDefault();
+    }
+
+    public TrackedEntity? FindNearestVisibleNonPlayer(
+        IReadOnlySet<uint> creatureIds,
+        Vector3 origin,
+        float radius,
+        IReadOnlySet<uint>? excludedGuids = null)
+    {
+        double radiusSquared = radius * radius;
+        return entities.Values
+            .Where(entity => entity.Type == EntityType.NonPlayer
+                && entity.CreatureId is uint creatureId
+                && creatureIds.Contains(creatureId)
+                && (excludedGuids is null || !excludedGuids.Contains(entity.Guid))
+                && entity.Health is null or > 0u
+                && entity.Position is Vector3 position
+                && Vector3.DistanceSquared(origin, position) <= radiusSquared)
+            .OrderBy(entity => Vector3.DistanceSquared(origin, entity.Position!.Value))
+            .ThenBy(entity => entity.Guid)
+            .FirstOrDefault();
+    }
+
+    public IReadOnlyList<(uint CreatureId, float Distance)> GetNearbyCreatureIds(
+        Vector3 origin,
+        float radius,
+        int limit)
+    {
+        double radiusSquared = radius * radius;
+        return entities.Values
+            .Where(entity => entity.CreatureId.HasValue
+                && entity.Position is Vector3 position
+                && Vector3.DistanceSquared(origin, position) <= radiusSquared)
+            .GroupBy(entity => entity.CreatureId!.Value)
+            .Select(group => (
+                CreatureId: group.Key,
+                Distance: group.Min(entity => Vector3.Distance(origin, entity.Position!.Value))))
+            .OrderBy(item => item.Distance)
+            .ThenBy(item => item.CreatureId)
+            .Take(limit)
+            .ToArray();
     }
 
     public int? CountOtherNonPlayers(Spawn targetSpawn, float radius)

@@ -14,6 +14,10 @@ internal sealed class BotRunner
     private static readonly TimeSpan DefaultStepTimeout = TimeSpan.FromSeconds(75); // cross-world teleports wait on the server loading map grids
     private static readonly TimeSpan CombatTimeout = TimeSpan.FromSeconds(300);
     private static readonly TimeSpan PerQuestTimeout = TimeSpan.FromMinutes(8);
+    private static readonly TimeSpan MinimumCombatCastInterval = TimeSpan.FromMilliseconds(500);
+    private static readonly TimeSpan GlobalCooldownWait = TimeSpan.FromSeconds(1);
+    private static readonly TimeSpan SlotCooldownWait = TimeSpan.FromSeconds(4);
+    private static readonly TimeSpan AllSlotsBusyWait = TimeSpan.FromMilliseconds(500);
 
     private readonly RunOptions options;
     private readonly RunReport report;
@@ -33,6 +37,8 @@ internal sealed class BotRunner
     private readonly List<string> objectiveCastResultDetails = [];
     private readonly Dictionary<byte, ushort[]> actionSetCombatSlots = [];
     private readonly HashSet<uint> finishedCombatSpellIds = [];
+    private readonly Dictionary<ushort, DateTimeOffset> combatSlotBusyUntil = [];
+    private readonly HashSet<ushort> combatSlotDiscoveryLoggedQuests = [];
 
     private BotGameData? gameData;
     private QuestDefinition? quest;
@@ -72,6 +78,7 @@ internal sealed class BotRunner
     private SpellCastResult? pendingCombatCastResult;
     private uint? pendingCombatServerId;
     private bool combatTargetDestroyed;
+    private DateTimeOffset nextCombatCastAllowedAt;
     private CancellationTokenSource? keepAliveCancellation;
     private Task? keepAliveTask;
 
@@ -205,9 +212,12 @@ internal sealed class BotRunner
             return GetActivateCreatureIds(objective);
         if (objective.Type == QuestObjectiveType.VirtualCollect)
             return GetVirtualCollectCreatureIds(objective);
+        if (objective.Type is QuestObjectiveType.ActivateTargetGroup
+            or QuestObjectiveType.ActivateTargetGroupChecklist
+            or QuestObjectiveType.Unknown10 or QuestObjectiveType.Unknown28)
+            return GetTargetGroupActivateCreatureIds(objective);
         if (objective.Type is QuestObjectiveType.KillTargetGroup or QuestObjectiveType.KillTargetGroups
-            or QuestObjectiveType.ActivateTargetGroup or QuestObjectiveType.ActivateTargetGroupChecklist
-            or QuestObjectiveType.Unknown10 or QuestObjectiveType.TalkToTargetGroup or QuestObjectiveType.Unknown28)
+            or QuestObjectiveType.TalkToTargetGroup)
             return RequireGameData().ResolveTargetGroup(RequireGameData().GetObjectiveTargetGroup(objective));
         if (objective.Type is QuestObjectiveType.TalkTo
             or QuestObjectiveType.KillCreature
@@ -224,11 +234,21 @@ internal sealed class BotRunner
         var ids = new List<uint>();
         if (data.IsCreature(objective.Data))
             ids.Add(objective.Data);
-        else
-            ids.AddRange(data.ResolveTargetGroup(objective.Data));
+        ids.AddRange(data.ResolveTargetGroup(objective.Data));
         ids.AddRange(data.ResolveTargetGroup(objective.RewardTargetGroupId));
         ids.AddRange(data.GetCreatureIdsFromText(objective.Text));
         return ids.Where(data.IsCreature).Distinct().ToArray();
+    }
+
+    private IReadOnlyList<uint> GetTargetGroupActivateCreatureIds(QuestObjectiveDefinition objective)
+    {
+        BotGameData data = RequireGameData();
+        return data.ResolveTargetGroup(objective.Data)
+            .Concat(data.ResolveTargetGroup(objective.RewardTargetGroupId))
+            .Concat(data.GetCreatureIdsFromText(objective.Text))
+            .Where(data.IsCreature)
+            .Distinct()
+            .ToArray();
     }
 
     private IReadOnlyList<uint> GetVirtualCollectCreatureIds(QuestObjectiveDefinition objective)
@@ -751,6 +771,10 @@ internal sealed class BotRunner
     {
         quest = definition;
         questState = questStates.GetValueOrDefault(definition.Id, QuestState.Unknown);
+        pendingActivationCastIds.Clear();
+        activationCastResults.Clear();
+        finishedSpellIds.Clear();
+        objectiveCastResultDetails.Clear();
         objectiveProgress.Clear();
         foreach (QuestObjectiveDefinition objective in definition.Objectives)
         {
@@ -765,6 +789,7 @@ internal sealed class BotRunner
         resurrectionShow = null;
 
         questWorldId = DetermineQuestWorld(definition);
+        LogCombatSlotDiscovery();
     }
 
     private ushort DetermineQuestWorld(QuestDefinition definition)
@@ -979,7 +1004,7 @@ internal sealed class BotRunner
         {
             if (RequireGameData().GetCommunicatorOffers(definition.Id).Count > 0)
                 return await AcceptCommunicatorQuestAsync(definition, cancellationToken);
-            throw new BotFailureException("giver spawn was not visible and no communicator offer");
+            throw new BotFailureException($"giver spawn was not visible and no communicator offer; {FormatNearbyTrackedCreatures()}");
         }
         await RequireWorld().SendEncryptedAsync(GameMessageOpcode.ClientEntityInteract,
             PacketCodec.ClientEntityInteract(entity.Guid, InteractionType.TalkTo), cancellationToken);
@@ -1019,7 +1044,7 @@ internal sealed class BotRunner
         string offerDetail = FormatCommunicatorOffer(offer);
         Spawn anchor = ChooseNearestSpawn(definition.ReceiverCreatureIds, questWorldId);
         _ = await TeleportAndTryFindWithRetryAsync(anchor, cancellationToken)
-            ?? throw new BotFailureException("receiver spawn was not visible for communicator acceptance");
+            ?? throw new BotFailureException($"receiver spawn was not visible for communicator acceptance; {FormatNearbyTrackedCreatures()}");
         await RequireWorld().SendEncryptedAsync(GameMessageOpcode.ClientQuestAccept,
             PacketCodec.ClientQuestAccept(definition.Id), cancellationToken);
         try
@@ -1138,7 +1163,11 @@ internal sealed class BotRunner
             attemptedSpawns.Add(spawn.Id);
             TrackedEntity? entity = await TeleportAndTryFindAsync(spawn, TimeSpan.FromSeconds(5), cancellationToken);
             if (entity is null)
+            {
+                if (attemptedSpawns.Count >= candidates.Count)
+                    throw new BotFailureException($"interaction target creature {objective.Data} was not visible; {FormatNearbyTrackedCreatures()}");
                 continue;
+            }
             await RequireWorld().SendEncryptedAsync(GameMessageOpcode.ClientEntityInteract,
                 PacketCodec.ClientEntityInteract(entity.Guid, interactionType), cancellationToken);
             if (!await TryWaitForObjectiveProgressAsync(objective.Index, before, TimeSpan.FromSeconds(8), cancellationToken)
@@ -1164,7 +1193,11 @@ internal sealed class BotRunner
             uint before = GetRawProgress(objective.Index);
             TrackedEntity? entity = await TeleportAndTryFindAsync(spawn, TimeSpan.FromSeconds(5), cancellationToken);
             if (entity is null)
+            {
+                if (attemptedSpawns.Count >= candidates.Count)
+                    throw new BotFailureException($"interaction target creature(s) {string.Join(',', creatureIds)} were not visible; {FormatNearbyTrackedCreatures()}");
                 continue;
+            }
             await RequireWorld().SendEncryptedAsync(GameMessageOpcode.ClientEntityInteract,
                 PacketCodec.ClientEntityInteract(entity.Guid, InteractionType.TalkTo), cancellationToken);
             if (!await TryWaitForObjectiveProgressAsync(objective.Index, before, TimeSpan.FromSeconds(8), cancellationToken)
@@ -1195,7 +1228,11 @@ internal sealed class BotRunner
             attemptedSpawns.Add(spawn.Id);
             TrackedEntity? entity = await TeleportAndTryFindAsync(spawn, TimeSpan.FromSeconds(5), cancellationToken);
             if (entity is null)
+            {
+                if (attemptedSpawns.Count >= candidates.Count)
+                    throw new BotFailureException($"activation target creature(s) {string.Join(',', creatureIds)} were not visible; {FormatNearbyTrackedCreatures()}");
                 continue;
+            }
             ActivationOutcome outcome = await RunActivationFlowAsync(objective.Index, before, entity, TimeSpan.FromSeconds(8), cancellationToken);
             if (outcome == ActivationOutcome.TargetNotUsable)
                 continue;
@@ -1246,7 +1283,11 @@ internal sealed class BotRunner
             attemptedSpawns.Add(spawn.Id);
             TrackedEntity? entity = await TeleportAndTryFindAsync(spawn, TimeSpan.FromSeconds(5), cancellationToken);
             if (entity is null)
+            {
+                if (attemptedSpawns.Count >= candidates.Count)
+                    throw new BotFailureException($"checklist target creature(s) {string.Join(',', creatureIds)} were not visible; {FormatNearbyTrackedCreatures()}");
                 continue;
+            }
             uint before = GetRawProgress(objective.Index);
             ActivationOutcome outcome = await RunActivationFlowAsync(objective.Index, before, entity, TimeSpan.FromSeconds(8), cancellationToken);
             if (outcome == ActivationOutcome.TargetNotUsable)
@@ -1424,7 +1465,11 @@ internal sealed class BotRunner
             attemptedSpawns.Add(spawn.Id);
             TrackedEntity? entity = await TeleportAndTryFindAsync(spawn, TimeSpan.FromSeconds(5), cancellationToken);
             if (entity is null)
+            {
+                if (attemptedSpawns.Count >= candidates.Count)
+                    throw new BotFailureException($"CSI target creature {objective.Data} was not visible; {FormatNearbyTrackedCreatures()}");
                 continue;
+            }
             uint before = GetRawProgress(objective.Index);
             ActivationOutcome outcome = await RunActivationFlowAsync(
                 objective.Index, before, entity, TimeSpan.FromSeconds(8), cancellationToken);
@@ -1503,34 +1548,83 @@ internal sealed class BotRunner
             ? ""
             : $"; castResults: {string.Join(" | ", objectiveCastResultDetails)}";
 
+    private string FormatNearbyTrackedCreatures()
+    {
+        IReadOnlyList<(uint CreatureId, float Distance)> nearby = entities.GetNearbyCreatureIds(lastPosition, 60f, 15);
+        return nearby.Count == 0
+            ? "tracked creature ids within 60 m: none"
+            : $"tracked creature ids within 60 m: {string.Join(", ", nearby.Select(item => FormattableString.Invariant($"{item.CreatureId}@{item.Distance:0.0}m")))}";
+    }
+
     private async Task RunKillObjectiveAsync(QuestObjectiveDefinition objective, CancellationToken cancellationToken)
     {
         uint[] creatureIds = GetObjectiveCreatureIds(objective).ToArray();
         if (creatureIds.Length == 0)
             throw new BotFailureException($"target group {objective.Data} resolved to no creature ids");
+        IReadOnlyList<Spawn> candidates = SpawnsFor(creatureIds, questWorldId);
+        if (candidates.Count == 0)
+            throw new BotFailureException($"No spawn in world {questWorldId} for combat target(s) {string.Join(',', creatureIds)}.");
+
+        IReadOnlySet<uint> objectiveCreatureIds = creatureIds.ToHashSet();
         var attemptedSpawns = new HashSet<uint>();
+        var finishedTargetGuids = new HashSet<uint>();
+        DateTimeOffset? retargetDeadline = null;
         while (!IsObjectiveComplete(objective))
         {
             Spawn spawn = ChooseCombatSpawn(creatureIds, questWorldId, attemptedSpawns);
             attemptedSpawns.Add(spawn.Id);
-            TrackedEntity entity = await TeleportAndFindAsync(spawn, cancellationToken);
-            uint before = GetRawProgress(objective.Index);
-            if (!CanFight(entity.Type))
-            {
-                ActivationOutcome outcome = await RunActivationFlowAsync(
-                    objective.Index, before, entity, TimeSpan.FromSeconds(20), cancellationToken);
-                if (outcome is ActivationOutcome.Progressed or ActivationOutcome.TargetNotUsable)
-                    continue;
-                if (attemptedSpawns.Count >= SpawnsFor(creatureIds, questWorldId).Count)
-                    throw new BotFailureException($"non-combat target {objective.Data} produced no quest progress through activation");
-                continue;
-            }
-            await RequireWorld().SendEncryptedAsync(GameMessageOpcode.ClientEntitySelect,
-                PacketCodec.ClientEntitySelect(entity.Guid), cancellationToken);
 
-            bool confirmed = await FightUntilProgressAsync(objective.Index, before, entity.Guid, cancellationToken);
-            if (!confirmed && attemptedSpawns.Count >= SpawnsFor(creatureIds, questWorldId).Count)
-                throw new BotFailureException($"target {objective.Data} died without a quest objective update");
+            TrackedEntity? entity;
+            CancellationTokenSource? retargetBudget = null;
+            try
+            {
+                CancellationToken acquisitionToken = cancellationToken;
+                if (retargetDeadline is DateTimeOffset deadline)
+                {
+                    TimeSpan remaining = deadline - DateTimeOffset.UtcNow;
+                    if (remaining <= TimeSpan.Zero)
+                        throw new BotFailureException($"combat target was not re-targeted within 2 s; {FormatNearbyTrackedCreatures()}");
+                    retargetBudget = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
+                    retargetBudget.CancelAfter(remaining);
+                    acquisitionToken = retargetBudget.Token;
+                    entity = entities.FindNearestVisibleNonPlayer(
+                        objectiveCreatureIds, lastPosition, 40f, finishedTargetGuids);
+                }
+                else
+                {
+                    entity = null;
+                }
+
+                entity ??= await TeleportAndTryFindCombatTargetAsync(
+                    spawn, objectiveCreatureIds, finishedTargetGuids, TimeSpan.FromSeconds(5), acquisitionToken);
+                if (entity is null)
+                {
+                    if (attemptedSpawns.Count >= candidates.Count)
+                        throw new BotFailureException($"combat target creature(s) {string.Join(',', creatureIds)} were not visible; {FormatNearbyTrackedCreatures()}");
+                    continue;
+                }
+
+                await RequireWorld().SendEncryptedAsync(GameMessageOpcode.ClientEntitySelect,
+                    PacketCodec.ClientEntitySelect(entity.Guid), acquisitionToken);
+                if (retargetDeadline is DateTimeOffset completedDeadline
+                    && DateTimeOffset.UtcNow > completedDeadline)
+                    throw new BotFailureException($"combat target was not re-targeted within 2 s; {FormatNearbyTrackedCreatures()}");
+            }
+            catch (OperationCanceledException) when (retargetBudget?.IsCancellationRequested == true
+                && !cancellationToken.IsCancellationRequested)
+            {
+                throw new BotFailureException($"combat target was not re-targeted within 2 s; {FormatNearbyTrackedCreatures()}");
+            }
+            finally
+            {
+                retargetBudget?.Dispose();
+            }
+
+            retargetDeadline = null;
+            uint before = GetRawProgress(objective.Index);
+            _ = await FightUntilProgressAsync(objective.Index, before, entity.Guid, cancellationToken);
+            finishedTargetGuids.Add(entity.Guid);
+            retargetDeadline = DateTimeOffset.UtcNow.AddSeconds(2);
         }
     }
 
@@ -1540,7 +1634,6 @@ internal sealed class BotRunner
         try
         {
             ushort[] slots = GetCombatSlots();
-            var unusableUntil = new Dictionary<ushort, DateTimeOffset>();
             int slotCursor = 0;
 
             while (true)
@@ -1548,8 +1641,14 @@ internal sealed class BotRunner
                 if (GetRawProgress(objectiveIndex) > before)
                     return true;
                 if (combatTargetDestroyed)
-                    return await TryWaitForObjectiveProgressAsync(
-                        objectiveIndex, before, TimeSpan.FromSeconds(5), cancellationToken);
+                    return true;
+
+                TimeSpan globalWait = nextCombatCastAllowedAt - DateTimeOffset.UtcNow;
+                if (globalWait > TimeSpan.Zero)
+                {
+                    await DrainWorldPacketsAsync(globalWait, cancellationToken);
+                    continue;
+                }
 
                 ushort? availableSlot = null;
                 DateTimeOffset now = DateTimeOffset.UtcNow;
@@ -1557,19 +1656,18 @@ internal sealed class BotRunner
                 {
                     ushort candidate = slots[slotCursor];
                     slotCursor = (slotCursor + 1) % slots.Length;
-                    if (!unusableUntil.TryGetValue(candidate, out DateTimeOffset until) || until <= now)
+                    if (!combatSlotBusyUntil.TryGetValue(candidate, out DateTimeOffset until) || until <= now)
                     {
                         availableSlot = candidate;
-                        unusableUntil.Remove(candidate);
+                        combatSlotBusyUntil.Remove(candidate);
                         break;
                     }
                 }
 
                 if (availableSlot is null)
                 {
-                    TimeSpan wait = unusableUntil.Values.Min() - DateTimeOffset.UtcNow;
-                    if (wait > TimeSpan.Zero)
-                        await TryReadWorldPacketAsync(wait, cancellationToken);
+                    log.Info("combat: every discovered slot is busy; waiting 0.5 s");
+                    await DrainWorldPacketsAsync(AllSlotsBusyWait, cancellationToken);
                     continue;
                 }
 
@@ -1580,6 +1678,7 @@ internal sealed class BotRunner
                 pendingCombatServerId = null;
                 await RequireWorld().SendEncryptedAsync(GameMessageOpcode.ClientCastSpell,
                     PacketCodec.ClientCastSpell(clientUniqueId, bagIndex, targetGuid), cancellationToken);
+                nextCombatCastAllowedAt = DateTimeOffset.UtcNow + MinimumCombatCastInterval;
 
                 CombatCastTransition transition;
                 SpellCastResult? castResult;
@@ -1598,8 +1697,7 @@ internal sealed class BotRunner
                 if (transition == CombatCastTransition.Progressed)
                     return true;
                 if (transition == CombatCastTransition.TargetDestroyed)
-                    return await TryWaitForObjectiveProgressAsync(
-                        objectiveIndex, before, TimeSpan.FromSeconds(5), cancellationToken);
+                    return true;
                 if (transition == CombatCastTransition.Started)
                 {
                     log.Info($"combat slot {bagIndex}: own spell started; waited for finish or 1.2 s");
@@ -1614,11 +1712,17 @@ internal sealed class BotRunner
                 switch (castResult.Result)
                 {
                     case CastResult.SpellCooldown:
+                        combatSlotBusyUntil[bagIndex] = DateTimeOffset.UtcNow + SlotCooldownWait;
+                        log.Info($"combat slot {bagIndex}: SpellCooldown; busy for 4 s, trying next slot");
+                        break;
                     case CastResult.SpellGlobalCooldown:
-                        log.Info($"combat slot {bagIndex}: {castResult.Result}; trying next slot immediately");
+                        DateTimeOffset globalCooldownUntil = DateTimeOffset.UtcNow + GlobalCooldownWait;
+                        if (globalCooldownUntil > nextCombatCastAllowedAt)
+                            nextCombatCastAllowedAt = globalCooldownUntil;
+                        log.Info($"combat slot {bagIndex}: SpellGlobalCooldown; waiting 1.0 s before any cast");
                         break;
                     case CastResult.PrereqCasterCast:
-                        unusableUntil[bagIndex] = DateTimeOffset.UtcNow.AddSeconds(15);
+                        combatSlotBusyUntil[bagIndex] = DateTimeOffset.UtcNow.AddSeconds(15);
                         log.Info($"combat slot {bagIndex}: PrereqCasterCast; unusable for 15 s");
                         break;
                     default:
@@ -1646,7 +1750,8 @@ internal sealed class BotRunner
     {
         if (!activeActionSetKnown || !actionSetCombatSlots.TryGetValue(activeActionSet, out ushort[]? slots))
         {
-            log.Info("combat slot discovery unavailable; falling back to slots 0..7");
+            if (quest is not null && combatSlotDiscoveryLoggedQuests.Add(quest.Id))
+                log.Info($"quest {quest.Id} combat slot discovery unavailable; falling back to slots [0,1,2,3,4,5,6,7]");
             return Enumerable.Range(0, 8).Select(index => (ushort)index).ToArray();
         }
         if (slots.Length == 0)
@@ -1770,7 +1875,7 @@ internal sealed class BotRunner
         QuestDefinition definition = RequireQuest();
         Spawn receiver = ChooseNearestSpawn(definition.ReceiverCreatureIds, questWorldId);
         TrackedEntity entity = await TeleportAndTryFindWithRetryAsync(receiver, cancellationToken)
-            ?? throw new BotFailureException("receiver spawn was not visible");
+            ?? throw new BotFailureException($"receiver spawn was not visible; {FormatNearbyTrackedCreatures()}");
         await RequireWorld().SendEncryptedAsync(GameMessageOpcode.ClientEntityInteract,
             PacketCodec.ClientEntityInteract(entity.Guid, InteractionType.TalkTo), cancellationToken);
         await RequireWorld().SendEncryptedAsync(GameMessageOpcode.ClientQuestComplete,
@@ -1784,8 +1889,8 @@ internal sealed class BotRunner
         bool includeWorld = currentWorldId != spawn.WorldId;
         if (includeWorld)
             entities.Clear();
-        Vector3 destination = GetCombatApproachPosition(spawn, includeWorld);
-        await SendCheatAsync(PacketCodec.TeleportCommand(spawn, includeWorld, destination), cancellationToken);
+        Vector3 destination = new(spawn.X + 2f, spawn.Y, spawn.Z + 2f);
+        await SendCheatAsync(PacketCodec.TeleportCommand(spawn, includeWorld), cancellationToken);
         if (!includeWorld)
             await WaitForLocalTeleportAsync(cancellationToken);
         lastPosition = destination;
@@ -1809,8 +1914,8 @@ internal sealed class BotRunner
         bool includeWorld = currentWorldId != spawn.WorldId;
         if (includeWorld)
             entities.Clear();
-        Vector3 destination = GetCombatApproachPosition(spawn, includeWorld);
-        await SendCheatAsync(PacketCodec.TeleportCommand(spawn, includeWorld, destination), cancellationToken);
+        Vector3 destination = new(spawn.X + 2f, spawn.Y, spawn.Z + 2f);
+        await SendCheatAsync(PacketCodec.TeleportCommand(spawn, includeWorld), cancellationToken);
         if (!includeWorld)
             await WaitForLocalTeleportAsync(cancellationToken);
         lastPosition = destination;
@@ -1843,16 +1948,35 @@ internal sealed class BotRunner
         return await TeleportAndTryFindAsync(spawn, TimeSpan.FromSeconds(25), cancellationToken);
     }
 
-    private Vector3 GetCombatApproachPosition(Spawn spawn, bool changingWorld)
+    private async Task<TrackedEntity?> TeleportAndTryFindCombatTargetAsync(
+        Spawn spawn,
+        IReadOnlySet<uint> creatureIds,
+        IReadOnlySet<uint> excludedGuids,
+        TimeSpan entityTimeout,
+        CancellationToken cancellationToken)
     {
-        Vector2 approach = changingWorld
-            ? Vector2.UnitX
-            : new Vector2(lastPosition.X - spawn.X, lastPosition.Z - spawn.Z);
-        if (approach.LengthSquared() < 0.01f)
-            approach = Vector2.UnitX;
-        else
-            approach = Vector2.Normalize(approach);
-        return new Vector3(spawn.X + approach.X * 3f, spawn.Y, spawn.Z + approach.Y * 3f);
+        bool includeWorld = currentWorldId != spawn.WorldId;
+        if (includeWorld)
+            entities.Clear();
+        Vector3 destination = new(spawn.X + 2f, spawn.Y, spawn.Z + 2f);
+        await SendCheatAsync(PacketCodec.TeleportCommand(spawn, includeWorld), cancellationToken);
+        if (!includeWorld)
+            await WaitForLocalTeleportAsync(cancellationToken);
+        lastPosition = destination;
+
+        DateTimeOffset deadline = DateTimeOffset.UtcNow + entityTimeout;
+        while (true)
+        {
+            TrackedEntity? target = currentWorldId == spawn.WorldId && !worldLoadPending
+                ? entities.FindNearestVisibleNonPlayer(creatureIds, lastPosition, 40f, excludedGuids)
+                : null;
+            if (target is not null)
+                return target;
+
+            TimeSpan remaining = deadline - DateTimeOffset.UtcNow;
+            if (remaining <= TimeSpan.Zero || await TryReadWorldPacketAsync(remaining, cancellationToken) is null)
+                return null;
+        }
     }
 
     private async Task WaitForLocalTeleportAsync(CancellationToken cancellationToken)
@@ -2039,6 +2163,10 @@ internal sealed class BotRunner
                 case GameMessageOpcode.ServerEntityCreate:
                 {
                     TrackedEntity entity = entities.ParseCreate(packet.Body);
+                    string position = entity.Position is Vector3 value
+                        ? FormattableString.Invariant($"({value.X:R},{value.Y:R},{value.Z:R})")
+                        : "none";
+                    log.Debug($"ENT guid={entity.Guid} EntityType={entity.Type} creatureId={entity.CreatureId?.ToString() ?? "none"} position={position}");
                     if (entity.Guid == playerGuid && entity.Type == EntityType.Player)
                     {
                         if (entity.Level is uint level)
@@ -2056,6 +2184,7 @@ internal sealed class BotRunner
                 case GameMessageOpcode.ServerEntityDestroy:
                 {
                     uint destroyedGuid = PacketCodec.ParseEntityDestroy(packet.Body);
+                    log.Debug($"ENT gone {destroyedGuid}");
                     if (combatTargetGuid == destroyedGuid)
                         combatTargetDestroyed = true;
                     entities.Remove(destroyedGuid);
@@ -2070,6 +2199,12 @@ internal sealed class BotRunner
                 case GameMessageOpcode.ServerEntityDeathState:
                 {
                     (uint unitId, bool dead) = PacketCodec.ParseEntityDeathState(packet.Body);
+                    if (dead)
+                    {
+                        entities.MarkDead(unitId);
+                        if (combatTargetGuid == unitId)
+                            combatTargetDestroyed = true;
+                    }
                     if (unitId == playerGuid && dead)
                     {
                         botDied = true;
@@ -2142,6 +2277,7 @@ internal sealed class BotRunner
                 case GameMessageOpcode.ServerPlayerHealthUpdate:
                 {
                     (uint unitId, uint health) = PacketCodec.ParseEntityHealthUpdate(packet.Body);
+                    entities.UpdateHealth(unitId, health);
                     if (unitId == playerGuid)
                         RecordPlayerHealth(health);
                     break;
@@ -2234,11 +2370,14 @@ internal sealed class BotRunner
 
     private void LogCombatSlotDiscovery()
     {
-        if (!activeActionSetKnown || !actionSetCombatSlots.TryGetValue(activeActionSet, out ushort[]? slots))
+        if (quest is null
+            || !activeActionSetKnown
+            || !actionSetCombatSlots.TryGetValue(activeActionSet, out ushort[]? slots)
+            || !combatSlotDiscoveryLoggedQuests.Add(quest.Id))
             return;
         log.Info(slots.Length == 0
-            ? $"combat slot discovery: active action set {activeActionSet} has no spell shortcuts"
-            : $"combat slot discovery: active action set {activeActionSet} spell slots [{string.Join(',', slots)}]");
+            ? $"quest {quest.Id} combat slot discovery: active action set {activeActionSet} has no spell shortcuts"
+            : $"quest {quest.Id} combat slot discovery: active action set {activeActionSet} spell slots [{string.Join(',', slots)}]");
     }
 
     private void UpdateObjectiveReport(uint index, uint rawProgress)
@@ -2315,18 +2454,7 @@ internal sealed class BotRunner
         if (candidates.Length == 0 && excluded is not null && allCandidates.Count > 0)
         {
             excluded.Clear();
-            if (allCandidates.Count > 1)
-            {
-                Spawn nearest = allCandidates
-                    .OrderBy(spawn => spawn.DistanceSquared(lastPosition.X, lastPosition.Y, lastPosition.Z))
-                    .First();
-                excluded.Add(nearest.Id);
-                candidates = allCandidates.Where(spawn => spawn.Id != nearest.Id).ToArray();
-            }
-            else
-            {
-                candidates = allCandidates.ToArray();
-            }
+            candidates = allCandidates.ToArray();
         }
         if (candidates.Length == 0)
             throw new BotFailureException($"No spawn in world {worldId} for creature(s) {string.Join(',', creatureIds)}.");
@@ -2343,9 +2471,9 @@ internal sealed class BotRunner
                 // so treat every other live NonPlayer as a conservative hostile-pack candidate.
                 TrackedNonPlayerNeighbors = entities.CountOtherNonPlayers(spawn, 15f) ?? 0
             })
-            .OrderBy(candidate => candidate.ObjectiveNeighbors + candidate.TrackedNonPlayerNeighbors)
+            .OrderBy(candidate => candidate.Spawn.DistanceSquared(lastPosition.X, lastPosition.Y, lastPosition.Z))
+            .ThenBy(candidate => candidate.ObjectiveNeighbors + candidate.TrackedNonPlayerNeighbors)
             .ThenBy(candidate => candidate.ObjectiveNeighbors)
-            .ThenBy(candidate => candidate.Spawn.DistanceSquared(lastPosition.X, lastPosition.Y, lastPosition.Z))
             .ThenBy(candidate => candidate.Spawn.Id)
             .First().Spawn;
     }
