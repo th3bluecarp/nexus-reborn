@@ -16,6 +16,7 @@ internal sealed class RunReport
     public List<string> Cheats { get; } = [];
     public List<ObjectiveReport> Objectives { get; } = [];
     public List<QuestRunReport> Quests { get; } = [];
+    public List<PathMissionRunReport> Missions { get; } = [];
     public RunSummary Summary { get; private set; } = new();
     public string Result { get; set; } = "FAIL";
     public string? Failure { get; set; }
@@ -29,6 +30,11 @@ internal sealed class RunReport
             Passed = Quests.Count(quest => quest.Result == "PASS"),
             Failed = Quests.Count(quest => quest.Result == "FAIL"),
             Skipped = Quests.Count(quest => quest.Result == "SKIPPED"),
+            MissionTotal = Missions.Count,
+            MissionPassed = Missions.Count(mission => mission.Result == "PASS"),
+            MissionFailed = Missions.Count(mission => mission.Result == "FAIL"),
+            MissionSkipped = Missions.Count(mission => mission.Result == "SKIPPED"),
+            MissionUnsupported = Missions.Count(mission => mission.Result == "UNSUPPORTED"),
             UnsupportedTypes = Quests.SelectMany(quest => quest.Objectives)
                 .Where(objective => objective.Failure?.StartsWith("unsupported objective type ", StringComparison.Ordinal) == true)
                 .Select(objective => objective.Type)
@@ -55,11 +61,14 @@ internal sealed class RunReport
     private string BuildMarkdown()
     {
         var builder = new StringBuilder();
-        builder.AppendLine($"# Quest run report");
+        builder.AppendLine($"# {Escape(Title)} run report");
         builder.AppendLine();
         builder.AppendLine($"{Summary.Total} quests: {Summary.Passed} passed, {Summary.Failed} failed, {Summary.Skipped} skipped. Character: {Escape(CharacterName)}. Elapsed: {(EndTimestamp - StartTimestamp).TotalSeconds:0.0}s.");
+        builder.AppendLine($"{Summary.MissionTotal} path missions: {Summary.MissionPassed} passed, {Summary.MissionFailed} failed, {Summary.MissionSkipped} skipped, {Summary.MissionUnsupported} unsupported.");
         builder.AppendLine();
         builder.AppendLine("Interactability evidence is an approximation from entity create flags/checklist data and Creature2 activation fields received or loaded by the bot.");
+        builder.AppendLine();
+        builder.AppendLine("## Quests");
         builder.AppendLine();
         builder.AppendLine("| quest | title | result | failed at | detail | note |");
         builder.AppendLine("|---:|---|---|---|---|---|");
@@ -82,6 +91,18 @@ internal sealed class RunReport
         builder.AppendLine();
         foreach (QuestRunReport quest in Quests)
             builder.AppendLine($"- {quest.QuestId} {Escape(quest.Title)}: {quest.Cheats.Count}");
+        builder.AppendLine();
+        builder.AppendLine("## Path missions (Soldier)");
+        builder.AppendLine();
+        builder.AppendLine("| mission | name | type | result | failed at | detail | elapsed | fought back | cheats |");
+        builder.AppendLine("|---:|---|---|---|---|---|---:|---|---:|");
+        foreach (PathMissionRunReport mission in Missions)
+        {
+            string foughtBack = mission.FoughtBack.HasValue
+                ? $"{mission.FoughtBack.Value.ToString().ToLowerInvariant()} (casts={mission.EnemyCasts}, damage={mission.DamageTaken})"
+                : "";
+            builder.AppendLine($"| {mission.MissionId} | {Escape(mission.Name)} | {Escape(mission.Type)} | {mission.Result} | {Escape(mission.FailedAt ?? "")} | {Escape(mission.Detail ?? "")} | {mission.ElapsedMs} ms | {Escape(foughtBack)} | {mission.Cheats.Count} |");
+        }
         return builder.ToString();
     }
 
@@ -94,10 +115,36 @@ internal sealed class RunSummary
     public int Passed { get; init; }
     public int Failed { get; init; }
     public int Skipped { get; init; }
+    public int MissionTotal { get; init; }
+    public int MissionPassed { get; init; }
+    public int MissionFailed { get; init; }
+    public int MissionSkipped { get; init; }
+    public int MissionUnsupported { get; init; }
     public IReadOnlyList<string> UnsupportedTypes { get; init; } = [];
     public DateTimeOffset StartedAt { get; init; }
     public DateTimeOffset FinishedAt { get; init; }
     public string Character { get; init; } = "";
+}
+
+internal sealed class PathMissionRunReport
+{
+    [JsonPropertyName("id")]
+    public ushort MissionId { get; init; }
+    public string Name { get; init; } = "";
+    public string Type { get; init; } = "";
+    public string Result { get; set; } = "FAIL";
+    public string? FailedAt { get; set; }
+    public string? Detail { get; set; }
+    public DateTimeOffset StartTimestamp { get; init; } = DateTimeOffset.UtcNow;
+    public DateTimeOffset EndTimestamp { get; set; }
+    [JsonPropertyName("elapsed")]
+    public long ElapsedMs => EndTimestamp == default ? 0L : Math.Max(0L, (long)(EndTimestamp - StartTimestamp).TotalMilliseconds);
+    public List<string> Cheats { get; } = [];
+    public bool? FoughtBack { get; set; }
+    public uint EnemyCasts { get; set; }
+    public uint DamageTaken { get; set; }
+    public long? FirstEnemyActionMs { get; set; }
+    public List<KillEvidence> Kills { get; } = [];
 }
 
 internal sealed class QuestRunReport

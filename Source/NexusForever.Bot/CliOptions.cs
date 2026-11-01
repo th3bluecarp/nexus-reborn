@@ -8,6 +8,7 @@ internal sealed record RunOptions(
     IReadOnlyList<ushort> QuestIds,
     uint? ZoneId,
     BotFaction Faction,
+    bool Paths,
     bool Chain,
     BotCharacterStart Start,
     Endpoint? Sts,
@@ -78,8 +79,8 @@ internal static class CliOptions
     public const string Usage = """
         Usage:
           NexusForever.Bot prep --db <connection-string> --email <email> --password <password>
-          NexusForever.Bot info --tables <path> --quest <id[,id...]> [--chain 1] [--db <connection-string>]
-          NexusForever.Bot run (--zone <id> --faction exile|dominion | --quest <id[,id...]>) [--chain 0|1] [--start arkship] [--max-minutes <n>] (--sts <host:port> --password <password> | --token <guid>) --auth <host:port> --world <host[:port]> --db <connection-string> --tables <path> --email <email> --report <file.json> --log <file.log>
+          NexusForever.Bot info --tables <path> (--quest <id[,id...]> [--chain 1] [--db <connection-string>] | --path <zone-id>)
+          NexusForever.Bot run (--zone <id> --faction exile|dominion [--paths 0|1] | --quest <id[,id...]>) [--chain 0|1] [--start arkship] [--max-minutes <n>] (--sts <host:port> --password <password> | --token <guid>) --auth <host:port> --world <host[:port]> --db <connection-string> --tables <path> --email <email> --report <file.json> --log <file.log>
         """;
 
     public static object Parse(string[] args)
@@ -99,10 +100,26 @@ internal static class CliOptions
 
     private static InfoOptions ParseInfo(Dictionary<string, string> values)
     {
-        RequireOnly(values, "tables", "quest", "chain", "db");
-        List<ushort> ids = Required(values, "quest").Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries).Select(ushort.Parse).ToList();
+        RequireOnly(values, "tables", "quest", "path", "chain", "db");
+        bool hasQuest = values.TryGetValue("quest", out string? questValue);
+        bool hasPath = values.TryGetValue("path", out string? pathValue);
+        if (hasQuest == hasPath)
+            throw new ArgumentException("Specify exactly one of --quest or --path.");
+
+        List<ushort> ids = hasQuest
+            ? questValue!.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries).Select(ushort.Parse).ToList()
+            : [];
+        uint? pathZone = null;
+        if (hasPath)
+        {
+            if (!uint.TryParse(pathValue, out uint parsedZone) || parsedZone == 0u)
+                throw new ArgumentException("--path must be a positive zone id.");
+            pathZone = parsedZone;
+        }
         bool chain = values.TryGetValue("chain", out string? c) && c is "1" or "true";
-        return new InfoOptions(Required(values, "tables"), ids, chain, values.GetValueOrDefault("db"));
+        if (hasPath && (values.ContainsKey("chain") || values.ContainsKey("db")))
+            throw new ArgumentException("--chain and --db apply only to --quest.");
+        return new InfoOptions(Required(values, "tables"), ids, pathZone, chain, values.GetValueOrDefault("db"));
     }
 
     private static PrepOptions ParsePrep(Dictionary<string, string> values)
@@ -113,7 +130,7 @@ internal static class CliOptions
 
     private static RunOptions ParseRun(Dictionary<string, string> values)
     {
-        RequireOnly(values, "quest", "zone", "faction", "chain", "start", "max-minutes", "sts", "auth", "world", "db", "tables", "email", "password", "token", "report", "log");
+        RequireOnly(values, "quest", "zone", "faction", "paths", "chain", "start", "max-minutes", "sts", "auth", "world", "db", "tables", "email", "password", "token", "report", "log");
 
         bool hasQuest = values.TryGetValue("quest", out string? questValue);
         bool hasZone = values.TryGetValue("zone", out string? zoneValue);
@@ -148,6 +165,15 @@ internal static class CliOptions
         };
         if (hasZone && !values.ContainsKey("faction"))
             throw new ArgumentException("--faction is required with --zone.");
+        bool paths = values.TryGetValue("paths", out string? pathsValue) switch
+        {
+            false => false,
+            true when pathsValue is "1" or "true" => true,
+            true when pathsValue is "0" or "false" => false,
+            _ => throw new ArgumentException("--paths must be 0 or 1.")
+        };
+        if (values.ContainsKey("paths") && !hasZone)
+            throw new ArgumentException("--paths is available only with --zone.");
         Endpoint? sts = values.TryGetValue("sts", out string? stsValue) ? Endpoint.Parse(stsValue) : null;
         string? password = values.TryGetValue("password", out string? passwordValue) && !string.IsNullOrWhiteSpace(passwordValue)
             ? passwordValue
@@ -187,6 +213,7 @@ internal static class CliOptions
             questIds,
             zoneId,
             faction,
+            paths,
             chain,
             start,
             sts,

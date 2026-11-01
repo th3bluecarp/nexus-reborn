@@ -5,7 +5,12 @@ using NexusForever.GameTable.Model;
 
 namespace NexusForever.Bot;
 
-internal sealed record InfoOptions(string Tables, IReadOnlyList<ushort> Quests, bool Chain, string? Database);
+internal sealed record InfoOptions(
+    string Tables,
+    IReadOnlyList<ushort> Quests,
+    uint? PathZone,
+    bool Chain,
+    string? Database);
 
 /// <summary>Prints quest prerequisites, objectives, givers and receivers straight from the game tables (no server needed).</summary>
 internal static class QuestInfo
@@ -19,6 +24,11 @@ internal static class QuestInfo
         var gameData = new BotGameData(tables, allowMissingCommunicatorMessages: true);
         var english = new TextTable(Path.Combine(tables, "en-US.bin"));
         var prerequisites = new GameTable<PrerequisiteEntry>(Path.Combine(tables, "Prerequisite.tbl"));
+        if (options.PathZone is uint pathZone)
+        {
+            PrintPathMissions(gameData, pathZone);
+            return 0;
+        }
         if (!gameData.HasCommunicatorTable)
             Console.WriteLine($"communicators: unavailable (missing {Path.Combine(tables, "CommunicatorMessages.tbl")})");
 
@@ -137,5 +147,29 @@ internal static class QuestInfo
             ? "none"
             : string.Join(",", offer.QuestConditions.Select(item => $"{item.QuestId}:{item.State}"));
         return $"id={offer.Id} world={offer.WorldId} zone={offer.WorldZoneId} levels=[{offer.MinLevel},{offer.MaxLevel}] questStates=[{questConditions}] prerequisite={offer.PrerequisiteId}";
+    }
+
+    private static void PrintPathMissions(BotGameData gameData, uint zoneId)
+    {
+        IReadOnlyList<PathMissionDefinition> missions = gameData.GetPathMissions(zoneId);
+        Console.WriteLine($"path missions for zone {zoneId}: {missions.Count}");
+        foreach (BotPath path in Enum.GetValues<BotPath>())
+        {
+            PathMissionDefinition[] pathMissions = missions.Where(mission => mission.Path == path).ToArray();
+            Console.WriteLine($"{path}: {pathMissions.Length}");
+            foreach (IGrouping<uint, PathMissionDefinition> episode in pathMissions.GroupBy(mission => mission.Episode.Id))
+            {
+                PathMissionDefinition first = episode.First();
+                Console.WriteLine($"  episode {episode.Key} \"{gameData.GetPathEpisodeName(first.Episode)}\" world={first.Episode.WorldId}");
+                foreach (PathMissionDefinition mission in episode)
+                {
+                    string locations = mission.Locations.Count == 0
+                        ? "none"
+                        : string.Join(", ", mission.Locations.Select(location =>
+                            FormattableString.Invariant($"{location.Id}@w{location.WorldId}({location.Position0:R},{location.Position1:R},{location.Position2:R})")));
+                    Console.WriteLine($"    mission {mission.Id} \"{mission.Name}\" type={mission.TypeName}({mission.RawType}) unlockCreature={mission.Entry.Creature2IdUnlock} locations=[{locations}]");
+                }
+            }
+        }
     }
 }

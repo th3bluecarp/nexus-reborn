@@ -5,6 +5,7 @@ using NexusForever.Game.Static.Chat;
 using NexusForever.Game.Static.Entity;
 using NexusForever.Game.Static.Entity.Movement.Command;
 using NexusForever.Game.Static.Loot;
+using NexusForever.Game.Static.PlayerPath;
 using NexusForever.Game.Static.Quest;
 using NexusForever.Game.Static.Spell;
 using NexusForever.GameTable.Model;
@@ -50,6 +51,18 @@ internal sealed record LootItemInfo(
     bool Delivered);
 internal sealed record LootNotification(uint OwnerUnitId, IReadOnlyList<LootItemInfo> Items);
 internal sealed record LootGrant(uint OwnerUnitId, uint LooterUnitId, LootItemInfo Item);
+internal sealed record PathInitialiseInfo(
+    NexusForever.Game.Static.PlayerPath.Path ActivePath,
+    IReadOnlyList<uint> Progress,
+    PathUnlockedMask UnlockedMask);
+internal sealed record PathMissionStatus(
+    ushort MissionId,
+    bool Completed,
+    uint Progress,
+    uint StateFlags,
+    PathMissionState? State,
+    uint GiverUnitId);
+internal sealed record PathEpisodeProgress(ushort EpisodeId, IReadOnlyList<PathMissionStatus> Missions);
 
 internal static class PacketCodec
 {
@@ -403,6 +416,49 @@ internal static class PacketCodec
         return new QuestInitInfo(completed, inactive);
     });
 
+    public static PathInitialiseInfo ParsePathInitialise(byte[] body) => Read(body, reader =>
+    {
+        NexusForever.Game.Static.PlayerPath.Path activePath = reader.ReadEnum<NexusForever.Game.Static.PlayerPath.Path>(3);
+        uint[] progress = Enumerable.Range(0, 4).Select(_ => reader.ReadUInt()).ToArray();
+        PathUnlockedMask mask = reader.ReadEnum<PathUnlockedMask>(4);
+        _ = reader.ReadSingle();
+        return new PathInitialiseInfo(activePath, progress, mask);
+    });
+
+    public static ushort ParsePathCurrentEpisode(byte[] body) => Read(body, reader =>
+    {
+        _ = reader.ReadUShort(15);
+        return reader.ReadUShort(14);
+    });
+
+    public static PathEpisodeProgress ParsePathEpisodeProgress(byte[] body) => Read(body, reader =>
+    {
+        ushort episodeId = reader.ReadUShort(14);
+        ushort count = reader.ReadUShort(16);
+        var missions = new List<PathMissionStatus>(count);
+        for (int i = 0; i < count; i++)
+            missions.Add(ReadPathMission(reader, includeState: false));
+        return new PathEpisodeProgress(episodeId, missions);
+    });
+
+    public static IReadOnlyList<PathMissionStatus> ParsePathMissionActivate(byte[] body) => Read(body, reader =>
+    {
+        uint count = reader.ReadUInt();
+        var missions = new List<PathMissionStatus>(checked((int)count));
+        for (uint i = 0; i < count; i++)
+            missions.Add(ReadPathMission(reader, includeState: true));
+        return missions;
+    });
+
+    public static PathMissionStatus ParsePathMissionUpdate(byte[] body)
+        => Read(body, reader => ReadPathMission(reader, includeState: false));
+
+    public static ushort ParsePathMissionAdvanced(byte[] body)
+        => Read(body, reader => reader.ReadUShort(14));
+
+    public static (ushort EventId, PlayerPathSoldierResult Result) ParsePathSoldierHoldoutEnd(byte[] body)
+        => Read(body, reader => (reader.ReadUShort(14), reader.ReadEnum<PlayerPathSoldierResult>(32)));
+
     public static byte ParseCharacterDeleteResult(byte[] body) => Read(body, reader => reader.ReadByte(6));
 
     public static (uint Position, uint WaitSeconds, bool IsGuest) ParseQueueStatus(byte[] body) => Read(body, reader =>
@@ -449,6 +505,17 @@ internal static class PacketCodec
         using var stream = new MemoryStream(body, writable: false);
         using var reader = new GamePacketReader(stream);
         return action(reader);
+    }
+
+    private static PathMissionStatus ReadPathMission(GamePacketReader reader, bool includeState)
+    {
+        ushort missionId = reader.ReadUShort(15);
+        bool completed = reader.ReadBit();
+        uint progress = reader.ReadUInt();
+        uint stateFlags = reader.ReadUInt();
+        PathMissionState? state = includeState ? reader.ReadEnum<PathMissionState>(3) : null;
+        uint giverUnitId = includeState ? reader.ReadUInt() : 0u;
+        return new PathMissionStatus(missionId, completed, progress, stateFlags, state, giverUnitId);
     }
 
     private static InventoryItemInfo ReadInventoryItem(GamePacketReader reader)

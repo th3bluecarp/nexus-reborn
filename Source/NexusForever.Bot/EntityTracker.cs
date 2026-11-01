@@ -106,6 +106,32 @@ internal sealed class EntityTracker
             .FirstOrDefault();
     }
 
+    public IReadOnlySet<uint> GetVisibleNonPlayerGuids()
+        => entities.Values
+            .Where(entity => entity.Type == EntityType.NonPlayer)
+            .Select(entity => entity.Guid)
+            .ToHashSet();
+
+    public TrackedEntity? FindNearestVisibleNonPlayer(
+        Vector3 origin,
+        float radius,
+        IReadOnlySet<uint> excludedGuids,
+        Func<uint, bool> creatureFilter)
+    {
+        float radiusSquared = radius * radius;
+        return entities.Values
+            .Where(entity => entity.Type == EntityType.NonPlayer
+                && entity.CreatureId is uint creatureId
+                && creatureFilter(creatureId)
+                && !excludedGuids.Contains(entity.Guid)
+                && entity.Health is null or > 0u
+                && entity.Position is Vector3 position
+                && Vector3.DistanceSquared(origin, position) <= radiusSquared)
+            .OrderBy(entity => Vector3.DistanceSquared(origin, entity.Position!.Value))
+            .ThenBy(entity => entity.Guid)
+            .FirstOrDefault();
+    }
+
     public IReadOnlyList<(uint CreatureId, float Distance)> GetNearbyCreatureIds(
         Vector3 origin,
         float radius,

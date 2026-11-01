@@ -50,6 +50,65 @@ internal sealed record CreatureActivationData(
     uint ActivateSpellTextId,
     string ActivateSpellText);
 
+internal enum BotPath : uint
+{
+    Soldier = 0,
+    Settler = 1,
+    Scientist = 2,
+    Explorer = 3
+}
+
+// PathMission.tbl stores this client enum as an integer. The server currently implements the
+// named values below; the unused numeric slots are kept so an unfamiliar row is reported instead
+// of accidentally being treated as another mission kind.
+internal enum PathMissionType : uint
+{
+    Holdout = 0,
+    Unknown1 = 1,
+    Scan = 2,
+    StakingClaim = 3,
+    Assassination = 4,
+    Demolition = 5,
+    Rescue = 6,
+    SWAT = 7,
+    Unknown8 = 8,
+    Unknown9 = 9,
+    Unknown10 = 10,
+    Unknown11 = 11,
+    Surveillance = 12,
+    ScavengerHunt = 13,
+    Checklist = 14,
+    Vista = 15,
+    Cartography = 16,
+    Exploration = 17,
+    Tracking = 18,
+    Expansion = 19,
+    FieldStudy = 20,
+    Infrastructure = 21,
+    Experimentation = 22,
+    SpecimenSurvey = 23,
+    DatacubeDiscovery = 24,
+    Mayor = 25,
+    Sheriff = 26,
+    Scout = 27
+}
+
+internal sealed record PathMissionDefinition(
+    ushort Id,
+    string Name,
+    BotPath Path,
+    PathMissionType Type,
+    uint RawType,
+    PathEpisodeEntry Episode,
+    PathMissionEntry Entry,
+    IReadOnlyList<WorldLocation2Entry> Locations,
+    IReadOnlyList<uint> ObjectiveCreatureIds,
+    uint Count,
+    IReadOnlyList<uint> HoldoutConsoleCreatureIds)
+{
+    public string TypeName => Enum.IsDefined(Type) ? Type.ToString() : $"Unknown{RawType}";
+}
+
 internal sealed class BotGameData
 {
     private readonly GameTable<Quest2Entry> quests;
@@ -59,6 +118,12 @@ internal sealed class BotGameData
     private readonly GameTable<CharacterCreationEntry> characterCreations;
     private readonly GameTable<WorldLocation2Entry> worldLocations;
     private readonly GameTable<TargetGroupEntry> targetGroups;
+    private readonly GameTable<PathMissionEntry> pathMissions;
+    private readonly GameTable<PathEpisodeEntry> pathEpisodes;
+    private readonly GameTable<PathSoldierEventEntry> pathSoldierEvents;
+    private readonly GameTable<PathSoldierAssassinateEntry> pathSoldierAssassinations;
+    private readonly GameTable<PathSoldierSWATEntry> pathSoldierSwats;
+    private readonly GameTable<PathSoldierActivateEntry> pathSoldierActivations;
     private readonly GameTable<CommunicatorMessagesEntry>? communicatorMessages;
     private readonly TextTable english;
     private readonly Dictionary<ushort, PrerequisiteBranchChoice> prerequisiteBranchChoices = [];
@@ -75,6 +140,12 @@ internal sealed class BotGameData
         characterCreations = Load<CharacterCreationEntry>(tablePath, "CharacterCreation.tbl");
         worldLocations = Load<WorldLocation2Entry>(tablePath, "WorldLocation2.tbl");
         targetGroups = Load<TargetGroupEntry>(tablePath, "TargetGroup.tbl");
+        pathMissions = Load<PathMissionEntry>(tablePath, "PathMission.tbl");
+        pathEpisodes = Load<PathEpisodeEntry>(tablePath, "PathEpisode.tbl");
+        pathSoldierEvents = Load<PathSoldierEventEntry>(tablePath, "PathSoldierEvent.tbl");
+        pathSoldierAssassinations = Load<PathSoldierAssassinateEntry>(tablePath, "PathSoldierAssassinate.tbl");
+        pathSoldierSwats = Load<PathSoldierSWATEntry>(tablePath, "PathSoldierSWAT.tbl");
+        pathSoldierActivations = Load<PathSoldierActivateEntry>(tablePath, "PathSoldierActivate.tbl");
         string communicatorPath = Path.Combine(tablePath, "CommunicatorMessages.tbl");
         if (File.Exists(communicatorPath))
             communicatorMessages = new GameTable<CommunicatorMessagesEntry>(communicatorPath);
@@ -139,6 +210,127 @@ internal sealed class BotGameData
             ?? throw new BotFailureException($"Item2 entry {itemId} was not found.");
         return entry.Quest2IdActivation;
     }
+
+    public IReadOnlyList<PathMissionDefinition> GetPathMissions(
+        uint zoneId,
+        BotPath? requiredPath = null,
+        BotFaction? faction = null)
+    {
+        PathEpisodeEntry[] episodes = pathEpisodes.Entries
+            .Where(entry => entry.WorldZoneId == zoneId
+                && (!requiredPath.HasValue || entry.PathTypeEnum == (uint)requiredPath.Value))
+            .OrderBy(entry => entry.Id)
+            .ToArray();
+        var result = new List<PathMissionDefinition>();
+        foreach (PathEpisodeEntry episode in episodes)
+        {
+            foreach (PathMissionEntry entry in pathMissions.Entries
+                .Where(entry => entry.PathEpisodeId == episode.Id
+                    && entry.PathTypeEnum == episode.PathTypeEnum
+                    && (!faction.HasValue || MatchesPathFaction(entry, faction.Value)))
+                .OrderBy(entry => entry.Id))
+            {
+                result.Add(CreatePathMission(entry, episode));
+            }
+        }
+        return result;
+    }
+
+    private PathMissionDefinition CreatePathMission(PathMissionEntry entry, PathEpisodeEntry episode)
+    {
+        var type = (PathMissionType)entry.PathMissionTypeEnum;
+        uint creatureId = 0u;
+        uint targetGroupId = 0u;
+        uint count = 1u;
+        if (entry.PathTypeEnum == (uint)BotPath.Soldier)
+        {
+            switch (type)
+            {
+                case PathMissionType.Holdout:
+                    _ = pathSoldierEvents.GetEntry(entry.ObjectId);
+                    break;
+                case PathMissionType.Assassination:
+                {
+                    PathSoldierAssassinateEntry? objective = pathSoldierAssassinations.GetEntry(entry.ObjectId);
+                    if (objective is not null)
+                    {
+                        creatureId = objective.Creature2Id;
+                        targetGroupId = objective.TargetGroupId;
+                        count = Math.Max(objective.Count, 1u);
+                    }
+                    break;
+                }
+                case PathMissionType.SWAT:
+                {
+                    PathSoldierSWATEntry? objective = pathSoldierSwats.GetEntry(entry.ObjectId);
+                    if (objective is not null)
+                    {
+                        creatureId = objective.Creature2Id;
+                        targetGroupId = objective.TargetGroupId;
+                        count = Math.Max(objective.Count, 1u);
+                    }
+                    break;
+                }
+                case PathMissionType.Demolition:
+                case PathMissionType.Rescue:
+                {
+                    PathSoldierActivateEntry? objective = pathSoldierActivations.GetEntry(entry.ObjectId);
+                    if (objective is not null)
+                    {
+                        creatureId = objective.Creature2Id;
+                        targetGroupId = objective.TargetGroupId;
+                        count = Math.Max(objective.Count, 1u);
+                    }
+                    break;
+                }
+            }
+        }
+
+        uint[] objectiveCreatures = (creatureId == 0u ? [] : new[] { creatureId })
+            .Concat(ResolveTargetGroup(targetGroupId))
+            .Distinct()
+            .ToArray();
+        WorldLocation2Entry[] locations = new[]
+            {
+                entry.WorldLocation2Id00,
+                entry.WorldLocation2Id01,
+                entry.WorldLocation2Id02,
+                entry.WorldLocation2Id03
+            }
+            .Where(id => id != 0u)
+            .Select(id => worldLocations.GetEntry(id))
+            .Where(location => location is not null)
+            .Cast<WorldLocation2Entry>()
+            .ToArray();
+        uint[] holdoutConsoles = creatures.Entries
+            .Where(creature => creature.PathMissionIdSoldier == entry.Id)
+            .Select(creature => creature.Id)
+            .Distinct()
+            .ToArray();
+        return new PathMissionDefinition(
+            checked((ushort)entry.Id),
+            english.GetEntry(entry.LocalizedTextIdName) ?? $"Mission {entry.Id}",
+            (BotPath)entry.PathTypeEnum,
+            type,
+            entry.PathMissionTypeEnum,
+            episode,
+            entry,
+            locations,
+            objectiveCreatures,
+            count,
+            holdoutConsoles);
+    }
+
+    public bool IsHoldoutHostile(uint creatureId)
+    {
+        Creature2Entry? creature = creatures.GetEntry(creatureId);
+        return creature is not null
+            && (uint)creature.FactionId != 1086u
+            && creature.PathMissionIdSoldier == 0u;
+    }
+
+    public string GetPathEpisodeName(PathEpisodeEntry episode)
+        => english.GetEntry(episode.LocalizedTextIdName) ?? $"Episode {episode.Id}";
 
     public IReadOnlyList<uint> GetPrerequisiteBranchGiverCreatureIds(RunOptions options)
     {
@@ -433,6 +625,14 @@ internal sealed class BotGameData
         {
             0u => faction == BotFaction.Exile,
             1u => faction == BotFaction.Dominion,
+            _ => true
+        };
+
+    private static bool MatchesPathFaction(PathMissionEntry entry, BotFaction faction)
+        => entry.PathMissionFactionEnum switch
+        {
+            1u => faction == BotFaction.Exile,
+            2u => faction == BotFaction.Dominion,
             _ => true
         };
 
