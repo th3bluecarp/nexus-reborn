@@ -25,10 +25,12 @@ namespace NexusForever.Game.Prerequisite.Check
         {
             switch (comparison)
             {
+                // a quest the player never had is in state 0 (Unknown): "quest X state = 0" means the player has not
+                // touched it (Serve and Protect needs More Important Than Revenge untouched), null compared as never equal
                 case PrerequisiteComparison.Equal:
-                    return player.QuestManager.GetQuestState((ushort)objectId) == (QuestState)value;
+                    return (player.QuestManager.GetQuestState((ushort)objectId) ?? QuestState.Unknown) == (QuestState)value;
                 case PrerequisiteComparison.NotEqual:
-                    return player.QuestManager.GetQuestState((ushort)objectId) != (QuestState)value;
+                    return (player.QuestManager.GetQuestState((ushort)objectId) ?? QuestState.Unknown) != (QuestState)value;
                 default:
                     log.LogWarning($"Unhandled PrerequisiteComparison {comparison} for {PrerequisiteType.QuestState}!");
                     return false;

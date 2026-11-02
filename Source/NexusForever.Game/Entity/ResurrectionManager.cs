@@ -184,13 +184,22 @@ namespace NexusForever.Game.Entity
         public void ResurrectSelf(ResurrectionType type)
         {
             if ((ResurrectionType & type) == 0)
+            {
+                log.LogWarning($"Player {owner.Name} asked for resurrection {type} but only {ResurrectionType} is offered.");
                 return;
+            }
 
             if (owner.IsAlive)
+            {
+                log.LogWarning($"Player {owner.Name} asked for resurrection {type} while alive.");
                 return;
+            }
 
             if (timeUntilResurrectionTimer != null && timeUntilResurrectionTimer.IsTicking)
+            {
+                log.LogWarning($"Player {owner.Name} asked for resurrection {type} with {timeUntilResurrectionTimer.Time:0.0} s of the resurrection timer left.");
                 return;
+            }
 
             switch (type)
             {

@@ -761,10 +761,15 @@ namespace NexusForever.Game.Map
             // no usable transmat (or offered only because wake here was unaffordable): an ordinary resurrection in place
             if (holocrypt == null)
             {
+                log.Warn($"Holocrypt resurrection of {player.Name} at {player.Position} on map {Entry.Id}: no transmat of {GetHolocrypts().Count}, resurrecting in place.");
                 OnResurrect(player);
                 return;
             }
 
+            if (!player.CanTeleport())
+                log.Warn($"Holocrypt resurrection of {player.Name} at {player.Position}: a teleport is still pending, the player revives where it died.");
+            else
+                log.Info($"Holocrypt resurrection of {player.Name} at {player.Position}: transmat creature {holocrypt.Creature} at ({holocrypt.X:0}, {holocrypt.Y:0}, {holocrypt.Z:0}).");
             player.ModifyHealth(player.MaxHealth, DamageType.Heal, null);
             player.Shield = 0;
             player.TeleportToLocal(new Vector3(holocrypt.X, holocrypt.Y, holocrypt.Z));

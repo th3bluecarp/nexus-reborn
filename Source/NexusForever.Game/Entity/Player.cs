@@ -908,6 +908,9 @@ namespace NexusForever.Game.Entity
                 QuestManager.ObjectiveUpdate(QuestObjectiveType.EnterZone, Zone.Id, 1);
                 PathMissionManager.OnZoneUpdate(Zone);
                 ChallengeManager.OnZoneUpdate(Zone);
+                // communicator calls gated on a zone (InSubZone prerequisites) fire when the player walks into it,
+                // not only on world entry
+                QuestManager.CheckPrerequisiteCommunicators();
             }
 
             ZoneMapManager.OnZoneUpdate();
