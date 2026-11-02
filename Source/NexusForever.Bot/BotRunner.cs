@@ -1486,7 +1486,15 @@ internal sealed class BotRunner
             .Distinct()
             .ToArray();
         if (sharedWorlds.Length == 0)
-            throw new BotFailureException($"Quest {definition.Id} giver and receiver have no spawns in a common world.");
+        {
+            // giver and receiver live in different worlds (Bon Voyage: Dorian Walker on the arkship, Scout Frostfield on Nexus):
+            // run the quest in the giver's world, the turn in follows the receiver spawns into theirs
+            ushort giverWorld = giverSpawns.Select(spawn => spawn.WorldId).Contains(currentWorldId)
+                ? currentWorldId
+                : giverSpawns.Select(spawn => spawn.WorldId).First();
+            log.Info($"quest {definition.Id}: giver and receiver share no world; running in the giver's world {giverWorld}");
+            return giverWorld;
+        }
 
         if (sharedWorlds.Contains(currentWorldId))
             return currentWorldId;
