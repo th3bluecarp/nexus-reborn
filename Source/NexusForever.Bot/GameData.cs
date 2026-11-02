@@ -1,6 +1,7 @@
 using System.Text.RegularExpressions;
 using NexusForever.Game.Static;
 using NexusForever.Game.Static.Entity;
+using NexusForever.Game.Static.Prerequisite;
 using NexusForever.Game.Static.Quest;
 using NexusForever.Game.Static.Reputation;
 using NexusForever.GameTable;
@@ -132,6 +133,7 @@ internal sealed record SettlerHubDefinition(
 internal sealed class BotGameData
 {
     private readonly GameTable<Quest2Entry> quests;
+    private readonly GameTable<PrerequisiteEntry> prerequisites;
     private readonly GameTable<QuestObjectiveEntry> objectives;
     private readonly GameTable<Creature2Entry> creatures;
     private readonly GameTable<Item2Entry> items;
@@ -161,6 +163,7 @@ internal sealed class BotGameData
             throw new DirectoryNotFoundException($"Game table directory not found: {tablePath}");
 
         quests = Load<Quest2Entry>(tablePath, "Quest2.tbl");
+        prerequisites = Load<PrerequisiteEntry>(tablePath, "Prerequisite.tbl");
         objectives = Load<QuestObjectiveEntry>(tablePath, "QuestObjective.tbl");
         creatures = Load<Creature2Entry>(tablePath, "Creature2.tbl");
         items = Load<Item2Entry>(tablePath, "Item2.tbl");
@@ -528,6 +531,36 @@ internal sealed class BotGameData
 
     private static string NormalizeName(string name)
         => Regex.Replace(name, @"\{p:[^}]*\}", "");
+
+    /// <summary>
+    /// The TradeskillTier a quest requires through a TradeSkillProfession prerequisite (Algoroc's tradeskill quest lines),
+    /// or null. A character without that tradeskill never receives the quest, so the bot skips it like a player would.
+    /// </summary>
+    public uint? TradeskillPrerequisiteTier(Quest2Entry entry)
+    {
+        if (entry.PrerequisiteId == 0u)
+            return null;
+        PrerequisiteEntry? prerequisite = prerequisites.GetEntry(entry.PrerequisiteId);
+        if (prerequisite is null)
+            return null;
+        for (int i = 0; i < prerequisite.PrerequisiteTypeId.Length; i++)
+        {
+            if (prerequisite.PrerequisiteTypeId[i] != PrerequisiteType.TradeSkillProfession)
+                continue;
+            // reached is 1 or 0: "GreaterThan 0", "GreaterThanOrEqual 1" and "Equal 1" all require the tier
+            bool requiresTier = prerequisite.PrerequisiteComparisonId[i] switch
+            {
+                PrerequisiteComparison.GreaterThan => prerequisite.Value[i] == 0u,
+                PrerequisiteComparison.GreaterThanOrEqual => prerequisite.Value[i] >= 1u,
+                PrerequisiteComparison.Equal => prerequisite.Value[i] == 1u,
+                PrerequisiteComparison.NotEqual => prerequisite.Value[i] == 0u,
+                _ => false
+            };
+            if (requiresTier)
+                return prerequisite.ObjectId[i];
+        }
+        return null;
+    }
 
     public bool IsHoldoutHostile(uint creatureId)
     {

@@ -479,6 +479,12 @@ internal sealed class BotRunner
                 finishedQuests.Add(definition.Id);
                 continue;
             }
+            if (RequireGameData().TradeskillPrerequisiteTier(definition.Entry) is uint tradeskillTier)
+            {
+                AddTradeskillQuestReport(definition, tradeskillTier);
+                finishedQuests.Add(definition.Id);
+                continue;
+            }
             if (completedQuests.Contains(definition.Id))
             {
                 AddSkippedQuestReport(definition);
@@ -1686,6 +1692,24 @@ internal sealed class BotRunner
             Detail = "ServerQuestInit/ServerQuestStateChange reported state 3 (Completed)"
         });
         report.Quests.Add(questReport);
+    }
+
+    private void AddTradeskillQuestReport(QuestDefinition definition, uint tradeskillTier)
+    {
+        var questReport = CreateQuestReport(definition);
+        questReport.Skipped = true;
+        questReport.Result = "SKIPPED";
+        questReport.Failure = $"SKIPPED: tradeskill quest (prerequisite {definition.Entry.PrerequisiteId} needs TradeskillTier {tradeskillTier}); a character without that tradeskill never receives it";
+        questReport.EndTimestamp = DateTimeOffset.UtcNow;
+        questReport.Steps.Add(new StepReport
+        {
+            Name = "skip tradeskill quest",
+            Ok = true,
+            ElapsedMs = 0,
+            Detail = questReport.Failure
+        });
+        report.Quests.Add(questReport);
+        log.Info($"quest {definition.Id} {questReport.Failure}");
     }
 
     private void AddItemStartedQuestReport(QuestDefinition definition)
