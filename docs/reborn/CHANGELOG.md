@@ -4,6 +4,7 @@ Newest first. "Live" means running on our test server.
 
 ## 2026-11-01
 
+- **The Eldan Defense Construct shows up**: the last fight of Deconstruct the Construct had no creature to fight (no world spawn); it now appears on the platform once the player gets there (SEMANTICS: Eldan construct spawns on the platform).
 - **Optional steps no longer block the next step**: a sequential objective waited for an optional predecessor to complete (Deconstruct the Construct's "Jump up to the platform" behind the optional direction-arrow hint); optional objectives are skipped in that check.
 - **Back-to-back area objectives**: when entering an area completes one objective and the next objective asks for the same area, it is credited by the same entry (Deconstruct the Construct's "Jump up to the platform" never completed because the player was already there).
 - **Leaving the arkship works**: the Northern Wilds Departures Terminal sends the player to the crash site and credits Bon Voyage's travel step; the Virtual Eldan Defense Construct can be fought (it was friendly-to-all like the turrets).
