@@ -119,6 +119,11 @@ namespace NexusForever.Game.Map
             PublicEventManager.Update(lastTick);
         }
 
+        private readonly HashSet<uint> nonFiniteRelocateLogged = [];
+
+        private static bool IsFinite(Vector3 vector)
+            => float.IsFinite(vector.X) && float.IsFinite(vector.Y) && float.IsFinite(vector.Z);
+
         private void ProcessGridActions()
         {
             var newActions = new List<IGridAction>();
@@ -143,6 +148,15 @@ namespace NexusForever.Game.Map
                         }
                         case IGridActionRelocate actionRelocate:
                         {
+                            // a movement computed into NaN (a Gronyx in Algoroc relocated to <NaN, NaN, NaN> every tick) must not
+                            // reach the entity: with a NaN position its aura target selection threw inside the map update and
+                            // aborted the whole tick for every creature on the map
+                            if (!IsFinite(actionRelocate.Vector))
+                            {
+                                if (nonFiniteRelocateLogged.Add(actionRelocate.Entity.Guid))
+                                    log.Warn($"Entity {actionRelocate.Entity.Guid} ({actionRelocate.Entity.GetType().Name}, creature {(actionRelocate.Entity as IWorldEntity)?.CreatureId}) relocate to {actionRelocate.Vector} on map {Entry.Id} ignored, left at {actionRelocate.Entity.Position}.");
+                                break;
+                            }
                             RelocateEntity(actionRelocate.Entity, actionRelocate.Vector);
                             actionRelocate.Callback?.Invoke(actionRelocate.Vector);
                             break;

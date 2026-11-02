@@ -19,7 +19,10 @@ namespace NexusForever.Game.Entity.Movement.Key
         {
             int index = GetIndex();
 
-            Vector3 vector = Vector3.Normalize(Values[index + 1] - Values[index]);
+            Vector3 difference = Values[index + 1] - Values[index];
+            if (difference.LengthSquared() < 0.0001f)
+                return Vector3.Zero; // two identical keys: Normalize would give NaN
+            Vector3 vector = Vector3.Normalize(difference);
             float pitch = MathF.Asin(-vector.Y);
             float yaw = MathF.Atan2(-vector.X, -vector.Z);
             return new Vector3(yaw, pitch, 0f);

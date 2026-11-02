@@ -61,7 +61,10 @@ namespace NexusForever.Game.Entity.Movement.Command.Rotation
             if (entity == null)
                 return Vector3.Zero;
 
-            Vector3 vector = Vector3.Normalize(entity.MovementManager.GetPosition() - movementManager.GetPosition());
+            Vector3 difference = entity.MovementManager.GetPosition() - movementManager.GetPosition();
+            if (difference.LengthSquared() < 0.0001f)
+                return Vector3.Zero; // facing a unit at the same spot: Normalize would give NaN
+            Vector3 vector = Vector3.Normalize(difference);
             float yaw = MathF.Atan2(-vector.X, -vector.Z);
 
             // RotationFaceUnitCommand is only yaw regardless of mode

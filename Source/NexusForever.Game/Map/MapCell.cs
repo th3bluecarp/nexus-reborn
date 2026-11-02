@@ -1,4 +1,5 @@
-﻿using System.Numerics;
+﻿using System.Collections.Concurrent;
+using System.Numerics;
 using NexusForever.Game.Abstract.Entity;
 using NexusForever.Game.Abstract.Map;
 using NexusForever.Game.Abstract.Map.Search;
@@ -47,8 +48,22 @@ namespace NexusForever.Game.Map
         public void Update(double lastTick)
         {
             foreach (IGridEntity entity in entities)
-                entity.Update(lastTick);
+            {
+                try
+                {
+                    entity.Update(lastTick);
+                }
+                catch (Exception ex)
+                {
+                    // one entity's update must not abort the tick for every other entity on the map (that stopped all combat
+                    // in Algoroc while a Gronyx with a NaN position threw from its aura every tick)
+                    if (updateErrorLogged.TryAdd(entity.Guid, 0))
+                        log.Error(ex, $"Entity {entity.Guid} ({entity.GetType().Name}, creature {(entity as IWorldEntity)?.CreatureId}) failed to update at {entity.Position}; later errors from it are not logged.");
+                }
+            }
         }
+
+        private static readonly ConcurrentDictionary<uint, byte> updateErrorLogged = new();
 
         /// <summary>
         /// Unload <see cref="IGridEntity"/>'s from the <see cref="IMapCell"/>.

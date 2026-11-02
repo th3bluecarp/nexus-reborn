@@ -55,7 +55,10 @@ namespace NexusForever.Game.Entity.Movement.Command.Rotation
         /// </summary>
         public Vector3 GetRotation()
         {
-            Vector3 vector = Vector3.Normalize(facePosition - movementManager.GetPosition());
+            Vector3 difference = facePosition - movementManager.GetPosition();
+            if (difference.LengthSquared() < 0.0001f)
+                return Vector3.Zero; // facing the spot the entity stands on: Normalize would give NaN
+            Vector3 vector = Vector3.Normalize(difference);
             float pitch = MathF.Asin(-vector.Y);
             float yaw = MathF.Atan2(-vector.X, -vector.Z);
             return new Vector3(yaw, pitch, 0f);

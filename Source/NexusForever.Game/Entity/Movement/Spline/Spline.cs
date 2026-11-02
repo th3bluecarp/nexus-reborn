@@ -243,6 +243,8 @@ namespace NexusForever.Game.Entity.Movement.Spline
             float t = CalculateT(result.Offset, point, index, point2, index2);
             Vector3 rotation = Type.GetInterpolatedRotation(point, Points[point.Index + 1], t);
 
+            if (rotation.LengthSquared() < 0.0001f)
+                return Vector3.Zero; // two identical spline points: Normalize would give NaN
             Vector3 vector = Vector3.Normalize(rotation);
             if (Direction == SplineDirection.Backward)
                 vector = -vector;
