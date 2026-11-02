@@ -236,7 +236,10 @@ internal sealed class BotRunner
 
         IReadOnlyDictionary<uint, ItemDropSources> loadedItemSources = await BotDatabase.LoadItemDropSourcesAsync(
             options.Database,
-            questPlan.Select(definition => definition.Entry.PrerequisiteItem),
+            questPlan.Select(definition => definition.Entry.PrerequisiteItem)
+                .Concat(questPlan.SelectMany(definition => definition.Objectives
+                    .Where(objective => objective.Type == QuestObjectiveType.CollectItem)
+                    .Select(objective => objective.Data))),
             cancellationToken);
         foreach ((uint itemId, ItemDropSources sources) in loadedItemSources)
             itemDropSources[itemId] = sources;
@@ -291,6 +294,9 @@ internal sealed class BotRunner
     {
         if (objective.Type == QuestObjectiveType.ActivateEntity)
             return GetActivateCreatureIds(objective);
+        // CollectItem: Data is the Item2 id; the creatures that drop it come from the world database loot tables
+        if (objective.Type == QuestObjectiveType.CollectItem)
+            return itemDropSources.TryGetValue(objective.Data, out ItemDropSources? dropSources) ? dropSources.CreatureIds : [];
         if (objective.Type == QuestObjectiveType.VirtualCollect)
             return GetVirtualCollectCreatureIds(objective);
         if (objective.Type is QuestObjectiveType.ActivateTargetGroup
@@ -482,7 +488,7 @@ internal sealed class BotRunner
                 finishedQuests.Add(definition.Id);
                 continue;
             }
-            if (RequireGameData().QuestSkipReason(definition.Entry) is string skipReason)
+            if ((RequireGameData().QuestSkipReason(definition.Entry) ?? InstanceSkipReason(definition)) is string skipReason)
             {
                 AddNotForCharacterQuestReport(definition, skipReason);
                 finishedQuests.Add(definition.Id);
@@ -1695,6 +1701,30 @@ internal sealed class BotRunner
         report.Quests.Add(questReport);
     }
 
+    /// <summary>
+    /// A quest whose area objective lies in another world (the class training instances, expeditions) is not zone content;
+    /// the zone run reports it skipped instead of timing out at the instance portal.
+    /// </summary>
+    private string? InstanceSkipReason(QuestDefinition definition)
+    {
+        WorldLocation2Entry? receiver = definition.Entry.WorldLocation2IdReceiver == 0u
+            ? null
+            : RequireGameData().TryGetWorldLocation(definition.Entry.WorldLocation2IdReceiver);
+        ushort? homeWorld = receiver is null ? null : checked((ushort)receiver.WorldId);
+        foreach (QuestObjectiveDefinition objective in definition.Objectives)
+        {
+            if (objective.Type is not (QuestObjectiveType.EnterZone or QuestObjectiveType.EnterArea) || objective.WorldLocationId == 0u)
+                continue;
+            WorldLocation2Entry? location = RequireGameData().TryGetWorldLocation(objective.WorldLocationId);
+            if (location is null)
+                continue;
+            ushort world = checked((ushort)location.WorldId);
+            if (homeWorld is ushort home && world != home)
+                return $"instance content (objective {objective.Index} enters world {world}, the quest lives in world {home})";
+        }
+        return null;
+    }
+
     private void AddNotForCharacterQuestReport(QuestDefinition definition, string reason)
     {
         var questReport = CreateQuestReport(definition);
@@ -2539,6 +2569,7 @@ internal sealed class BotRunner
                 case QuestObjectiveType.KillCreature2:
                 case QuestObjectiveType.KillTargetGroup:
                 case QuestObjectiveType.KillTargetGroups:
+                case QuestObjectiveType.CollectItem:
                     await RunKillObjectiveAsync(objective, cancellationToken);
                     break;
                 case QuestObjectiveType.EnterArea:

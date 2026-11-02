@@ -541,6 +541,8 @@ internal sealed class BotGameData
     /// <summary>
     /// The zone and every zone below it (WorldZone.ParentZoneId).
     /// </summary>
+    public WorldLocation2Entry? TryGetWorldLocation(uint id) => worldLocations.GetEntry(id);
+
     public IReadOnlySet<uint> ZoneFamily(uint zoneId)
     {
         if (zoneFamilies.TryGetValue(zoneId, out HashSet<uint>? cached))
