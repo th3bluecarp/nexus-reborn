@@ -63,6 +63,9 @@ internal sealed class BotRunner
     private readonly HashSet<uint> lootedItemIds = [];
     private GenericError? lastGenericError;
     private GenericError? lastItemError;
+    // set when the server answers a teleport command with "You have a pending teleport!" (a previous teleport never completed)
+    private bool teleportRefused;
+    private const int TeleportRefusedRetries = 5;
     private readonly Dictionary<ushort, PathMissionStatus> pathMissionStates = [];
     private readonly List<uint> questNpcAttemptCreatureIds = [];
     private readonly List<string> questNpcAttemptDetails = [];
@@ -824,11 +827,9 @@ internal sealed class BotRunner
             string command = PacketCodec.TeleportCommand(destination);
             if (includeWorld)
                 command += $" {point.WorldId}";
-            await SendCheatAsync(command, cancellationToken);
+            await SendTeleportAsync(command, includeWorld, cancellationToken);
             if (includeWorld)
                 await ReadWorldUntilAsync(packet => packet.Opcode == GameMessageOpcode.ServerPlayerEnteredWorld, cancellationToken);
-            else
-                await WaitForLocalTeleportAsync(cancellationToken);
             lastPosition = destination + new Vector3(2f, 0f, 2f);
             visited++;
 
@@ -3162,8 +3163,7 @@ internal sealed class BotRunner
             return null;
         float distance = Vector3.Distance(lastPosition, position);
         log.Info($"combat target guid={far.Guid} creature {far.CreatureId} is visible {distance:0.0} m away; teleporting to it");
-        await SendCheatAsync(PacketCodec.TeleportCommand(position), cancellationToken);
-        await WaitForLocalTeleportAsync(cancellationToken);
+        await SendTeleportAsync(PacketCodec.TeleportCommand(position), false, cancellationToken);
         lastPosition = new Vector3(position.X + 2f, position.Y, position.Z + 2f);
         return FindVisibleCombatTarget(questWorldId, creatureIds, excludedGuids) ?? entities.Get(far.Guid) ?? far;
     }
@@ -3716,10 +3716,8 @@ internal sealed class BotRunner
         bool includeWorld = currentWorldId != location.WorldId;
         if (includeWorld)
             entities.Clear();
-        await SendCheatAsync(PacketCodec.TeleportCommand(location, includeWorld, offsetX), cancellationToken);
-        if (!includeWorld)
-            await WaitForLocalTeleportAsync(cancellationToken);
-        else
+        await SendTeleportAsync(PacketCodec.TeleportCommand(location, includeWorld, offsetX), includeWorld, cancellationToken);
+        if (includeWorld)
             await ReadWorldUntilAsync(packet => packet.Opcode == GameMessageOpcode.ServerPlayerEnteredWorld, cancellationToken);
         lastPosition = new Vector3(location.Position0 + offsetX, location.Position1, location.Position2);
     }
@@ -3729,10 +3727,8 @@ internal sealed class BotRunner
         bool includeWorld = currentWorldId != spawn.WorldId;
         if (includeWorld)
             entities.Clear();
-        await SendCheatAsync(PacketCodec.TeleportCommand(spawn, includeWorld), cancellationToken);
-        if (!includeWorld)
-            await WaitForLocalTeleportAsync(cancellationToken);
-        else
+        await SendTeleportAsync(PacketCodec.TeleportCommand(spawn, includeWorld), includeWorld, cancellationToken);
+        if (includeWorld)
             await ReadWorldUntilAsync(packet => packet.Opcode == GameMessageOpcode.ServerPlayerEnteredWorld, cancellationToken);
         lastPosition = new Vector3(spawn.X + 2f, spawn.Y, spawn.Z + 2f);
     }
@@ -3828,9 +3824,7 @@ internal sealed class BotRunner
         if (includeWorld)
             entities.Clear();
         Vector3 destination = new(spawn.X + 2f, spawn.Y, spawn.Z + 2f);
-        await SendCheatAsync(PacketCodec.TeleportCommand(spawn, includeWorld), cancellationToken);
-        if (!includeWorld)
-            await WaitForLocalTeleportAsync(cancellationToken);
+        await SendTeleportAsync(PacketCodec.TeleportCommand(spawn, includeWorld), includeWorld, cancellationToken);
         lastPosition = destination;
 
         DateTimeOffset deadline = DateTimeOffset.UtcNow + entityTimeout;
@@ -3873,9 +3867,7 @@ internal sealed class BotRunner
         if (includeWorld)
             entities.Clear();
         Vector3 destination = new(spawn.X + 2f, spawn.Y, spawn.Z + 2f);
-        await SendCheatAsync(PacketCodec.TeleportCommand(spawn, includeWorld), cancellationToken);
-        if (!includeWorld)
-            await WaitForLocalTeleportAsync(cancellationToken);
+        await SendTeleportAsync(PacketCodec.TeleportCommand(spawn, includeWorld), includeWorld, cancellationToken);
         lastPosition = destination;
 
         DateTimeOffset deadline = DateTimeOffset.UtcNow + entityTimeout;
@@ -3920,8 +3912,32 @@ internal sealed class BotRunner
 
     private async Task WaitForLocalTeleportAsync(CancellationToken cancellationToken)
     {
-        await ReadWorldUntilAsync(packet => packet.Opcode == GameMessageOpcode.ServerLoadingScreen, cancellationToken);
+        await ReadWorldUntilAsync(packet => packet.Opcode == GameMessageOpcode.ServerLoadingScreen || teleportRefused, cancellationToken);
+        if (teleportRefused)
+            return;
         await ReadWorldUntilAsync(packet => packet.Opcode == GameMessageOpcode.ServerMovementControl, cancellationToken);
+    }
+
+    /// <summary>
+    /// Sends a teleport command and waits for the local teleport. A server that still has a pending teleport refuses the
+    /// command in chat; the bot retries a few times instead of waiting for a loading screen that never comes.
+    /// </summary>
+    private async Task SendTeleportAsync(string command, bool includeWorld, CancellationToken cancellationToken)
+    {
+        for (int attempt = 0; ; attempt++)
+        {
+            teleportRefused = false;
+            await SendCheatAsync(command, cancellationToken);
+            if (includeWorld)
+                return;
+            await WaitForLocalTeleportAsync(cancellationToken);
+            if (!teleportRefused)
+                return;
+            if (attempt >= TeleportRefusedRetries)
+                throw new BotFailureException($"server refused the teleport {attempt + 1} times with a pending teleport (the previous teleport never completed on the server)");
+            log.Info($"teleport refused (pending teleport); retry {attempt + 1}/{TeleportRefusedRetries} in 2 s");
+            await DrainWorldPacketsAsync(TimeSpan.FromSeconds(2), cancellationToken);
+        }
     }
 
     private async Task SendCheatAsync(string command, CancellationToken cancellationToken)
@@ -4468,6 +4484,8 @@ internal sealed class BotRunner
                 {
                     string text = PacketCodec.ParseServerChatText(packet.Body);
                     log.Info($"server chat: {text}");
+                    if (text.Contains("pending teleport", StringComparison.OrdinalIgnoreCase))
+                        teleportRefused = true;
                     currentQuestReport?.ServerMessages.Add(text);
                     break;
                 }
