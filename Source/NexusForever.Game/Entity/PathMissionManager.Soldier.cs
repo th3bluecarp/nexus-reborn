@@ -9,6 +9,7 @@ using NexusForever.GameTable;
 using NexusForever.GameTable.Model;
 using NexusForever.Network.World.Message.Model.PlayerPath;
 using NexusForever.Shared;
+using NLog;
 using Path = NexusForever.Game.Static.PlayerPath.Path;
 
 namespace NexusForever.Game.Entity
@@ -57,7 +58,11 @@ namespace NexusForever.Game.Entity
             public float MaxDefendHealth { get; set; }
             public int DefendersPlaced { get; set; }
             public bool DefendersReady => Defenders.Count > 0 && DefendersPlaced == DefendIds.Length;
+            // wave creatures that stay far from the soldier (stuck on the way, spawned on the far side) and since when
+            public Dictionary<uint, double> FarSince { get; } = [];
         }
+
+        private static readonly ILogger holdoutLog = LogManager.GetLogger("Holdout");
 
         // Creature2 rows made for one holdout, named in Description like "Northern Wilds Holdout - M156 - Bruiser [NW-hCBC]" or
         // "Northern Wilds Holdout Boss - M156 - Tank" (the Frost Giant). Rows marked [DELETE], [STUB], [PROTOTYPE] or (DEPR)
@@ -102,6 +107,11 @@ namespace NexusForever.Game.Entity
         private const float HoldoutPointMax    = 40f;
         private const double HoldoutArriveTime = 2d;
         private const float HoldoutDefendRange = 3f;
+        // a wave creature this far from the soldier for this long is brought next to the soldier: a creature stuck on the way
+        // (cave walls, slopes, no path) otherwise keeps the wave alive until the event clock runs out
+        private const float HoldoutStragglerRange  = 30f;
+        private const double HoldoutStragglerTime  = 10d;
+        private const float HoldoutStragglerBring  = 6f;
 
         private Holdout holdout;
 
@@ -175,6 +185,11 @@ namespace NexusForever.Game.Entity
             }
 
             player.Session.EnqueueMessageEncrypted(HoldoutStatus(PlayerPathSoldierEventMode.InitialDelay, (int)soldierEvent.InitialSpawnTime));
+
+            holdoutLog.Info($"M{mission.Entry.Id} event {soldierEvent.Id} type {soldierEvent.PathSoldierEventType} started by {player.Name} (level {player.Level}, "
+                + $"health {player.Health}/{player.MaxHealth}) at {center}: {waves} waves, {holdout.Pool.Length} creature(s) in the pool [{string.Join(",", holdout.Pool)}]"
+                + $"{(hasRoster ? " (roster)" : "")}, {holdout.Bosses.Length} boss(es), {spawnPoints.Length} spawn point(s), {defendIds.Length} defender(s), "
+                + $"event time {soldierEvent.MaxEventTime} ms");
 
             SpawnHoldoutDefenders();
         }
@@ -276,6 +291,8 @@ namespace NexusForever.Game.Entity
             bool waveAlive = holdout.Elapsed - holdout.WaveSpawnedAt < HoldoutArriveTime || holdout.Spawned.Any(guid => player.Map.GetEntity<IUnitEntity>(guid)?.IsAlive == true);
             bool lastWave  = holdout.WaveIndex >= holdout.Waves - 1;
 
+            BringHoldoutStragglers();
+
             if (holdout.Elapsed * 1000d >= holdout.Event.MaxEventTime)
             {
                 EndHoldout(holdout.IsTimed ? PlayerPathSoldierResult.Success : PlayerPathSoldierResult.FailTimeOut);
@@ -301,6 +318,57 @@ namespace NexusForever.Game.Entity
                 SpawnHoldoutWave();
         }
 
+        /// <summary>
+        /// A live wave creature that has stayed more than <see cref="HoldoutStragglerRange"/> from the soldier for
+        /// <see cref="HoldoutStragglerTime"/> is set down next to the soldier and sent at them again.
+        /// </summary>
+        private void BringHoldoutStragglers()
+        {
+            Holdout current = holdout;
+            foreach (uint guid in current.Spawned)
+            {
+                IUnitEntity unit = player.Map.GetEntity<IUnitEntity>(guid);
+                if (unit == null || !unit.IsAlive)
+                {
+                    current.FarSince.Remove(guid);
+                    continue;
+                }
+
+                float distance = Vector3.Distance(unit.Position, player.Position);
+                if (distance <= HoldoutStragglerRange)
+                {
+                    current.FarSince.Remove(guid);
+                    continue;
+                }
+
+                if (!current.FarSince.TryGetValue(guid, out double since))
+                {
+                    current.FarSince[guid] = current.Elapsed;
+                    continue;
+                }
+
+                if (current.Elapsed - since < HoldoutStragglerTime)
+                    continue;
+
+                current.FarSince.Remove(guid);
+                Vector3 direction = Vector3.Normalize(new Vector3(unit.Position.X - player.Position.X, 0f, unit.Position.Z - player.Position.Z));
+                if (float.IsNaN(direction.X))
+                    direction = Vector3.UnitX;
+                Vector3 position = player.Position + direction * HoldoutStragglerBring;
+
+                holdoutLog.Info($"M{current.Mission.Entry.Id} wave {current.WaveIndex + 1}: creature {unit.CreatureId} guid {guid} stayed {distance:0} m away "
+                    + $"for {HoldoutStragglerTime:0} s at {unit.Position}, brought to {position}");
+
+                IPlayer soldier = player;
+                unit.RelocateOnMap(position, vector =>
+                {
+                    unit.MovementManager.SetPosition(vector, false);
+                    unit.MovementManager.BroadcastNetworkEntityCommands();
+                    unit.ThreatManager.UpdateThreat(soldier, 10);
+                });
+            }
+        }
+
         private void SpawnHoldoutWave()
         {
             holdout.WaveIndex++;
@@ -316,9 +384,14 @@ namespace NexusForever.Game.Entity
             player.Session.EnqueueMessageEncrypted(HoldoutStatus(PlayerPathSoldierEventMode.Active, (int)holdout.Event.MaxTimeBetweenWaves, boss));
 
             if (holdout.Pool.Length == 0)
+            {
+                holdoutLog.Warn($"M{holdout.Mission.Entry.Id} wave {holdout.WaveIndex + 1}: no creatures in the pool, nothing spawned");
                 return;
+            }
 
             holdout.WaveSpawnedAt = holdout.Elapsed;
+            holdoutLog.Info($"M{holdout.Mission.Entry.Id} wave {holdout.WaveIndex + 1}/{holdout.Waves}{(boss ? " (boss)" : "")} at {holdout.Elapsed:0.0} s, "
+                + $"soldier health {player.Health}/{player.MaxHealth}");
 
             var creatureInfoManager = LegacyServiceProvider.Provider.GetService<ICreatureInfoManager>();
             var entityFactory       = LegacyServiceProvider.Provider.GetService<IEntityFactory>();
@@ -374,11 +447,15 @@ namespace NexusForever.Game.Entity
                 entity.Rotation = new Vector3(angle + MathF.PI, 0f, 0f);
                 // in a defend event every other attacker goes for the defended units, the soldier pulls them off by fighting them
                 bool goesForDefenders = i % 2 == 1;
+                ICreatureInfo spawnedInfo = creatureInfo;
                 entity.AddToMap(player.Map, position, (map, guid, vector) =>
                 {
                     current.Spawned.Add(guid);
                     if (map.GetEntity<IUnitEntity>(guid) is not IUnitEntity unit || player.Map != map)
                         return;
+
+                    holdoutLog.Info($"M{current.Mission.Entry.Id} wave {current.WaveIndex + 1}: spawned creature {spawnId} guid {guid} level {unit.Level} "
+                        + $"difficulty {spawnedInfo.DifficultyEntry?.Id ?? 0u} health {unit.MaxHealth} at {vector} ({Vector3.Distance(vector, current.Center):0} m from the point)");
 
                     IUnitEntity[] defenders = goesForDefenders
                         ? current.Defenders.Select(g => map.GetEntity<IUnitEntity>(g)).Where(d => d?.IsAlive == true).ToArray()
@@ -392,6 +469,13 @@ namespace NexusForever.Game.Entity
         {
             Holdout ended = holdout;
             holdout = null;
+
+            string alive = string.Join(", ", ended.Spawned
+                .Select(guid => player.Map?.GetEntity<IUnitEntity>(guid))
+                .Where(unit => unit?.IsAlive == true)
+                .Select(unit => $"{unit.CreatureId} guid {unit.Guid} health {unit.Health}/{unit.MaxHealth} at {Vector3.Distance(unit.Position, player.Position):0} m"));
+            holdoutLog.Info($"M{ended.Mission.Entry.Id} ended {result} after {ended.Elapsed:0.0} s in wave {ended.WaveIndex + 1}/{ended.Waves}, "
+                + $"soldier health {player.Health}/{player.MaxHealth}, alive wave creatures: [{alive}]");
 
             foreach (uint guid in ended.Spawned.Concat(ended.Defenders))
                 player.Map?.GetEntity<IWorldEntity>(guid)?.RemoveFromMap();

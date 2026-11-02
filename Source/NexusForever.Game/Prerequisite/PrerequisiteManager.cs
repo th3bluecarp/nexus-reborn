@@ -42,6 +42,47 @@ namespace NexusForever.Game.Prerequisite
         }
 
         /// <summary>
+        /// Checks if a creature caster meets a spell effect's caster prerequisite.
+        /// </summary>
+        /// <remarks>
+        /// Creature auto attacks carry two damage effects gated by <see cref="PrerequisiteType.CreatureDifficulty"/> (one coefficient
+        /// for the low ranks, a bigger one for the high ranks). Applying both doubled every creature hit. Checks of other types
+        /// are not known for creatures and pass.
+        /// </remarks>
+        public bool MeetsCreature(IWorldEntity caster, uint prerequisiteId)
+        {
+            PrerequisiteEntry entry = gameTableManager.Prerequisite.GetEntry(prerequisiteId);
+            if (entry == null)
+                return true;
+
+            uint difficulty = caster?.CreatureInfo?.DifficultyEntry?.Id ?? 0u;
+            bool any = false, all = true, evaluated = false;
+            for (int i = 0; i < entry.PrerequisiteTypeId.Length; i++)
+            {
+                if (entry.PrerequisiteTypeId[i] != PrerequisiteType.CreatureDifficulty)
+                    continue;
+
+                evaluated = true;
+                bool met = entry.PrerequisiteComparisonId[i] switch
+                {
+                    PrerequisiteComparison.Equal              => difficulty == entry.ObjectId[i],
+                    PrerequisiteComparison.NotEqual           => difficulty != entry.ObjectId[i],
+                    PrerequisiteComparison.GreaterThanOrEqual => difficulty >= entry.ObjectId[i],
+                    PrerequisiteComparison.GreaterThan        => difficulty > entry.ObjectId[i],
+                    PrerequisiteComparison.LessThanOrEqual    => difficulty <= entry.ObjectId[i],
+                    PrerequisiteComparison.LessThan           => difficulty < entry.ObjectId[i],
+                    _                                         => true
+                };
+                any |= met;
+                all &= met;
+            }
+
+            if (!evaluated)
+                return true;
+            return entry.Flags == EvaluationMode.EvaluateOR ? any : all;
+        }
+
+        /// <summary>
         /// Checks if <see cref="IPlayer"/> meets supplied prerequisite.
         /// </summary>
         public bool Meets(IPlayer player, uint prerequisiteId, IPrerequisiteParameters parameters)

@@ -187,7 +187,7 @@
         ChallengeObject             = 176, // Challenge object requirement not met
         TrueLevel                   = 177, // True level requirement not met
         Item7                       = 178, // Item of type Equipped?
-        Unknown179                  = 179, // Requirements not met
+        CreatureDifficulty          = 179, // Caster's Creature2Difficulty id against ObjectId (creature spell effects pick a damage coefficient by rank)
         Unknown180                  = 180, // Requirements not met
         // 181 is unused in PrerequisiteType.tbl
         HouseOwnership              = 182, // Housing ownership requirement not met

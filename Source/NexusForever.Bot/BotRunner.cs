@@ -119,6 +119,9 @@ internal sealed class BotRunner
     private PlayerPathSoldierResult? holdoutResult;
     private ushort? activeHoldoutEventId;
     private int? currentHoldoutWave;
+    private DateTimeOffset? holdoutNoTargetSince;
+    private DateTimeOffset holdoutLastNoTargetLog = DateTimeOffset.MinValue;
+    private const float HoldoutTargetRadius = 60f;
     private string? holdoutPreparationDetail;
 
     private enum ActivationOutcome
@@ -846,17 +849,44 @@ internal sealed class BotRunner
                 return null;
             TrackedEntity? target = entities.FindNearestVisibleNonPlayer(
                 lastPosition,
-                40f,
+                HoldoutTargetRadius,
                 ignoredGuids,
                 RequireGameData().IsHoldoutHostile);
             if (target is not null)
+            {
+                holdoutNoTargetSince = null;
                 return target;
+            }
 
             TimeSpan remaining = deadline - DateTimeOffset.UtcNow;
             if (remaining <= TimeSpan.Zero
                 || await TryReadWorldPacketAsync(remaining, cancellationToken) is null)
+            {
+                LogHoldoutNoTarget(ignoredGuids);
                 return null;
+            }
         }
+    }
+
+    /// <summary>
+    /// After 10 s without a holdout target, say what is around so a wave creature standing out of reach (stuck, far spawn,
+    /// not hostile by our rule) can be told apart from a wave that is simply over.
+    /// </summary>
+    private void LogHoldoutNoTarget(IReadOnlySet<uint> ignoredGuids)
+    {
+        DateTimeOffset now = DateTimeOffset.UtcNow;
+        holdoutNoTargetSince ??= now;
+        if (now - holdoutNoTargetSince.Value < TimeSpan.FromSeconds(10)
+            || now - holdoutLastNoTargetLog < TimeSpan.FromSeconds(10))
+            return;
+
+        holdoutLastNoTargetLog = now;
+        string nearby = string.Join(", ", entities
+            .GetNearbyCreatureIds(lastPosition, 150f, 10)
+            .Select(entry => $"{entry.CreatureId}@{entry.Distance:0}m{(RequireGameData().IsHoldoutHostile(entry.CreatureId) ? "" : " (not hostile)")}"));
+        log.Info($"holdout: no target within {HoldoutTargetRadius:0} m for {(now - holdoutNoTargetSince.Value).TotalSeconds:0} s "
+            + $"(wave {FormatCurrentHoldoutWave()}, health {currentHealth?.ToString() ?? "?"}/{currentMaxHealth?.ToString() ?? "?"}, "
+            + $"{ignoredGuids.Count} guid(s) ignored); creatures within 150 m: [{nearby}]");
     }
 
     private async Task<string> PrepareForHoldoutAsync(CancellationToken cancellationToken)
@@ -4054,6 +4084,8 @@ internal sealed class BotRunner
             combatDamageTaken += previousHealth - health;
             RecordEnemyAction();
         }
+        if (activeHoldoutEventId is not null && currentHealth != health)
+            log.Info($"holdout health {health}/{currentMaxHealth?.ToString() ?? "?"} (wave {FormatCurrentHoldoutWave()})");
         currentHealth = health;
         if (resurrectionRecoveryActive && health > 0u)
         {

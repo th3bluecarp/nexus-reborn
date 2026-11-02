@@ -5,6 +5,8 @@ Newest first. "Live" means running on our test server.
 ## 2026-11-02
 
 - **Off with Her Head! can start**: the Coldburrow Xenobreeder, whose head starts the quest, had no spawn anywhere in our world (it is neither a quest giver nor an objective, so the spawn builder never placed it). It now stands in its Coldburrow Cavern chamber, three of them at the quest-marker heights, with its archived drop table, the head at 63% (data/quest_fixes.sql; SEMANTICS: hand-placed quest starters).
+- **Creatures no longer hit twice**: creature auto attacks have two damage effects, one for low ranks and one for high ranks, chosen by a caster prerequisite the server only checked for players, so every creature swing landed both (about 2.5x the intended damage). Creatures now pick the effect for their rank (SEMANTICS: creature spell effects honour their caster prerequisite). This is why holdout waves and camps of five killed a level-15 character.
+- **Holdout stragglers rejoin the fight**: a wave creature stuck more than 30 m away for 10 s is brought next to the soldier instead of keeping the wave alive until the clock runs out (SEMANTICS: holdout stragglers are brought in). Wave spawns, pulls and results are logged.
 
 ## 2026-11-01
 

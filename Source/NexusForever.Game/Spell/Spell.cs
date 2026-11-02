@@ -653,6 +653,12 @@ namespace NexusForever.Game.Spell
                 if (spell4EffectsEntry.PrerequisiteIdCasterApply > 0 && !PrerequisiteManager.Instance.Meets(player, spell4EffectsEntry.PrerequisiteIdCasterApply))
                     return false;
             }
+            else if (spell4EffectsEntry.PrerequisiteIdCasterApply > 0
+                && !PrerequisiteManager.Instance.MeetsCreature(Caster, spell4EffectsEntry.PrerequisiteIdCasterApply))
+            {
+                // creature auto attacks pick one of their damage effects by the creature's rank, both applied doubled every hit
+                return false;
+            }
 
             if (delayedEffects.TryGetValue(spell4EffectsEntry, out UpdateTimer updateTimer)
                 && !updateTimer.HasElapsed)
