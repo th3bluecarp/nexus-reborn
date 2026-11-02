@@ -270,6 +270,11 @@ namespace NexusForever.Game.Entity
         {
             Position = vector;
 
+            // a relocate queued just before the entity left its map (a local teleport followed by a world teleport)
+            // runs with no map; the vision updates need one and threw, losing the rest of the callback chain
+            if (Map == null)
+                return;
+
             UpdateVision();
             UpdateGridVision();
             UpdateRangeChecks();

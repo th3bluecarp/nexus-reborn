@@ -1393,16 +1393,19 @@ namespace NexusForever.Game.Entity
             if (showLoadingScreen)
                 Session.EnqueueMessageEncrypted(new ServerLoadingScreen());
 
-            if (callback != null)
+            // a relocate that throws (grid action errors) must not leave the teleport pending forever: every later
+            // teleport would be refused with "You have a pending teleport!" until relog
+            Map.EnqueueRelocate(this, position, (vector) =>
             {
-                RelocateOnMap(position, (vector) =>
-                {
-                    OnTeleportToLocal(vector);
-                    callback.Invoke(vector);
-                });
-            }
-            else
-                RelocateOnMap(position, OnTeleportToLocal);
+                OnRelocate(vector);
+                OnTeleportToLocal(vector);
+                callback?.Invoke(vector);
+            }, ex =>
+            {
+                log.Warn(ex, $"Local teleport of {Name}({CharacterId}) to {position} failed, clearing the pending teleport.");
+                pendingLocalTeleport = false;
+                SetControl(this);
+            });
 
             log.Trace($"Teleporting {Name}({CharacterId}) to location {position.X}, {position.Y}, {position.Z}.");
         }
@@ -1418,7 +1421,7 @@ namespace NexusForever.Game.Entity
 
             if (VanityPetGuid != null)
             {
-                IPetEntity pet = Map.GetEntity<IPetEntity>(VanityPetGuid.Value);
+                IPetEntity pet = Map?.GetEntity<IPetEntity>(VanityPetGuid.Value);
                 pet?.RelocateOnMap(position);
             }
 

@@ -160,7 +160,14 @@ namespace NexusForever.Game.Map
                 }
                 catch (Exception ex)
                 {
-                    log.Error(ex, $"Failed to process grid action for map {Entry.Id}!");
+                    string detail = action switch
+                    {
+                        IGridActionRelocate relocate => $"relocate {relocate.Entity?.GetType().Name} {relocate.Entity?.Guid} to {relocate.Vector} from {relocate.Entity?.Position}",
+                        IGridActionAdd add           => $"add {add.Entity?.GetType().Name} {add.Entity?.Guid} at {add.Vector}",
+                        IGridActionRemove remove     => $"remove {remove.Entity?.GetType().Name} {remove.Entity?.Guid}",
+                        _                            => action.GetType().Name
+                    };
+                    log.Error(ex, $"Failed to process grid action for map {Entry.Id} ({detail})!");
                     action.Exception?.Invoke(ex);
                 }
             }
@@ -362,13 +369,14 @@ namespace NexusForever.Game.Map
         /// <summary>
         /// Enqueue <see cref="IGridEntity"/> to be relocated in <see cref="IBaseMap"/> to <see cref="Vector3"/>.
         /// </summary>
-        public void EnqueueRelocate(IGridEntity entity, Vector3 position, OnRelocateDelegate callback = null)
+        public void EnqueueRelocate(IGridEntity entity, Vector3 position, OnRelocateDelegate callback = null, OnExceptionDelegate exception = null)
         {
             pendingActions.Enqueue(new GridActionRelocate
             {
-                Entity   = entity,
-                Vector   = position,
-                Callback = callback
+                Entity    = entity,
+                Vector    = position,
+                Callback  = callback,
+                Exception = exception
             });
         }
 
@@ -623,9 +631,18 @@ namespace NexusForever.Game.Map
 
             ActivateGrid(entity, vector);
             IMapGrid newGrid = GetGrid(vector);
-            IMapGrid oldGrid = GetGrid(entity.Position);
+            if (newGrid == null)
+            {
+                // the destination grid could not be activated (a position outside the map): the entity stays where it is
+                log.Warn($"Entity {entity.Guid} ({entity.GetType().Name}) relocate to {vector} on map {Entry.Id} has no grid, left at {entity.Position}.");
+                return;
+            }
 
-            if (newGrid.Coord.X != oldGrid.Coord.X
+            // the entity's own grid can be missing (a position that was never on the map, or a grid unloaded under it);
+            // that threw thousands of NullReferenceExceptions per run and lost the relocate with its callback
+            IMapGrid oldGrid = GetGrid(entity.Position);
+            if (oldGrid == null
+                || newGrid.Coord.X != oldGrid.Coord.X
                 || newGrid.Coord.Z != oldGrid.Coord.Z)
             {
                 RemoveFromGrid(entity);
