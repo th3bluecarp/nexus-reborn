@@ -53,6 +53,11 @@ internal sealed class EntityTracker
         positionPaths.Remove(guid);
     }
 
+    /// <summary>
+    /// Entity types the bot may fight or talk to: creatures and AI turrets (the arkship Sim-Turrets 73494 are AiTurret, not NonPlayer).
+    /// </summary>
+    private static bool IsCombatUnit(EntityType type) => type is EntityType.NonPlayer or EntityType.AiTurret;
+
     public TrackedEntity? Get(uint guid)
     {
         TrackedEntity? entity = entities.GetValueOrDefault(guid);
@@ -104,7 +109,7 @@ internal sealed class EntityTracker
         double radiusSquared = radius * radius;
         return entities.Values
             .Select(entity => Get(entity.Guid) ?? entity)
-            .Where(entity => entity.Type == EntityType.NonPlayer
+            .Where(entity => IsCombatUnit(entity.Type)
                 && entity.CreatureId is uint creatureId
                 && creatureIds.Contains(creatureId)
                 && (excludedGuids is null || !excludedGuids.Contains(entity.Guid))
@@ -118,7 +123,7 @@ internal sealed class EntityTracker
 
     public IReadOnlySet<uint> GetVisibleNonPlayerGuids()
         => entities.Values
-            .Where(entity => entity.Type == EntityType.NonPlayer)
+            .Where(entity => IsCombatUnit(entity.Type))
             .Select(entity => entity.Guid)
             .ToHashSet();
 
@@ -131,7 +136,7 @@ internal sealed class EntityTracker
         float radiusSquared = radius * radius;
         return entities.Values
             .Select(entity => Get(entity.Guid) ?? entity)
-            .Where(entity => entity.Type == EntityType.NonPlayer
+            .Where(entity => IsCombatUnit(entity.Type)
                 && entity.CreatureId is uint creatureId
                 && creatureFilter(creatureId)
                 && !excludedGuids.Contains(entity.Guid)
@@ -171,7 +176,7 @@ internal sealed class EntityTracker
 
         double radiusSquared = radius * radius;
         return entities.Values.Count(entity => entity.Guid != target.Guid
-            && entity.Type == EntityType.NonPlayer
+            && IsCombatUnit(entity.Type)
             && entity.Position is Vector3 position
             && entity.Health is > 0u
             && targetSpawn.DistanceSquared(position.X, position.Y, position.Z) <= radiusSquared);

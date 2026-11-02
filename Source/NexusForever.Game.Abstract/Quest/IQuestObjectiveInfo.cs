@@ -19,6 +19,7 @@ namespace NexusForever.Game.Abstract.Quest
         /// Item2 id for an ActivateEntity objective with no data whose text reads Equip the $(item=N), else 0.
         /// </summary>
         uint EquipItemId { get; }
+        uint TextCreatureId { get; }
 
         /// <summary>
         /// Quest objective is sequential, previous quest objective must be complete.

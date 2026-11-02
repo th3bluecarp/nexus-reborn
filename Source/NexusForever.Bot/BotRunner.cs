@@ -1319,6 +1319,20 @@ internal sealed class BotRunner
 
             foreach (QuestObjectiveDefinition objective in definition.Objectives)
             {
+                // optional objectives (flag 0x20: "Purchase ... from the In-Game Store" on Lots in Store!) are completed by the
+                // server once the required ones are done; the bot does not attempt them
+                if ((objective.Flags & 0x20u) != 0u && !IsObjectiveComplete(objective))
+                {
+                    log.Info($"quest {definition.Id} objective {objective.Index}: optional (flags 0x{objective.Flags:X}), skipped");
+                    questReport.Steps.Add(new StepReport
+                    {
+                        Name = $"objective {objective.Index}",
+                        Ok = true,
+                        ElapsedMs = 0,
+                        Detail = $"optional objective (flags 0x{objective.Flags:X}) left to the server"
+                    });
+                    continue;
+                }
                 TimeSpan timeout = objective.Type is QuestObjectiveType.KillCreature
                     or QuestObjectiveType.KillCreature2
                     or QuestObjectiveType.KillTargetGroup
@@ -1472,7 +1486,15 @@ internal sealed class BotRunner
             .Distinct()
             .ToArray();
         if (sharedWorlds.Length == 0)
-            throw new BotFailureException($"Quest {definition.Id} giver and receiver have no spawns in a common world.");
+        {
+            // giver and receiver live in different worlds (Bon Voyage: Dorian Walker on the arkship, Scout Frostfield on Nexus):
+            // run the quest in the giver's world, the turn in follows the receiver spawns into theirs
+            ushort giverWorld = giverSpawns.Select(spawn => spawn.WorldId).Contains(currentWorldId)
+                ? currentWorldId
+                : giverSpawns.Select(spawn => spawn.WorldId).First();
+            log.Info($"quest {definition.Id}: giver and receiver share no world; running in the giver's world {giverWorld}");
+            return giverWorld;
+        }
 
         if (sharedWorlds.Contains(currentWorldId))
             return currentWorldId;
@@ -2242,7 +2264,14 @@ internal sealed class BotRunner
         {
             Spawn spawn = ChooseNearestSpawn(creatureIds, questWorldId, attemptedSpawns);
             attemptedSpawns.Add(spawn.Id);
+            // proximity-credited entities (the Unusual Rocks tick when the character comes within 4 m) progress during the
+            // teleport itself, before any activation: count that as progress too
+            uint beforeTeleport = GetRawProgress(objective.Index);
             TrackedEntity? entity = await TeleportAndTryFindWithRetryAsync(spawn, cancellationToken);
+            if (IsObjectiveComplete(objective))
+                break;
+            if (GetRawProgress(objective.Index) != beforeTeleport)
+                continue;
             if (entity is null)
             {
                 if (attemptedSpawns.Count >= candidates.Count)
@@ -2251,6 +2280,8 @@ internal sealed class BotRunner
             }
             uint before = GetRawProgress(objective.Index);
             ActivationOutcome outcome = await RunActivationFlowAsync(objective.Index, before, entity, TimeSpan.FromSeconds(8), cancellationToken);
+            if (IsObjectiveComplete(objective))
+                break;
             if (outcome == ActivationOutcome.TargetNotUsable)
                 continue;
             if (outcome != ActivationOutcome.Progressed && attemptedSpawns.Count >= candidates.Count)
@@ -2595,7 +2626,9 @@ internal sealed class BotRunner
             throw new BotFailureException($"target group {objective.Data} resolved to no creature ids");
         IReadOnlyList<Spawn> candidates = SpawnsFor(creatureIds, questWorldId);
         if (candidates.Count == 0)
-            throw new BotFailureException($"No spawn in world {questWorldId} for combat target(s) {string.Join(',', creatureIds)}.");
+            // script-spawned enemies (the arkship Virtual Legionnaires drop in when a Sim-Turret dies) have no database spawn:
+            // keep watching for them until the objective budget runs out instead of giving up at once
+            log.Info($"no spawn in world {questWorldId} for combat target(s) {string.Join(',', creatureIds)}; waiting for script-spawned entities");
 
         IReadOnlySet<uint> objectiveCreatureIds = creatureIds.ToHashSet();
         var spawnVisits = new Dictionary<uint, int>();
@@ -3193,6 +3226,33 @@ internal sealed class BotRunner
         WorldLocation2Entry location = RequireGameData().GetWorldLocation(objective.WorldLocationId);
         uint before = GetRawProgress(objective.Index);
         await TeleportToLocationAsync(location, 0f, cancellationToken);
+        // "Right-click the $(creature=73741) ... to continue to the Protostar Model Skyplot" (10525, EnterZone 4965): the
+        // zone is entered through a portal object, so activate the creature the text names once it is streamed in
+        // only zone transitions go through a portal object; an EnterArea text may name a creature for other reasons
+        // ("Jump up to the $p(creature=73499) platform" names the boss standing on it)
+        uint portalCreatureId = objective.Type == QuestObjectiveType.EnterZone ? BotGameData.CreatureFromText(objective.Text) : 0u;
+        if (portalCreatureId != 0u && !IsObjectiveComplete(objective))
+        {
+            DateTimeOffset deadline = DateTimeOffset.UtcNow + EntityStreamTimeout;
+            TrackedEntity? portal = entities.FindCreature(portalCreatureId);
+            while (portal is null && DateTimeOffset.UtcNow < deadline)
+            {
+                if (await TryReadWorldPacketAsync(deadline - DateTimeOffset.UtcNow, cancellationToken) is null)
+                    break;
+                portal = entities.FindCreature(portalCreatureId);
+            }
+            if (portal is not null)
+            {
+                log.Info($"location objective {objective.Index}: activating portal creature {portalCreatureId} guid {portal.Guid}");
+                // portals have no activation spell: the plain ClientActivateUnit reaches the server's OnActivate directly
+                // one plain activation only: the server teleports the player (a map transfer, the portal is gone from view),
+                // and a follow-up ActivateUnitCast for the vanished unit made the server drop the session (13:41 run)
+                await RequireWorld().SendEncryptedAsync(GameMessageOpcode.ClientActivateUnit,
+                    PacketCodec.ClientActivateUnit(portal.Guid), cancellationToken);
+            }
+            else
+                log.Info($"location objective {objective.Index}: portal creature {portalCreatureId} not visible within {EntityStreamTimeout.TotalSeconds:0} s");
+        }
         await WaitForObjectiveProgressAsync(objective.Index, before, cancellationToken);
     }
 
@@ -3234,6 +3294,33 @@ internal sealed class BotRunner
     private async Task<string> TurnInQuestAsync(CancellationToken cancellationToken)
     {
         QuestDefinition definition = RequireQuest();
+        // the receiver may live in another world (Bon Voyage: accepted on the arkship, handed to Scout Frostfield in Northern
+        // Wilds): follow the receiver spawns, whatever world they are in
+        if (definition.ReceiverCreatureIds.Count > 0
+            && !spawns.Any(spawn => spawn.WorldId == questWorldId && definition.ReceiverCreatureIds.Contains(spawn.CreatureId)))
+        {
+            Spawn? receiverWorldAnchor = spawns
+                .Where(spawn => definition.ReceiverCreatureIds.Contains(spawn.CreatureId))
+                .OrderBy(spawn => spawn.WorldId == currentWorldId ? 0 : 1)
+                .ThenBy(spawn => spawn.Id)
+                .FirstOrDefault();
+            if (receiverWorldAnchor is not null)
+            {
+                log.Info($"quest {definition.Id}: receivers spawn in world {receiverWorldAnchor.WorldId}, not {questWorldId}; following them");
+                questWorldId = receiverWorldAnchor.WorldId;
+            }
+        }
+        if (definition.ReceiverCreatureIds.Count == 0)
+        {
+            // no receiver creature (The Face of the Enemy 10518, flags 0x804000): the client turns these in over the
+            // communicator, ClientQuestComplete with IsCommunicatorMsg set
+            await RequireWorld().SendEncryptedAsync(GameMessageOpcode.ClientQuestComplete,
+                PacketCodec.ClientQuestComplete(definition.Id, communicator: true), cancellationToken);
+            if (await TryWaitForQuestStateAsync(QuestState.Completed, QuestNpcConfirmationTimeout, cancellationToken))
+                return "completed over the communicator (no receiver creature); state 3";
+            throw new BotFailureException(
+                $"communicator turn-in (no receiver creature) produced no Completed state within {QuestNpcConfirmationTimeout.TotalSeconds:0} s; quest flags 0x{definition.Entry.Flags:X}; last generic error={lastGenericError?.ToString() ?? "none"}");
+        }
         if (definition.Entry.PrerequisiteItem != 0u
             && !spawns.Any(spawn => spawn.WorldId == questWorldId && definition.ReceiverCreatureIds.Contains(spawn.CreatureId)))
         {

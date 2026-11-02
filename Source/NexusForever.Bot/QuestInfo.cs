@@ -136,7 +136,7 @@ internal static class QuestInfo
                 if ((QuestObjectiveType)o.Type is QuestObjectiveType.KillTargetGroup or QuestObjectiveType.KillTargetGroups or QuestObjectiveType.ActivateTargetGroup or QuestObjectiveType.TalkToTargetGroup)
                     extra.Append(" creatures=[" + string.Join(",", gameData.ResolveTargetGroup(o.Data).Select(c => $"{c} {english.GetEntry(creatures.GetEntry(c)?.LocalizedTextIdName ?? 0)}")) + "]");
                 else if (o.Data != 0 && creatures.GetEntry(o.Data) is { } c)
-                    extra.Append($" creature=\"{english.GetEntry(c.LocalizedTextIdName)}\"");
+                    extra.Append($" creature=\"{english.GetEntry(c.LocalizedTextIdName)}\" faction={c.FactionId} creationType={c.CreationTypeEnum}");
                 uint[] rewardPaneCreatures = gameData.ResolveTargetGroup(o.TargetGroupIdRewardPane).ToArray();
                 extra.Append($" rewardPane={o.TargetGroupIdRewardPane} [{string.Join(',', rewardPaneCreatures)}]");
                 if (!gameData.IsCreature(o.Data))

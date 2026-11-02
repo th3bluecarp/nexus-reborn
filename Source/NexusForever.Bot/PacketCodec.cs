@@ -162,11 +162,11 @@ internal static class PacketCodec
         writer.Write(questId, 15);
     });
 
-    public static byte[] ClientQuestComplete(ushort questId) => Write(writer =>
+    public static byte[] ClientQuestComplete(ushort questId, bool communicator = false) => Write(writer =>
     {
         writer.Write(questId, 15);
         writer.Write((ushort)0, 15);
-        writer.Write(false);
+        writer.Write(communicator); // IsCommunicatorMsg: turn in over the communicator (quests without a receiver creature)
     });
 
     public static byte[] ClientQuestAbandon(ushort questId) => Write(writer => writer.Write(questId, 15));
