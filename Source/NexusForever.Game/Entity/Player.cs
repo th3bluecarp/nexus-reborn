@@ -1426,6 +1426,7 @@ namespace NexusForever.Game.Entity
             }
 
             pendingLocalTeleport = false;
+            log.Trace($"Teleport of {Name}({CharacterId}) to {position} complete.");
         }
 
         /// <summary>

@@ -124,11 +124,19 @@ namespace NexusForever.Game.Map
         private static bool IsFinite(Vector3 vector)
             => float.IsFinite(vector.X) && float.IsFinite(vector.Y) && float.IsFinite(vector.Z);
 
+        private DateTime backlogWarnedAt = DateTime.MinValue;
+
         private void ProcessGridActions()
         {
             var newActions = new List<IGridAction>();
-            foreach (IGridAction action in pendingActions.Dequeue(
-                SharedConfiguration.Instance.Get<MapConfig>().GridActionThreshold ?? 100u))
+            uint threshold = SharedConfiguration.Instance.Get<MapConfig>().GridActionThreshold ?? 2000u;
+            int queued = pendingActions.Count;
+            if (queued > threshold && DateTime.UtcNow - backlogWarnedAt > TimeSpan.FromSeconds(10))
+            {
+                backlogWarnedAt = DateTime.UtcNow;
+                log.Warn($"Map {Entry.Id} has {queued} grid actions queued, more than the {threshold} processed per tick; teleports and spawns wait.");
+            }
+            foreach (IGridAction action in pendingActions.Dequeue(threshold))
             {
                 try
                 {
@@ -151,6 +159,13 @@ namespace NexusForever.Game.Map
                             // a movement computed into NaN (a Gronyx in Algoroc relocated to <NaN, NaN, NaN> every tick) must not
                             // reach the entity: with a NaN position its aura target selection threw inside the map update and
                             // aborted the whole tick for every creature on the map
+                            if (actionRelocate.Entity.Map == null || actionRelocate.Entity.Guid == 0u)
+                            {
+                                // an entity that is not on the map any more (despawned, or never added) still moving: nothing to relocate
+                                if (nonFiniteRelocateLogged.Add(actionRelocate.Entity.Guid ^ 0x80000000u ^ ((actionRelocate.Entity as IWorldEntity)?.CreatureId ?? 0u)))
+                                    log.Warn($"Entity {actionRelocate.Entity.Guid} ({actionRelocate.Entity.GetType().Name}, creature {(actionRelocate.Entity as IWorldEntity)?.CreatureId}) relocate to {actionRelocate.Vector} on map {Entry.Id} ignored: not on the map.");
+                                break;
+                            }
                             if (!IsFinite(actionRelocate.Vector))
                             {
                                 if (nonFiniteRelocateLogged.Add(actionRelocate.Entity.Guid))
