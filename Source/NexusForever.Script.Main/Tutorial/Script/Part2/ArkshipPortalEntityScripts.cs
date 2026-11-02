@@ -48,3 +48,16 @@ namespace NexusForever.Script.Main.Tutorial.Script.Part2
         protected override (ushort WorldId, float X, float Y, float Z) Destination => (3460, -3634f, -437.9f, -4354f);
     }
 }
+
+namespace NexusForever.Script.Main.Tutorial.Script.Part2
+{
+    /// <summary>
+    /// "Right-click ... to continue to the Mission Simulation" (Lots in Store! 10540): zone 4964, next to the first Circuit
+    /// Switch of Servicing Circuitry (world location 52742).
+    /// </summary>
+    [ScriptFilterCreatureId(73743)]
+    public class MissionSimulationPortalEntityScript : ArkshipPortalEntityScript
+    {
+        protected override (ushort WorldId, float X, float Y, float Z) Destination => (3460, 584f, -426f, 240f);
+    }
+}
