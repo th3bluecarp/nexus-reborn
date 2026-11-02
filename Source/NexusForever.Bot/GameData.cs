@@ -134,6 +134,10 @@ internal sealed class BotGameData
 {
     private readonly GameTable<Quest2Entry> quests;
     private readonly GameTable<PrerequisiteEntry> prerequisites;
+    private readonly GameTable<WorldZoneEntry> worldZones;
+    private readonly Dictionary<uint, HashSet<uint>> zoneFamilies = [];
+    /// <summary>The class every bot character is created with (see GetBotCharacterCreation).</summary>
+    public const Class BotClass = Class.Warrior;
     private readonly GameTable<QuestObjectiveEntry> objectives;
     private readonly GameTable<Creature2Entry> creatures;
     private readonly GameTable<Item2Entry> items;
@@ -164,6 +168,7 @@ internal sealed class BotGameData
 
         quests = Load<Quest2Entry>(tablePath, "Quest2.tbl");
         prerequisites = Load<PrerequisiteEntry>(tablePath, "Prerequisite.tbl");
+        worldZones = Load<WorldZoneEntry>(tablePath, "WorldZone.tbl");
         objectives = Load<QuestObjectiveEntry>(tablePath, "QuestObjective.tbl");
         creatures = Load<Creature2Entry>(tablePath, "Creature2.tbl");
         items = Load<Item2Entry>(tablePath, "Item2.tbl");
@@ -254,8 +259,9 @@ internal sealed class BotGameData
         BotPath? requiredPath = null,
         BotFaction? faction = null)
     {
+        IReadOnlySet<uint> zoneFamily = ZoneFamily(zoneId);
         PathEpisodeEntry[] episodes = pathEpisodes.Entries
-            .Where(entry => entry.WorldZoneId == zoneId
+            .Where(entry => zoneFamily.Contains(entry.WorldZoneId)
                 && (!requiredPath.HasValue || entry.PathTypeEnum == (uint)requiredPath.Value))
             .OrderBy(entry => entry.Id)
             .ToArray();
@@ -533,6 +539,145 @@ internal sealed class BotGameData
         => Regex.Replace(name, @"\{p:[^}]*\}", "");
 
     /// <summary>
+    /// The zone and every zone below it (WorldZone.ParentZoneId).
+    /// </summary>
+    public IReadOnlySet<uint> ZoneFamily(uint zoneId)
+    {
+        if (zoneFamilies.TryGetValue(zoneId, out HashSet<uint>? cached))
+            return cached;
+        var family = new HashSet<uint> { zoneId };
+        var frontier = new Queue<uint>();
+        frontier.Enqueue(zoneId);
+        while (frontier.TryDequeue(out uint parent))
+            foreach (WorldZoneEntry child in worldZones.Entries.Where(zone => zone.ParentZoneId == parent && zone.Id != parent))
+                if (family.Add(child.Id))
+                    frontier.Enqueue(child.Id);
+        zoneFamilies[zoneId] = family;
+        return family;
+    }
+
+    /// <summary>
+    /// Why this character never receives the quest, or null: tradeskill work orders (Quest2 type 5), quests gated on a
+    /// tradeskill tier and class quests for other classes. A player sees none of these on a Warrior without tradeskills.
+    /// </summary>
+    public string? QuestSkipReason(Quest2Entry entry)
+    {
+        if (entry.Type == 5u)
+            return "tradeskill work order (Quest2 type 5)";
+        if (TradeskillPrerequisiteTier(entry) is uint tier)
+            return $"tradeskill quest (prerequisite {entry.PrerequisiteId} needs TradeskillTier {tier})";
+        if (entry.PrerequisiteId != 0u && !PrerequisiteAllowsClass(entry.PrerequisiteId, 0))
+            return $"class quest (prerequisite {entry.PrerequisiteId} excludes {BotClass})";
+        return null;
+    }
+
+    private bool PrerequisiteAllowsClass(uint prerequisiteId, int depth)
+    {
+        PrerequisiteEntry? prerequisite = prerequisites.GetEntry(prerequisiteId);
+        if (prerequisite is null || depth > 4)
+            return true;
+        bool any = false, all = true, evaluated = false;
+        for (int i = 0; i < prerequisite.PrerequisiteTypeId.Length; i++)
+        {
+            bool met;
+            switch (prerequisite.PrerequisiteTypeId[i])
+            {
+                case PrerequisiteType.Class:
+                    met = prerequisite.PrerequisiteComparisonId[i] switch
+                    {
+                        PrerequisiteComparison.Equal    => prerequisite.Value[i] == (uint)BotClass,
+                        PrerequisiteComparison.NotEqual => prerequisite.Value[i] != (uint)BotClass,
+                        _                               => true
+                    };
+                    break;
+                case PrerequisiteType.OtherPrerequisite:
+                    met = PrerequisiteAllowsClass(prerequisite.ObjectId[i], depth + 1);
+                    break;
+                case PrerequisiteType.None:
+                    continue;
+                default:
+                    met = true;
+                    break;
+            }
+            evaluated = true;
+            any |= met;
+            all &= met;
+        }
+        if (!evaluated)
+            return true;
+        return prerequisite.Flags == EvaluationMode.EvaluateOR ? any : all;
+    }
+
+    /// <summary>
+    /// A quest the Prerequisite table requires completed (QuestState 3) and the character has not completed, or null.
+    /// </summary>
+    public ushort? MissingQuestStatePrerequisite(Quest2Entry entry, Func<ushort, bool> isCompleted)
+    {
+        if (entry.PrerequisiteId == 0u)
+            return null;
+        ushort? missing = null;
+        bool Evaluate(uint prerequisiteId, int depth)
+        {
+            PrerequisiteEntry? prerequisite = prerequisites.GetEntry(prerequisiteId);
+            if (prerequisite is null || depth > 4)
+                return true;
+            bool any = false, all = true, evaluated = false;
+            for (int i = 0; i < prerequisite.PrerequisiteTypeId.Length; i++)
+            {
+                bool met = true;
+                switch (prerequisite.PrerequisiteTypeId[i])
+                {
+                    case PrerequisiteType.QuestState when prerequisite.PrerequisiteComparisonId[i] == PrerequisiteComparison.Equal
+                        && prerequisite.Value[i] == 3u && prerequisite.ObjectId[i] != 0u && prerequisite.ObjectId[i] <= ushort.MaxValue:
+                        met = isCompleted((ushort)prerequisite.ObjectId[i]);
+                        if (!met)
+                            missing ??= (ushort)prerequisite.ObjectId[i];
+                        break;
+                    case PrerequisiteType.OtherPrerequisite:
+                        met = Evaluate(prerequisite.ObjectId[i], depth + 1);
+                        break;
+                    case PrerequisiteType.None:
+                        continue;
+                }
+                evaluated = true;
+                any |= met;
+                all &= met;
+            }
+            if (!evaluated)
+                return true;
+            return prerequisite.Flags == EvaluationMode.EvaluateOR ? any : all;
+        }
+        return Evaluate(entry.PrerequisiteId, 0) ? null : missing;
+    }
+
+    /// <summary>
+    /// Quest ids a quest's Prerequisite table entry requires completed (AND trees only; an OR tree is a branch choice the
+    /// run leaves to the server).
+    /// </summary>
+    public IReadOnlyList<ushort> QuestStatePrerequisiteQuests(Quest2Entry entry)
+    {
+        var result = new List<ushort>();
+        void Collect(uint prerequisiteId, int depth)
+        {
+            PrerequisiteEntry? prerequisite = prerequisites.GetEntry(prerequisiteId);
+            if (prerequisite is null || depth > 4 || prerequisite.Flags == EvaluationMode.EvaluateOR)
+                return;
+            for (int i = 0; i < prerequisite.PrerequisiteTypeId.Length; i++)
+            {
+                if (prerequisite.PrerequisiteTypeId[i] == PrerequisiteType.QuestState
+                    && prerequisite.PrerequisiteComparisonId[i] == PrerequisiteComparison.Equal
+                    && prerequisite.Value[i] == 3u && prerequisite.ObjectId[i] != 0u && prerequisite.ObjectId[i] <= ushort.MaxValue)
+                    result.Add((ushort)prerequisite.ObjectId[i]);
+                else if (prerequisite.PrerequisiteTypeId[i] == PrerequisiteType.OtherPrerequisite)
+                    Collect(prerequisite.ObjectId[i], depth + 1);
+            }
+        }
+        if (entry.PrerequisiteId != 0u)
+            Collect(entry.PrerequisiteId, 0);
+        return result;
+    }
+
+    /// <summary>
     /// The TradeskillTier a quest requires through a TradeSkillProfession prerequisite (Algoroc's tradeskill quest lines),
     /// or null. A character without that tradeskill never receives the quest, so the bot skips it like a player would.
     /// </summary>
@@ -577,7 +722,7 @@ internal sealed class BotGameData
     {
         IEnumerable<QuestDefinition> roots = options.ZoneId is uint zoneId
             ? quests.Entries
-                .Where(entry => entry.WorldZoneId == zoneId && MatchesFaction(entry, options.Faction))
+                .Where(entry => ZoneFamily(zoneId).Contains(entry.WorldZoneId) && MatchesFaction(entry, options.Faction))
                 .Select(entry => GetQuest(checked((ushort)entry.Id)))
             : options.QuestIds.Select(GetQuest);
 
@@ -622,8 +767,10 @@ internal sealed class BotGameData
             return TopologicalOrder(requested, requestedDependencies);
         }
 
+        // a zone's quests sit in its sub zones (Algoroc 13 has 5 child zones and 25 grandchildren; only 57 of its quests name 13)
+        IReadOnlySet<uint> zoneFamily = ZoneFamily(options.ZoneId.Value);
         QuestDefinition[] roots = quests.Entries
-            .Where(entry => entry.WorldZoneId == options.ZoneId.Value && MatchesFaction(entry, options.Faction))
+            .Where(entry => zoneFamily.Contains(entry.WorldZoneId) && MatchesFaction(entry, options.Faction))
             .Select(entry => GetQuest(checked((ushort)entry.Id)))
             .ToArray();
         if (roots.Length == 0)
@@ -813,10 +960,15 @@ internal sealed class BotGameData
             .Where(id => id != 0u)
             .Select(id => GetQuest(checked((ushort)id)))
             .ToArray();
+        // quests the Prerequisite table requires completed are prerequisites too (Algoroc chains use it instead of PrerequisiteQuests)
+        QuestDefinition[] stateRequired = QuestStatePrerequisiteQuests(definition.Entry)
+            .Where(id => quests.GetEntry(id) is not null && candidates.All(candidate => candidate.Id != id))
+            .Select(GetQuest)
+            .ToArray();
         if (candidates.Length == 0)
-            return candidates;
+            return stateRequired;
         if ((definition.Entry.PrerequisiteFlags & 1u) == 0u)
-            return candidates;
+            return candidates.Concat(stateRequired).ToArray();
 
         QuestDefinition[] compatible = candidates.Where(candidate => MatchesFaction(candidate.Entry, faction)).ToArray();
         QuestDefinition selected = (compatible.Length > 0 ? compatible : candidates)

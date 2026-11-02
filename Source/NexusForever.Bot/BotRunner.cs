@@ -482,9 +482,9 @@ internal sealed class BotRunner
                 finishedQuests.Add(definition.Id);
                 continue;
             }
-            if (RequireGameData().TradeskillPrerequisiteTier(definition.Entry) is uint tradeskillTier)
+            if (RequireGameData().QuestSkipReason(definition.Entry) is string skipReason)
             {
-                AddTradeskillQuestReport(definition, tradeskillTier);
+                AddNotForCharacterQuestReport(definition, skipReason);
                 finishedQuests.Add(definition.Id);
                 continue;
             }
@@ -1644,14 +1644,14 @@ internal sealed class BotRunner
             .Select(value => checked((ushort)value))
             .ToArray();
         if (prerequisites.Length == 0)
-            return null;
+            return RequireGameData().MissingQuestStatePrerequisite(definition.Entry, completedQuests.Contains);
         if ((definition.Entry.PrerequisiteFlags & 1u) != 0u)
             return prerequisites.Any(completedQuests.Contains)
                 ? null
                 : RequireGameData().GetPrerequisiteBranchChoice(definition.Id)?.BranchQuestId ?? prerequisites[0];
         return prerequisites.FirstOrDefault(id => !completedQuests.Contains(id)) is ushort missing && missing != 0
             ? missing
-            : null;
+            : RequireGameData().MissingQuestStatePrerequisite(definition.Entry, completedQuests.Contains);
     }
 
     private void AddBlockedQuestReport(QuestDefinition definition, ushort prerequisiteId)
@@ -1695,16 +1695,16 @@ internal sealed class BotRunner
         report.Quests.Add(questReport);
     }
 
-    private void AddTradeskillQuestReport(QuestDefinition definition, uint tradeskillTier)
+    private void AddNotForCharacterQuestReport(QuestDefinition definition, string reason)
     {
         var questReport = CreateQuestReport(definition);
         questReport.Skipped = true;
         questReport.Result = "SKIPPED";
-        questReport.Failure = $"SKIPPED: tradeskill quest (prerequisite {definition.Entry.PrerequisiteId} needs TradeskillTier {tradeskillTier}); a character without that tradeskill never receives it";
+        questReport.Failure = $"SKIPPED: {reason}; this character never receives it";
         questReport.EndTimestamp = DateTimeOffset.UtcNow;
         questReport.Steps.Add(new StepReport
         {
-            Name = "skip tradeskill quest",
+            Name = "skip quest not for this character",
             Ok = true,
             ElapsedMs = 0,
             Detail = questReport.Failure
