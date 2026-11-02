@@ -3284,6 +3284,22 @@ internal sealed class BotRunner
     private async Task<string> TurnInQuestAsync(CancellationToken cancellationToken)
     {
         QuestDefinition definition = RequireQuest();
+        // the receiver may live in another world (Bon Voyage: accepted on the arkship, handed to Scout Frostfield in Northern
+        // Wilds): follow the receiver spawns, whatever world they are in
+        if (definition.ReceiverCreatureIds.Count > 0
+            && !spawns.Any(spawn => spawn.WorldId == questWorldId && definition.ReceiverCreatureIds.Contains(spawn.CreatureId)))
+        {
+            Spawn? receiverWorldAnchor = spawns
+                .Where(spawn => definition.ReceiverCreatureIds.Contains(spawn.CreatureId))
+                .OrderBy(spawn => spawn.WorldId == currentWorldId ? 0 : 1)
+                .ThenBy(spawn => spawn.Id)
+                .FirstOrDefault();
+            if (receiverWorldAnchor is not null)
+            {
+                log.Info($"quest {definition.Id}: receivers spawn in world {receiverWorldAnchor.WorldId}, not {questWorldId}; following them");
+                questWorldId = receiverWorldAnchor.WorldId;
+            }
+        }
         if (definition.ReceiverCreatureIds.Count == 0)
         {
             // no receiver creature (The Face of the Enemy 10518, flags 0x804000): the client turns these in over the
