@@ -325,6 +325,13 @@ internal static class PacketCodec
 
     public static GenericError ParseGenericError(byte[] body) => Read(body, reader => reader.ReadEnum<GenericError>(8));
 
+    // ServerItemError.Write: ulong item guid, then the GenericError (ItemInventoryFull when a gathered item has no bag slot)
+    public static GenericError ParseItemError(byte[] body) => Read(body, reader =>
+    {
+        _ = reader.ReadULong();
+        return reader.ReadEnum<GenericError>(8);
+    });
+
     public static SpellCastStart ParseSpellStart(byte[] body) => Read(body, reader =>
     {
         uint serverUniqueId = reader.ReadUInt();

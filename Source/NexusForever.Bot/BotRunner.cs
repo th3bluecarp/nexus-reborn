@@ -62,6 +62,7 @@ internal sealed class BotRunner
     private readonly List<LootEvidence> combatLoot = [];
     private readonly HashSet<uint> lootedItemIds = [];
     private GenericError? lastGenericError;
+    private GenericError? lastItemError;
     private readonly Dictionary<ushort, PathMissionStatus> pathMissionStates = [];
     private readonly List<uint> questNpcAttemptCreatureIds = [];
     private readonly List<string> questNpcAttemptDetails = [];
@@ -924,6 +925,11 @@ internal sealed class BotRunner
             ?? throw new BotFailureException($"PathSettlerHub {definition.Entry.ObjectId} was not resolved");
         if (hub.Builds.Count == 0)
             throw new BotFailureException($"hub {hub.HubId} has no usable PathSettlerImprovementGroup tiers");
+        // the quest phase leaves the bags full of loot; a gathered resource with no bag slot is lost (ServerItemError ItemInventoryFull)
+        var keepItems = hub.Resources.Select(resource => resource.ItemId).ToHashSet();
+        int freedBefore = await FreeLootedJunkAsync(keepItems, $"settler mission {definition.Id}", cancellationToken);
+        if (freedBefore > 0)
+            missionReport.Detail = (missionReport.Detail ?? "") + $"freed {freedBefore} looted item(s) ";
 
         foreach (SettlerBuildDefinition build in hub.Builds)
         {
@@ -979,6 +985,7 @@ internal sealed class BotRunner
                     if (spawn is null || entity is null)
                         throw new BotFailureException($"resource {resource.Name} item {itemId} needs {required}, inventory has {GetInventoryItemCount(itemId)}, and none of {candidates.Length} remaining spawn(s) was visible; gathered=[{FormatResources(missionReport)}]");
                     uint before = GetInventoryItemCount(itemId);
+                    lastItemError = null;
 
                     // Resource nodes are activated directly by the retail client. If the creature has a cast activation,
                     // complete that normal interaction too so OnActivateSuccess can award the item.
@@ -994,8 +1001,16 @@ internal sealed class BotRunner
                             cancellationToken);
                         gathered = GetInventoryItemCount(itemId) > before;
                     }
+                    if (!gathered && lastItemError == GenericError.ItemInventoryFull)
+                    {
+                        int freed = await FreeLootedJunkAsync(keepItems, $"settler mission {definition.Id} (bags full at node {entity.Guid})", cancellationToken);
+                        log.Info($"settler resource {resource.Name}: node {entity.Guid} gathered into full bags; freed {freed} looted item(s), moving to the next node");
+                        missionReport.Detail = (missionReport.Detail ?? "") + $"bags-full@{entity.Guid}(freed {freed}) ";
+                        if (freed > 0)
+                            continue;
+                    }
                     if (!gathered)
-                        throw new BotFailureException($"activation of resource creature {spawn.CreatureId} guid {entity.Guid} did not add item {itemId}");
+                        throw new BotFailureException($"activation of resource creature {spawn.CreatureId} guid {entity.Guid} did not add item {itemId}{(lastItemError is null ? "" : $" (server item error {lastItemError})")}");
 
                     uint gained = GetInventoryItemCount(itemId) - before;
                     missionReport.ResourcesGathered[itemId] = missionReport.ResourcesGathered.GetValueOrDefault(itemId) + gained;
@@ -3138,6 +3153,14 @@ internal sealed class BotRunner
         keep.UnionWith(definition.Entry.PushedItemIds.Where(id => id != 0u));
         if (definition.Entry.PrerequisiteItem != 0u)
             keep.Add(definition.Entry.PrerequisiteItem);
+        return await FreeLootedJunkAsync(keep, $"quest {definition.Id}", cancellationToken);
+    }
+
+    /// <summary>
+    /// Deletes looted items that are not in <paramref name="keep"/>, as a player clears quest loot from full bags.
+    /// </summary>
+    private async Task<int> FreeLootedJunkAsync(IReadOnlySet<uint> keep, string why, CancellationToken cancellationToken)
+    {
         InventoryItemInfo[] junk = inventory.Values
             .Where(item => item.Location == InventoryLocation.Inventory && lootedItemIds.Contains(item.ItemId) && !keep.Contains(item.ItemId))
             .ToArray();
@@ -3146,7 +3169,7 @@ internal sealed class BotRunner
             await RequireWorld().SendEncryptedAsync(GameMessageOpcode.ClientItemDelete,
                 PacketCodec.ClientItemDelete(item.Location, item.BagIndex), cancellationToken);
         }
-        log.Info($"bag space: requested deletion of {junk.Length} looted item(s) not needed by quest {definition.Id}");
+        log.Info($"bag space: requested deletion of {junk.Length} looted item(s) not needed by {why}");
         DateTimeOffset deadline = DateTimeOffset.UtcNow + TimeSpan.FromSeconds(5);
         while (junk.Any(item => inventory.ContainsKey(item.Guid)) && DateTimeOffset.UtcNow < deadline)
         {
@@ -4407,6 +4430,14 @@ internal sealed class BotRunner
                     lastGenericError = error;
                     log.Info($"server generic error: {error}");
                     currentQuestReport?.ServerMessages.Add($"generic error: {error}");
+                    break;
+                }
+                case GameMessageOpcode.ServerItemError:
+                {
+                    GenericError error = PacketCodec.ParseItemError(packet.Body);
+                    lastItemError = error;
+                    log.Info($"server item error: {error}");
+                    currentQuestReport?.ServerMessages.Add($"item error: {error}");
                     break;
                 }
                 case GameMessageOpcode.ServerChat:
