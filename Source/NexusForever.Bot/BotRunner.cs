@@ -2256,7 +2256,14 @@ internal sealed class BotRunner
         {
             Spawn spawn = ChooseNearestSpawn(creatureIds, questWorldId, attemptedSpawns);
             attemptedSpawns.Add(spawn.Id);
+            // proximity-credited entities (the Unusual Rocks tick when the character comes within 4 m) progress during the
+            // teleport itself, before any activation: count that as progress too
+            uint beforeTeleport = GetRawProgress(objective.Index);
             TrackedEntity? entity = await TeleportAndTryFindWithRetryAsync(spawn, cancellationToken);
+            if (IsObjectiveComplete(objective))
+                break;
+            if (GetRawProgress(objective.Index) != beforeTeleport)
+                continue;
             if (entity is null)
             {
                 if (attemptedSpawns.Count >= candidates.Count)
@@ -2265,6 +2272,8 @@ internal sealed class BotRunner
             }
             uint before = GetRawProgress(objective.Index);
             ActivationOutcome outcome = await RunActivationFlowAsync(objective.Index, before, entity, TimeSpan.FromSeconds(8), cancellationToken);
+            if (IsObjectiveComplete(objective))
+                break;
             if (outcome == ActivationOutcome.TargetNotUsable)
                 continue;
             if (outcome != ActivationOutcome.Progressed && attemptedSpawns.Count >= candidates.Count)
