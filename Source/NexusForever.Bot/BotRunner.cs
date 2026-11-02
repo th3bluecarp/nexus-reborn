@@ -1534,7 +1534,12 @@ internal sealed class BotRunner
 
     private async Task LevelForQuestIfNeededAsync(QuestDefinition definition, CancellationToken cancellationToken)
     {
-        uint targetLevel = definition.Entry.ConLevel + (RequiresLevelBoost(definition) ? 5u : 1u);
+        // camps with many kills (Shellshock: nine Dominion soldiers who aggro together) killed the bot at con level + 5,
+        // 3335 damage taken over 31 enemy casts; a bigger margin for objectives asking five or more kills
+        bool camp = definition.Objectives.Any(objective => objective.Type is QuestObjectiveType.KillCreature
+            or QuestObjectiveType.KillCreature2 or QuestObjectiveType.KillTargetGroup or QuestObjectiveType.KillTargetGroups
+            && objective.Count >= 5u);
+        uint targetLevel = definition.Entry.ConLevel + (RequiresLevelBoost(definition) ? (camp ? 9u : 5u) : 1u);
         if (options.ZoneId is not null)
             targetLevel = Math.Min(15u, targetLevel);
 
