@@ -482,9 +482,36 @@ internal sealed class BotRunner
             .Where(definition => !HasReputationObjective(definition))
             .Concat(questPlan.Where(HasReputationObjective))
             .ToArray();
-        foreach (QuestDefinition definition in orderedPlan)
+        for (int planIndex = 0; planIndex < orderedPlan.Length; planIndex++)
         {
+            QuestDefinition definition = orderedPlan[planIndex];
             cancellationToken.ThrowIfCancellationRequested();
+            if (botDied)
+            {
+                // a dead character cannot accept or fight: try the resurrection once more, else stop the run honestly
+                // instead of failing every remaining quest with a misleading reason (Algoroc 2026-11-02)
+                QuestRunReport deadReport = CreateQuestReport(definition);
+                await TryRecoverFromDeathAsync(deadReport, cancellationToken);
+                if (botDied)
+                {
+                    string reason = "not run: the character is dead and resurrection failed twice";
+                    log.Info($"{reason}; {orderedPlan.Length - planIndex} quest(s) left");
+                    deadReport.Result = "FAIL";
+                    deadReport.Failure = reason;
+                    deadReport.EndTimestamp = DateTimeOffset.UtcNow;
+                    report.Quests.Add(deadReport);
+                    foreach (QuestDefinition rest in orderedPlan.Skip(planIndex + 1))
+                    {
+                        QuestRunReport restReport = CreateQuestReport(rest);
+                        restReport.Result = "FAIL";
+                        restReport.Failure = reason;
+                        restReport.EndTimestamp = DateTimeOffset.UtcNow;
+                        report.Quests.Add(restReport);
+                    }
+                    break;
+                }
+                log.Info($"character resurrected before quest {definition.Id}");
+            }
             if (StartItem(definition) is uint startItem && startItem != 0u
                 && (!itemDropSources.TryGetValue(startItem, out ItemDropSources? sources)
                     || sources.CreatureIds.Count == 0))
@@ -1725,6 +1752,11 @@ internal sealed class BotRunner
         ushort? homeWorld = receiver is null ? null : checked((ushort)receiver.WorldId);
         foreach (QuestObjectiveDefinition objective in definition.Objectives)
         {
+            // an EnterZone objective naming a zone outside the run zone's family is an instance or another zone (the class
+            // training instances: Support Training enters zone 4819 of world 3406 through a portal in Algoroc)
+            if (objective.Type == QuestObjectiveType.EnterZone && objective.Data != 0u && options.ZoneId is uint runZone
+                && !RequireGameData().ZoneFamily(runZone).Contains(objective.Data) && !RequireGameData().ZoneFamily(objective.Data).Contains(runZone))
+                return $"enters zone {objective.Data} outside zone {runZone} (objective {objective.Index}); instance or other zone content";
             if (objective.Type is not (QuestObjectiveType.EnterZone or QuestObjectiveType.EnterArea) || objective.WorldLocationId == 0u)
                 continue;
             WorldLocation2Entry? location = RequireGameData().TryGetWorldLocation(objective.WorldLocationId);
