@@ -566,8 +566,9 @@ internal sealed class BotRunner
 
             if (GetPathMissionStatus(definition.Id)?.Completed == true)
             {
-                currentMissionReport.Result = "SKIPPED";
-                currentMissionReport.Detail = "already complete in ServerPathEpisodeProgress/ServerPathMissionActivate";
+                currentMissionReport.Result = "PASS";
+                currentMissionReport.Detail = $"completed during the quest phase (server progress={GetPathMissionStatus(definition.Id)?.Progress.ToString() ?? "?"}/{definition.Count} before the mission phase; a player walking the zone completes it the same way); episode={definition.Episode.Id}";
+                log.Info($"path mission {definition.Id} PASS: {currentMissionReport.Detail}");
                 currentMissionReport.EndTimestamp = DateTimeOffset.UtcNow;
                 currentMissionReport = null;
                 continue;
