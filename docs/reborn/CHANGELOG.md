@@ -4,6 +4,7 @@ Newest first. "Live" means running on our test server.
 
 ## 2026-11-01
 
+- **Back-to-back area objectives**: when entering an area completes one objective and the next objective asks for the same area, it is credited by the same entry (Deconstruct the Construct's "Jump up to the platform" never completed because the player was already there).
 - **Leaving the arkship works**: the Northern Wilds Departures Terminal sends the player to the crash site and credits Bon Voyage's travel step; the Virtual Eldan Defense Construct can be fought (it was friendly-to-all like the turrets).
 - **Jump through the Unusual Rocks counts**: the rocks could never be ticked off (no activation spell, identical checklist indices); passing close to each one now ticks the next box, and the cryosleep exit credits both factions' zone ids (SEMANTICS: Unusual Rocks tick on approach).
 - **Arkship portals work**: the Skyplot portal and the cryosleep exit had no activation spell, so right-clicking them did nothing; they now teleport the player into the next stage of the simulation (SEMANTICS: arkship portals teleport).

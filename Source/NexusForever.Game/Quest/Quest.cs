@@ -673,25 +673,37 @@ namespace NexusForever.Game.Quest
             if (State == QuestState.Achieved)
                 return;
 
-            // Order in reverse Index so that sequential steps don't completed by the same action
-            foreach (IQuestObjective objective in objectives
-                .Where(predicate)
-                .OrderByDescending(o => o.Index))
+            // Order in reverse Index so that sequential steps don't completed by the same action.
+            // A sequential objective that becomes updatable because this very event completed its predecessor is updated too
+            // when it asks for the same thing (Deconstruct the Construct: "see a Direction Arrow" and "Jump up to the platform"
+            // are both EnterArea 8548, the second was never credited because the player was already standing in the area).
+            bool updatedAny;
+            do
             {
-                if (objective.IsComplete())
-                    continue;
+                updatedAny = false;
+                foreach (IQuestObjective objective in objectives
+                    .Where(predicate)
+                    .OrderByDescending(o => o.Index))
+                {
+                    if (objective.IsComplete())
+                        continue;
 
-                if (!CanUpdateObjective(objective))
-                    continue;
+                    if (!CanUpdateObjective(objective))
+                        continue;
 
-                uint oldProgress = objective.Progress;
-                objective.ObjectiveUpdate(progress);
+                    uint oldProgress = objective.Progress;
+                    objective.ObjectiveUpdate(progress);
 
-                if (objective.Progress != oldProgress)
-                    SendQuestObjectiveUpdate(objective);
+                    if (objective.Progress != oldProgress)
+                    {
+                        SendQuestObjectiveUpdate(objective);
+                        if (objective.IsComplete() && objective.ObjectiveInfo.Type is QuestObjectiveType.EnterArea or QuestObjectiveType.EnterZone)
+                            updatedAny = true;
+                    }
 
-                scriptCollection?.Invoke<IQuestScript>(s => s.OnObjectiveUpdate(objective));
-            }
+                    scriptCollection?.Invoke<IQuestScript>(s => s.OnObjectiveUpdate(objective));
+                }
+            } while (updatedAny);
 
             player.VisibilityUpdate();
 
