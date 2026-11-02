@@ -488,7 +488,14 @@ internal sealed class BotRunner
                 finishedQuests.Add(definition.Id);
                 continue;
             }
-            if ((RequireGameData().QuestSkipReason(definition.Entry) ?? InstanceSkipReason(definition)) is string skipReason)
+            var prerequisiteContext = new PrerequisiteContext(
+                BotGameData.BotClass,
+                options.Path,
+                Math.Max(currentLevel, definition.Entry.ConLevel + 1u),
+                id => questStates.GetValueOrDefault(id, QuestState.Unknown));
+            if ((RequireGameData().QuestSkipReason(definition.Entry)
+                ?? InstanceSkipReason(definition)
+                ?? RequireGameData().PrerequisiteBlockReason(definition.Entry, prerequisiteContext)) is string skipReason)
             {
                 AddNotForCharacterQuestReport(definition, skipReason);
                 finishedQuests.Add(definition.Id);
@@ -1783,6 +1790,20 @@ internal sealed class BotRunner
                     ? spawns.Count(spawn => definition.ReceiverCreatureIds.Contains(spawn.CreatureId))
                     : 0;
                 acceptTimeout = AllowEveryQuestNpcSpawnAttempt(giverSpawnCount + receiverSpawnCount, acceptTimeout);
+            }
+            if (RequireGameData().RequiredSubZone(definition.Entry) is uint requiredZone)
+            {
+                // the server checks the InSubZone prerequisite at accept (the communicator offers these on zone entry)
+                await RunQuestStepAsync("enter prerequisite zone", TimeSpan.FromSeconds(60), cancellationToken, async token =>
+                {
+                    Spawn? giverSpawn = SpawnsFor(definition.GiverCreatureIds, questWorldId).FirstOrDefault();
+                    Vector3? near = giverSpawn is null ? null : new Vector3(giverSpawn.X, giverSpawn.Y, giverSpawn.Z);
+                    WorldLocation2Entry location = RequireGameData().LocationInZone(requiredZone, questWorldId, near)
+                        ?? throw new BotFailureException($"no WorldLocation2 lies in zone {requiredZone} of world {questWorldId}");
+                    await TeleportToLocationAsync(location, 0f, token);
+                    await DrainWorldPacketsAsync(TimeSpan.FromSeconds(1), token);
+                    return $"zone {requiredZone} via WorldLocation2 {location.Id} ({location.Position0:0},{location.Position1:0},{location.Position2:0})";
+                });
             }
             await RunQuestStepAsync("accept quest", acceptTimeout, cancellationToken, AcceptQuestAsync);
             await LevelForQuestIfNeededAsync(definition, cancellationToken);

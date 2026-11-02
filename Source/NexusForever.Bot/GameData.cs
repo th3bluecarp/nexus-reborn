@@ -1,3 +1,4 @@
+using System.Numerics;
 using System.Text.RegularExpressions;
 using NexusForever.Game.Static;
 using NexusForever.Game.Static.Entity;
@@ -115,6 +116,7 @@ internal sealed record PathMissionDefinition(
     public string TypeName => Enum.IsDefined(Type) ? Type.ToString() : $"Unknown{RawType}";
 }
 
+internal sealed record PrerequisiteContext(Class Class, BotPath Path, uint Level, Func<ushort, QuestState> QuestStateOf);
 internal sealed record CartographyPoint(uint HexGroupId, ushort WorldId, float X, float Y, float Z);
 internal sealed record SettlerResourceDefinition(uint ItemId, string Name, IReadOnlyList<uint> CreatureIds);
 internal sealed record SettlerBuildDefinition(
@@ -568,9 +570,139 @@ internal sealed class BotGameData
             return "tradeskill work order (Quest2 type 5)";
         if (TradeskillPrerequisiteTier(entry) is uint tier)
             return $"tradeskill quest (prerequisite {entry.PrerequisiteId} needs TradeskillTier {tier})";
-        if (entry.PrerequisiteId != 0u && !PrerequisiteAllowsClass(entry.PrerequisiteId, 0))
-            return $"class quest (prerequisite {entry.PrerequisiteId} excludes {BotClass})";
         return null;
+    }
+
+    /// <summary>
+    /// Why this character fails the quest's Prerequisite entry at accept, or null. Only the checks a player could not change
+    /// by playing on are judged: class, path, a level window, a quest that must be untouched, a tradeskill tier. A quest that
+    /// must be completed is left to the run order, a zone the player must stand in is entered before the accept.
+    /// </summary>
+    public string? PrerequisiteBlockReason(Quest2Entry entry, PrerequisiteContext context)
+    {
+        if (entry.PrerequisiteId == 0u)
+            return null;
+        var reasons = new List<string>();
+        bool Evaluate(uint prerequisiteId, int depth)
+        {
+            PrerequisiteEntry? prerequisite = prerequisites.GetEntry(prerequisiteId);
+            if (prerequisite is null || depth > 4)
+                return true;
+            bool any = false, all = true, evaluated = false;
+            for (int i = 0; i < prerequisite.PrerequisiteTypeId.Length; i++)
+            {
+                PrerequisiteComparison comparison = prerequisite.PrerequisiteComparisonId[i];
+                uint value = prerequisite.Value[i];
+                uint objectId = prerequisite.ObjectId[i];
+                bool met = true;
+                switch (prerequisite.PrerequisiteTypeId[i])
+                {
+                    case PrerequisiteType.None:
+                        continue;
+                    case PrerequisiteType.Level:
+                        met = Compare(context.Level, comparison, value);
+                        if (!met)
+                            reasons.Add($"level must be {Describe(comparison, value)}, character is {context.Level}");
+                        break;
+                    case PrerequisiteType.Class:
+                        met = Compare((uint)context.Class, comparison, value);
+                        if (!met)
+                            reasons.Add($"class must be {Describe(comparison, value)} ({(Class)value}), character is {context.Class}");
+                        break;
+                    case PrerequisiteType.Path:
+                        met = Compare((uint)context.Path, comparison, value);
+                        if (!met)
+                            reasons.Add($"path must be {Describe(comparison, value)} ({(NexusForever.Game.Static.PlayerPath.Path)(byte)value}), character is {context.Path}");
+                        break;
+                    case PrerequisiteType.QuestState when comparison == PrerequisiteComparison.Equal && value == 3u:
+                        met = true; // a quest that must be completed is ordered before this one, or reported as blocking
+                        break;
+                    case PrerequisiteType.QuestState when objectId != 0u && objectId <= ushort.MaxValue:
+                        QuestState state = context.QuestStateOf((ushort)objectId);
+                        met = Compare((uint)state, comparison, value);
+                        if (!met)
+                            reasons.Add($"quest {objectId} state must be {Describe(comparison, value)}, is {state}");
+                        break;
+                    case PrerequisiteType.TradeSkillProfession:
+                        met = Compare(0u, comparison, value);
+                        if (!met)
+                            reasons.Add($"tradeskill tier {objectId} required");
+                        break;
+                    case PrerequisiteType.OtherPrerequisite:
+                        met = Evaluate(objectId, depth + 1);
+                        break;
+                }
+                evaluated = true;
+                any |= met;
+                all &= met;
+            }
+            if (!evaluated)
+                return true;
+            return prerequisite.Flags == EvaluationMode.EvaluateOR ? any : all;
+        }
+        return Evaluate(entry.PrerequisiteId, 0)
+            ? null
+            : $"prerequisite {entry.PrerequisiteId}: {string.Join(" / ", reasons.Distinct())}";
+    }
+
+    private static bool Compare(uint actual, PrerequisiteComparison comparison, uint value) => comparison switch
+    {
+        PrerequisiteComparison.Equal              => actual == value,
+        PrerequisiteComparison.NotEqual           => actual != value,
+        PrerequisiteComparison.GreaterThanOrEqual => actual >= value,
+        PrerequisiteComparison.GreaterThan        => actual > value,
+        PrerequisiteComparison.LessThanOrEqual    => actual <= value,
+        PrerequisiteComparison.LessThan           => actual < value,
+        _                                         => true
+    };
+
+    private static string Describe(PrerequisiteComparison comparison, uint value) => comparison switch
+    {
+        PrerequisiteComparison.Equal              => $"= {value}",
+        PrerequisiteComparison.NotEqual           => $"!= {value}",
+        PrerequisiteComparison.GreaterThanOrEqual => $">= {value}",
+        PrerequisiteComparison.GreaterThan        => $"> {value}",
+        PrerequisiteComparison.LessThanOrEqual    => $"<= {value}",
+        PrerequisiteComparison.LessThan           => $"< {value}",
+        _                                         => $"{comparison} {value}"
+    };
+
+    /// <summary>
+    /// The zone the player must stand in to accept the quest (an InSubZone prerequisite, as the communicator offers on zone entry), or null.
+    /// </summary>
+    public uint? RequiredSubZone(Quest2Entry entry)
+    {
+        uint? found = null;
+        void Collect(uint prerequisiteId, int depth)
+        {
+            PrerequisiteEntry? prerequisite = prerequisites.GetEntry(prerequisiteId);
+            if (prerequisite is null || depth > 4 || found is not null)
+                return;
+            for (int i = 0; i < prerequisite.PrerequisiteTypeId.Length; i++)
+            {
+                if (prerequisite.PrerequisiteTypeId[i] == PrerequisiteType.InSubZone
+                    && prerequisite.PrerequisiteComparisonId[i] == PrerequisiteComparison.Equal && prerequisite.Value[i] != 0u)
+                    found ??= prerequisite.Value[i];
+                else if (prerequisite.PrerequisiteTypeId[i] == PrerequisiteType.OtherPrerequisite)
+                    Collect(prerequisite.ObjectId[i], depth + 1);
+            }
+        }
+        if (entry.PrerequisiteId != 0u)
+            Collect(entry.PrerequisiteId, 0);
+        return found;
+    }
+
+    /// <summary>
+    /// A WorldLocation2 inside the zone (or any zone below it) in the world, nearest to the point when one is given.
+    /// </summary>
+    public WorldLocation2Entry? LocationInZone(uint zoneId, ushort worldId, Vector3? near)
+    {
+        IReadOnlySet<uint> family = ZoneFamily(zoneId);
+        IEnumerable<WorldLocation2Entry> candidates = worldLocations.Entries
+            .Where(location => location.WorldId == worldId && family.Contains(location.WorldZoneId));
+        return near is Vector3 point
+            ? candidates.OrderBy(location => Vector3.DistanceSquared(point, new Vector3(location.Position0, location.Position1, location.Position2))).FirstOrDefault()
+            : candidates.OrderBy(location => location.Id).FirstOrDefault();
     }
 
     private bool PrerequisiteAllowsClass(uint prerequisiteId, int depth)
