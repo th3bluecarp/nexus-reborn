@@ -104,6 +104,7 @@ Confidence: **High** = consistent across all the data we checked and no counter 
 | unlock rule | every mission of the zone episode unlocks on zone entry | Low | retail had per mission unlock (Creature2IdUnlock, proximity) |
 | vista / claim / exploration / tracking | reach the mission world locations (tracking: retail followed a creature or trail) | Low | retail required placing a beacon or exploring a set of points |
 | cartography | zone map explored percent, done at 95 | Invented | retail threshold unknown |
+| settler resource nodes | a gathered node despawns and comes back after the server respawn delay (60 s); hubs that share a resource area share the same nodes (Coldburrow gathers at Settler's Reach's nodes) | Low | retail node spots were in lost scripts; ours come from data/settler.sql inside the hub resource locations |
 | scavenger clue types | 0 activate, 1 creature or area, 2 location | Medium | field patterns per type; starting the hunt is skipped |
 | Soldier SWAT | kill the target group Count times (retail used a gadget on them) | Low | stand in |
 | path XP per mission | 25 + 5 x level | Invented | fitted to the PathLevel curve, retail values unknown |
