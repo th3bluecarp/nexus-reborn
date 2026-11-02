@@ -1,4 +1,5 @@
 using NexusForever.Game.Abstract.Entity;
+using NexusForever.Game.Static.Quest;
 using NexusForever.Script.Template;
 using NexusForever.Script.Template.Filter;
 
@@ -13,6 +14,12 @@ namespace NexusForever.Script.Main.Tutorial.Script.Part2
     {
         protected abstract (ushort WorldId, float X, float Y, float Z) Destination { get; }
 
+        /// <summary>
+        /// The WorldZone the portal leads into; credited as entered right after the teleport, because the map file's area
+        /// lookup at the destination does not always resolve to the quest's zone id.
+        /// </summary>
+        protected abstract uint DestinationZoneId { get; }
+
         public void OnLoad(IWorldEntity owner)
         {
         }
@@ -21,8 +28,9 @@ namespace NexusForever.Script.Main.Tutorial.Script.Part2
         {
             (ushort worldId, float x, float y, float z) = Destination;
             // same world: relocate in place (a TeleportTo into the same world runs a full map transfer and reload)
+            uint zoneId = DestinationZoneId;
             if (activator.Map?.Entry.Id == worldId)
-                activator.TeleportToLocal(new System.Numerics.Vector3(x, y, z));
+                activator.TeleportToLocal(new System.Numerics.Vector3(x, y, z), true, _ => activator.QuestManager.ObjectiveUpdate(QuestObjectiveType.EnterZone, zoneId, 1u));
             else
                 activator.TeleportTo(worldId, x, y, z);
         }
@@ -36,6 +44,7 @@ namespace NexusForever.Script.Main.Tutorial.Script.Part2
     public class SkyplotPortalEntityScript : ArkshipPortalEntityScript
     {
         protected override (ushort WorldId, float X, float Y, float Z) Destination => (3460, 1230f, -494.2f, 116f);
+        protected override uint DestinationZoneId => 4965;
     }
 
     /// <summary>
@@ -46,6 +55,7 @@ namespace NexusForever.Script.Main.Tutorial.Script.Part2
     public class CryosleepExitPortalEntityScript : ArkshipPortalEntityScript
     {
         protected override (ushort WorldId, float X, float Y, float Z) Destination => (3460, -3634f, -437.9f, -4354f);
+        protected override uint DestinationZoneId => 5999;
     }
 }
 
@@ -59,5 +69,6 @@ namespace NexusForever.Script.Main.Tutorial.Script.Part2
     public class MissionSimulationPortalEntityScript : ArkshipPortalEntityScript
     {
         protected override (ushort WorldId, float X, float Y, float Z) Destination => (3460, 584f, -426f, 240f);
+        protected override uint DestinationZoneId => 4964;
     }
 }
