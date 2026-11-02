@@ -2,6 +2,10 @@
 
 Newest first. "Live" means running on our test server.
 
+## 2026-11-02
+
+- **Off with Her Head! can start**: the Coldburrow Xenobreeder, whose head starts the quest, had no spawn anywhere in our world (it is neither a quest giver nor an objective, so the spawn builder never placed it). It now stands in its Coldburrow Cavern chamber, three of them at the quest-marker heights, with its archived drop table, the head at 63% (data/quest_fixes.sql; SEMANTICS: hand-placed quest starters).
+
 ## 2026-11-01
 
 - **The Eldan Defense Construct shows up**: the last fight of Deconstruct the Construct had no creature to fight (no world spawn); it now appears on the platform once the player gets there (SEMANTICS: Eldan construct spawns on the platform).
