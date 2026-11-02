@@ -169,6 +169,13 @@ internal sealed class BotGameData
             throw new DirectoryNotFoundException($"Game table directory not found: {tablePath}");
 
         quests = Load<Quest2Entry>(tablePath, "Quest2.tbl");
+        questActivationItems = new Lazy<Dictionary<uint, uint>>(() =>
+        {
+            var map = new Dictionary<uint, uint>();
+            foreach (Item2Entry item in items.Entries.Where(item => item.Quest2IdActivation != 0u).OrderBy(item => item.Id))
+                map.TryAdd(item.Quest2IdActivation, item.Id);
+            return map;
+        });
         prerequisites = Load<PrerequisiteEntry>(tablePath, "Prerequisite.tbl");
         worldZones = Load<WorldZoneEntry>(tablePath, "WorldZone.tbl");
         objectives = Load<QuestObjectiveEntry>(tablePath, "QuestObjective.tbl");
@@ -248,6 +255,15 @@ internal sealed class BotGameData
         string title = english.GetEntry(entry.LocalizedTextIdTitle) ?? $"Quest {id}";
         return new QuestDefinition(id, title, entry, questObjectives, givers, receivers);
     }
+
+    /// <summary>
+    /// The item whose use starts the quest (Item2.Quest2IdActivation; A Heart of Stone starts from a dropped gronyx heart),
+    /// or 0. Quest2.PrerequisiteItem covers the quests that ask for the item in hand instead.
+    /// </summary>
+    public uint GetQuestActivationItem(ushort questId)
+        => questActivationItems.Value.GetValueOrDefault(questId);
+
+    private readonly Lazy<Dictionary<uint, uint>> questActivationItems;
 
     public uint GetItemActivationQuest(uint itemId)
     {

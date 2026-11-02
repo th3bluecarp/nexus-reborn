@@ -236,7 +236,7 @@ internal sealed class BotRunner
 
         IReadOnlyDictionary<uint, ItemDropSources> loadedItemSources = await BotDatabase.LoadItemDropSourcesAsync(
             options.Database,
-            questPlan.Select(definition => definition.Entry.PrerequisiteItem)
+            questPlan.Select(StartItem)
                 .Concat(questPlan.SelectMany(definition => definition.Objectives
                     .Where(objective => objective.Type == QuestObjectiveType.CollectItem)
                     .Select(objective => objective.Data))),
@@ -480,8 +480,8 @@ internal sealed class BotRunner
         foreach (QuestDefinition definition in questPlan)
         {
             cancellationToken.ThrowIfCancellationRequested();
-            if (definition.Entry.PrerequisiteItem != 0u
-                && (!itemDropSources.TryGetValue(definition.Entry.PrerequisiteItem, out ItemDropSources? sources)
+            if (StartItem(definition) is uint startItem && startItem != 0u
+                && (!itemDropSources.TryGetValue(startItem, out ItemDropSources? sources)
                     || sources.CreatureIds.Count == 0))
             {
                 AddItemStartedQuestReport(definition);
@@ -1755,7 +1755,7 @@ internal sealed class BotRunner
         var questReport = CreateQuestReport(definition);
         questReport.Skipped = true;
         questReport.Result = "SKIPPED";
-        questReport.Failure = $"SKIPPED: item {definition.Entry.PrerequisiteItem} has no drop source in the world database";
+        questReport.Failure = $"SKIPPED: item {StartItem(definition)} has no drop source in the world database";
         questReport.EndTimestamp = DateTimeOffset.UtcNow;
         questReport.Steps.Add(new StepReport
         {
@@ -2315,7 +2315,7 @@ internal sealed class BotRunner
     private async Task<string> AcceptQuestAsync(CancellationToken cancellationToken)
     {
         QuestDefinition definition = RequireQuest();
-        if (definition.Entry.PrerequisiteItem != 0u)
+        if (StartItem(definition) != 0u)
             return await AcquireItemAndAcceptQuestAsync(definition, cancellationToken);
 
         if (questState == QuestState.Mentioned)
@@ -2353,11 +2353,19 @@ internal sealed class BotRunner
         return $"accepted from creature {giver.Entity.CreatureId} guid {giver.Entity.Guid}; {giver.Attempts}";
     }
 
+    /// <summary>
+    /// The item that starts the quest: the one the quest asks for (PrerequisiteItem) or the one whose use activates it.
+    /// </summary>
+    private uint StartItem(QuestDefinition definition)
+        => definition.Entry.PrerequisiteItem != 0u
+            ? definition.Entry.PrerequisiteItem
+            : RequireGameData().GetQuestActivationItem(definition.Id);
+
     private async Task<string> AcquireItemAndAcceptQuestAsync(
         QuestDefinition definition,
         CancellationToken cancellationToken)
     {
-        uint itemId = definition.Entry.PrerequisiteItem;
+        uint itemId = StartItem(definition);
         uint activationQuest = RequireGameData().GetItemActivationQuest(itemId);
         if (activationQuest != definition.Id)
             throw new BotFailureException($"item {itemId} activates quest {activationQuest}, not quest {definition.Id}");
@@ -2568,6 +2576,9 @@ internal sealed class BotRunner
                 case QuestObjectiveType.TalkToTargetGroup:
                     await RunTargetGroupInteractionObjectiveAsync(objective, cancellationToken);
                     break;
+                case QuestObjectiveType.ActivateEntity when objective.Data == 0u && objective.Count == 1000u:
+                    // "Raise your Reputation with the Algoroc Accord": a reputation objective (3 in the game), not an activation
+                    throw new BotFailureException("reputation objective (ActivateEntity with no creature, Count 1000): the server does not advance it; SERVER GAP");
                 case QuestObjectiveType.ActivateEntity:
                     await RunActivateObjectiveAsync(objective, cancellationToken);
                     break;
