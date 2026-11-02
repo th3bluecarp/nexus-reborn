@@ -1319,6 +1319,20 @@ internal sealed class BotRunner
 
             foreach (QuestObjectiveDefinition objective in definition.Objectives)
             {
+                // optional objectives (flag 0x20: "Purchase ... from the In-Game Store" on Lots in Store!) are completed by the
+                // server once the required ones are done; the bot does not attempt them
+                if ((objective.Flags & 0x20u) != 0u && !IsObjectiveComplete(objective))
+                {
+                    log.Info($"quest {definition.Id} objective {objective.Index}: optional (flags 0x{objective.Flags:X}), skipped");
+                    questReport.Steps.Add(new StepReport
+                    {
+                        Name = $"objective {objective.Index}",
+                        Ok = true,
+                        ElapsedMs = 0,
+                        Detail = $"optional objective (flags 0x{objective.Flags:X}) left to the server"
+                    });
+                    continue;
+                }
                 TimeSpan timeout = objective.Type is QuestObjectiveType.KillCreature
                     or QuestObjectiveType.KillCreature2
                     or QuestObjectiveType.KillTargetGroup
