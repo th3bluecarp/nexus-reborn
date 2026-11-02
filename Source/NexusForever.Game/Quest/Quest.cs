@@ -758,8 +758,9 @@ namespace NexusForever.Game.Quest
         {
             if (objective.ObjectiveInfo.IsSequential())
             {
-                // objectives loaded from the database are not ordered by index
-                foreach (IQuestObjective previous in objectives.Where(o => o.Index < objective.Index))
+                // objectives loaded from the database are not ordered by index; an optional predecessor ("see a Direction
+                // Arrow" before "Jump up to the platform" in Deconstruct the Construct) does not gate the chain
+                foreach (IQuestObjective previous in objectives.Where(o => o.Index < objective.Index && !o.ObjectiveInfo.IsOptional()))
                     if (!previous.IsComplete())
                         return false;
             }
