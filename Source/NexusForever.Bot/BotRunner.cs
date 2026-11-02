@@ -25,6 +25,9 @@ internal sealed class BotRunner
     private static readonly TimeSpan CombatLocalTargetSearchTimeout = TimeSpan.FromSeconds(5);
     private static readonly TimeSpan CombatSpawnTargetSearchTimeout = TimeSpan.FromSeconds(10);
     private static readonly TimeSpan EntityStreamTimeout = TimeSpan.FromSeconds(15);
+    // a gathered settler resource node despawns and comes back on the server's respawn timer; wait that long at the nearest node
+    private static readonly TimeSpan SettlerNodeRespawnWait = TimeSpan.FromSeconds(100);
+    private static readonly TimeSpan SettlerMissionTimeout = TimeSpan.FromMinutes(15);
     private static readonly TimeSpan QuestNpcConfirmationTimeout = TimeSpan.FromSeconds(15);
     private static readonly TimeSpan CorpseLootTimeout = TimeSpan.FromSeconds(5);
     private static readonly TimeSpan SingleTargetKillRetryTimeout = TimeSpan.FromSeconds(660);
@@ -607,7 +610,7 @@ internal sealed class BotRunner
             }
 
             using var missionBudget = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
-            missionBudget.CancelAfter(PerPathMissionTimeout);
+            missionBudget.CancelAfter(definition.Type == PathMissionType.Expansion ? SettlerMissionTimeout : PerPathMissionTimeout);
             string phase = "location";
             try
             {
@@ -941,7 +944,25 @@ internal sealed class BotRunner
                             build.DisplayLocation.Position2))
                         .ToArray();
                     if (candidates.Length == 0)
-                        throw new BotFailureException($"resource {resource.Name} item {itemId} needs {required}, inventory has {GetInventoryItemCount(itemId)}, and no unused spawn exists; gathered=[{FormatResources(missionReport)}]");
+                    {
+                        // every node has been gathered once; they come back on the respawn timer, so wait at the nearest one
+                        Spawn[] all = SpawnsFor(resource.CreatureIds, checked((ushort)definition.Episode.WorldId))
+                            .OrderBy(spawn => spawn.DistanceSquared(
+                                build.DisplayLocation.Position0,
+                                build.DisplayLocation.Position1,
+                                build.DisplayLocation.Position2))
+                            .ToArray();
+                        if (all.Length == 0)
+                            throw new BotFailureException($"resource {resource.Name} item {itemId} needs {required}, inventory has {GetInventoryItemCount(itemId)}, and no spawn of creatures [{string.Join(',', resource.CreatureIds)}] exists in world {definition.Episode.WorldId}; gathered=[{FormatResources(missionReport)}]");
+                        log.Info($"settler resource {resource.Name}: all {all.Length} nodes gathered once; waiting up to {SettlerNodeRespawnWait.TotalSeconds:0} s for respawns");
+                        foreach (Spawn node in all)
+                            usedSettlerResourceSpawnIds.Remove(node.Id);
+                        missionReport.Detail = (missionReport.Detail ?? "") + $"respawn-wait({resource.Name}) ";
+                        TrackedEntity? respawned = await TeleportAndTryFindAsync(all[0], SettlerNodeRespawnWait, cancellationToken);
+                        if (respawned is null)
+                            throw new BotFailureException($"resource {resource.Name} item {itemId} needs {required}, inventory has {GetInventoryItemCount(itemId)}; all {all.Length} nodes gathered and none respawned within {SettlerNodeRespawnWait.TotalSeconds:0} s at spawn {all[0].Id}; gathered=[{FormatResources(missionReport)}]");
+                        continue;
+                    }
 
                     Spawn? spawn = null;
                     TrackedEntity? entity = null;
