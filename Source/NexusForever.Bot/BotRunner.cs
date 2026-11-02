@@ -3220,7 +3220,9 @@ internal sealed class BotRunner
         await TeleportToLocationAsync(location, 0f, cancellationToken);
         // "Right-click the $(creature=73741) ... to continue to the Protostar Model Skyplot" (10525, EnterZone 4965): the
         // zone is entered through a portal object, so activate the creature the text names once it is streamed in
-        uint portalCreatureId = BotGameData.CreatureFromText(objective.Text);
+        // only zone transitions go through a portal object; an EnterArea text may name a creature for other reasons
+        // ("Jump up to the $p(creature=73499) platform" names the boss standing on it)
+        uint portalCreatureId = objective.Type == QuestObjectiveType.EnterZone ? BotGameData.CreatureFromText(objective.Text) : 0u;
         if (portalCreatureId != 0u && !IsObjectiveComplete(objective))
         {
             DateTimeOffset deadline = DateTimeOffset.UtcNow + EntityStreamTimeout;
