@@ -84,9 +84,13 @@ internal sealed class EntityTracker
             entities[guid] = entity with { MaxHealth = maxHealth };
     }
 
-    public TrackedEntity? FindCreature(uint creatureId, Spawn? expected = null)
+    public TrackedEntity? FindCreature(
+        uint creatureId,
+        Spawn? expected = null,
+        IReadOnlySet<uint>? excludedGuids = null)
     {
-        IEnumerable<TrackedEntity> matches = entities.Values.Where(entity => entity.CreatureId == creatureId);
+        IEnumerable<TrackedEntity> matches = entities.Values.Where(entity => entity.CreatureId == creatureId
+            && (excludedGuids is null || !excludedGuids.Contains(entity.Guid)));
         if (expected is null)
             return matches.FirstOrDefault();
 

@@ -64,6 +64,7 @@ internal sealed class BotRunner
     private readonly List<string> questNpcAttemptDetails = [];
     private readonly List<string> holdoutProgressPackets = [];
     private readonly List<string> resurrectionPacketsAfterAccept = [];
+    private readonly HashSet<uint> usedSettlerResourceSpawnIds = [];
 
     private BotGameData? gameData;
     private QuestDefinition? quest;
@@ -123,6 +124,7 @@ internal sealed class BotRunner
     private DateTimeOffset holdoutLastNoTargetLog = DateTimeOffset.MinValue;
     private const float HoldoutTargetRadius = 60f;
     private string? holdoutPreparationDetail;
+    private bool scientistScanbotSummoned;
 
     private enum ActivationOutcome
     {
@@ -152,6 +154,7 @@ internal sealed class BotRunner
         this.report = report;
         this.log = log;
         gameToken = options.Token ?? Guid.Empty;
+        report.PathName = options.Path.ToString().ToLowerInvariant();
     }
 
     public async Task<int> RunAsync()
@@ -218,7 +221,7 @@ internal sealed class BotRunner
         {
             pathMissionPlan = gameData.GetPathMissions(
                 options.ZoneId ?? throw new BotFailureException("path missions require a zone run"),
-                BotPath.Soldier,
+                options.Path,
                 options.Faction);
         }
         foreach (QuestDefinition definition in questPlan)
@@ -232,7 +235,7 @@ internal sealed class BotRunner
             itemDropSources[itemId] = sources;
 
         QuestDefinition? requested = questPlan.Count > 0 ? questPlan[0] : null;
-        report.Title = options.ZoneId is uint zoneId ? $"Zone {zoneId} ({options.Faction})" : requested?.Title ?? "Character only (--quest none)";
+        report.Title = options.ZoneId is uint zoneId ? $"Zone {zoneId} ({options.Faction}, {options.Path})" : requested?.Title ?? "Character only (--quest none)";
         foreach (QuestObjectiveDefinition objective in options.ZoneId is null && options.QuestIds.Count == 1 && requested is not null ? requested.Objectives : [])
         {
             report.Objectives.Add(new ObjectiveReport
@@ -274,7 +277,7 @@ internal sealed class BotRunner
         string selection = options.ZoneId is uint selectedZone
             ? $"zone {selectedZone} {options.Faction}"
             : $"quest list {string.Join(',', options.QuestIds)}";
-        return $"{selection}; {questPlan.Count} quest(s), {pathMissionPlan.Count} Soldier path mission(s) loaded; {spawns.Count} relevant spawns{selfCheck}";
+        return $"{selection}; {questPlan.Count} quest(s), {pathMissionPlan.Count} {options.Path} path mission(s) loaded; {spawns.Count} relevant spawns{selfCheck}";
     }
 
     private IEnumerable<uint> GetObjectiveCreatureIds(QuestObjectiveDefinition objective)
@@ -425,7 +428,7 @@ internal sealed class BotRunner
             // --keep-character: a named character that stays on the account (the GUI click-through logs in as it)
             report.CharacterName = options.KeepCharacter ?? $"Bot {Random.Shared.Next(0, 10000):0000}";
             await RequireWorld().SendEncryptedAsync(GameMessageOpcode.ClientCharacterCreate,
-                PacketCodec.ClientCharacterCreate(creation, report.CharacterName), cancellationToken);
+                PacketCodec.ClientCharacterCreate(creation, report.CharacterName, options.Path), cancellationToken);
 
             ProtocolPacket packet = await ReadWorldUntilAsync(
                 candidate => candidate.Opcode == GameMessageOpcode.ServerCharacterCreate, cancellationToken);
@@ -438,7 +441,7 @@ internal sealed class BotRunner
                 throw new BotFailureException("character creation returned character id 0");
 
             characterId = result.CharacterId;
-            return $"{report.CharacterName}; character {characterId}; creation {creation.Id} ({creation.CharacterCreationStartEnum}); world {result.WorldId}";
+            return $"{report.CharacterName}; character {characterId}; path {options.Path}; creation {creation.Id} ({creation.CharacterCreationStartEnum}); world {result.WorldId}";
         }
 
         throw new BotFailureException("character creation exhausted name retries");
@@ -545,8 +548,9 @@ internal sealed class BotRunner
                     throw new BotFailureException("ServerPathInitialise was not received before the path mission phase");
             }
         }
-        if (activePath != NexusForever.Game.Static.PlayerPath.Path.Soldier)
-            throw new BotFailureException($"character active path is {activePath}, expected Soldier");
+        var expectedPath = (NexusForever.Game.Static.PlayerPath.Path)(byte)options.Path;
+        if (activePath != expectedPath)
+            throw new BotFailureException($"character active path is {activePath}, expected {expectedPath}");
 
         foreach (PathMissionDefinition definition in pathMissionPlan)
         {
@@ -554,6 +558,7 @@ internal sealed class BotRunner
             currentMissionReport = new PathMissionRunReport
             {
                 MissionId = definition.Id,
+                Path = definition.Path.ToString().ToLowerInvariant(),
                 Name = definition.Name,
                 Type = definition.TypeName
             };
@@ -572,11 +577,28 @@ internal sealed class BotRunner
                 or PathMissionType.Assassination
                 or PathMissionType.SWAT
                 or PathMissionType.Demolition
-                or PathMissionType.Rescue))
+                or PathMissionType.Rescue
+                or PathMissionType.StakingClaim
+                or PathMissionType.Surveillance
+                or PathMissionType.Vista
+                or PathMissionType.Tracking
+                or PathMissionType.Cartography
+                or PathMissionType.Scan
+                or PathMissionType.Expansion))
             {
                 currentMissionReport.Result = "UNSUPPORTED";
                 currentMissionReport.FailedAt = "objective";
                 currentMissionReport.Detail = $"unsupported mission type {definition.TypeName}";
+                currentMissionReport.EndTimestamp = DateTimeOffset.UtcNow;
+                log.Info($"path mission {definition.Id}: {currentMissionReport.Detail}");
+                currentMissionReport = null;
+                continue;
+            }
+            if (definition.Type == PathMissionType.Cartography && definition.CartographyPoints.Count == 0)
+            {
+                currentMissionReport.Result = "UNSUPPORTED";
+                currentMissionReport.FailedAt = "objective";
+                currentMissionReport.Detail = "UNSUPPORTED: client zone-map packet ClientZoneChange (0x063A) carries only previous/new zone ids; no client chunk-report packet exists and no MapZone hex grid could be resolved";
                 currentMissionReport.EndTimestamp = DateTimeOffset.UtcNow;
                 log.Info($"path mission {definition.Id}: {currentMissionReport.Detail}");
                 currentMissionReport = null;
@@ -588,11 +610,14 @@ internal sealed class BotRunner
             string phase = "location";
             try
             {
-                if (definition.Locations.Count == 0)
+                if (definition.Locations.Count == 0 && definition.Type != PathMissionType.Cartography)
                     throw new BotFailureException("mission has no WorldLocation2 location");
                 questWorldId = checked((ushort)definition.Episode.WorldId);
-                await TeleportToLocationAsync(definition.Locations[0], 0f, missionBudget.Token);
-                await DrainWorldPacketsAsync(TimeSpan.FromMilliseconds(500), missionBudget.Token);
+                if (definition.Locations.Count > 0)
+                {
+                    await TeleportToLocationAsync(definition.Locations[0], 0f, missionBudget.Token);
+                    await DrainWorldPacketsAsync(TimeSpan.FromMilliseconds(500), missionBudget.Token);
+                }
 
                 phase = "unlock";
                 await UnlockPathMissionIfNeededAsync(definition, missionBudget.Token);
@@ -604,6 +629,7 @@ internal sealed class BotRunner
                 }
 
                 phase = "objective";
+                string? objectiveDetail = null;
                 switch (definition.Type)
                 {
                     case PathMissionType.Assassination:
@@ -617,6 +643,21 @@ internal sealed class BotRunner
                     case PathMissionType.Holdout:
                         await RunHoldoutMissionAsync(definition, missionBudget.Token);
                         break;
+                    case PathMissionType.StakingClaim:
+                    case PathMissionType.Surveillance:
+                    case PathMissionType.Vista:
+                    case PathMissionType.Tracking:
+                        objectiveDetail = await RunExplorerLocationsAsync(definition, missionBudget.Token);
+                        break;
+                    case PathMissionType.Cartography:
+                        objectiveDetail = await RunExplorerCartographyAsync(definition, missionBudget.Token);
+                        break;
+                    case PathMissionType.Scan:
+                        objectiveDetail = await RunScientistScanMissionAsync(definition, missionBudget.Token);
+                        break;
+                    case PathMissionType.Expansion:
+                        objectiveDetail = await RunSettlerExpansionMissionAsync(definition, missionBudget.Token);
+                        break;
                 }
 
                 if (definition.Type != PathMissionType.Holdout
@@ -624,9 +665,9 @@ internal sealed class BotRunner
                     throw new BotFailureException("server did not report the mission complete");
                 currentMissionReport.Result = "PASS";
                 PathMissionStatus? status = GetPathMissionStatus(definition.Id);
-                currentMissionReport.Detail = definition.Type == PathMissionType.Holdout
+                currentMissionReport.Detail = objectiveDetail ?? (definition.Type == PathMissionType.Holdout
                     ? $"holdout end={holdoutResult}; progress={status?.Progress.ToString() ?? "not-received"}/{definition.Count}; episode={definition.Episode.Id}"
-                    : $"complete; progress={status!.Progress}/{definition.Count}; episode={definition.Episode.Id}";
+                    : $"complete; progress={status!.Progress}/{definition.Count}; episode={definition.Episode.Id}");
                 if (definition.Type == PathMissionType.Holdout)
                     currentMissionReport.Detail += FormatHoldoutMissionDetail();
                 log.Info($"path mission {definition.Id} PASS: {currentMissionReport.Detail}");
@@ -696,7 +737,314 @@ internal sealed class BotRunner
                 holdoutPreparationDetail = null;
             }
         }
+
+        if (scientistScanbotSummoned)
+        {
+            await RequireWorld().SendEncryptedAsync(GameMessageOpcode.ClientPathScientistDismissScanbot,
+                PacketCodec.ClientPathScientistDismissScanbot(), cancellationToken);
+            scientistScanbotSummoned = false;
+        }
     }
+
+    private async Task<string> RunExplorerLocationsAsync(
+        PathMissionDefinition definition,
+        CancellationToken cancellationToken)
+    {
+        PathMissionRunReport missionReport = currentMissionReport
+            ?? throw new InvalidOperationException("Explorer mission report is unavailable.");
+
+        for (int index = 0; index < definition.Locations.Count; index++)
+        {
+            uint bit = 1u << index;
+            WorldLocation2Entry location = definition.Locations[index];
+            string reached = FormattableString.Invariant(
+                $"{index + 1}:{location.Id}@({location.Position0:0.###},{location.Position1:0.###},{location.Position2:0.###})");
+            if ((GetPathMissionStatus(definition.Id)?.Progress & bit) != 0u)
+            {
+                missionReport.LocationsReached.Add(reached + " already-set");
+                continue;
+            }
+
+            await TeleportToLocationAsync(location, 0f, cancellationToken);
+            await Task.Delay(TimeSpan.FromSeconds(3), cancellationToken);
+            await DrainWorldPacketsAsync(TimeSpan.FromMilliseconds(250), cancellationToken);
+            bool set = await WaitForPathMissionAsync(
+                definition.Id,
+                status => (status.Progress & bit) != 0u || status.Completed,
+                TimeSpan.FromSeconds(7),
+                cancellationToken);
+            if (!set)
+            {
+                log.Info($"path mission {definition.Id}: location bit {index} did not set in 10 s; nudging 5 m");
+                await TeleportToLocationAsync(location, 5f, cancellationToken);
+                await Task.Delay(TimeSpan.FromSeconds(3), cancellationToken);
+                await DrainWorldPacketsAsync(TimeSpan.FromMilliseconds(250), cancellationToken);
+                set = await WaitForPathMissionAsync(
+                    definition.Id,
+                    status => (status.Progress & bit) != 0u || status.Completed,
+                    TimeSpan.FromSeconds(7),
+                    cancellationToken);
+                reached += " nudge=5m";
+            }
+
+            if (!set)
+                throw new BotFailureException($"location {index + 1}/{definition.Locations.Count} did not set progress bit 0x{bit:X}; reached=[{string.Join(", ", missionReport.LocationsReached)}]");
+            missionReport.LocationsReached.Add(reached);
+        }
+
+        PathMissionStatus? status = GetPathMissionStatus(definition.Id);
+        return $"locations reached {missionReport.LocationsReached.Count}/{definition.Locations.Count}: {string.Join(", ", missionReport.LocationsReached)}; progress=0x{status?.Progress ?? 0u:X}; episode={definition.Episode.Id}";
+    }
+
+    private async Task<string> RunExplorerCartographyAsync(
+        PathMissionDefinition definition,
+        CancellationToken cancellationToken)
+    {
+        int visited = 0;
+        foreach (CartographyPoint point in definition.CartographyPoints)
+        {
+            if (IsPathMissionComplete(definition.Id))
+                break;
+
+            bool includeWorld = currentWorldId != point.WorldId;
+            if (includeWorld)
+                entities.Clear();
+            var destination = new Vector3(point.X, point.Y, point.Z);
+            string command = PacketCodec.TeleportCommand(destination);
+            if (includeWorld)
+                command += $" {point.WorldId}";
+            await SendCheatAsync(command, cancellationToken);
+            if (includeWorld)
+                await ReadWorldUntilAsync(packet => packet.Opcode == GameMessageOpcode.ServerPlayerEnteredWorld, cancellationToken);
+            else
+                await WaitForLocalTeleportAsync(cancellationToken);
+            lastPosition = destination + new Vector3(2f, 0f, 2f);
+            visited++;
+
+            uint before = GetPathMissionStatus(definition.Id)?.Progress ?? 0u;
+            _ = await WaitForPathMissionAsync(
+                definition.Id,
+                status => status.Progress > before || status.Completed,
+                TimeSpan.FromSeconds(3),
+                cancellationToken);
+        }
+
+        _ = await WaitForPathMissionAsync(
+            definition.Id,
+            status => status.Completed || status.Progress >= definition.Count,
+            TimeSpan.FromSeconds(3),
+            cancellationToken);
+        PathMissionStatus? final = GetPathMissionStatus(definition.Id);
+        if (final?.Completed != true)
+            throw new BotFailureException($"cartography visited {visited}/{definition.CartographyPoints.Count} MapZone hex groups but server progress is {final?.Progress.ToString() ?? "not-received"}%/{definition.Count}%");
+        return $"cartography complete; visited {visited}/{definition.CartographyPoints.Count} MapZone hex groups; progress={final.Progress}%/{definition.Count}%; server ZoneMapManager.OnRelocate (no client zone-map chunk packet); episode={definition.Episode.Id}";
+    }
+
+    private async Task<string> RunScientistScanMissionAsync(
+        PathMissionDefinition definition,
+        CancellationToken cancellationToken)
+    {
+        PathMissionRunReport missionReport = currentMissionReport
+            ?? throw new InvalidOperationException("Scientist mission report is unavailable.");
+        if (definition.ScanCreatureGroups.Count == 0 || definition.ScansPerGroup == 0u)
+            throw new BotFailureException($"no server ScanRules mapping was resolved for scientist mission {definition.Id}");
+
+        if (!scientistScanbotSummoned)
+        {
+            await RequireWorld().SendEncryptedAsync(GameMessageOpcode.ClientPathScientistRequestScanbot,
+                PacketCodec.ClientPathScientistRequestScanbot(), cancellationToken);
+            scientistScanbotSummoned = true;
+            await DrainWorldPacketsAsync(TimeSpan.FromSeconds(1), cancellationToken);
+        }
+
+        var usedSpawnIds = new HashSet<uint>();
+        var usedEntityGuids = new HashSet<uint>();
+        for (int groupIndex = 0; groupIndex < definition.ScanCreatureGroups.Count && !IsPathMissionComplete(definition.Id); groupIndex++)
+        {
+            IReadOnlyList<uint> group = definition.ScanCreatureGroups[groupIndex];
+            for (uint scan = 0u; scan < definition.ScansPerGroup && !IsPathMissionComplete(definition.Id); scan++)
+            {
+                Spawn[] candidates = SpawnsFor(group, checked((ushort)definition.Episode.WorldId))
+                    .Where(spawn => !usedSpawnIds.Contains(spawn.Id))
+                    .OrderBy(spawn => spawn.DistanceSquared(lastPosition.X, lastPosition.Y, lastPosition.Z))
+                    .ToArray();
+                TrackedEntity? entity = null;
+                Spawn? selectedSpawn = null;
+                foreach (Spawn candidate in candidates)
+                {
+                    usedSpawnIds.Add(candidate.Id);
+                    entity = await TeleportAndTryFindWithRetryAsync(candidate, cancellationToken, usedEntityGuids);
+                    if (entity is not null)
+                    {
+                        selectedSpawn = candidate;
+                        break;
+                    }
+                }
+
+                if (entity is null || selectedSpawn is null)
+                {
+                    foreach (uint creatureId in group.Where(id => !missionReport.CreaturesNeverFound.Contains(id)))
+                        missionReport.CreaturesNeverFound.Add(creatureId);
+                    break;
+                }
+
+                uint before = GetPathMissionStatus(definition.Id)?.Progress ?? 0u;
+                await RequireWorld().SendEncryptedAsync(GameMessageOpcode.ClientEntitySelect,
+                    PacketCodec.ClientEntitySelect(entity.Guid), cancellationToken);
+                await RequireWorld().SendEncryptedAsync(GameMessageOpcode.ClientPathScientistScan,
+                    PacketCodec.ClientPathScientistScan(), cancellationToken);
+                bool progressed = await WaitForPathMissionAsync(
+                    definition.Id,
+                    status => status.Progress > before || status.Completed,
+                    TimeSpan.FromSeconds(10),
+                    cancellationToken);
+                if (!progressed)
+                    throw new BotFailureException($"scan of creature {selectedSpawn.CreatureId} guid {entity.Guid} produced no ServerPathMissionUpdate in 10 s; scanned=[{string.Join(',', missionReport.CreaturesScanned)}]");
+                missionReport.CreaturesScanned.Add(selectedSpawn.CreatureId);
+                usedEntityGuids.Add(entity.Guid);
+            }
+        }
+
+        if (missionReport.CreaturesNeverFound.Count > 0 || !IsPathMissionComplete(definition.Id))
+            throw new BotFailureException($"scientist scan incomplete; scanned=[{string.Join(',', missionReport.CreaturesScanned)}]; never found=[{string.Join(',', missionReport.CreaturesNeverFound)}]; progress={GetPathMissionStatus(definition.Id)?.Progress.ToString() ?? "not-received"}");
+        return $"creatures scanned=[{string.Join(',', missionReport.CreaturesScanned)}]; never found=[{string.Join(',', missionReport.CreaturesNeverFound)}]; progress={GetPathMissionStatus(definition.Id)!.Progress}; episode={definition.Episode.Id}";
+    }
+
+    private async Task<string> RunSettlerExpansionMissionAsync(
+        PathMissionDefinition definition,
+        CancellationToken cancellationToken)
+    {
+        PathMissionRunReport missionReport = currentMissionReport
+            ?? throw new InvalidOperationException("Settler mission report is unavailable.");
+        SettlerHubDefinition hub = definition.SettlerHub
+            ?? throw new BotFailureException($"PathSettlerHub {definition.Entry.ObjectId} was not resolved");
+        if (hub.Builds.Count == 0)
+            throw new BotFailureException($"hub {hub.HubId} has no usable PathSettlerImprovementGroup tiers");
+
+        foreach (SettlerBuildDefinition build in hub.Builds)
+        {
+            if (IsPathMissionComplete(definition.Id))
+                break;
+
+            foreach ((uint itemId, uint required) in build.Costs)
+            {
+                SettlerResourceDefinition resource = hub.Resources.FirstOrDefault(candidate => candidate.ItemId == itemId)
+                    ?? throw new BotFailureException($"hub {hub.HubId} build group {build.GroupId} requires unknown resource item {itemId}");
+                while (GetInventoryItemCount(itemId) < required)
+                {
+                    Spawn[] candidates = SpawnsFor(resource.CreatureIds, checked((ushort)definition.Episode.WorldId))
+                        .Where(spawn => !usedSettlerResourceSpawnIds.Contains(spawn.Id))
+                        .OrderBy(spawn => spawn.DistanceSquared(
+                            build.DisplayLocation.Position0,
+                            build.DisplayLocation.Position1,
+                            build.DisplayLocation.Position2))
+                        .ToArray();
+                    if (candidates.Length == 0)
+                        throw new BotFailureException($"resource {resource.Name} item {itemId} needs {required}, inventory has {GetInventoryItemCount(itemId)}, and no unused spawn exists; gathered=[{FormatResources(missionReport)}]");
+
+                    Spawn? spawn = null;
+                    TrackedEntity? entity = null;
+                    foreach (Spawn candidate in candidates)
+                    {
+                        usedSettlerResourceSpawnIds.Add(candidate.Id);
+                        entity = await TeleportAndTryFindWithRetryAsync(candidate, cancellationToken);
+                        if (entity is not null)
+                        {
+                            spawn = candidate;
+                            break;
+                        }
+                    }
+                    if (spawn is null || entity is null)
+                        throw new BotFailureException($"resource {resource.Name} item {itemId} needs {required}, inventory has {GetInventoryItemCount(itemId)}, and none of {candidates.Length} remaining spawn(s) was visible; gathered=[{FormatResources(missionReport)}]");
+                    uint before = GetInventoryItemCount(itemId);
+
+                    // Resource nodes are activated directly by the retail client. If the creature has a cast activation,
+                    // complete that normal interaction too so OnActivateSuccess can award the item.
+                    await RequireWorld().SendEncryptedAsync(GameMessageOpcode.ClientActivateUnit,
+                        PacketCodec.ClientActivateUnit(entity.Guid), cancellationToken);
+                    bool gathered = await WaitForInventoryCountAsync(itemId, before, TimeSpan.FromSeconds(2), cancellationToken);
+                    if (!gathered)
+                    {
+                        _ = await RunPathActivationFlowAsync(
+                            entity,
+                            () => GetInventoryItemCount(itemId) > before,
+                            TimeSpan.FromSeconds(8),
+                            cancellationToken);
+                        gathered = GetInventoryItemCount(itemId) > before;
+                    }
+                    if (!gathered)
+                        throw new BotFailureException($"activation of resource creature {spawn.CreatureId} guid {entity.Guid} did not add item {itemId}");
+
+                    uint gained = GetInventoryItemCount(itemId) - before;
+                    missionReport.ResourcesGathered[itemId] = missionReport.ResourcesGathered.GetValueOrDefault(itemId) + gained;
+                }
+            }
+
+            Spawn depotSpawn = SpawnsFor([build.DepotCreatureId], checked((ushort)definition.Episode.WorldId))
+                .OrderBy(spawn => spawn.DistanceSquared(
+                    build.DisplayLocation.Position0,
+                    build.DisplayLocation.Position1,
+                    build.DisplayLocation.Position2))
+                .FirstOrDefault()
+                ?? throw new BotFailureException($"no depot spawn exists for group {build.GroupId}, creature {build.DepotCreatureId}");
+            TrackedEntity depot = await TeleportAndTryFindWithRetryAsync(depotSpawn, cancellationToken)
+                ?? throw new BotFailureException($"depot creature {build.DepotCreatureId} for group {build.GroupId} was never visible");
+            await RequireWorld().SendEncryptedAsync(GameMessageOpcode.ClientEntitySelect,
+                PacketCodec.ClientEntitySelect(depot.Guid), cancellationToken);
+
+            uint beforeProgress = GetPathMissionStatus(definition.Id)?.Progress ?? 0u;
+            await RequireWorld().SendEncryptedAsync(GameMessageOpcode.ClientPathSettlerImprovementBuildTier,
+                PacketCodec.ClientPathSettlerImprovementBuildTier(build.GroupId, build.Tier), cancellationToken);
+            bool built = await WaitForPathMissionAsync(
+                definition.Id,
+                status => status.Progress > beforeProgress || status.Completed,
+                TimeSpan.FromSeconds(10),
+                cancellationToken);
+            if (!built)
+                throw new BotFailureException($"build group {build.GroupId} tier {build.Tier} at depot {depot.Guid} produced no mission progress in 10 s; builds=[{string.Join(',', missionReport.Builds)}]; resources=[{FormatResources(missionReport)}]");
+            missionReport.Builds.Add($"group={build.GroupId}/tier={build.Tier}/contribution={build.Contribution}");
+        }
+
+        if (!IsPathMissionComplete(definition.Id))
+            throw new BotFailureException($"hub {hub.HubId} exhausted {hub.Builds.Count} build tiers without completing {definition.Count}; progress={GetPathMissionStatus(definition.Id)?.Progress.ToString() ?? "not-received"}");
+        return $"hub={hub.HubId}; resources gathered=[{FormatResources(missionReport)}]; builds done={missionReport.Builds.Count} [{string.Join(", ", missionReport.Builds)}]; progress={GetPathMissionStatus(definition.Id)!.Progress}/{definition.Count}; episode={definition.Episode.Id}";
+    }
+
+    private async Task<bool> WaitForPathMissionAsync(
+        ushort missionId,
+        Func<PathMissionStatus, bool> predicate,
+        TimeSpan timeout,
+        CancellationToken cancellationToken)
+    {
+        DateTimeOffset deadline = DateTimeOffset.UtcNow + timeout;
+        while (true)
+        {
+            if (GetPathMissionStatus(missionId) is PathMissionStatus status && predicate(status))
+                return true;
+            TimeSpan remaining = deadline - DateTimeOffset.UtcNow;
+            if (remaining <= TimeSpan.Zero || await TryReadWorldPacketAsync(remaining, cancellationToken) is null)
+                return false;
+        }
+    }
+
+    private async Task<bool> WaitForInventoryCountAsync(
+        uint itemId,
+        uint before,
+        TimeSpan timeout,
+        CancellationToken cancellationToken)
+    {
+        DateTimeOffset deadline = DateTimeOffset.UtcNow + timeout;
+        while (GetInventoryItemCount(itemId) <= before)
+        {
+            TimeSpan remaining = deadline - DateTimeOffset.UtcNow;
+            if (remaining <= TimeSpan.Zero || await TryReadWorldPacketAsync(remaining, cancellationToken) is null)
+                return false;
+        }
+        return true;
+    }
+
+    private static string FormatResources(PathMissionRunReport missionReport)
+        => string.Join(',', missionReport.ResourcesGathered.OrderBy(pair => pair.Key).Select(pair => $"{pair.Key}:{pair.Value}"));
 
     private async Task UnlockPathMissionIfNeededAsync(
         PathMissionDefinition definition,
@@ -3404,7 +3752,8 @@ internal sealed class BotRunner
     private async Task<TrackedEntity?> TeleportAndTryFindAsync(
         Spawn spawn,
         TimeSpan entityTimeout,
-        CancellationToken cancellationToken)
+        CancellationToken cancellationToken,
+        IReadOnlySet<uint>? excludedGuids = null)
     {
         bool includeWorld = currentWorldId != spawn.WorldId;
         if (includeWorld)
@@ -3419,7 +3768,7 @@ internal sealed class BotRunner
         while (true)
         {
             TrackedEntity? existing = currentWorldId == spawn.WorldId && !worldLoadPending
-                ? entities.FindCreature(spawn.CreatureId, spawn)
+                ? entities.FindCreature(spawn.CreatureId, spawn, excludedGuids)
                 : null;
             if (existing is not null)
                 return existing;
@@ -3432,15 +3781,16 @@ internal sealed class BotRunner
 
     private async Task<TrackedEntity?> TeleportAndTryFindWithRetryAsync(
         Spawn spawn,
-        CancellationToken cancellationToken)
+        CancellationToken cancellationToken,
+        IReadOnlySet<uint>? excludedGuids = null)
     {
-        TrackedEntity? entity = await TeleportAndTryFindAsync(spawn, EntityStreamTimeout, cancellationToken);
+        TrackedEntity? entity = await TeleportAndTryFindAsync(spawn, EntityStreamTimeout, cancellationToken, excludedGuids);
         if (entity is not null)
             return entity;
 
         // The spawn stream after a teleport can lag behind PlayerEnteredWorld. Re-send the same
         // command (which intentionally lands 2 m off the spawn) once and allow a second full window.
-        return await TeleportAndTryFindAsync(spawn, EntityStreamTimeout, cancellationToken);
+        return await TeleportAndTryFindAsync(spawn, EntityStreamTimeout, cancellationToken, excludedGuids);
     }
 
     private async Task<TrackedEntity?> TeleportAndTryFindCombatTargetAsync(

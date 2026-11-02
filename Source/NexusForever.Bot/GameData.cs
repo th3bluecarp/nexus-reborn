@@ -105,10 +105,29 @@ internal sealed record PathMissionDefinition(
     IReadOnlyList<WorldLocation2Entry> Locations,
     IReadOnlyList<uint> ObjectiveCreatureIds,
     uint Count,
-    IReadOnlyList<uint> HoldoutConsoleCreatureIds)
+    IReadOnlyList<uint> HoldoutConsoleCreatureIds,
+    IReadOnlyList<IReadOnlyList<uint>> ScanCreatureGroups,
+    uint ScansPerGroup,
+    SettlerHubDefinition? SettlerHub,
+    IReadOnlyList<CartographyPoint> CartographyPoints)
 {
     public string TypeName => Enum.IsDefined(Type) ? Type.ToString() : $"Unknown{RawType}";
 }
+
+internal sealed record CartographyPoint(uint HexGroupId, ushort WorldId, float X, float Y, float Z);
+internal sealed record SettlerResourceDefinition(uint ItemId, string Name, IReadOnlyList<uint> CreatureIds);
+internal sealed record SettlerBuildDefinition(
+    uint GroupId,
+    uint DepotCreatureId,
+    WorldLocation2Entry DisplayLocation,
+    uint Tier,
+    uint Contribution,
+    IReadOnlyDictionary<uint, uint> Costs);
+internal sealed record SettlerHubDefinition(
+    uint HubId,
+    uint MissionCount,
+    IReadOnlyList<SettlerResourceDefinition> Resources,
+    IReadOnlyList<SettlerBuildDefinition> Builds);
 
 internal sealed class BotGameData
 {
@@ -125,6 +144,13 @@ internal sealed class BotGameData
     private readonly GameTable<PathSoldierAssassinateEntry> pathSoldierAssassinations;
     private readonly GameTable<PathSoldierSWATEntry> pathSoldierSwats;
     private readonly GameTable<PathSoldierActivateEntry> pathSoldierActivations;
+    private readonly GameTable<PathExplorerNodeEntry> pathExplorerNodes;
+    private readonly GameTable<PathSettlerHubEntry> pathSettlerHubs;
+    private readonly GameTable<PathSettlerImprovementGroupEntry> pathSettlerImprovementGroups;
+    private readonly GameTable<PathSettlerImprovementEntry> pathSettlerImprovements;
+    private readonly GameTable<MapZoneEntry> mapZones;
+    private readonly GameTable<MapZoneHexGroupEntry> mapZoneHexGroups;
+    private readonly GameTable<MapZoneHexGroupEntryEntry> mapZoneHexGroupEntries;
     private readonly GameTable<CommunicatorMessagesEntry>? communicatorMessages;
     private readonly TextTable english;
     private readonly Dictionary<ushort, PrerequisiteBranchChoice> prerequisiteBranchChoices = [];
@@ -147,6 +173,13 @@ internal sealed class BotGameData
         pathSoldierAssassinations = Load<PathSoldierAssassinateEntry>(tablePath, "PathSoldierAssassinate.tbl");
         pathSoldierSwats = Load<PathSoldierSWATEntry>(tablePath, "PathSoldierSWAT.tbl");
         pathSoldierActivations = Load<PathSoldierActivateEntry>(tablePath, "PathSoldierActivate.tbl");
+        pathExplorerNodes = Load<PathExplorerNodeEntry>(tablePath, "PathExplorerNode.tbl");
+        pathSettlerHubs = Load<PathSettlerHubEntry>(tablePath, "PathSettlerHub.tbl");
+        pathSettlerImprovementGroups = Load<PathSettlerImprovementGroupEntry>(tablePath, "PathSettlerImprovementGroup.tbl");
+        pathSettlerImprovements = Load<PathSettlerImprovementEntry>(tablePath, "PathSettlerImprovement.tbl");
+        mapZones = Load<MapZoneEntry>(tablePath, "MapZone.tbl");
+        mapZoneHexGroups = Load<MapZoneHexGroupEntry>(tablePath, "MapZoneHexGroup.tbl");
+        mapZoneHexGroupEntries = Load<MapZoneHexGroupEntryEntry>(tablePath, "MapZoneHexGroupEntry.tbl");
         string communicatorPath = Path.Combine(tablePath, "CommunicatorMessages.tbl");
         if (File.Exists(communicatorPath))
             communicatorMessages = new GameTable<CommunicatorMessagesEntry>(communicatorPath);
@@ -244,6 +277,10 @@ internal sealed class BotGameData
         uint creatureId = 0u;
         uint targetGroupId = 0u;
         uint count = 1u;
+        IReadOnlyList<IReadOnlyList<uint>> scanGroups = [];
+        uint scansPerGroup = 0u;
+        SettlerHubDefinition? settlerHub = null;
+        IReadOnlyList<CartographyPoint> cartographyPoints = [];
         if (entry.PathTypeEnum == (uint)BotPath.Soldier)
         {
             switch (type)
@@ -288,6 +325,25 @@ internal sealed class BotGameData
             }
         }
 
+        if (entry.PathTypeEnum == (uint)BotPath.Scientist && type == PathMissionType.Scan)
+        {
+            (scanGroups, scansPerGroup) = ResolveScientistScanRule(entry.Id);
+            count = Math.Min((uint)scanGroups.Count * scansPerGroup, 32u);
+        }
+
+        if (entry.PathTypeEnum == (uint)BotPath.Settler && type == PathMissionType.Expansion)
+        {
+            settlerHub = ResolveSettlerHub(entry.ObjectId);
+            if (settlerHub is not null)
+                count = Math.Max(settlerHub.MissionCount, 1u);
+        }
+
+        if (entry.PathTypeEnum == (uint)BotPath.Explorer && type == PathMissionType.Cartography)
+        {
+            count = 95u; // PathMissionManager.CartographyCompletePercent
+            cartographyPoints = ResolveCartographyPoints(episode);
+        }
+
         uint[] objectiveCreatures = (creatureId == 0u ? [] : new[] { creatureId })
             .Concat(ResolveTargetGroup(targetGroupId))
             .Distinct()
@@ -304,6 +360,18 @@ internal sealed class BotGameData
             .Where(location => location is not null)
             .Cast<WorldLocation2Entry>()
             .ToArray();
+        if (locations.Length == 0
+            && entry.PathTypeEnum == (uint)BotPath.Explorer
+            && type is PathMissionType.StakingClaim or PathMissionType.Surveillance or PathMissionType.Vista)
+        {
+            locations = pathExplorerNodes.Entries
+                .Where(node => node.PathExplorerAreaId == entry.ObjectId && node.WorldLocation2Id != 0u)
+                .Select(node => worldLocations.GetEntry(node.WorldLocation2Id))
+                .Where(location => location is not null)
+                .Cast<WorldLocation2Entry>()
+                .Take(32)
+                .ToArray();
+        }
         uint[] holdoutConsoles = creatures.Entries
             .Where(creature => creature.PathMissionIdSoldier == entry.Id)
             .Select(creature => creature.Id)
@@ -318,10 +386,148 @@ internal sealed class BotGameData
             episode,
             entry,
             locations,
-            objectiveCreatures,
+            objectiveCreatures
+                .Concat(scanGroups.SelectMany(group => group))
+                .Concat(settlerHub?.Resources.SelectMany(resource => resource.CreatureIds) ?? [])
+                .Concat(settlerHub?.Builds.Select(build => build.DepotCreatureId) ?? [])
+                .Distinct()
+                .ToArray(),
             count,
-            holdoutConsoles);
+            holdoutConsoles,
+            scanGroups,
+            scansPerGroup,
+            settlerHub,
+            cartographyPoints);
     }
+
+    private (IReadOnlyList<IReadOnlyList<uint>> Groups, uint ScansPerGroup) ResolveScientistScanRule(uint missionId)
+    {
+        (string[][] Groups, uint ScansPerGroup)? rule = missionId switch
+        {
+            42u => ([
+                ["Dominion Turret", "Inactive Dominion Turret"],
+                ["Dominion Secure Database", "Dominion Secure Database Hologram"]
+            ], 1u),
+            160u => ([["Vitalium Crystal"]], 3u),
+            648u => ([["Skeech Diviner", "Skeech Scratcher", "Skeech Shaman", "Cleaved Skeech Shaman"]], 3u),
+            _ => null
+        };
+        if (rule is null)
+            return ([], 0u);
+
+        IReadOnlyList<IReadOnlyList<uint>> groups = rule.Value.Groups
+            .Select(names => (IReadOnlyList<uint>)creatures.Entries
+                .Where(creature => names.Contains(CreatureName(creature), StringComparer.OrdinalIgnoreCase))
+                .Select(creature => creature.Id)
+                .Distinct()
+                .Order()
+                .ToArray())
+            .ToArray();
+        return (groups, rule.Value.ScansPerGroup);
+    }
+
+    private SettlerHubDefinition? ResolveSettlerHub(uint hubId)
+    {
+        PathSettlerHubEntry? hub = pathSettlerHubs.GetEntry(hubId);
+        if (hub is null)
+            return null;
+
+        uint[] itemIds = [hub.Item2IdResource00, hub.Item2IdResource01, hub.Item2IdResource02];
+        var resources = new List<SettlerResourceDefinition>();
+        foreach (uint itemId in itemIds.Where(id => id != 0u))
+        {
+            Item2Entry? item = items.GetEntry(itemId);
+            string name = item is null ? $"item {itemId}" : NormalizeName(english.GetEntry(item.LocalizedTextIdName) ?? $"item {itemId}");
+            uint[] resourceCreatures = creatures.Entries
+                .Where(creature => string.Equals(CreatureName(creature), name, StringComparison.OrdinalIgnoreCase))
+                .Select(creature => creature.Id)
+                .Distinct()
+                .Order()
+                .ToArray();
+            resources.Add(new SettlerResourceDefinition(itemId, name, resourceCreatures));
+        }
+
+        var builds = new List<SettlerBuildDefinition>();
+        foreach (PathSettlerImprovementGroupEntry group in pathSettlerImprovementGroups.Entries
+            .Where(candidate => candidate.PathSettlerHubId == hub.Id)
+            .OrderBy(candidate => candidate.Id))
+        {
+            WorldLocation2Entry? display = worldLocations.GetEntry(group.WorldLocation2IdDisplayPoint);
+            if (display is null || group.Creature2IdDepot == 0u)
+                continue;
+
+            uint[] tiers = [
+                group.PathSettlerImprovementIdTier00,
+                group.PathSettlerImprovementIdTier01,
+                group.PathSettlerImprovementIdTier02,
+                group.PathSettlerImprovementIdTier03
+            ];
+            for (uint tier = 0u; tier < tiers.Length && tiers[tier] != 0u; tier++)
+            {
+                PathSettlerImprovementEntry? improvement = pathSettlerImprovements.GetEntry(tiers[tier]);
+                if (improvement is null)
+                    continue;
+
+                uint[] counts = [improvement.CountResource00, improvement.CountResource01, improvement.CountResource02];
+                var costs = new Dictionary<uint, uint>();
+                for (int i = 0; i < itemIds.Length; i++)
+                    if (itemIds[i] != 0u && counts[i] != 0u)
+                        costs[itemIds[i]] = counts[i];
+
+                builds.Add(new SettlerBuildDefinition(
+                    group.Id,
+                    group.Creature2IdDepot,
+                    display,
+                    tier,
+                    Math.Max(group.ContributionValue + tier * group.PerTierBonusContributionValue, 1u),
+                    costs));
+            }
+        }
+
+        return new SettlerHubDefinition(hub.Id, hub.MissionCount, resources, builds);
+    }
+
+    private IReadOnlyList<CartographyPoint> ResolveCartographyPoints(PathEpisodeEntry episode)
+    {
+        MapZoneEntry? mapZone = mapZones.Entries.FirstOrDefault(zone => zone.WorldZoneId == episode.WorldZoneId);
+        if (mapZone is null)
+            return [];
+
+        const float zoneMapBoundary = 64f * 512f; // MapDefines.WorldGridOrigin * MapDefines.GridSize
+        var points = new List<CartographyPoint>();
+        foreach (MapZoneHexGroupEntry group in mapZoneHexGroups.Entries
+            .Where(candidate => candidate.MapZoneId == mapZone.Id)
+            .OrderBy(candidate => candidate.Id))
+        {
+            MapZoneHexGroupEntryEntry? hex = mapZoneHexGroupEntries.Entries
+                .Where(candidate => candidate.MapZoneHexGroupId == group.Id)
+                .OrderBy(candidate => candidate.Id)
+                .FirstOrDefault();
+            if (hex is null)
+                continue;
+
+            float x = 48f * hex.HexX - 16f - zoneMapBoundary;
+            float z = 27.712812f * (2f * hex.HexY - 1f) - zoneMapBoundary;
+            WorldLocation2Entry? heightAnchor = worldLocations.Entries
+                .Where(location => location.WorldId == episode.WorldId)
+                .OrderBy(location =>
+                {
+                    double dx = location.Position0 - x;
+                    double dz = location.Position2 - z;
+                    return dx * dx + dz * dz;
+                })
+                .FirstOrDefault();
+            float y = heightAnchor?.Position1 ?? 0f;
+            points.Add(new CartographyPoint(group.Id, checked((ushort)episode.WorldId), x, y, z));
+        }
+        return points;
+    }
+
+    private string CreatureName(Creature2Entry creature)
+        => NormalizeName(english.GetEntry(creature.LocalizedTextIdName) ?? "");
+
+    private static string NormalizeName(string name)
+        => Regex.Replace(name, @"\{p:[^}]*\}", "");
 
     public bool IsHoldoutHostile(uint creatureId)
     {

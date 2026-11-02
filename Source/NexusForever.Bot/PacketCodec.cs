@@ -120,11 +120,11 @@ internal static class PacketCodec
         writer.Write(3u);
     });
 
-    public static byte[] ClientCharacterCreate(CharacterCreationEntry creation, string name) => Write(writer =>
+    public static byte[] ClientCharacterCreate(CharacterCreationEntry creation, string name, BotPath path) => Write(writer =>
     {
         writer.Write(creation.Id);
         writer.WriteStringWide(name);
-        writer.Write((byte)0, 3);
+        writer.Write((byte)path, 3);
         writer.Write(0u);
         writer.Write(0u);
     });
@@ -179,6 +179,24 @@ internal static class PacketCodec
 
     public static byte[] ClientActivateUnit(uint guid) => Write(writer => writer.Write(guid));
     public static byte[] ClientEntitySelect(uint guid) => Write(writer => writer.Write(guid));
+
+    // ClientPathScientistRequestScanbot.Read: uint profile followed by the one-bit GameCommand flag.
+    public static byte[] ClientPathScientistRequestScanbot(uint profile = 0u, bool isGameCommand = false) => Write(writer =>
+    {
+        writer.Write(profile);
+        writer.Write(isGameCommand);
+    });
+
+    // Both scientist path-action packets have zero-byte payloads.
+    public static byte[] ClientPathScientistScan() => [];
+    public static byte[] ClientPathScientistDismissScanbot() => [];
+
+    // ClientPathSettlerImprovementBuildTier.Read: 14-bit group id, then zero-based uint tier.
+    public static byte[] ClientPathSettlerImprovementBuildTier(uint improvementGroupId, uint tier) => Write(writer =>
+    {
+        writer.Write(improvementGroupId, 14);
+        writer.Write(tier);
+    });
     public static byte[] ClientItemDelete(InventoryLocation location, uint bagIndex) => Write(writer =>
     {
         writer.Write(location, 9);

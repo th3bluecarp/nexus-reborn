@@ -9,6 +9,8 @@ internal sealed class RunReport
 {
     public ushort QuestId { get; init; }
     public string Title { get; set; } = "";
+    [JsonPropertyName("path")]
+    public string PathName { get; set; } = "soldier";
     public string CharacterName { get; set; } = "";
     public DateTimeOffset StartTimestamp { get; init; } = DateTimeOffset.UtcNow;
     public DateTimeOffset EndTimestamp { get; set; }
@@ -43,7 +45,8 @@ internal sealed class RunReport
                 .ToArray(),
             StartedAt = StartTimestamp,
             FinishedAt = EndTimestamp,
-            Character = CharacterName
+            Character = CharacterName,
+            Path = PathName
         };
         string? directory = Path.GetDirectoryName(Path.GetFullPath(path));
         if (!string.IsNullOrEmpty(directory))
@@ -92,16 +95,16 @@ internal sealed class RunReport
         foreach (QuestRunReport quest in Quests)
             builder.AppendLine($"- {quest.QuestId} {Escape(quest.Title)}: {quest.Cheats.Count}");
         builder.AppendLine();
-        builder.AppendLine("## Path missions (Soldier)");
+        builder.AppendLine($"## Path missions ({Escape(PathName)})");
         builder.AppendLine();
-        builder.AppendLine("| mission | name | type | result | failed at | detail | elapsed | fought back | cheats |");
-        builder.AppendLine("|---:|---|---|---|---|---|---:|---|---:|");
+        builder.AppendLine("| mission | path | name | type | result | failed at | detail | elapsed | fought back | cheats |");
+        builder.AppendLine("|---:|---|---|---|---|---|---|---:|---|---:|");
         foreach (PathMissionRunReport mission in Missions)
         {
             string foughtBack = mission.FoughtBack.HasValue
                 ? $"{mission.FoughtBack.Value.ToString().ToLowerInvariant()} (casts={mission.EnemyCasts}, damage={mission.DamageTaken})"
                 : "";
-            builder.AppendLine($"| {mission.MissionId} | {Escape(mission.Name)} | {Escape(mission.Type)} | {mission.Result} | {Escape(mission.FailedAt ?? "")} | {Escape(mission.Detail ?? "")} | {mission.ElapsedMs} ms | {Escape(foughtBack)} | {mission.Cheats.Count} |");
+            builder.AppendLine($"| {mission.MissionId} | {Escape(mission.Path)} | {Escape(mission.Name)} | {Escape(mission.Type)} | {mission.Result} | {Escape(mission.FailedAt ?? "")} | {Escape(mission.Detail ?? "")} | {mission.ElapsedMs} ms | {Escape(foughtBack)} | {mission.Cheats.Count} |");
         }
         return builder.ToString();
     }
@@ -124,12 +127,14 @@ internal sealed class RunSummary
     public DateTimeOffset StartedAt { get; init; }
     public DateTimeOffset FinishedAt { get; init; }
     public string Character { get; init; } = "";
+    public string Path { get; init; } = "soldier";
 }
 
 internal sealed class PathMissionRunReport
 {
     [JsonPropertyName("id")]
     public ushort MissionId { get; init; }
+    public string Path { get; init; } = "soldier";
     public string Name { get; init; } = "";
     public string Type { get; init; } = "";
     public string Result { get; set; } = "FAIL";
@@ -145,6 +150,11 @@ internal sealed class PathMissionRunReport
     public uint DamageTaken { get; set; }
     public long? FirstEnemyActionMs { get; set; }
     public List<KillEvidence> Kills { get; } = [];
+    public List<string> LocationsReached { get; } = [];
+    public List<uint> CreaturesScanned { get; } = [];
+    public List<uint> CreaturesNeverFound { get; } = [];
+    public Dictionary<uint, uint> ResourcesGathered { get; } = [];
+    public List<string> Builds { get; } = [];
 }
 
 internal sealed class QuestRunReport

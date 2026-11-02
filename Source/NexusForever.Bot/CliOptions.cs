@@ -8,6 +8,7 @@ internal sealed record RunOptions(
     IReadOnlyList<ushort> QuestIds,
     uint? ZoneId,
     BotFaction Faction,
+    BotPath Path,
     bool Paths,
     bool Chain,
     BotCharacterStart Start,
@@ -82,7 +83,7 @@ internal static class CliOptions
         Usage:
           NexusForever.Bot prep --db <connection-string> --email <email> --password <password>
           NexusForever.Bot info --tables <path> (--quest <id[,id...]> [--chain 1] [--db <connection-string>] | --path <zone-id>)
-          NexusForever.Bot run (--zone <id> --faction exile|dominion [--paths 0|1] | --quest <id[,id...]|none>) [--keep-character <name>] [--chain 0|1] [--start arkship|nexus] [--max-minutes <n>] (--sts <host:port> --password <password> | --token <guid>) --auth <host:port> --world <host[:port]> --db <connection-string> --tables <path> --email <email> --report <file.json> --log <file.log>
+          NexusForever.Bot run (--zone <id> --faction exile|dominion [--path soldier|settler|scientist|explorer] [--paths 0|1] | --quest <id[,id...]|none>) [--keep-character <name>] [--chain 0|1] [--start arkship|nexus] [--max-minutes <n>] (--sts <host:port> --password <password> | --token <guid>) --auth <host:port> --world <host[:port]> --db <connection-string> --tables <path> --email <email> --report <file.json> --log <file.log>
         """;
 
     public static object Parse(string[] args)
@@ -132,7 +133,7 @@ internal static class CliOptions
 
     private static RunOptions ParseRun(Dictionary<string, string> values)
     {
-        RequireOnly(values, "quest", "zone", "faction", "paths", "chain", "start", "max-minutes", "keep-character", "sts", "auth", "world", "db", "tables", "email", "password", "token", "report", "log");
+        RequireOnly(values, "quest", "zone", "faction", "path", "paths", "chain", "start", "max-minutes", "keep-character", "sts", "auth", "world", "db", "tables", "email", "password", "token", "report", "log");
 
         bool hasQuest = values.TryGetValue("quest", out string? questValue);
         bool hasZone = values.TryGetValue("zone", out string? zoneValue);
@@ -171,6 +172,16 @@ internal static class CliOptions
         };
         if (hasZone && !values.ContainsKey("faction"))
             throw new ArgumentException("--faction is required with --zone.");
+        BotPath path = values.GetValueOrDefault("path", "soldier").ToLowerInvariant() switch
+        {
+            "soldier" => BotPath.Soldier,
+            "settler" => BotPath.Settler,
+            "scientist" => BotPath.Scientist,
+            "explorer" => BotPath.Explorer,
+            _ => throw new ArgumentException("--path must be soldier, settler, scientist or explorer.")
+        };
+        if (values.ContainsKey("path") && !hasZone)
+            throw new ArgumentException("--path is available only with --zone.");
         bool paths = values.TryGetValue("paths", out string? pathsValue) switch
         {
             false => false,
@@ -220,6 +231,7 @@ internal static class CliOptions
             questIds,
             zoneId,
             faction,
+            path,
             paths,
             chain,
             start,
