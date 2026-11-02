@@ -109,6 +109,12 @@ Confidence: **High** = consistent across all the data we checked and no counter 
 | Soldier SWAT | kill the target group Count times (retail used a gadget on them) | Low | stand in |
 | path XP per mission | 25 + 5 x level | Invented | fitted to the PathLevel curve, retail values unknown |
 
+## Quest objectives (reputation)
+
+| Item | Our meaning | Confidence | Notes |
+|---|---|---|---|
+| reputation objective | an ActivateEntity objective with no creature and Count 1000 ("Raise your Reputation with the Algoroc Accord", 3 quests) fills with the player's reputation with the quest's reward faction, complete at 3000 (the first tier) | Invented | retail threshold unknown; the quest bot runs these quests after the zone's other quests |
+
 ## Challenge rewards
 
 | Item | Our meaning | Confidence | Evidence | Alternatives / risks |

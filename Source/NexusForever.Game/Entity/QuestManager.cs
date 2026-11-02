@@ -600,6 +600,14 @@ namespace NexusForever.Game.Entity
             foreach (IQuestObjective objective in quest.Where(o => o.ObjectiveInfo.Entry.Type == (uint)QuestObjectiveType.CollectItem))
                 quest.ObjectiveSet(QuestObjectiveType.CollectItem, objective.ObjectiveInfo.Entry.Data, player.Inventory.GetItemCount(objective.ObjectiveInfo.Entry.Data));
 
+            // reputation objectives start from the reputation the player already has with the quest's reward faction
+            if (quest.Any(IsReputationObjective) && info.Entry.Faction2IdRewardReputation00 != 0u)
+            {
+                var faction = (NexusForever.Game.Static.Reputation.Faction)info.Entry.Faction2IdRewardReputation00;
+                float amount = player.ReputationManager.GetReputation(faction)?.Amount ?? 0f;
+                ReputationUpdate(faction, amount);
+            }
+
             // equip objectives count an item that is already equipped (30 equipment slots)
             foreach (uint equipItemId in quest.Select(o => o.ObjectiveInfo.EquipItemId).Where(i => i != 0u).Distinct().ToList())
                 if (Enumerable.Range(0, 30).Any(i => player.Inventory.GetItem(InventoryLocation.Equipped, (uint)i)?.Info.Id == equipItemId))
@@ -998,6 +1006,32 @@ namespace NexusForever.Game.Entity
         {
             foreach (IQuest quest in activeQuests.Values.ToList())
                 quest.ObjectiveSet(QuestObjectiveType.CollectItem, itemId, count);
+        }
+
+        /// <summary>
+        /// Reputation the "Raise your Reputation with ..." objectives need: the first tier above neutral (Liked).
+        /// Retail value unknown, see SEMANTICS (reputation objective).
+        /// </summary>
+        public const float ReputationObjectiveAmount = 3000f;
+
+        /// <summary>
+        /// A reputation objective is an ActivateEntity objective with no creature and a Count of 1000 (three quests in the
+        /// game: The Algoroc Accord, The Watchers of Deradune, the weekly PvP bonus). It tracks the quest's reward faction.
+        /// </summary>
+        public static bool IsReputationObjective(IQuestObjective objective)
+            => objective.ObjectiveInfo.Entry.Type == (uint)QuestObjectiveType.ActivateEntity
+                && objective.ObjectiveInfo.Entry.Data == 0u
+                && objective.ObjectiveInfo.Entry.Count == 1000u;
+
+        public void ReputationUpdate(NexusForever.Game.Static.Reputation.Faction factionId, float amount)
+        {
+            uint progress = (uint)Math.Clamp(amount / ReputationObjectiveAmount * 1000f, 0f, 1000f);
+            foreach (IQuest quest in activeQuests.Values.ToList())
+            {
+                if (quest.Info.Entry.Faction2IdRewardReputation00 != (uint)factionId || !quest.Any(IsReputationObjective))
+                    continue;
+                quest.ObjectiveSet(QuestObjectiveType.ActivateEntity, 0u, progress);
+            }
         }
 
         /// <summary>

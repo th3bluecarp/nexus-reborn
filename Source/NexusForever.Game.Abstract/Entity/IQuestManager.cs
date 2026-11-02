@@ -161,6 +161,11 @@ namespace NexusForever.Game.Abstract.Entity
         void ItemCountUpdate(uint itemId, uint count);
 
         /// <summary>
+        /// Invoked when the player's reputation with a faction changes, updates reputation objectives.
+        /// </summary>
+        void ReputationUpdate(NexusForever.Game.Static.Reputation.Faction factionId, float amount);
+
+        /// <summary>
         /// Invoked when the player successfully casts a spell, updates SpellSuccess objectives.
         /// </summary>
         void SpellSuccessUpdate(uint spell4Id, IEnumerable<IUnitEntity> targets);

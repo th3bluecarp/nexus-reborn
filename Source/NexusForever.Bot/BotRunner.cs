@@ -477,7 +477,12 @@ internal sealed class BotRunner
 
     private async Task RunRequestedQuestAsync(CancellationToken cancellationToken)
     {
-        foreach (QuestDefinition definition in questPlan)
+        // reputation quests last: the zone's other quests pay the reputation they ask for
+        QuestDefinition[] orderedPlan = questPlan
+            .Where(definition => !HasReputationObjective(definition))
+            .Concat(questPlan.Where(HasReputationObjective))
+            .ToArray();
+        foreach (QuestDefinition definition in orderedPlan)
         {
             cancellationToken.ThrowIfCancellationRequested();
             if (StartItem(definition) is uint startItem && startItem != 0u
@@ -2356,6 +2361,9 @@ internal sealed class BotRunner
     /// <summary>
     /// The item that starts the quest: the one the quest asks for (PrerequisiteItem) or the one whose use activates it.
     /// </summary>
+    private static bool HasReputationObjective(QuestDefinition definition)
+        => definition.Objectives.Any(objective => objective.Type == QuestObjectiveType.ActivateEntity && objective.Data == 0u && objective.Count == 1000u);
+
     private uint StartItem(QuestDefinition definition)
         => definition.Entry.PrerequisiteItem != 0u
             ? definition.Entry.PrerequisiteItem
@@ -2577,8 +2585,15 @@ internal sealed class BotRunner
                     await RunTargetGroupInteractionObjectiveAsync(objective, cancellationToken);
                     break;
                 case QuestObjectiveType.ActivateEntity when objective.Data == 0u && objective.Count == 1000u:
-                    // "Raise your Reputation with the Algoroc Accord": a reputation objective (3 in the game), not an activation
-                    throw new BotFailureException("reputation objective (ActivateEntity with no creature, Count 1000): the server does not advance it; SERVER GAP");
+                    // "Raise your Reputation with the Algoroc Accord": the server fills it from the reward faction reputation
+                    // (3000 = Liked); the plan runs these quests last so the zone's other quests have paid their reputation
+                    DateTimeOffset reputationDeadline = DateTimeOffset.UtcNow + TimeSpan.FromSeconds(20);
+                    while (!IsObjectiveComplete(objective) && DateTimeOffset.UtcNow < reputationDeadline)
+                        if (await TryReadWorldPacketAsync(reputationDeadline - DateTimeOffset.UtcNow, cancellationToken) is null)
+                            break;
+                    if (!IsObjectiveComplete(objective))
+                        throw new BotFailureException($"reputation objective at {GetRawProgress(objective.Index)}/1000: the zone's quests so far did not reach 3000 reputation with faction {RequireQuest().Entry.Faction2IdRewardReputation00}");
+                    break;
                 case QuestObjectiveType.ActivateEntity:
                     await RunActivateObjectiveAsync(objective, cancellationToken);
                     break;

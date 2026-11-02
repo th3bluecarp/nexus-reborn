@@ -59,6 +59,8 @@ namespace NexusForever.Game.Reputation
             else
                 reputation.Amount += value;
 
+            owner.QuestManager?.ReputationUpdate(factionId, reputation.Amount);
+
             owner.Session.EnqueueMessageEncrypted(new ServerReputationUpdate
             {
                 FactionId = factionId,
