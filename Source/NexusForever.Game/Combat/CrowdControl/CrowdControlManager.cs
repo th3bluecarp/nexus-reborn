@@ -36,13 +36,26 @@ namespace NexusForever.Game.Combat.CrowdControl
             }
 
             // TODO: handle StackingDoesNotStack, StackingShorterDuration
-            // TODO: handle DiminishingReturnsTriggerCap
+
+            // diminishing returns, invented: after a crowd control state ends the unit is immune to that state for twice its
+            // duration (at least ImmunityMinimumSeconds), so a boss telegraph that re-applies a stun every few seconds cannot hold a
+            // player stunned forever (Algoroc's Boulderback, Loftite Shards; SEMANTICS: crowd control immunity)
+            if (immuneUntil.TryGetValue(ccState, out DateTime until) && until > DateTime.UtcNow)
+            {
+                return new CrowdControlApplyResult
+                {
+                    Result = CCStateApplyRulesResult.TargetImmune
+                };
+            }
 
             return new CrowdControlApplyResult
             {
                 Result = CCStateApplyRulesResult.Ok,
             };
         }
+
+        private const double ImmunityMinimumSeconds = 5d;
+        private readonly Dictionary<CCState, DateTime> immuneUntil = new();
 
         /// <summary>
         /// Adds the specified <see cref="CCState"/> to the target.
@@ -57,6 +70,11 @@ namespace NexusForever.Game.Combat.CrowdControl
         /// </summary>
         public void RemoveCCEffect(CCState state)
         {
+            if (ccEffects.TryGetValue(state, out ISpellTargetEffectInfo effect))
+            {
+                double seconds = Math.Max(ImmunityMinimumSeconds, 2d * (effect?.Entry?.DurationTime ?? 0u) / 1000d);
+                immuneUntil[state] = DateTime.UtcNow.AddSeconds(seconds);
+            }
             ccEffects.Remove(state);
         }
 
