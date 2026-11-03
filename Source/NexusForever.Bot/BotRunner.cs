@@ -2348,6 +2348,9 @@ internal sealed class BotRunner
                     or QuestObjectiveType.KillTargetGroups
                     or QuestObjectiveType.GatheResource
                     ? CombatTimeout
+                    // a virtual item held by hostile creatures (Rockridge Rascals: Arifo the Rascal, a named with 1.75x stats) is a fight
+                    : objective.Type == QuestObjectiveType.VirtualCollect && VirtualCollectIsFight(objective)
+                        ? TimeSpan.FromSeconds(Math.Max((uint)CombatTimeout.TotalSeconds, Math.Max(1u, objective.Count) * 55u))
                     : objective.Type == QuestObjectiveType.VirtualCollect
                         ? TimeSpan.FromSeconds(Math.Max(1u, objective.Count) * 55u)
                     : objective.Type == QuestObjectiveType.SucceedCSI
@@ -3427,11 +3430,27 @@ internal sealed class BotRunner
         }
     }
 
+    /// <summary>
+    /// A virtual item whose reward pane creatures are hostile is taken from their corpses (the server credits the kill).
+    /// </summary>
+    private bool VirtualCollectIsFight(QuestObjectiveDefinition objective)
+    {
+        uint[] creatureIds = GetObjectiveCreatureIds(objective).ToArray();
+        return creatureIds.Length > 0 && creatureIds.All(creatureId => RequireGameData().IsHoldoutHostile(creatureId));
+    }
+
     private async Task RunVirtualCollectObjectiveAsync(QuestObjectiveDefinition objective, CancellationToken cancellationToken)
     {
         uint[] creatureIds = GetObjectiveCreatureIds(objective).ToArray();
         if (creatureIds.Length == 0)
             throw new BotFailureException($"target group {objective.Data} resolved to no creature ids");
+        if (VirtualCollectIsFight(objective))
+        {
+            // Rockridge Rascals: "retrieve the loot from Arifo the Rascal" is a kill, the 20 s use attempt only aggroed him
+            log.Info($"objective {objective.Index}: virtual item {objective.Data} is held by hostile creature(s) [{string.Join(',', creatureIds)}]; fighting for it");
+            await RunKillObjectiveAsync(objective, cancellationToken);
+            return;
+        }
 
         var attemptedSpawns = new HashSet<uint>();
         while (!IsObjectiveComplete(objective))

@@ -591,6 +591,10 @@ namespace NexusForever.Game.Entity
             {
                 // no activation spell (the arkship portals 73741/73745): a direct activation, handled by the entity scripts
                 OnActivate(activator);
+                // a quest target without an activation spell (Fiery Vengeance's slaver shacks, burned in retail by a grenade
+                // spell the quest granted) is used directly: the use is the success (SEMANTICS: direct activation of quest targets)
+                if (IsActiveQuestActivateTarget(activator) || IsActiveQuestChecklistTarget(activator))
+                    OnActivateSuccess(activator);
                 return;
             }
 
@@ -913,6 +917,23 @@ namespace NexusForever.Game.Entity
         /// <summary>
         /// Returns if activating this entity progresses an unfinished objective of one of the activator's accepted quests.
         /// </summary>
+        /// <summary>
+        /// Returns if an accepted quest of the activator has an unfinished checklist objective naming a target group this entity belongs to.
+        /// </summary>
+        private bool IsActiveQuestChecklistTarget(IPlayer activator)
+        {
+            if (CreatureInfo?.Entry == null)
+                return false;
+
+            var targetGroups = AssetManager.Instance.GetTargetGroupsForCreatureId(CreatureInfo.Entry.Id);
+            return activator.QuestManager.GetActiveQuests()
+                .Where(quest => quest.State == QuestState.Accepted)
+                .SelectMany(quest => quest)
+                .Any(objective => !objective.IsComplete()
+                    && (objective.ObjectiveInfo.Type is QuestObjectiveType.ActivateTargetGroupChecklist or QuestObjectiveType.Unknown10)
+                    && targetGroups.Contains(objective.ObjectiveInfo.Data));
+        }
+
         private bool IsActiveQuestActivateTarget(IPlayer activator)
         {
             if (CreatureInfo?.Entry == null)
