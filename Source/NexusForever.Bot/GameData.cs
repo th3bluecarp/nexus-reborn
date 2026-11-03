@@ -390,7 +390,8 @@ internal sealed class BotGameData
             }
         }
 
-        if (entry.PathTypeEnum == (uint)BotPath.Scientist && type == PathMissionType.Scan)
+        // checklists (type 14) are scans of N different units of the listed kinds on the server (PathMissionManager.Scientist ScanRules)
+        if (entry.PathTypeEnum == (uint)BotPath.Scientist && type is PathMissionType.Scan or PathMissionType.Checklist or PathMissionType.FieldStudy)
         {
             (scanGroups, scansPerGroup) = ResolveScientistScanRule(entry.Id);
             count = Math.Min((uint)scanGroups.Count * scansPerGroup, 32u);
@@ -670,6 +671,11 @@ internal sealed class BotGameData
             ], 1u),
             160u => ([["Vitalium Crystal"]], 3u),
             648u => ([["Skeech Diviner", "Skeech Scratcher", "Skeech Shaman", "Cleaved Skeech Shaman"]], 3u),
+            // Algoroc checklists (mission type 14), the server's ScanRules names
+            262u => ([["Darkspur Cartel Terminal"]], 5u),
+            701u => ([["Eldan Relic", "Eldan Relics"]], 8u),
+            2132u => ([["DREDplex Data Terminal"]], 10u),
+            2133u => ([["Deadstar Data Terminal", "Deadstar Footlocker", "Deadstar Clothesline"]], 3u),
             _ => null
         };
         if (rule is null)

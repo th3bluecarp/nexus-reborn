@@ -675,11 +675,11 @@ internal sealed class BotRunner
             };
             report.Missions.Add(currentMissionReport);
 
-            if (definition.Type is PathMissionType.Checklist or PathMissionType.FieldStudy)
+            if (definition.Type is PathMissionType.Checklist or PathMissionType.FieldStudy && definition.ScanCreatureGroups.Count == 0)
             {
                 currentMissionReport.Result = "UNSUPPORTED";
                 currentMissionReport.FailedAt = "objective";
-                currentMissionReport.Detail = $"UNSUPPORTED: server has no handler for mission type {definition.RawType} ({definition.TypeName})";
+                currentMissionReport.Detail = $"UNSUPPORTED: no scan rule for mission type {definition.RawType} ({definition.TypeName}) mission {definition.Id}";
                 currentMissionReport.EndTimestamp = DateTimeOffset.UtcNow;
                 log.Info($"path mission {definition.Id}: {currentMissionReport.Detail}");
                 currentMissionReport = null;
@@ -800,6 +800,8 @@ internal sealed class BotRunner
                         objectiveDetail = await RunExplorerCartographyAsync(definition, missionBudget.Token);
                         break;
                     case PathMissionType.Scan:
+                    case PathMissionType.Checklist:
+                    case PathMissionType.FieldStudy:
                         objectiveDetail = await RunScientistScanMissionAsync(definition, missionBudget.Token);
                         break;
                     case PathMissionType.Expansion:
