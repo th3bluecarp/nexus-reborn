@@ -4,6 +4,7 @@ using NexusForever.Database.Character;
 using NexusForever.Database.Character.Model;
 using NexusForever.Game.Abstract.Entity;
 using NexusForever.Game.Abstract.Quest;
+using NexusForever.Game.Map.Search;
 using NexusForever.Game.Prerequisite;
 using NexusForever.Game.Quest;
 using NexusForever.Game.Static;
@@ -188,10 +189,12 @@ namespace NexusForever.Game.Entity
                         && IsInObjectiveArea(entry))
                         updates.Add((quest, objective.ObjectiveInfo.Id));
 
-                    // an EnterArea objective without an indicator names a world zone (Corrupted Reconnaissance: 4350): standing in
-                    // that zone or one of its sub zones completes it
+                    // an EnterArea objective without an indicator was a map trigger volume we do not have; its Data is a world zone
+                    // for some (Corrupted Reconnaissance: 4350), standing in that zone or one of its sub zones completes it. For the
+                    // rest the text says where: "Search for Botsmith Redfield inside Halsen's Claim" (Beyond the Realm of Medicine)
+                    // completes near the creature it names or at the location it links
                     else if (objective.ObjectiveInfo.Type == QuestObjectiveType.EnterArea && !HasIndicator(entry)
-                        && entry.Data != 0u && IsInWorldZone(entry.Data))
+                        && (entry.Data != 0u && IsInWorldZone(entry.Data) || IsNearTextCreature(entry) || IsAtTextLocation(entry)))
                         updates.Add((quest, objective.ObjectiveInfo.Id));
 
                     // complete an event whose public event cannot run here (no longer in the client data, or on a map that does not
@@ -268,6 +271,27 @@ namespace NexusForever.Game.Entity
             }
 
             return false;
+        }
+
+        private const float TextCreatureRange = 25f;
+
+        /// <summary>
+        /// Whether a creature the objective text names ($(creature=N)) stands within <see cref="TextCreatureRange"/> of the player.
+        /// </summary>
+        private bool IsNearTextCreature(QuestObjectiveEntry entry)
+        {
+            string text = GameTableManager.Instance.TextEnglish?.GetEntry(entry.LocalizedTextIdFull);
+            if (text == null || player.Map == null)
+                return false;
+            var creatureIds = new HashSet<uint>();
+            foreach (System.Text.RegularExpressions.Match match in System.Text.RegularExpressions.Regex.Matches(text, @"creature=(\d+)"))
+                creatureIds.Add(uint.Parse(match.Groups[1].Value));
+            if (creatureIds.Count == 0)
+                return false;
+            var check = new SearchCheckRange<IUnitEntity>();
+            check.Initialise(player.Position, TextCreatureRange);
+            return player.Map.Search(player.Position, TextCreatureRange, check)
+                .Any(unit => unit is not IPlayer && creatureIds.Contains(unit.CreatureId));
         }
 
         private static bool HasNoText(QuestObjectiveEntry entry)

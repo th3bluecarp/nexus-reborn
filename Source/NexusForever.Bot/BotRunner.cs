@@ -4773,18 +4773,50 @@ internal sealed class BotRunner
     }
 
     /// <summary>
-    /// An EnterArea objective without a map indicator names a world zone (Corrupted Reconnaissance: zone 4350); the server
-    /// completes it when the player stands in that zone or one of its sub zones, so go to a known location of the zone.
+    /// An EnterArea objective without a map indicator was a map trigger volume the server does not have. The server completes
+    /// it near a creature the text names ("Search for Botsmith Redfield inside Halsen's Claim"), at a location the text links,
+    /// or in the world zone its Data names (Corrupted Reconnaissance: zone 4350); the bot goes to the first of those it can
+    /// resolve in the quest's world. The Data is not always a zone of this world (Beyond the Realm of Medicine: 2026 lies in
+    /// another world), which is why the text comes first.
     /// </summary>
     private async Task RunEnterZoneAreaObjectiveAsync(QuestObjectiveDefinition objective, CancellationToken cancellationToken)
     {
         uint before = GetRawProgress(objective.Index);
-        WorldLocation2Entry location = RequireGameData().LocationInZone(objective.Data, questWorldId, lastPosition)
-            ?? throw new BotFailureException($"EnterArea objective has no indicator and no WorldLocation2 lies in zone {objective.Data} of world {questWorldId}");
-        log.Info($"objective {objective.Index}: EnterArea zone {objective.Data} via WorldLocation2 {location.Id} ({location.Position0:0},{location.Position1:0},{location.Position2:0})");
-        await TeleportToLocationAsync(location, 0f, cancellationToken);
+        BotGameData data = RequireGameData();
+        string reached;
+        IReadOnlyList<uint> textCreatureIds = data.GetCreatureIdsFromText(objective.Text);
+        Spawn? textSpawn = null;
+        if (textCreatureIds.Count > 0)
+        {
+            IReadOnlyList<Spawn> textSpawns = await BotDatabase.LoadSpawnsAsync(options.Database, textCreatureIds, cancellationToken);
+            textSpawn = textSpawns
+                .Where(spawn => spawn.WorldId == questWorldId)
+                .OrderBy(spawn => spawn.DistanceSquared(lastPosition.X, lastPosition.Y, lastPosition.Z))
+                .FirstOrDefault();
+        }
+        if (textSpawn is not null)
+        {
+            reached = $"creature {textSpawn.CreatureId} named in the text (spawn {textSpawn.Id} at {textSpawn.X:0},{textSpawn.Y:0},{textSpawn.Z:0})";
+            log.Info($"objective {objective.Index}: EnterArea {objective.Data} via {reached}");
+            await TeleportToSpawnLocationAsync(textSpawn, cancellationToken);
+        }
+        else
+        {
+            WorldLocation2Entry? location = data.GetLocationIdsFromText(objective.Text)
+                .Select(id => data.GetWorldLocation(id))
+                .FirstOrDefault(candidate => candidate.WorldId == questWorldId);
+            reached = location is null ? "" : $"text location WorldLocation2 {location.Id}";
+            if (location is null)
+            {
+                location = data.LocationInZone(objective.Data, questWorldId, lastPosition)
+                    ?? throw new BotFailureException($"EnterArea objective has no indicator, its text names no creature or location of world {questWorldId}, and no WorldLocation2 lies in zone {objective.Data} of that world");
+                reached = $"zone {objective.Data} WorldLocation2 {location.Id}";
+            }
+            log.Info($"objective {objective.Index}: EnterArea {objective.Data} via {reached} ({location.Position0:0},{location.Position1:0},{location.Position2:0})");
+            await TeleportToLocationAsync(location, 0f, cancellationToken);
+        }
         if (!await TryWaitForObjectiveProgressAsync(objective.Index, before, TimeSpan.FromSeconds(15), cancellationToken))
-            throw new BotFailureException($"EnterArea zone {objective.Data} produced no progress 15 s after reaching WorldLocation2 {location.Id}");
+            throw new BotFailureException($"EnterArea {objective.Data} produced no progress 15 s after reaching {reached}");
     }
 
     /// <summary>

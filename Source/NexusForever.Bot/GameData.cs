@@ -1277,6 +1277,15 @@ internal sealed class BotGameData
         return difficulty?.GroupValue ?? 0u;
     }
 
+    /// <summary>
+    /// The WorldLocation2 ids an objective text links (<text Link="Location:N">), in text order.
+    /// </summary>
+    public IReadOnlyList<uint> GetLocationIdsFromText(string text)
+        => Regex.Matches(text, @"Location:([0-9]{1,9})", RegexOptions.IgnoreCase)
+            .Select(match => uint.Parse(match.Groups[1].Value))
+            .Distinct()
+            .ToArray();
+
     public IReadOnlyList<uint> GetCreatureIdsFromText(string text)
         => Regex.Matches(text, @"creature=([0-9]{1,9})", RegexOptions.IgnoreCase)
             .Select(match => uint.Parse(match.Groups[1].Value))
