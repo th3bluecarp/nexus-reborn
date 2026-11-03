@@ -1450,6 +1450,24 @@ internal sealed class BotGameData
     /// <summary>
     /// The spell's own cooldown in milliseconds (Spell4.SpellCoolDown), 0 when the spell is unknown or has none.
     /// </summary>
+    // the weapon type each class wields (Item2Type): the class is not on the item, only on its type
+    private const uint GreatswordItemType = 51u;
+
+    /// <summary>
+    /// A plain green weapon of the bot's class for the level: the highest power level at or below it whose required level
+    /// the character meets (a player of that level wears quest and vendor gear of about that power level).
+    /// </summary>
+    public Item2Entry? ChooseWeaponForLevel(uint level)
+        => items.Entries
+            .Where(item => item.Item2TypeId == GreatswordItemType && item.ClassRequired == 0u && item.ItemQualityId == 2u
+                && item.Quest2IdActivation == 0u && item.Flags == 0u && item.RequiredLevel <= level && item.PowerLevel <= level && item.PowerLevel > 0u)
+            .OrderByDescending(item => item.PowerLevel)
+            .ThenBy(item => item.Id)
+            .FirstOrDefault();
+
+    public string ItemName(uint itemId)
+        => items.GetEntry(itemId) is Item2Entry item ? english.GetEntry(item.LocalizedTextIdName) ?? itemId.ToString() : itemId.ToString();
+
     public uint GetSpellCooldownMs(uint spellId)
         => spells.GetEntry(spellId)?.SpellCoolDown ?? 0u;
 

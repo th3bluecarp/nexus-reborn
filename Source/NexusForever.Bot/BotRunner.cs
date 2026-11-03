@@ -1905,6 +1905,7 @@ internal sealed class BotRunner
             currentLevel = 15u;
             await DrainWorldPacketsAsync(TimeSpan.FromSeconds(1), cancellationToken);
         }
+        await EquipWeaponForLevelAsync(cancellationToken);
 
         Stopwatch healthWait = Stopwatch.StartNew();
         DateTimeOffset deadline = DateTimeOffset.UtcNow.AddSeconds(60);
@@ -2672,6 +2673,44 @@ internal sealed class BotRunner
             .FirstOrDefault();
     }
 
+    private uint equippedWeaponPowerLevel;
+
+    /// <summary>
+    /// The level cheat gives the character a level's health but not a level's gear: it fought at level 18 with the level 1
+    /// starter sword (raw 160 per hit against 1,860 health creatures). A player of that level wears gear of about that power
+    /// level, so after a level raise the bot takes a plain green weapon of its level (!item add, the item cheat it already
+    /// relies on for levels) and equips it with the client's own item move.
+    /// </summary>
+    private async Task EquipWeaponForLevelAsync(CancellationToken cancellationToken)
+    {
+        if (currentLevel < 2u || equippedWeaponPowerLevel + 2u >= currentLevel)
+            return;
+        Item2Entry? weapon = RequireGameData().ChooseWeaponForLevel(currentLevel);
+        if (weapon is null || weapon.PowerLevel <= equippedWeaponPowerLevel)
+            return;
+        string name = RequireGameData().ItemName(weapon.Id);
+        await SendCheatAsync($"!item add {weapon.Id}", cancellationToken);
+        DateTimeOffset deadline = DateTimeOffset.UtcNow.AddSeconds(3);
+        InventoryItemInfo? added = null;
+        while (added is null && DateTimeOffset.UtcNow < deadline)
+        {
+            added = inventory.Values.FirstOrDefault(item => item.ItemId == weapon.Id && item.Location == InventoryLocation.Inventory);
+            if (added is null && await TryReadWorldPacketAsync(deadline - DateTimeOffset.UtcNow, cancellationToken) is null)
+                break;
+        }
+        if (added is null)
+        {
+            log.Info($"weapon for level {currentLevel}: {name} ({weapon.Id}, power level {weapon.PowerLevel}) did not arrive in the bags within 3 s");
+            return;
+        }
+        await RequireWorld().SendEncryptedAsync(GameMessageOpcode.ClientItemMove,
+            PacketCodec.ClientItemMove(added.Location, added.BagIndex, InventoryLocation.Equipped, (uint)EquippedItem.WeaponPrimary), cancellationToken);
+        await DrainWorldPacketsAsync(TimeSpan.FromMilliseconds(500), cancellationToken);
+        bool equipped = inventory.TryGetValue(added.Guid, out InventoryItemInfo? moved) && moved.Location == InventoryLocation.Equipped;
+        log.Info($"weapon for level {currentLevel}: {name} ({weapon.Id}, power level {weapon.PowerLevel}) {(equipped ? "equipped" : "added; equip not confirmed")}");
+        equippedWeaponPowerLevel = weapon.PowerLevel;
+    }
+
     private async Task LevelForQuestIfNeededAsync(QuestDefinition definition, CancellationToken cancellationToken)
     {
         // camps with many kills (Shellshock: nine Dominion soldiers who aggro together) killed the bot at con level + 5,
@@ -2690,7 +2729,10 @@ internal sealed class BotRunner
             targetLevel = Math.Min(15u, targetLevel);
 
         if (targetLevel <= currentLevel)
+        {
+            await EquipWeaponForLevelAsync(cancellationToken);
             return;
+        }
 
         await RunQuestStepAsync("set quest level", TimeSpan.FromSeconds(10), cancellationToken, async token =>
         {
@@ -2700,6 +2742,7 @@ internal sealed class BotRunner
             // documented fallback because this GM command accepts increases only.
             currentLevel = targetLevel;
             await DrainWorldPacketsAsync(TimeSpan.FromSeconds(1), token);
+            await EquipWeaponForLevelAsync(token);
             return $"level {before} -> {currentLevel} for quest con level {definition.Entry.ConLevel}";
         });
     }

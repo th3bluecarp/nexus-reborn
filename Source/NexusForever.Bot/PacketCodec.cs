@@ -210,6 +210,14 @@ internal static class PacketCodec
         writer.Write(improvementGroupId, 14);
         writer.Write(tier);
     });
+    public static byte[] ClientItemMove(InventoryLocation fromLocation, uint fromBagIndex, InventoryLocation toLocation, uint toBagIndex) => Write(writer =>
+    {
+        writer.Write(fromLocation, 9);
+        writer.Write(fromBagIndex);
+        writer.Write(toLocation, 9);
+        writer.Write(toBagIndex);
+    });
+
     public static byte[] ClientItemDelete(InventoryLocation location, uint bagIndex) => Write(writer =>
     {
         writer.Write(location, 9);
