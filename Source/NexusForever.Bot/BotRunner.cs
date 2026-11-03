@@ -2008,6 +2008,13 @@ internal sealed class BotRunner
                         PacketCodec.ClientActivateUnit(entity.Guid), cancellationToken);
                     await RequireWorld().SendEncryptedAsync(GameMessageOpcode.ClientEntityInteract,
                         PacketCodec.ClientEntityInteract(entity.Guid, InteractionType.Interact), cancellationToken);
+                    // a unit without an activation spell answers nothing a client can see; when the caller tracks the effect itself
+                    // (an infrastructure crate's carried resource) the plain use is the activation
+                    if (acceptConfirmedActivationWithoutProgress)
+                    {
+                        await DrainWorldPacketsAsync(TimeSpan.FromMilliseconds(300), cancellationToken);
+                        return ActivationOutcome.Activated;
+                    }
                 }
 
                 DateTimeOffset deadline = DateTimeOffset.UtcNow + progressTimeout;

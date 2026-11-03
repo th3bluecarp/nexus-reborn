@@ -566,6 +566,11 @@ namespace NexusForever.Game.Entity
         {
             // objects without an activation spell (the arkship portals 73741/73745) are handled by their scripts
             scriptCollection?.Invoke<IWorldEntityScript>(s => s.OnActivate(activator));
+
+            // a unit used without an activation spell still counts for the path missions (a Pioneering League Supplies crate of
+            // an INFRASTRUCTURE mission, a datacube, a holdout console): the spell path reaches them through OnActivateSuccess
+            if (CreatureInfo?.Entry != null)
+                activator.PathMissionManager.OnActivate(CreatureInfo.Entry.Id, AssetManager.Instance.GetTargetGroupsForCreatureId(CreatureInfo.Entry.Id));
         }
 
         /// <summary>

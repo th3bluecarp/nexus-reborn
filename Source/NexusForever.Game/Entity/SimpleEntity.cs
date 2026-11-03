@@ -42,11 +42,8 @@ namespace NexusForever.Game.Entity
             if (CreatureInfo.Entry.DatacubeId != 0u)
                 activator.DatacubeManager.AddDatacube((ushort)CreatureInfo.Entry.DatacubeId, int.MaxValue);
 
-            // the client sends a plain activate for soldier holdout control points (no activate cast, though they list
-            // spell 1817), so the cast success path that starts path missions never ran and the beacon did nothing;
-            // a datacube opened the same way is a Datacube Discovery mission's object (Algoroc's 2136)
-            if (CreatureInfo.Entry.PathMissionIdSoldier != 0u || CreatureInfo.Entry.DatacubeId != 0u)
-                activator.PathMissionManager.OnActivate(CreatureInfo.Entry.Id, AssetManager.Instance.GetTargetGroupsForCreatureId(CreatureInfo.Entry.Id));
+            // the path missions (holdout control points, datacubes, resource crates) are reached by the base plain activation
+            base.OnActivate(activator);
         }
 
         public override void OnActivateSuccess(IPlayer activator)
