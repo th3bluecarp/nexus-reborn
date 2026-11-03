@@ -52,7 +52,7 @@ Generated from parity.csv (rows marked ahead), 33 features.
 2. Taxis and shuttles need packet research (no message layout for the flight path window).
 3. Tradeskills, gathering and crafting are missing (data for auto-learned schematics and XP is unclear).
 4. Creature AI still has a fixed 15 m aggro, straight line chase and no distance leash; per creature abilities only cover 136 starting zone creatures until the level 1 to 15 Jabbithole pass finishes.
-5. Path missions miss Scientist scans, Settler building, Soldier holdouts and Explorer tracking.
+5. Path missions all progress and the quest bot passes them in Northern Wilds and Algoroc; Explorer power maps are unhandled and the Settler Sheriff missions need group bosses.
 6. Challenges give no rewards, and open world events that need script-spawned creatures cannot finish.
 7. Death resurrects in place instead of at a holocrypt (no holocrypt locations in the data).
 
