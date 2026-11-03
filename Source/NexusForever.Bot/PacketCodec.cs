@@ -449,6 +449,9 @@ internal static class PacketCodec
         return (guid, stackCount);
     });
 
+    /// <summary>ServerItemMove / ServerItemSwap: the guid of the item now at the destination (ItemDragDrop.Guid; the packed drag-drop location follows).</summary>
+    public static ulong ParseItemMovedGuid(byte[] body) => Read(body, reader => reader.ReadULong());
+
     public static ulong ParseItemDelete(byte[] body) => Read(body, reader =>
     {
         ulong guid = reader.ReadULong();

@@ -2674,6 +2674,7 @@ internal sealed class BotRunner
     }
 
     private uint equippedWeaponPowerLevel;
+    private ulong? lastMovedItemGuid;
 
     /// <summary>
     /// The level cheat gives the character a level's health but not a level's gear: it fought at level 18 with the level 1
@@ -2703,10 +2704,18 @@ internal sealed class BotRunner
             log.Info($"weapon for level {currentLevel}: {name} ({weapon.Id}, power level {weapon.PowerLevel}) did not arrive in the bags within 3 s");
             return;
         }
+        lastMovedItemGuid = null;
         await RequireWorld().SendEncryptedAsync(GameMessageOpcode.ClientItemMove,
             PacketCodec.ClientItemMove(added.Location, added.BagIndex, InventoryLocation.Equipped, (uint)EquippedItem.WeaponPrimary), cancellationToken);
-        await DrainWorldPacketsAsync(TimeSpan.FromMilliseconds(500), cancellationToken);
-        bool equipped = inventory.TryGetValue(added.Guid, out InventoryItemInfo? moved) && moved.Location == InventoryLocation.Equipped;
+        // the server answers with ServerItemSwap (the starter sword comes back to the bag) or ServerItemMove
+        DateTimeOffset moveDeadline = DateTimeOffset.UtcNow.AddSeconds(2);
+        while (lastMovedItemGuid != added.Guid && DateTimeOffset.UtcNow < moveDeadline
+            && await TryReadWorldPacketAsync(moveDeadline - DateTimeOffset.UtcNow, cancellationToken) is not null)
+        {
+        }
+        bool equipped = lastMovedItemGuid == added.Guid;
+        if (equipped)
+            inventory[added.Guid] = added with { Location = InventoryLocation.Equipped, BagIndex = (uint)EquippedItem.WeaponPrimary };
         log.Info($"weapon for level {currentLevel}: {name} ({weapon.Id}, power level {weapon.PowerLevel}) {(equipped ? "equipped" : "added; equip not confirmed")}");
         equippedWeaponPowerLevel = weapon.PowerLevel;
     }
@@ -5586,6 +5595,10 @@ internal sealed class BotRunner
                 }
                 case GameMessageOpcode.ServerItemDelete:
                     inventory.Remove(PacketCodec.ParseItemDelete(packet.Body));
+                    break;
+                case GameMessageOpcode.ServerItemMove:
+                case GameMessageOpcode.ServerItemSwap:
+                    lastMovedItemGuid = PacketCodec.ParseItemMovedGuid(packet.Body);
                     break;
                 case GameMessageOpcode.ServerPathInitialise:
                 {
