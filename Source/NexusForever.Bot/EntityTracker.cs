@@ -127,6 +127,27 @@ internal sealed class EntityTracker
             .FirstOrDefault();
     }
 
+    /// <summary>Nearest visible entity of the creature ids of any entity type (a quest ability target such as Helix, a Simple unit).</summary>
+    public TrackedEntity? FindNearestVisible(
+        IReadOnlySet<uint> creatureIds,
+        Vector3 origin,
+        float radius,
+        IReadOnlySet<uint>? excludedGuids = null)
+    {
+        double radiusSquared = radius * radius;
+        return entities.Values
+            .Select(entity => Get(entity.Guid) ?? entity)
+            .Where(entity => entity.CreatureId is uint creatureId
+                && creatureIds.Contains(creatureId)
+                && (excludedGuids is null || !excludedGuids.Contains(entity.Guid))
+                && entity.Health is null or > 0u
+                && entity.Position is Vector3 position
+                && Vector3.DistanceSquared(origin, position) <= radiusSquared)
+            .OrderBy(entity => Vector3.DistanceSquared(origin, entity.Position!.Value))
+            .ThenBy(entity => entity.Guid)
+            .FirstOrDefault();
+    }
+
     public IReadOnlySet<uint> GetVisibleNonPlayerGuids()
         => entities.Values
             .Where(entity => IsCombatUnit(entity.Type))

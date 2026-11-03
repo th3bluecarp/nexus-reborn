@@ -255,6 +255,17 @@ internal static class PacketCodec
         writer.Write(0u);
     });
 
+    /// <summary>ClientCastObjectiveAbility (0x009D): the quest tracker's ability button, a spell a SpellSuccess objective names.</summary>
+    public static byte[] ClientCastObjectiveAbility(uint uniqueId, uint spell4Id, uint targetGuid, Vector3 position) => Write(writer =>
+    {
+        writer.Write(uniqueId);
+        writer.Write(spell4Id, 18);
+        writer.Write(targetGuid);
+        writer.Write(position.X);
+        writer.Write(position.Y);
+        writer.Write(position.Z);
+    });
+
     public static byte[] ClientCastSpell(uint uniqueId, ushort bagIndex, uint targetGuid) => Write(writer =>
     {
         writer.Write(uniqueId);

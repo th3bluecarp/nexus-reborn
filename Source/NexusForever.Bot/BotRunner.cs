@@ -2355,6 +2355,9 @@ internal sealed class BotRunner
                         ? TimeSpan.FromSeconds(Math.Max(1u, objective.Count) * 55u)
                     : objective.Type == QuestObjectiveType.SucceedCSI
                         ? TimeSpan.FromSeconds(60)
+                    // a quest ability cast per target (Use Augmented Remains on eight constructs: a 3 s cast and a fight each)
+                    : objective.Type == QuestObjectiveType.SpellSuccess
+                        ? TimeSpan.FromSeconds(Math.Max(120u, Math.Max(1u, objective.Count) * 45u))
                     // items collected by using units or looted from kills (By Leaps and Bounds: eight loftite, a girrok fight and a
                     // health recovery each): 45 s per item plus a respawn wait
                     : objective.Type == QuestObjectiveType.CollectItem
@@ -2723,8 +2726,10 @@ internal sealed class BotRunner
             if (botDied)
                 throw;
 
+            // a zone run already fights at the zone cap (15): the retry after a death comes back three levels stronger, as a
+            // player who died to a named or a camp would (Algoroc's eleventh pass: 12 quests lost to a second death at 15)
             uint targetLevel = options.ZoneId is not null
-                ? Math.Min(15u, definition.Entry.ConLevel + 7u)
+                ? Math.Min(ZoneDeathRetryLevelCap, Math.Max(definition.Entry.ConLevel + 7u, currentLevel + 3u))
                 : definition.Entry.ConLevel + 7u;
             if (targetLevel > currentLevel)
             {
@@ -3143,6 +3148,9 @@ internal sealed class BotRunner
                 case QuestObjectiveType.VirtualCollect:
                     await RunVirtualCollectObjectiveAsync(objective, cancellationToken);
                     break;
+                case QuestObjectiveType.SpellSuccess:
+                    await RunSpellSuccessObjectiveAsync(objective, cancellationToken);
+                    break;
                 case QuestObjectiveType.GatheResource:
                     await RunGatherResourceObjectiveAsync(objective, cancellationToken);
                     break;
@@ -3354,6 +3362,15 @@ internal sealed class BotRunner
                 continue;
             }
             ActivationOutcome outcome = await RunActivationFlowAsync(objective.Index, before, entity, TimeSpan.FromSeconds(8), cancellationToken);
+            if (outcome == ActivationOutcome.Progressed && CanFight(entity.Type) && entity.CreatureId is uint usedCreatureId
+                && RequireGameData().IsHoldoutHostile(usedCreatureId) && entities.Get(entity.Guid)?.Health is null or > 0u)
+            {
+                // a used hostile (Weapons of War: a loftite grenade on a Dominion Sentry) is awake now; finish it before the next
+                // one, six sentries attacking at once killed the bot twice
+                await RequireWorld().SendEncryptedAsync(GameMessageOpcode.ClientEntitySelect,
+                    PacketCodec.ClientEntitySelect(entity.Guid), cancellationToken);
+                _ = await FightUntilDeathAsync(entity.Guid, cancellationToken);
+            }
             if (outcome == ActivationOutcome.TargetNotUsable)
                 continue;
             if (outcome == ActivationOutcome.Stunned && await RetreatFromStunAsync(spawn, attemptedSpawns, cancellationToken))
@@ -3427,6 +3444,108 @@ internal sealed class BotRunner
                 throw new BotFailureException(checklist
                     ? $"checklist entities for target group {objective.Data} produced no further progress"
                     : $"activation targets for group {objective.Data} produced no further progress");
+        }
+    }
+
+    private const uint ZoneDeathRetryLevelCap = 18u;
+
+    private const float QuestAbilityTargetRadius = 60f;
+
+    /// <summary>
+    /// A SpellSuccess objective: the quest tracker shows an ability (the objective's spell) the player casts on the objective's
+    /// targets. Targets come from the reward pane group or the objective text; with neither, any hostile near the objective's
+    /// map indicator (Use Augmented Remains on constructs near Annihilator Silo 14). The server allows the cast while the
+    /// objective is open (SEMANTICS: quest abilities).
+    /// </summary>
+    private async Task RunSpellSuccessObjectiveAsync(QuestObjectiveDefinition objective, CancellationToken cancellationToken)
+    {
+        BotGameData data = RequireGameData();
+        uint[] creatureIds = data.ResolveTargetGroup(objective.RewardTargetGroupId).ToArray();
+        if (creatureIds.Length == 0)
+            creatureIds = data.GetCreatureIdsFromText(objective.Text).ToArray();
+        bool hostile = creatureIds.Length == 0 || creatureIds.All(data.IsHoldoutHostile);
+        WorldLocation2Entry? indicator = objective.WorldLocationId != 0u ? data.TryGetWorldLocation(objective.WorldLocationId) : null;
+        if (creatureIds.Length == 0 && (indicator is null || indicator.WorldId != questWorldId))
+            throw new BotFailureException($"quest ability {objective.Data}: no target creature (reward pane group {objective.RewardTargetGroupId}, text names none) and no map indicator in world {questWorldId}");
+        log.Info($"objective {objective.Index}: quest ability {objective.Data} x{objective.Count} on creature(s) [{string.Join(',', creatureIds)}] hostile={hostile}"
+            + (creatureIds.Length == 0 ? $"; any hostile within {QuestAbilityTargetRadius:0} m of indicator {indicator!.Id}" : ""));
+
+        var attemptedSpawns = new HashSet<uint>();
+        var usedGuids = new HashSet<uint>();
+        bool atIndicator = false;
+        while (!IsObjectiveComplete(objective))
+        {
+            TrackedEntity? entity;
+            if (creatureIds.Length > 0)
+            {
+                IReadOnlySet<uint> wanted = creatureIds.ToHashSet();
+                entity = entities.FindNearestVisibleNonPlayer(wanted, lastPosition, QuestAbilityTargetRadius, usedGuids)
+                    ?? entities.FindNearestVisible(wanted, lastPosition, QuestAbilityTargetRadius, usedGuids);
+                if (entity is null)
+                {
+                    Spawn spawn = ChooseCombatSpawn(creatureIds, questWorldId, attemptedSpawns);
+                    attemptedSpawns.Add(spawn.Id);
+                    entity = await TeleportAndTryFindWithRetryAsync(spawn, cancellationToken, usedGuids);
+                }
+            }
+            else
+            {
+                if (!atIndicator)
+                {
+                    await TeleportToSpawnLocationAsync(new Spawn(0u, 0u, questWorldId, indicator!.Position0, indicator.Position1, indicator.Position2), cancellationToken);
+                    atIndicator = true;
+                }
+                entity = entities.FindNearestVisibleNonPlayer(lastPosition, QuestAbilityTargetRadius, usedGuids, data.IsHoldoutHostile);
+                if (entity is null)
+                {
+                    // respawns stream in; keep looking until the objective budget ends
+                    await DrainWorldPacketsAsync(TimeSpan.FromSeconds(5), cancellationToken);
+                    continue;
+                }
+            }
+            if (entity is null)
+                continue;
+
+            await RequireWorld().SendEncryptedAsync(GameMessageOpcode.ClientEntitySelect,
+                PacketCodec.ClientEntitySelect(entity.Guid), cancellationToken);
+            uint before = GetRawProgress(objective.Index);
+            bool progressed = await CastQuestAbilityAsync(objective, entity, cancellationToken);
+            usedGuids.Add(entity.Guid);
+            if (hostile && !combatTargetDestroyed && (entities.Get(entity.Guid)?.Health is null or > 0u))
+            {
+                // the target is awake now: finish it so the next cast is not made under attack (and a sibling kill objective counts)
+                _ = await FightUntilDeathAsync(entity.Guid, cancellationToken);
+            }
+            if (!progressed)
+                log.Info($"objective {objective.Index}: quest ability {objective.Data} on guid {entity.Guid} (creature {entity.CreatureId}) gave no progress; trying another target");
+        }
+    }
+
+    private async Task<bool> CastQuestAbilityAsync(QuestObjectiveDefinition objective, TrackedEntity entity, CancellationToken cancellationToken)
+    {
+        await FaceCombatTargetAsync(entity.Guid, true, cancellationToken);
+        uint before = GetRawProgress(objective.Index);
+        uint clientUniqueId = spellCastId++;
+        pendingActivationCastIds.Add(clientUniqueId);
+        try
+        {
+            Vector3 position = entities.Get(entity.Guid)?.Position ?? entity.Position ?? lastPosition;
+            await RequireWorld().SendEncryptedAsync(GameMessageOpcode.ClientCastObjectiveAbility,
+                PacketCodec.ClientCastObjectiveAbility(clientUniqueId, objective.Data, entity.Guid, position), cancellationToken);
+            ActivationCastResponse response = await TryWaitForActivationCastResponseAsync(
+                clientUniqueId, entity.Guid, TimeSpan.FromSeconds(5), cancellationToken);
+            if (response.Result is SpellCastResult result && result.Result != CastResult.Ok)
+            {
+                log.Info($"objective {objective.Index}: quest ability {objective.Data} refused: {result.Result}(0x{(uint)result.Result:X4})");
+                return false;
+            }
+            // the cast runs its cast time (2-3 s) before the server credits the objective
+            return await TryWaitForObjectiveProgressAsync(objective.Index, before, TimeSpan.FromSeconds(12), cancellationToken);
+        }
+        finally
+        {
+            pendingActivationCastIds.Remove(clientUniqueId);
+            activationCastResults.Remove(clientUniqueId);
         }
     }
 

@@ -865,8 +865,10 @@ internal sealed class BotGameData
                         if (!met)
                             reasons.Add($"path must be {Describe(comparison, value)} ({(NexusForever.Game.Static.PlayerPath.Path)(byte)value}), character is {context.Path}");
                         break;
-                    case PrerequisiteType.QuestState when comparison == PrerequisiteComparison.Equal && value == 3u:
-                        met = true; // a quest that must be completed is ordered before this one, or reported as blocking
+                    // Achieved (2) or Completed (3): a quest that must be done is ordered before this one, or reported as
+                    // blocking (Rummage for Clues wants Slushed Away achieved or completed, an OR of the two states)
+                    case PrerequisiteType.QuestState when comparison == PrerequisiteComparison.Equal && value is 2u or 3u:
+                        met = true;
                         break;
                     case PrerequisiteType.QuestState when objectId != 0u && objectId <= ushort.MaxValue:
                         QuestState state = context.QuestStateOf((ushort)objectId);
@@ -1017,8 +1019,9 @@ internal sealed class BotGameData
                 bool met = true;
                 switch (prerequisite.PrerequisiteTypeId[i])
                 {
+                    // Achieved (2) counts as done: the bot turns a quest in right after it is achieved, and a quest it failed is neither
                     case PrerequisiteType.QuestState when prerequisite.PrerequisiteComparisonId[i] == PrerequisiteComparison.Equal
-                        && prerequisite.Value[i] == 3u && prerequisite.ObjectId[i] != 0u && prerequisite.ObjectId[i] <= ushort.MaxValue:
+                        && prerequisite.Value[i] is 2u or 3u && prerequisite.ObjectId[i] != 0u && prerequisite.ObjectId[i] <= ushort.MaxValue:
                         met = isCompleted((ushort)prerequisite.ObjectId[i]);
                         if (!met)
                             missing ??= (ushort)prerequisite.ObjectId[i];
