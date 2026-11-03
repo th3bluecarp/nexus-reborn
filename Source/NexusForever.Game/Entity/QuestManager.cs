@@ -427,7 +427,10 @@ namespace NexusForever.Game.Entity
 
                 // a zone entry call waits for the player to stand in its zone (or one of its sub zones)
                 if (message.ZoneEntry && !IsInWorldZone(message.WorldZoneId))
+                {
+                    log.LogTrace($"Communicator {message.Id} for quest {message.QuestId} waits for zone {message.WorldZoneId}, player is in zone {player.Zone?.Id} at {player.Position}.");
                     continue;
+                }
 
                 bool prerequisites = MeetsPrerequisites(info);
                 bool messageMeets = message.Meets(player);

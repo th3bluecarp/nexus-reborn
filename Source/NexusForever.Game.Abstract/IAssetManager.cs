@@ -35,6 +35,12 @@ namespace NexusForever.Game.Abstract
         ImmutableDictionary<uint, ImmutableList<uint>> AreaMarkerTargetGroups { get; }
 
         /// <summary>
+        /// WorldLocation2 ids of the quest objective indicators of each area marker target group: where kills count when
+        /// none of the group's marker entities stands on the map.
+        /// </summary>
+        ImmutableDictionary<uint, ImmutableList<uint>> AreaMarkerIndicatorLocations { get; }
+
+        /// <summary>
         /// Returns an <see cref="ImmutableList{T}"/> containing all <see cref="RewardPropertyPremiumModifierEntry"/> for the given <see cref="AccountTier"/>.
         /// </summary>
         ImmutableList<RewardPropertyPremiumModifierEntry> GetRewardPropertiesForTier(AccountTier tier);

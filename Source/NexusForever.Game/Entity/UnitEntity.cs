@@ -1118,6 +1118,11 @@ namespace NexusForever.Game.Entity
         /// </summary>
         private const float AreaMarkerRange = 60f;
 
+        /// <summary>
+        /// A kill this close to a kill objective's map indicator counts for an area marker group whose markers are not on the map.
+        /// </summary>
+        private const float AreaMarkerIndicatorRange = 100f;
+
         protected virtual void RewardKiller(IPlayer player)
         {
             player.QuestManager.ObjectiveUpdate(QuestObjectiveType.KillCreature, CreatureId, 1u);
@@ -1143,6 +1148,15 @@ namespace NexusForever.Game.Entity
                     continue;
                 bool nearMarker = markerIds.Any(markerId => GetVisibleCreature<IWorldEntity>(markerId)
                     .Any(marker => Vector3.DistanceSquared(marker.Position, Position) <= AreaMarkerRange * AreaMarkerRange));
+                if (!nearMarker
+                    && AssetManager.Instance.AreaMarkerIndicatorLocations.TryGetValue(targetGroupId, out ImmutableList<uint> indicatorIds))
+                {
+                    // no marker of the group on the map: the kill objective's own map indicator stands in for it
+                    nearMarker = indicatorIds
+                        .Select(id => GameTableManager.Instance.WorldLocation2.GetEntry(id))
+                        .Any(location => location != null && location.WorldId == Map?.Entry.Id
+                            && Vector3.DistanceSquared(new Vector3(location.Position0, location.Position1, location.Position2), Position) <= AreaMarkerIndicatorRange * AreaMarkerIndicatorRange);
+                }
                 if (!nearMarker)
                     continue;
                 player.QuestManager.ObjectiveUpdate(QuestObjectiveType.KillTargetGroup, targetGroupId, 1u);

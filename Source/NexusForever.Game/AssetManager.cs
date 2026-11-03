@@ -92,6 +92,7 @@ namespace NexusForever.Game
             zoneTutorials = zoneEntries.ToImmutable();
         }
 
+        public ImmutableDictionary<uint, ImmutableList<uint>> AreaMarkerIndicatorLocations { get; private set; } = ImmutableDictionary<uint, ImmutableList<uint>>.Empty;
         public ImmutableDictionary<uint, ImmutableList<uint>> AreaMarkerTargetGroups { get; private set; } = ImmutableDictionary<uint, ImmutableList<uint>>.Empty;
 
         private void CacheCreatureTargetGroups()
@@ -153,6 +154,22 @@ namespace NexusForever.Game
                     markers.Add(entry.Id, markerIds.Distinct().ToImmutableList());
             }
             AreaMarkerTargetGroups = markers.ToImmutable();
+
+            // the marker entities of some groups are not in our world database (Yeti Extermination's three Cave Entrances);
+            // the kill objectives that name the group carry map indicators, kills near those count instead
+            var indicators = ImmutableDictionary.CreateBuilder<uint, ImmutableList<uint>>();
+            foreach (QuestObjectiveEntry objective in GameTableManager.Instance.QuestObjective.Entries
+                .Where(o => (o.Type == (uint)QuestObjectiveType.KillTargetGroup || o.Type == (uint)QuestObjectiveType.KillTargetGroups) && AreaMarkerTargetGroups.ContainsKey(o.Data)))
+            {
+                uint[] locations = new[] { objective.WorldLocationsIdIndicator00, objective.WorldLocationsIdIndicator01, objective.WorldLocationsIdIndicator02, objective.WorldLocationsIdIndicator03 }
+                    .Where(l => l != 0u)
+                    .ToArray();
+                if (locations.Length == 0)
+                    continue;
+                indicators[objective.Data] = (indicators.TryGetValue(objective.Data, out ImmutableList<uint> existing) ? existing : ImmutableList<uint>.Empty)
+                    .AddRange(locations.Where(l => existing == null || !existing.Contains(l)));
+            }
+            AreaMarkerIndicatorLocations = indicators.ToImmutable();
         }
 
         private void CacheRewardPropertiesByTier()
