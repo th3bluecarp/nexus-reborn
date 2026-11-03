@@ -2719,6 +2719,8 @@ internal sealed class BotRunner
         CancellationToken cancellationToken)
     {
         uint[] creatureIds = GetObjectiveCreatureIds(objective).ToArray();
+        if (creatureIds.Length == 0 && RequireGameData().IsAreaMarkerTargetGroup(objective.Data))
+            throw new BotFailureException($"target group {objective.Data} is an area marker group (TargetGroup type 9: kill creatures near marker entities); the server does not resolve it; SERVER GAP");
         if (creatureIds.Length == 0)
             throw new BotFailureException($"target group {objective.Data} resolved to no creature ids");
 

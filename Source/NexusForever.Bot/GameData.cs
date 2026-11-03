@@ -1032,8 +1032,13 @@ internal sealed class BotGameData
                 foreach (uint childId in entry.DataEntries.Where(value => value != 0))
                     ResolveTargetGroup(childId, visited, result);
                 break;
+            // type 9 names marker entities (Icemaw Cavern's "Cave Entrance" objects for "Kill Yeti in Icemaw Cavern"): an area,
+            // not the creatures to kill; neither the server nor the bot resolves it yet (SERVER GAP)
         }
     }
+
+    public bool IsAreaMarkerTargetGroup(uint id)
+        => targetGroups.GetEntry(id) is TargetGroupEntry entry && (TargetGroupType)entry.Type == TargetGroupType.Unknown9;
 
     public CharacterCreationEntry GetBotCharacterCreation(BotCharacterStart start, BotFaction faction)
     {

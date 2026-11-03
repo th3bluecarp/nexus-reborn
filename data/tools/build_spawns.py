@@ -62,7 +62,7 @@ for q in Q.values():
             # some target already in the zone: enough for kills, but objects to use or rescue need as many copies as the
             # objective counts (a reused object only counts again once its busy time is over)
             have=sum(1 for i in ids for w2,_ in bycre[i] if w2==w)
-            if o['Type'] not in (5,9,12) or len(ids)!=1 or have>=min(12,o.get('Count',0) or 1): continue
+            if o["Type"] not in (5,9,10,12,14) or len(ids)!=1 or have>=min(12,o.get("Count",0) or 1): continue  # checklist marks (10, 14) need one unit per bit too (Algoroc: Pure Loftite Vein x4)
             topup=True
         for i in ids:
             need[(i,z)]['roles'].add('target'); need[(i,z)]['quests'].add(q['Id'])

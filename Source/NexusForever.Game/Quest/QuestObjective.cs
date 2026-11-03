@@ -176,7 +176,18 @@ namespace NexusForever.Game.Quest
             if (IsChecklist())
             {
                 if (update < 32u)
-                    Progress = progress | (1u << (int)update);
+                {
+                    uint bit = 1u << (int)update;
+                    // a unit whose bit is already set was used again after its respawn: our world often has fewer units than
+                    // the count asks (Algoroc has 3 Pure Loftite Veins for "Mark 4"), so it fills the next free bit instead
+                    if ((progress & bit) != 0u)
+                    {
+                        int free = System.Numerics.BitOperations.TrailingZeroCount(~progress);
+                        if (free < 32)
+                            bit = 1u << free;
+                    }
+                    Progress = progress | bit;
+                }
                 return;
             }
 
