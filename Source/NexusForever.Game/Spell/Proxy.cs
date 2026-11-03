@@ -16,6 +16,14 @@ namespace NexusForever.Game.Spell
         public bool CanCast { get; private set; } = false;
 
         private ISpellParameters proxyParameters;
+        private static readonly NLog.Logger log = NLog.LogManager.GetCurrentClassLogger();
+        private static readonly System.Collections.Concurrent.ConcurrentDictionary<uint, byte> missingProxySpellIds = new();
+        private static readonly MissingSet missingProxySpellsLogged = new();
+
+        private sealed class MissingSet
+        {
+            public bool Add(uint id) => missingProxySpellIds.TryAdd(id, 0);
+        }
 
         public Proxy(IUnitEntity target, ISpellEffectProxyData data, ISpell parentSpell, ISpellParameters parameters)
         {
@@ -52,6 +60,18 @@ namespace NexusForever.Game.Spell
         {
             if (!CanCast)
                 return;
+
+            // a proxy naming a spell that is not in our Spell4 table (a Shoveljaw Boulderback's aura in Algoroc) threw out of
+            // the creature's update every tick; it is skipped instead
+            uint castId = ParentSpell.CastMethod == CastMethod.Aura && Data.Entry.TickTime > 0 || Data.Entry.TickTime > 0
+                ? Data.PeriodicSpellId
+                : Data.SpellId;
+            if (NexusForever.GameTable.GameTableManager.Instance.Spell4.GetEntry(castId) == null)
+            {
+                if (missingProxySpellsLogged.Add(castId))
+                    log.Warn($"Proxy of spell {ParentSpell.Spell4Id} names spell {castId}, which is not in the Spell4 table; skipped.");
+                return;
+            }
 
             if (ParentSpell.CastMethod == CastMethod.Aura && Data.Entry.TickTime > 0)
             {
