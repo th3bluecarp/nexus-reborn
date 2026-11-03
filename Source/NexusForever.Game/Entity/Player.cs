@@ -1430,6 +1430,9 @@ namespace NexusForever.Game.Entity
 
             pendingLocalTeleport = false;
             log.Trace($"Teleport of {Name}({CharacterId}) to {position} complete.");
+
+            // a teleport inside one map area raises no zone update; zone entry communicator calls still need a look
+            QuestManager.CheckPrerequisiteCommunicators();
         }
 
         /// <summary>

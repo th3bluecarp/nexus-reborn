@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
+using System.Numerics;
 using NexusForever.Database.Character;
 using NexusForever.Database.Character.Model;
 using NexusForever.Game.Abstract.Entity;
@@ -446,12 +447,47 @@ namespace NexusForever.Game.Entity
             }
         }
 
+        /// <summary>
+        /// A player stands in a world zone when the map file's area for the position is that zone or one of its sub zones, or,
+        /// because the map areas do not always agree with the WorldLocation2 rows (Tremor Ridge's ridge, zone 1083, is area 23
+        /// in the map file), when a WorldLocation2 of the zone family lies within <see cref="ZoneLocationRange"/>.
+        /// </summary>
+        private const float ZoneLocationRange = 60f;
+        private static readonly Dictionary<uint, (ushort World, Vector3 Position)[]> zoneLocations = new();
+
         private bool IsInWorldZone(uint worldZoneId)
         {
             for (WorldZoneEntry zone = player.Zone; zone != null; zone = zone.ParentZoneId != 0u ? GameTableManager.Instance.WorldZone.GetEntry(zone.ParentZoneId) : null)
                 if (zone.Id == worldZoneId)
                     return true;
-            return false;
+
+            if (player.Map == null)
+                return false;
+
+            (ushort World, Vector3 Position)[] locations;
+            lock (zoneLocations)
+            {
+                if (!zoneLocations.TryGetValue(worldZoneId, out locations))
+                {
+                    var family = new HashSet<uint> { worldZoneId };
+                    bool grew = true;
+                    while (grew)
+                    {
+                        grew = false;
+                        foreach (WorldZoneEntry zone in GameTableManager.Instance.WorldZone.Entries)
+                            if (zone.ParentZoneId != 0u && family.Contains(zone.ParentZoneId) && family.Add(zone.Id))
+                                grew = true;
+                    }
+                    locations = GameTableManager.Instance.WorldLocation2.Entries
+                        .Where(l => family.Contains(l.WorldZoneId))
+                        .Select(l => ((ushort)l.WorldId, new Vector3(l.Position0, l.Position1, l.Position2)))
+                        .ToArray();
+                    zoneLocations[worldZoneId] = locations;
+                }
+            }
+
+            ushort mapId = (ushort)player.Map.Entry.Id;
+            return locations.Any(l => l.World == mapId && Vector3.DistanceSquared(l.Position, player.Position) <= ZoneLocationRange * ZoneLocationRange);
         }
 
         /// <summary>
