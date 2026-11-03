@@ -452,6 +452,15 @@ internal static class PacketCodec
     /// <summary>ServerItemMove / ServerItemSwap: the guid of the item now at the destination (ItemDragDrop.Guid; the packed drag-drop location follows).</summary>
     public static ulong ParseItemMovedGuid(byte[] body) => Read(body, reader => reader.ReadULong());
 
+    /// <summary>ServerItemSwap: To (the dragged item: Guid, DragDrop) then From (the item it displaced).</summary>
+    public static (ulong Moved, ulong SwappedOut) ParseItemSwapGuids(byte[] body) => Read(body, reader =>
+    {
+        ulong moved = reader.ReadULong();
+        _ = reader.ReadULong();
+        ulong swappedOut = reader.ReadULong();
+        return (moved, swappedOut);
+    });
+
     public static ulong ParseItemDelete(byte[] body) => Read(body, reader =>
     {
         ulong guid = reader.ReadULong();

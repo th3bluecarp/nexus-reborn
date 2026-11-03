@@ -289,3 +289,7 @@ These fix a visible symptom without knowing the real rule, the kind of patch tha
 ## EnterArea objectives without a marker
 
 Retail completed "enter area" objectives with map trigger volumes the server does not have. An objective with a map marker completes inside the marker (radius at least 10 m). One without a marker completes within 25 m of a creature its text names, within 30 m of a location its text links, or anywhere in the world zone its Data names (including sub zones). Approximation: the retail volume may have been smaller or larger than these.
+
+## The quest bot wears gear of its level
+
+A player of level N wears quest and vendor gear of about power level N. The bot has no quest-reward or vendor flow, so after each level raise it adds (GM `!item add`) and equips a plain green greatsword, heavy armor set and shield of its level: the highest power level at or below the level among Item2 rows of quality 2 with no class, quest or flag lock (shields carry flag 0x4000 on every plain one, allowed). Each replaced piece is deleted as a player vendors it. Approximation: real gear is green to blue with stats; the bot's has the slot's base armor, health and shield only, so it is a floor for a player's survivability, not a ceiling.

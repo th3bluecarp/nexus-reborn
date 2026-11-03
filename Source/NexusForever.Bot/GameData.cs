@@ -1450,20 +1450,43 @@ internal sealed class BotGameData
     /// <summary>
     /// The spell's own cooldown in milliseconds (Spell4.SpellCoolDown), 0 when the spell is unknown or has none.
     /// </summary>
-    // the weapon type each class wields (Item2Type): the class is not on the item, only on its type
-    private const uint GreatswordItemType = 51u;
+    // shields carry ItemFlags 0x4000 on every plain one; other gear of the bot is flag-free
+    private const uint ShieldItemFlag = 0x4000u;
+
+    /// <summary>
+    /// The gear a Warrior wears, by Item2Type (the class is on the type, not on the item): greatsword, heavy armor, shield.
+    /// </summary>
+    public static readonly IReadOnlyList<GearSlot> WarriorGear =
+    [
+        new GearSlot(51u, EquippedItem.WeaponPrimary, "greatsword"),
+        new GearSlot(15u, EquippedItem.Chest, "chest"),
+        new GearSlot(16u, EquippedItem.Legs, "legs"),
+        new GearSlot(17u, EquippedItem.Head, "head"),
+        new GearSlot(18u, EquippedItem.Shoulder, "shoulders"),
+        new GearSlot(19u, EquippedItem.Feet, "boots"),
+        new GearSlot(20u, EquippedItem.Hands, "gloves"),
+        new GearSlot(53u, EquippedItem.Shields, "shield"),
+    ];
+
+    /// <summary>
+    /// A plain green item of the type for the level: the highest power level at or below it whose required level the
+    /// character meets (a player of that level wears quest and vendor gear of about that power level).
+    /// </summary>
+    public Item2Entry? ChooseGearForLevel(GearSlot slot, uint level)
+        => items.Entries
+            .Where(item => item.Item2TypeId == slot.ItemType && item.ClassRequired == 0u && item.ItemQualityId == 2u
+                && item.Quest2IdActivation == 0u && ((uint)item.Flags & ~(slot.Slot == EquippedItem.Shields ? ShieldItemFlag : 0u)) == 0u
+                && item.RequiredLevel <= level && item.PowerLevel <= level && item.PowerLevel > 0u)
+            .OrderByDescending(item => item.PowerLevel)
+            .ThenBy(item => item.Id)
+            .FirstOrDefault();
 
     /// <summary>
     /// A plain green weapon of the bot's class for the level: the highest power level at or below it whose required level
     /// the character meets (a player of that level wears quest and vendor gear of about that power level).
     /// </summary>
     public Item2Entry? ChooseWeaponForLevel(uint level)
-        => items.Entries
-            .Where(item => item.Item2TypeId == GreatswordItemType && item.ClassRequired == 0u && item.ItemQualityId == 2u
-                && item.Quest2IdActivation == 0u && item.Flags == 0u && item.RequiredLevel <= level && item.PowerLevel <= level && item.PowerLevel > 0u)
-            .OrderByDescending(item => item.PowerLevel)
-            .ThenBy(item => item.Id)
-            .FirstOrDefault();
+        => ChooseGearForLevel(WarriorGear[0], level);
 
     public string ItemName(uint itemId)
         => items.GetEntry(itemId) is Item2Entry item ? english.GetEntry(item.LocalizedTextIdName) ?? itemId.ToString() : itemId.ToString();
@@ -1585,3 +1608,6 @@ internal sealed class BotGameData
         return path;
     }
 }
+
+/// <summary>An equipment slot of the bot's class with the Item2Type worn there.</summary>
+internal sealed record GearSlot(uint ItemType, EquippedItem Slot, string Kind);

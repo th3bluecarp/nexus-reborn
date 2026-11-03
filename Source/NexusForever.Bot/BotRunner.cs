@@ -1905,7 +1905,7 @@ internal sealed class BotRunner
             currentLevel = 15u;
             await DrainWorldPacketsAsync(TimeSpan.FromSeconds(1), cancellationToken);
         }
-        await EquipWeaponForLevelAsync(cancellationToken);
+        await EquipGearForLevelAsync(cancellationToken);
 
         Stopwatch healthWait = Stopwatch.StartNew();
         DateTimeOffset deadline = DateTimeOffset.UtcNow.AddSeconds(60);
@@ -2673,8 +2673,11 @@ internal sealed class BotRunner
             .FirstOrDefault();
     }
 
-    private uint equippedWeaponPowerLevel;
+    // power level of the gear the bot equipped per slot (starter gear counts as 0)
+    private readonly Dictionary<EquippedItem, uint> equippedGearPowerLevel = [];
     private ulong? lastMovedItemGuid;
+    // the item a ServerItemSwap sent back to the bag in exchange (null after a plain ServerItemMove)
+    private ulong? lastSwappedOutItemGuid;
 
     /// <summary>
     /// The level cheat gives the character a level's health but not a level's gear: it fought at level 18 with the level 1
@@ -2682,42 +2685,76 @@ internal sealed class BotRunner
     /// level, so after a level raise the bot takes a plain green weapon of its level (!item add, the item cheat it already
     /// relies on for levels) and equips it with the client's own item move.
     /// </summary>
-    private async Task EquipWeaponForLevelAsync(CancellationToken cancellationToken)
+    /// <summary>
+    /// Dresses the bot like a player of its level: a plain green greatsword, heavy armor set and shield of about the level's
+    /// power level (a naked level 18 bot had 4200 health and died to two level 12 creatures; the same gear a player gets from
+    /// quests and vendors adds armor, health and a shield pool). Each piece replaced goes the way a player vendors it: deleted.
+    /// </summary>
+    private async Task EquipGearForLevelAsync(CancellationToken cancellationToken)
     {
-        if (currentLevel < 2u || equippedWeaponPowerLevel + 2u >= currentLevel)
+        if (currentLevel < 2u)
             return;
-        Item2Entry? weapon = RequireGameData().ChooseWeaponForLevel(currentLevel);
-        if (weapon is null || weapon.PowerLevel <= equippedWeaponPowerLevel)
-            return;
-        string name = RequireGameData().ItemName(weapon.Id);
-        await SendCheatAsync($"!item add {weapon.Id}", cancellationToken);
+        var equippedNow = new List<string>();
+        foreach (GearSlot slot in BotGameData.WarriorGear)
+        {
+            equippedGearPowerLevel.TryGetValue(slot.Slot, out uint wornPowerLevel);
+            if (wornPowerLevel + 2u >= currentLevel)
+                continue;
+            Item2Entry? piece = RequireGameData().ChooseGearForLevel(slot, currentLevel);
+            if (piece is null || piece.PowerLevel <= wornPowerLevel)
+                continue;
+            if (await EquipGearPieceAsync(slot, piece, cancellationToken))
+                equippedNow.Add($"{slot.Kind} {RequireGameData().ItemName(piece.Id)} ({piece.Id}, power level {piece.PowerLevel})");
+            equippedGearPowerLevel[slot.Slot] = piece.PowerLevel;
+        }
+        if (equippedNow.Count > 0)
+            log.Info($"gear for level {currentLevel}: {string.Join("; ", equippedNow)}");
+    }
+
+    private async Task<bool> EquipGearPieceAsync(GearSlot slot, Item2Entry piece, CancellationToken cancellationToken)
+    {
+        string name = RequireGameData().ItemName(piece.Id);
+        await SendCheatAsync($"!item add {piece.Id}", cancellationToken);
         DateTimeOffset deadline = DateTimeOffset.UtcNow.AddSeconds(3);
         InventoryItemInfo? added = null;
         while (added is null && DateTimeOffset.UtcNow < deadline)
         {
-            added = inventory.Values.FirstOrDefault(item => item.ItemId == weapon.Id && item.Location == InventoryLocation.Inventory);
+            added = inventory.Values.FirstOrDefault(item => item.ItemId == piece.Id && item.Location == InventoryLocation.Inventory);
             if (added is null && await TryReadWorldPacketAsync(deadline - DateTimeOffset.UtcNow, cancellationToken) is null)
                 break;
         }
         if (added is null)
         {
-            log.Info($"weapon for level {currentLevel}: {name} ({weapon.Id}, power level {weapon.PowerLevel}) did not arrive in the bags within 3 s");
-            return;
+            log.Info($"{slot.Kind} for level {currentLevel}: {name} ({piece.Id}, power level {piece.PowerLevel}) did not arrive in the bags within 3 s");
+            return false;
         }
         lastMovedItemGuid = null;
+        lastSwappedOutItemGuid = null;
         await RequireWorld().SendEncryptedAsync(GameMessageOpcode.ClientItemMove,
-            PacketCodec.ClientItemMove(added.Location, added.BagIndex, InventoryLocation.Equipped, (uint)EquippedItem.WeaponPrimary), cancellationToken);
-        // the server answers with ServerItemSwap (the starter sword comes back to the bag) or ServerItemMove
+            PacketCodec.ClientItemMove(added.Location, added.BagIndex, InventoryLocation.Equipped, (uint)slot.Slot), cancellationToken);
+        // the server answers with ServerItemSwap (the worn piece comes back to the bag slot the new one left) or ServerItemMove
         DateTimeOffset moveDeadline = DateTimeOffset.UtcNow.AddSeconds(2);
         while (lastMovedItemGuid != added.Guid && DateTimeOffset.UtcNow < moveDeadline
             && await TryReadWorldPacketAsync(moveDeadline - DateTimeOffset.UtcNow, cancellationToken) is not null)
         {
         }
         bool equipped = lastMovedItemGuid == added.Guid;
-        if (equipped)
-            inventory[added.Guid] = added with { Location = InventoryLocation.Equipped, BagIndex = (uint)EquippedItem.WeaponPrimary };
-        log.Info($"weapon for level {currentLevel}: {name} ({weapon.Id}, power level {weapon.PowerLevel}) {(equipped ? "equipped" : "added; equip not confirmed")}");
-        equippedWeaponPowerLevel = weapon.PowerLevel;
+        if (!equipped)
+        {
+            log.Info($"{slot.Kind} for level {currentLevel}: {name} ({piece.Id}, power level {piece.PowerLevel}) added; equip not confirmed");
+            return false;
+        }
+        inventory[added.Guid] = added with { Location = InventoryLocation.Equipped, BagIndex = (uint)slot.Slot };
+        if (lastSwappedOutItemGuid is ulong oldGuid && inventory.TryGetValue(oldGuid, out InventoryItemInfo? old)
+            && old.Location == InventoryLocation.Equipped && old.BagIndex == (uint)slot.Slot)
+        {
+            // the replaced piece is junk to a player (vendored): delete it from the bag slot it swapped into so bags stay free
+            inventory[oldGuid] = old with { Location = InventoryLocation.Inventory, BagIndex = added.BagIndex };
+            await RequireWorld().SendEncryptedAsync(GameMessageOpcode.ClientItemDelete,
+                PacketCodec.ClientItemDelete(InventoryLocation.Inventory, added.BagIndex), cancellationToken);
+            await DrainWorldPacketsAsync(TimeSpan.FromMilliseconds(300), cancellationToken);
+        }
+        return true;
     }
 
     private async Task LevelForQuestIfNeededAsync(QuestDefinition definition, CancellationToken cancellationToken)
@@ -2739,7 +2776,7 @@ internal sealed class BotRunner
 
         if (targetLevel <= currentLevel)
         {
-            await EquipWeaponForLevelAsync(cancellationToken);
+            await EquipGearForLevelAsync(cancellationToken);
             return;
         }
 
@@ -2751,7 +2788,7 @@ internal sealed class BotRunner
             // documented fallback because this GM command accepts increases only.
             currentLevel = targetLevel;
             await DrainWorldPacketsAsync(TimeSpan.FromSeconds(1), token);
-            await EquipWeaponForLevelAsync(token);
+            await EquipGearForLevelAsync(token);
             return $"level {before} -> {currentLevel} for quest con level {definition.Entry.ConLevel}";
         });
     }
@@ -5597,8 +5634,11 @@ internal sealed class BotRunner
                     inventory.Remove(PacketCodec.ParseItemDelete(packet.Body));
                     break;
                 case GameMessageOpcode.ServerItemMove:
-                case GameMessageOpcode.ServerItemSwap:
                     lastMovedItemGuid = PacketCodec.ParseItemMovedGuid(packet.Body);
+                    lastSwappedOutItemGuid = null;
+                    break;
+                case GameMessageOpcode.ServerItemSwap:
+                    (lastMovedItemGuid, lastSwappedOutItemGuid) = PacketCodec.ParseItemSwapGuids(packet.Body);
                     break;
                 case GameMessageOpcode.ServerPathInitialise:
                 {
