@@ -18,7 +18,11 @@ internal sealed class BotRunner
     private static readonly TimeSpan PerQuestTimeout = TimeSpan.FromMinutes(8);
     private static readonly TimeSpan PerPathMissionTimeout = TimeSpan.FromMinutes(6);
     private static readonly TimeSpan MinimumCombatCastInterval = TimeSpan.FromMilliseconds(500);
-    private static readonly TimeSpan GlobalCooldownWait = TimeSpan.FromSeconds(1);
+    // the server's global cooldown is 0.75 s; a player presses the next ability as soon as it ends
+    private static readonly TimeSpan GlobalCooldownWait = TimeSpan.FromMilliseconds(800);
+    // an instant ability reports its start at once; rapid-tap abilities only finish after their 4 s threshold window,
+    // so the bot stops waiting for the finish after this and lets the global cooldown pace the next cast
+    private static readonly TimeSpan CombatCastFinishWait = TimeSpan.FromMilliseconds(350);
     private static readonly TimeSpan SlotCooldownWait = TimeSpan.FromSeconds(4);
     private static readonly TimeSpan AllSlotsBusyWait = TimeSpan.FromMilliseconds(500);
     private static readonly TimeSpan CombatFacingRefreshInterval = TimeSpan.FromSeconds(3);
@@ -4397,7 +4401,12 @@ internal sealed class BotRunner
                 }
                 if (transition == CombatCastTransition.Started)
                 {
-                    log.Info($"combat slot {bagIndex}: own spell started; waited for finish or 1.2 s");
+                    // the cast went through: the next one is allowed when the global cooldown ends (a second cast of the same
+                    // slot inside it only returns SpellGlobalCooldown and used to cost the bot another second)
+                    DateTimeOffset afterGlobalCooldown = DateTimeOffset.UtcNow + GlobalCooldownWait;
+                    if (afterGlobalCooldown > nextCombatCastAllowedAt)
+                        nextCombatCastAllowedAt = afterGlobalCooldown;
+                    log.Info($"combat slot {bagIndex}: own spell started; next cast after the global cooldown");
                     continue;
                 }
                 if (transition == CombatCastTransition.NoResponse || castResult is null)
@@ -4420,14 +4429,19 @@ internal sealed class BotRunner
                 switch (castResult.Result)
                 {
                     case CastResult.SpellCooldown:
-                        combatSlotBusyUntil[bagIndex] = DateTimeOffset.UtcNow + SlotCooldownWait;
-                        log.Info($"combat slot {bagIndex}: SpellCooldown; busy for 4 s, trying next slot");
+                    {
+                        // the ability's own cooldown from Spell4 (58591 is 20 s; retrying it every 4 s wasted casts), at least 4 s
+                        uint cooldownMs = RequireGameData().GetSpellCooldownMs(castResult.Spell4Id);
+                        TimeSpan busy = cooldownMs > SlotCooldownWait.TotalMilliseconds ? TimeSpan.FromMilliseconds(cooldownMs) : SlotCooldownWait;
+                        combatSlotBusyUntil[bagIndex] = DateTimeOffset.UtcNow + busy;
+                        log.Info($"combat slot {bagIndex}: SpellCooldown; busy for {busy.TotalSeconds:0} s, trying next slot");
                         break;
+                    }
                     case CastResult.SpellGlobalCooldown:
                         DateTimeOffset globalCooldownUntil = DateTimeOffset.UtcNow + GlobalCooldownWait;
                         if (globalCooldownUntil > nextCombatCastAllowedAt)
                             nextCombatCastAllowedAt = globalCooldownUntil;
-                        log.Info($"combat slot {bagIndex}: SpellGlobalCooldown; waiting 1.0 s before any cast");
+                        log.Info($"combat slot {bagIndex}: SpellGlobalCooldown; waiting {GlobalCooldownWait.TotalSeconds:0.0} s before any cast");
                         break;
                     case CastResult.PrereqCasterCast:
                         combatSlotBusyUntil[bagIndex] = DateTimeOffset.UtcNow.AddSeconds(15);
@@ -4579,7 +4593,7 @@ internal sealed class BotRunner
             if (pendingCombatServerId is uint serverId && startedServerId != serverId)
             {
                 startedServerId = serverId;
-                finishDeadline = DateTimeOffset.UtcNow.AddSeconds(1.2);
+                finishDeadline = DateTimeOffset.UtcNow + CombatCastFinishWait;
             }
             if (startedServerId is uint started && finishedCombatSpellIds.Remove(started))
                 return (CombatCastTransition.Started, facing);

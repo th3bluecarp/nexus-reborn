@@ -157,6 +157,7 @@ internal sealed class BotGameData
     public const Class BotClass = Class.Warrior;
     private readonly GameTable<QuestObjectiveEntry> objectives;
     private readonly GameTable<Creature2Entry> creatures;
+    private readonly GameTable<Spell4Entry> spells;
     private readonly GameTable<Creature2DifficultyEntry> creatureDifficulties;
     private readonly GameTable<Item2Entry> items;
     private readonly GameTable<CharacterCreationEntry> characterCreations;
@@ -204,6 +205,7 @@ internal sealed class BotGameData
         worldZones = Load<WorldZoneEntry>(tablePath, "WorldZone.tbl");
         objectives = Load<QuestObjectiveEntry>(tablePath, "QuestObjective.tbl");
         creatures = Load<Creature2Entry>(tablePath, "Creature2.tbl");
+        spells = Load<Spell4Entry>(tablePath, "Spell4.tbl");
         creatureDifficulties = Load<Creature2DifficultyEntry>(tablePath, "Creature2Difficulty.tbl");
         items = Load<Item2Entry>(tablePath, "Item2.tbl");
         characterCreations = Load<CharacterCreationEntry>(tablePath, "CharacterCreation.tbl");
@@ -1404,6 +1406,12 @@ internal sealed class BotGameData
 
     public PrerequisiteBranchChoice? GetPrerequisiteBranchChoice(ushort questId)
         => prerequisiteBranchChoices.GetValueOrDefault(questId);
+
+    /// <summary>
+    /// The spell's own cooldown in milliseconds (Spell4.SpellCoolDown), 0 when the spell is unknown or has none.
+    /// </summary>
+    public uint GetSpellCooldownMs(uint spellId)
+        => spells.GetEntry(spellId)?.SpellCoolDown ?? 0u;
 
     private static GameTable<T> Load<T>(string directory, string name) where T : class, new()
         => new(RequiredPath(directory, name));
