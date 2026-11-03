@@ -52,7 +52,9 @@ namespace NexusForever.Game.Quest
                 if (questId == 0)
                     continue;
 
-                if (player.QuestManager.GetQuestState(questId) != (QuestState)entry.States[i])
+                // a quest the player never had is in state 0 (Unknown): "quest 4969 in state 0" offers A Hidden Threat to a player
+                // who has not started it; null compared as never equal and the offer never came
+                if ((player.QuestManager.GetQuestState(questId) ?? QuestState.Unknown) != (QuestState)entry.States[i])
                     return false;
             }
 

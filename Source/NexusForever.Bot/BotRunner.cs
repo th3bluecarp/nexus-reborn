@@ -2114,11 +2114,13 @@ internal sealed class BotRunner
         });
     }
 
-    private static bool RequiresLevelBoost(QuestDefinition definition)
-        => definition.Objectives.Any(objective => objective.Type is QuestObjectiveType.KillCreature
+    private bool RequiresLevelBoost(QuestDefinition definition)
+        => StartItem(definition) != 0u // the start item is farmed from a drop source (A Heart of Stone: a named gronyx)
+            || definition.Objectives.Any(objective => objective.Type is QuestObjectiveType.KillCreature
             or QuestObjectiveType.KillCreature2
             or QuestObjectiveType.KillTargetGroup
             or QuestObjectiveType.KillTargetGroups
+            or QuestObjectiveType.CollectItem
             or QuestObjectiveType.VirtualCollect);
 
     private static bool HasSingleTargetKillRetry(QuestDefinition definition)
@@ -2656,6 +2658,11 @@ internal sealed class BotRunner
                 case QuestObjectiveType.SucceedCSI:
                     await RunSucceedCsiObjectiveAsync(objective, cancellationToken);
                     break;
+                case QuestObjectiveType.CollectItem when !itemDropSources.TryGetValue(objective.Data, out ItemDropSources? collectSources) || collectSources.CreatureIds.Count == 0:
+                    // no creature drops the item: it comes from using the objective's reward pane units (By Leaps and Bounds: loftite
+                    // collected by jumping through the Loftite Crystals of target group 7534), so activate those until the count is met
+                    await RunCollectByActivationObjectiveAsync(objective, cancellationToken);
+                    break;
                 case QuestObjectiveType.KillCreature:
                 case QuestObjectiveType.KillCreature2:
                 case QuestObjectiveType.KillTargetGroup:
@@ -2762,6 +2769,40 @@ internal sealed class BotRunner
             if (!await TryWaitForObjectiveProgressAsync(objective.Index, before, TimeSpan.FromSeconds(8), cancellationToken)
                 && attemptedSpawns.Count >= candidates.Count)
                 throw new BotFailureException($"talking to target group {objective.Data} produced no objective progress");
+        }
+    }
+
+    private async Task RunCollectByActivationObjectiveAsync(QuestObjectiveDefinition objective, CancellationToken cancellationToken)
+    {
+        BotGameData data = RequireGameData();
+        uint[] creatureIds = data.ResolveTargetGroup(objective.RewardTargetGroupId)
+            .Concat(data.GetCreatureIdsFromText(objective.Text))
+            .Where(data.IsCreature)
+            .Distinct()
+            .ToArray();
+        if (creatureIds.Length == 0)
+            throw new BotFailureException($"item {objective.Data} has no drop source in the world database and the objective names no unit to use");
+        var attemptedSpawns = new HashSet<uint>();
+        IReadOnlyList<Spawn> candidates = SpawnsFor(creatureIds, questWorldId);
+        if (candidates.Count == 0)
+            throw new BotFailureException($"no spawn in world {questWorldId} for the units {string.Join(',', creatureIds)} that give item {objective.Data}");
+        while (!IsObjectiveComplete(objective))
+        {
+            uint before = GetRawProgress(objective.Index);
+            if (attemptedSpawns.Count >= candidates.Count)
+            {
+                // every unit used once; they come back on the respawn timer
+                log.Info($"objective {objective.Index}: all {candidates.Count} units used once at {before}/{objective.Count}; waiting for respawns");
+                attemptedSpawns.Clear();
+                await DrainWorldPacketsAsync(TimeSpan.FromSeconds(30), cancellationToken);
+            }
+            Spawn spawn = ChooseNearestSpawn(creatureIds, questWorldId, attemptedSpawns);
+            attemptedSpawns.Add(spawn.Id);
+            TrackedEntity? entity = await TeleportAndTryFindWithRetryAsync(spawn, cancellationToken);
+            if (entity is null)
+                continue;
+            ActivationOutcome outcome = await RunActivationFlowAsync(objective.Index, before, entity, TimeSpan.FromSeconds(8), cancellationToken);
+            log.Info($"objective {objective.Index}: used unit {entity.CreatureId} guid {entity.Guid}: {outcome}; progress {GetRawProgress(objective.Index)}/{objective.Count}");
         }
     }
 
@@ -3227,6 +3268,8 @@ internal sealed class BotRunner
     }
 
     private const float AreaMarkerRange = 60f;
+    private const int StunEscapeThreshold = 8;
+    private int consecutiveStunResults;
 
     /// <summary>
     /// Creature ids of the hostile spawns within <see cref="AreaMarkerRange"/> of the marker entities a type 9 target group names.
@@ -3491,6 +3534,17 @@ internal sealed class BotRunner
                     continue;
                 }
 
+                if (castResult.Result == CastResult.CCStun)
+                    consecutiveStunResults++;
+                else
+                    consecutiveStunResults = 0;
+                if (consecutiveStunResults >= StunEscapeThreshold)
+                {
+                    // chain-stunned (standing in a boss telegraph: the Boulderback's Loftite Shards stun every 2.5 s): a player
+                    // walks out; the bot drops this target and the caller moves to another spawn (Irradiated Creatures, 582 CCStun)
+                    consecutiveStunResults = 0;
+                    throw new CombatTargetUnavailableException($"stunned for {StunEscapeThreshold} casts in a row; leaving the spot");
+                }
                 switch (castResult.Result)
                 {
                     case CastResult.SpellCooldown:
