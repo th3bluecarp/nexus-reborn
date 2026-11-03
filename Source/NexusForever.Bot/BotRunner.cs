@@ -547,7 +547,19 @@ internal sealed class BotRunner
                 && (!itemDropSources.TryGetValue(startItem, out ItemDropSources? sources)
                     || sources.CreatureIds.Count == 0))
             {
-                AddItemStartedQuestReport(definition);
+                AddItemStartedQuestReport(definition, $"SKIPPED: item {startItem} has no drop source in the world database");
+                finishedQuests.Add(definition.Id);
+                continue;
+            }
+            // a start item that only drops from group content (A Miner's Trophy: a Chunk of Stalagmight from the public event's
+            // 5-man tank) is never farmed by a lone bot
+            if (StartItem(definition) is uint groupItem && groupItem != 0u
+                && itemDropSources.TryGetValue(groupItem, out ItemDropSources? groupSources)
+                && groupSources.CreatureIds.Count > 0
+                && groupSources.CreatureIds.All(id => RequireGameData().GroupSizeOfCreature(id) > 0u))
+            {
+                uint groupSize = groupSources.CreatureIds.Max(id => RequireGameData().GroupSizeOfCreature(id));
+                AddItemStartedQuestReport(definition, $"SKIPPED: item {groupItem} drops only from group content creatures [{string.Join(',', groupSources.CreatureIds)}] ({groupSize}-player difficulty); the bot plays alone");
                 finishedQuests.Add(definition.Id);
                 continue;
             }
@@ -2246,12 +2258,12 @@ internal sealed class BotRunner
         log.Info($"quest {definition.Id} {questReport.Failure}");
     }
 
-    private void AddItemStartedQuestReport(QuestDefinition definition)
+    private void AddItemStartedQuestReport(QuestDefinition definition, string reason)
     {
         var questReport = CreateQuestReport(definition);
         questReport.Skipped = true;
         questReport.Result = "SKIPPED";
-        questReport.Failure = $"SKIPPED: item {StartItem(definition)} has no drop source in the world database";
+        questReport.Failure = reason;
         questReport.EndTimestamp = DateTimeOffset.UtcNow;
         questReport.Steps.Add(new StepReport
         {
@@ -2330,9 +2342,10 @@ internal sealed class BotRunner
                         ? TimeSpan.FromSeconds(Math.Max(1u, objective.Count) * 55u)
                     : objective.Type == QuestObjectiveType.SucceedCSI
                         ? TimeSpan.FromSeconds(60)
-                    // items collected by using units (By Leaps and Bounds: eight Loftite Crystals that respawn): a unit per 25 s plus a respawn wait
+                    // items collected by using units or looted from kills (By Leaps and Bounds: eight loftite, a girrok fight and a
+                    // health recovery each): 45 s per item plus a respawn wait
                     : objective.Type == QuestObjectiveType.CollectItem
-                        ? TimeSpan.FromSeconds(Math.Max(75u, Math.Max(1u, objective.Count) * 25u + 30u))
+                        ? TimeSpan.FromSeconds(Math.Max(75u, Math.Max(1u, objective.Count) * 45u + 30u))
                         : DefaultStepTimeout;
                 if (objective.Type is QuestObjectiveType.ActivateEntity
                     or QuestObjectiveType.ActivateTargetGroup

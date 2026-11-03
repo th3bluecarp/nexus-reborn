@@ -157,6 +157,7 @@ internal sealed class BotGameData
     public const Class BotClass = Class.Warrior;
     private readonly GameTable<QuestObjectiveEntry> objectives;
     private readonly GameTable<Creature2Entry> creatures;
+    private readonly GameTable<Creature2DifficultyEntry> creatureDifficulties;
     private readonly GameTable<Item2Entry> items;
     private readonly GameTable<CharacterCreationEntry> characterCreations;
     private readonly GameTable<WorldLocation2Entry> worldLocations;
@@ -203,6 +204,7 @@ internal sealed class BotGameData
         worldZones = Load<WorldZoneEntry>(tablePath, "WorldZone.tbl");
         objectives = Load<QuestObjectiveEntry>(tablePath, "QuestObjective.tbl");
         creatures = Load<Creature2Entry>(tablePath, "Creature2.tbl");
+        creatureDifficulties = Load<Creature2DifficultyEntry>(tablePath, "Creature2Difficulty.tbl");
         items = Load<Item2Entry>(tablePath, "Item2.tbl");
         characterCreations = Load<CharacterCreationEntry>(tablePath, "CharacterCreation.tbl");
         worldLocations = Load<WorldLocation2Entry>(tablePath, "WorldLocation2.tbl");
@@ -1231,6 +1233,16 @@ internal sealed class BotGameData
     }
 
     public bool IsCreature(uint id) => id != 0u && creatures.GetEntry(id) is not null;
+
+    /// <summary>
+    /// Group content: the creature's difficulty row has a GroupValue (5, 20 or 40 players); the bot plays alone.
+    /// </summary>
+    public uint GroupSizeOfCreature(uint creatureId)
+    {
+        Creature2Entry? creature = creatures.GetEntry(creatureId);
+        Creature2DifficultyEntry? difficulty = creature is null ? null : creatureDifficulties.GetEntry(creature.Creature2DifficultyId);
+        return difficulty?.GroupValue ?? 0u;
+    }
 
     public IReadOnlyList<uint> GetCreatureIdsFromText(string text)
         => Regex.Matches(text, @"creature=([0-9]{1,9})", RegexOptions.IgnoreCase)
