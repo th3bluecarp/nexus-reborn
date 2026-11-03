@@ -651,6 +651,8 @@ internal sealed class BotRunner
             TimeSpan questTimeout = HasSingleTargetKillRetry(definition)
                 ? PerQuestTimeout + CombatTimeout + TimeSpan.FromSeconds(60)
                 : PerQuestTimeout;
+            if (StartItem(definition) != 0u)
+                questTimeout += ItemDropAcceptTimeout;
             using var questBudget = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
             questBudget.CancelAfter(questTimeout);
             try
