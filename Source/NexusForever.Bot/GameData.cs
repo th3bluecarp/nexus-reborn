@@ -649,6 +649,11 @@ internal sealed class BotGameData
                     case PrerequisiteType.OtherPrerequisite:
                         met = Evaluate(objectId, depth + 1);
                         break;
+                    case PrerequisiteType.PublicEvent117:
+                        // offered only while a public event runs (Algoroc's Loftite Pike); the bot cannot start events
+                        met = false;
+                        reasons.Add($"public event {objectId} must be running (prerequisite type 117)");
+                        break;
                 }
                 evaluated = true;
                 any |= met;

@@ -1884,6 +1884,9 @@ internal sealed class BotRunner
                         ? TimeSpan.FromSeconds(Math.Max(1u, objective.Count) * 55u)
                     : objective.Type == QuestObjectiveType.SucceedCSI
                         ? TimeSpan.FromSeconds(60)
+                    // items collected by using units (By Leaps and Bounds: eight Loftite Crystals that respawn): a unit per 25 s plus a respawn wait
+                    : objective.Type == QuestObjectiveType.CollectItem
+                        ? TimeSpan.FromSeconds(Math.Max(75u, Math.Max(1u, objective.Count) * 25u + 30u))
                         : DefaultStepTimeout;
                 if (objective.Type is QuestObjectiveType.ActivateEntity
                     or QuestObjectiveType.ActivateTargetGroup
@@ -2077,7 +2080,9 @@ internal sealed class BotRunner
     {
         // camps with many kills (Shellshock: nine Dominion soldiers who aggro together) killed the bot at con level + 5,
         // 3335 damage taken over 31 enemy casts; a bigger margin for objectives asking five or more kills
-        bool camp = definition.Objectives.Any(objective => objective.Type is QuestObjectiveType.KillCreature
+        // a start item farmed from a drop source is a named creature fight (A Heart of Stone: Stonefist, a difficulty 5 named
+        // with 1.75x stats, killed the bot at con level + 5 twice), so it gets the camp margin as well
+        bool camp = StartItem(definition) != 0u || definition.Objectives.Any(objective => objective.Type is QuestObjectiveType.KillCreature
             or QuestObjectiveType.KillCreature2 or QuestObjectiveType.KillTargetGroup or QuestObjectiveType.KillTargetGroups
             && objective.Count >= 5u);
         // every quest of a zone run fights at con level + 5 (camps + 9): Algoroc's activation quests walk into Dominion camps
@@ -3271,6 +3276,15 @@ internal sealed class BotRunner
     private async Task RunKillObjectiveAsync(QuestObjectiveDefinition objective, CancellationToken cancellationToken)
     {
         uint[] creatureIds = GetObjectiveCreatureIds(objective).ToArray();
+        if (creatureIds.Length == 0 && RequireGameData().IsAreaMarkerTargetGroup(objective.Data))
+        {
+            // a kill group of type 9 names marker entities (Yeti Extermination: the Cave Entrances of Icemaw Cavern); the server
+            // counts any hostile killed within AreaMarkerRange of a marker, so fight the hostile spawns standing there
+            creatureIds = AreaMarkerCreatureIds(objective.Data).ToArray();
+            log.Info($"objective {objective.Index}: area marker kill group {objective.Data} resolves to hostile creatures near its markers: [{string.Join(',', creatureIds)}]");
+            if (creatureIds.Length == 0)
+                throw new BotFailureException($"target group {objective.Data} is an area marker group (TargetGroup type 9) but no hostile spawn stands within {AreaMarkerRange:0} m of its markers in world {questWorldId}");
+        }
         if (creatureIds.Length == 0)
             throw new BotFailureException($"target group {objective.Data} resolved to no creature ids");
         IReadOnlyList<Spawn> candidates = SpawnsFor(creatureIds, questWorldId);
