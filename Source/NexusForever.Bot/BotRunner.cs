@@ -1257,28 +1257,46 @@ internal sealed class BotRunner
             }
 
             float range = Math.Max(location.Radius, 30f);
-            Spawn spawn = spawns
+            Spawn[] candidates = spawns
                 .Where(candidate => candidate.WorldId == location.WorldId
                     && candidate.DistanceSquared(location.Position0, location.Position1, location.Position2) <= range * range)
                 .OrderBy(candidate => candidate.DistanceSquared(location.Position0, location.Position1, location.Position2))
                 .ThenBy(candidate => candidate.Id)
-                .FirstOrDefault()
-                ?? throw new BotFailureException($"specimen location {location.Id} has no non-player creature spawn within {range:0.###} m");
-            TrackedEntity entity = await TeleportAndTryFindWithRetryAsync(spawn, cancellationToken)
-                ?? throw new BotFailureException($"nearest specimen creature {spawn.CreatureId} at spawn {spawn.Id} was not visible for location {location.Id}");
+                .Take(SpecimenSpawnAttempts)
+                .ToArray();
+            if (candidates.Length == 0)
+                throw new BotFailureException($"specimen location {location.Id} has no non-player creature spawn within {range:0.###} m");
 
-            await RequireWorld().SendEncryptedAsync(GameMessageOpcode.ClientEntitySelect,
-                PacketCodec.ClientEntitySelect(entity.Guid), cancellationToken);
-            await RequireWorld().SendEncryptedAsync(GameMessageOpcode.ClientPathScientistScan,
-                PacketCodec.ClientPathScientistScan(), cancellationToken);
-            bool progressed = await WaitForPathMissionAsync(
-                definition.Id,
-                status => (status.Progress & bit) != 0u || status.Completed,
-                TimeSpan.FromSeconds(10),
-                cancellationToken);
+            // one sample can fail (the unit wandered out of the scan range, a scan cooldown): the next nearest creature is tried
+            bool progressed = false;
+            var tried = new List<string>();
+            foreach (Spawn spawn in candidates)
+            {
+                TrackedEntity? entity = await TeleportAndTryFindWithRetryAsync(spawn, cancellationToken);
+                if (entity is null)
+                {
+                    tried.Add($"{spawn.CreatureId}@spawn {spawn.Id}: not visible");
+                    continue;
+                }
+                await RequireWorld().SendEncryptedAsync(GameMessageOpcode.ClientEntitySelect,
+                    PacketCodec.ClientEntitySelect(entity.Guid), cancellationToken);
+                await RequireWorld().SendEncryptedAsync(GameMessageOpcode.ClientPathScientistScan,
+                    PacketCodec.ClientPathScientistScan(), cancellationToken);
+                progressed = await WaitForPathMissionAsync(
+                    definition.Id,
+                    status => (status.Progress & bit) != 0u || status.Completed,
+                    TimeSpan.FromSeconds(10),
+                    cancellationToken);
+                log.Info($"path mission {definition.Id}: specimen location {location.Id} scan of creature {spawn.CreatureId} guid {entity.Guid}: {(progressed ? "sampled" : "no bit")}");
+                if (progressed)
+                {
+                    sampled.Add($"location={location.Id}:creature={spawn.CreatureId}/spawn={spawn.Id}/range={range:0.###}");
+                    break;
+                }
+                tried.Add($"{spawn.CreatureId}@spawn {spawn.Id} guid {entity.Guid}: no bit");
+            }
             if (!progressed)
-                throw new BotFailureException($"scan of creature {spawn.CreatureId} guid {entity.Guid} produced no specimen bit 0x{bit:X} for location {location.Id}; sampled=[{string.Join(", ", sampled)}]");
-            sampled.Add($"location={location.Id}:creature={spawn.CreatureId}/spawn={spawn.Id}/range={range:0.###}");
+                throw new BotFailureException($"no scan produced specimen bit 0x{bit:X} for location {location.Id}: [{string.Join("; ", tried)}]; sampled=[{string.Join(", ", sampled)}]");
         }
 
         PathMissionStatus? status = GetPathMissionStatus(definition.Id);
@@ -3518,6 +3536,8 @@ internal sealed class BotRunner
     private const uint ZoneDeathRetryLevelCap = 18u;
 
     private const int ScavengerClueSpawnAttempts = 6;
+
+    private const int SpecimenSpawnAttempts = 3;
 
     private const float QuestAbilityTargetRadius = 60f;
 
