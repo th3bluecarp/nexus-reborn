@@ -486,6 +486,18 @@ internal sealed class BotRunner
         {
             QuestDefinition definition = orderedPlan[planIndex];
             cancellationToken.ThrowIfCancellationRequested();
+            // the report is written after every quest so a run in progress can be watched (the dashboard shows it as running)
+            if (planIndex > 0)
+            {
+                try
+                {
+                    await report.WriteAsync(options.Report);
+                }
+                catch (Exception exception)
+                {
+                    log.Info($"progress report write failed: {exception.Message}");
+                }
+            }
             if (botDied)
             {
                 // a dead character cannot accept or fight: try the resurrection once more, else stop the run honestly
