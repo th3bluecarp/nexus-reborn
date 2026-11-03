@@ -34,6 +34,10 @@ internal sealed class BotRunner
     private static readonly TimeSpan SettlerMissionTimeout = TimeSpan.FromMinutes(15);
     private static readonly TimeSpan QuestNpcConfirmationTimeout = TimeSpan.FromSeconds(15);
     private static readonly TimeSpan CorpseLootTimeout = TimeSpan.FromSeconds(5);
+    // a quest started by a dropped item (A Heart of Stone: Stonefist's Heart, 74 % of kills; The Soul of Gloomstone: 60 %): the
+    // creature has one spawn point and comes back 60 s after its corpse goes, so a miss costs a respawn wait plus a fight; five
+    // tries leave a 1 % chance of failing on bad luck (the 75 s default allowed one kill, the 300 s combat budget three)
+    private static readonly TimeSpan ItemDropAcceptTimeout = TimeSpan.FromSeconds(540);
     private static readonly TimeSpan SingleTargetKillRetryTimeout = TimeSpan.FromSeconds(660);
     private const float CombatTargetMovementThreshold = 2f;
     private const float CombatStandOffDistance = 2f;
@@ -2417,8 +2421,8 @@ internal sealed class BotRunner
             await LevelForAcceptanceIfNeededAsync(definition, cancellationToken);
             if (definition.Entry.PrerequisiteItem != 0u)
                 await LevelForQuestIfNeededAsync(definition, cancellationToken);
-            TimeSpan acceptTimeout = definition.Entry.PrerequisiteItem == 0u ? DefaultStepTimeout : CombatTimeout;
-            if (definition.Entry.PrerequisiteItem == 0u && questState != QuestState.Mentioned)
+            TimeSpan acceptTimeout = StartItem(definition) == 0u ? DefaultStepTimeout : ItemDropAcceptTimeout;
+            if (StartItem(definition) == 0u && questState != QuestState.Mentioned)
             {
                 int giverSpawnCount = SpawnsFor(definition.GiverCreatureIds, questWorldId).Count;
                 int receiverSpawnCount = RequireGameData().GetCommunicatorOffers(definition.Id).Count > 0
@@ -2488,10 +2492,11 @@ internal sealed class BotRunner
                     // a quest ability cast per target (Use Augmented Remains on eight constructs: a 3 s cast and a fight each)
                     : objective.Type == QuestObjectiveType.SpellSuccess
                         ? TimeSpan.FromSeconds(Math.Max(120u, Math.Max(1u, objective.Count) * 45u))
-                    // items collected by using units or looted from kills (By Leaps and Bounds: eight loftite, a girrok fight and a
-                    // health recovery each): 45 s per item plus a respawn wait
+                    // items collected by using units or looted from kills (By Leaps and Bounds: eight loftite fragments that drop
+                    // from 44 % of boulderback kills, so eighteen fights of about 25 s on average and the odd health recovery;
+                    // 390 s failed three legs of four): 75 s per item plus a respawn wait
                     : objective.Type == QuestObjectiveType.CollectItem
-                        ? TimeSpan.FromSeconds(Math.Max(75u, Math.Max(1u, objective.Count) * 45u + 30u))
+                        ? TimeSpan.FromSeconds(Math.Max(75u, Math.Max(1u, objective.Count) * 75u + 30u))
                         : DefaultStepTimeout;
                 if (objective.Type is QuestObjectiveType.ActivateEntity
                     or QuestObjectiveType.ActivateTargetGroup
