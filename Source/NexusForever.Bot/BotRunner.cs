@@ -1759,13 +1759,23 @@ internal sealed class BotRunner
             throw new BotFailureException($"No spawn in world {questWorldId} for activation targets {string.Join(',', definition.ObjectiveCreatureIds)}.");
 
         var attemptedSpawns = new HashSet<uint>();
+        int rounds = 0;
+        log.Info($"path mission {definition.Id}: activation target creature(s) [{string.Join(',', definition.ObjectiveCreatureIds)}], {candidates.Count} spawn(s), count {definition.Count}");
         while (!IsPathMissionComplete(definition.Id))
         {
             if (attemptedSpawns.Count >= candidates.Count)
+            {
+                // every spawn visited: a unit shown only while the mission runs (Rockridge Recovery's Dead Explorers) may appear
+                // after the server starts the mission at its indicator; three rounds, not a six minute loop on one spawn
+                if (++rounds >= ActivateMissionSpawnRounds)
+                    throw new BotFailureException($"activation targets [{string.Join(',', definition.ObjectiveCreatureIds)}] never visible at their {candidates.Count} spawn(s) in {rounds} rounds; progress={GetPathMissionStatus(definition.Id)?.Progress ?? 0u}");
                 attemptedSpawns.Clear();
+            }
             Spawn spawn = ChooseNearestSpawn(definition.ObjectiveCreatureIds, questWorldId, attemptedSpawns);
             attemptedSpawns.Add(spawn.Id);
             TrackedEntity? entity = await TeleportAndTryFindWithRetryAsync(spawn, cancellationToken);
+            if (entity is null)
+                log.Info($"path mission {definition.Id}: spawn {spawn.Id} (creature {spawn.CreatureId}) not visible");
             if (entity is null)
                 continue;
             uint before = GetPathMissionStatus(definition.Id)?.Progress ?? 0u;
@@ -3538,6 +3548,8 @@ internal sealed class BotRunner
     private const int ScavengerClueSpawnAttempts = 6;
 
     private const int SpecimenSpawnAttempts = 3;
+
+    private const int ActivateMissionSpawnRounds = 3;
 
     private const float QuestAbilityTargetRadius = 60f;
 

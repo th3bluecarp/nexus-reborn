@@ -423,6 +423,7 @@ namespace NexusForever.Game.Entity
                 return;
 
             DeliverInfrastructureResources();
+            StartMissionsAtIndicators();
 
             foreach (PathMission mission in missions.Values.Where(m => m.Kind == MissionKind.Cartography && !m.IsComplete).ToList())
             {
@@ -577,6 +578,51 @@ namespace NexusForever.Game.Entity
             uint bit = 1u << (int)nodeIndex;
             if ((mission.Progress & bit) == 0u)
                 Advance(mission, mission.Progress | bit);
+        }
+
+        /// <summary>
+        /// Largest distance from a mission's map indicator at which an unlocked mission starts.
+        /// </summary>
+        private const float MissionStartRadius = 60f;
+
+        /// <summary>
+        /// An unlocked mission starts when the player reaches one of its map indicators: its units shown by mission state
+        /// (OPERATIONS: Rockridge Recovery's four Dead Explorers, visible only while the mission is started) appear.
+        /// Retail started missions on area entry; here the first progress did, which those units made impossible
+        /// (SEMANTICS: path missions start at their indicators).
+        /// </summary>
+        private void StartMissionsAtIndicators()
+        {
+            foreach (PathMission mission in missions.Values.Where(m => m.State == PathMissionState.Unlocked && !m.IsComplete).ToList())
+            {
+                bool near = false;
+                foreach (uint locationId in new[] { mission.Entry.WorldLocation2Id00, mission.Entry.WorldLocation2Id01, mission.Entry.WorldLocation2Id02, mission.Entry.WorldLocation2Id03 })
+                {
+                    if (locationId == 0u)
+                        continue;
+                    WorldLocation2Entry location = GameTableManager.Instance.WorldLocation2.GetEntry(locationId);
+                    if (location == null || location.WorldId != player.Map.Entry.Id)
+                        continue;
+                    float dx = player.Position.X - location.Position0;
+                    float dz = player.Position.Z - location.Position2;
+                    float radius = Math.Max(location.Radius, MissionStartRadius);
+                    if (dx * dx + dz * dz <= radius * radius)
+                    {
+                        near = true;
+                        break;
+                    }
+                }
+                if (!near)
+                    continue;
+
+                mission.State   = PathMissionState.Started;
+                mission.IsDirty = true;
+                player.VisibilityUpdate();
+                player.Session.EnqueueMessageEncrypted(new ServerPathMissionUpdate
+                {
+                    Mission = Build(mission)
+                });
+            }
         }
 
         private void Advance(PathMission mission, uint progress)
