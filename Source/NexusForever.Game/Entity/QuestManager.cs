@@ -479,7 +479,7 @@ namespace NexusForever.Game.Entity
         private const float ZoneLocationRange = 60f;
         private static readonly Dictionary<uint, (ushort World, Vector3 Position)[]> zoneLocations = new();
 
-        private bool IsInWorldZone(uint worldZoneId)
+        public bool IsInWorldZone(uint worldZoneId)
         {
             for (WorldZoneEntry zone = player.Zone; zone != null; zone = zone.ParentZoneId != 0u ? GameTableManager.Instance.WorldZone.GetEntry(zone.ParentZoneId) : null)
                 if (zone.Id == worldZoneId)

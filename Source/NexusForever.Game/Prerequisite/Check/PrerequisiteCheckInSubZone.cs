@@ -24,10 +24,10 @@ namespace NexusForever.Game.Prerequisite.Check
 
         public bool Meets(IPlayer player, PrerequisiteComparison comparison, uint value, uint objectId, IPrerequisiteParameters parameters)
         {
-            // Value is a world zone, met when the player is in it or in one of its sub zones.
-            bool inZone = false;
-            for (WorldZoneEntry zone = player.Zone; zone != null && !inZone; zone = zone.ParentZoneId != 0u ? GameTableManager.Instance.WorldZone.GetEntry(zone.ParentZoneId) : null)
-                inZone = zone.Id == value;
+            // Value is a world zone, met when the player is in it or in one of its sub zones. The map file's areas do not
+            // always agree with the zone the data means (The Hidden Grotto 1083 is area 365/1084 in the map file, so A Hidden
+            // Threat's call never came), so the quest manager's check also accepts a WorldLocation2 row of the zone family within 60 m.
+            bool inZone = player.QuestManager?.IsInWorldZone(value) ?? false;
 
             bool? result = PrerequisiteCompare.Is(comparison, inZone);
             if (result == null)

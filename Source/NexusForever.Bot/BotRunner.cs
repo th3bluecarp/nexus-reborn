@@ -847,6 +847,11 @@ internal sealed class BotRunner
                 string? objectiveDetail = null;
                 switch (definition.Type)
                 {
+                    // a SWAT mission with a retail gadget uses its targets (Fire in the Hole: Burrow Busters on canimid burrows,
+                    // objects no attack lands on; the bot hit one for six minutes); the server counts the use as the gadget
+                    case PathMissionType.SWAT when definition.GadgetTargets:
+                        await RunPathActivateMissionAsync(definition, missionBudget.Token);
+                        break;
                     case PathMissionType.Assassination:
                     case PathMissionType.SWAT:
                         await RunPathKillMissionAsync(definition, missionBudget.Token);
@@ -2502,7 +2507,9 @@ internal sealed class BotRunner
                     or QuestObjectiveType.KillTargetGroup
                     or QuestObjectiveType.KillTargetGroups
                     or QuestObjectiveType.GatheResource
-                    ? CombatTimeout
+                    // seven Augmented Gronyx (Grafted Gronyx, difficulty 4) took about 40 s each with the teleport between them and
+                    // overran the flat 300 s on the seventh: 50 s per kill, never under the combat budget
+                    ? TimeSpan.FromSeconds(Math.Max(CombatTimeout.TotalSeconds, Math.Max(1u, objective.Count) * 50d + 30d))
                     // a virtual item held by hostile creatures (Rockridge Rascals: Arifo the Rascal, a named with 1.75x stats) is a fight
                     : objective.Type == QuestObjectiveType.VirtualCollect && VirtualCollectIsFight(objective)
                         ? TimeSpan.FromSeconds(Math.Max((uint)CombatTimeout.TotalSeconds, Math.Max(1u, objective.Count) * 55u))
@@ -2529,6 +2536,9 @@ internal sealed class BotRunner
                     or QuestObjectiveType.SucceedCSI)
                 {
                     timeout = AllowEveryObjectiveSpawnAttempt(objective, timeout);
+                    // a used unit comes back on the respawn timer; the activation flow waits for it twice (35 s each)
+                    if (objective.Type == QuestObjectiveType.ActivateEntity && timeout < TimeSpan.FromSeconds(150))
+                        timeout = TimeSpan.FromSeconds(150);
                 }
                 if (IsSingleTargetKillRetryObjective(objective))
                     timeout = SingleTargetKillRetryTimeout;
@@ -3629,6 +3639,7 @@ internal sealed class BotRunner
             throw new BotFailureException("ActivateEntity objective has no creature, target-group, reward-pane, or text target");
         var attemptedSpawns = new HashSet<uint>();
         IReadOnlyList<Spawn> candidates = SpawnsFor(creatureIds, questWorldId);
+        int respawnWaits = 0;
         while (!IsObjectiveComplete(objective))
         {
             uint before = GetRawProgress(objective.Index);
@@ -3638,7 +3649,15 @@ internal sealed class BotRunner
             if (entity is null)
             {
                 if (attemptedSpawns.Count >= candidates.Count)
-                    throw new BotFailureException($"activation target creature(s) {string.Join(',', creatureIds)} were not visible; {FormatNearbyTrackedCreatures()}");
+                {
+                    // a unit used by an earlier objective comes back on the respawn timer (Breaching Security uses the Avatar Control
+                    // Panel twice, 60 s apart); a player waits at the spot, so wait twice before giving up
+                    if (respawnWaits++ >= 2)
+                        throw new BotFailureException($"activation target creature(s) {string.Join(',', creatureIds)} were not visible after {respawnWaits - 1} respawn wait(s); {FormatNearbyTrackedCreatures()}");
+                    log.Info($"objective {objective.Index}: none of the {candidates.Count} spawn(s) of creature(s) [{string.Join(',', creatureIds)}] is up; waiting 35 s for a respawn");
+                    attemptedSpawns.Clear();
+                    await DrainWorldPacketsAsync(TimeSpan.FromSeconds(35), cancellationToken);
+                }
                 continue;
             }
             ActivationOutcome outcome = await RunActivationFlowAsync(objective.Index, before, entity, TimeSpan.FromSeconds(8), cancellationToken);

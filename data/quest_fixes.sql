@@ -33,3 +33,12 @@ INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1300004,0,1502),(130000
 INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`,`QuestChecklistIdx`) VALUES
 (1300008,0,23850,51,786,4837.359,-1071.2158,-4207.437,0,0,0,24399,0,763,763,0);
 INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1300008,10,14),(1300008,15,0);
+
+-- Cage Panels for XAS Scientists (creature 35249), the four cages of Caged Science (quest 5261, rescue objective 7647, reward pane group 7963) inside Exo-Lab 14; no spawn in our data
+-- and the objective's own target group 37 is not in the client tables. Placed around the Exo-Lab Purifier spawn 900311 (4872,-1024,-4229, area 786), display 24340 from the creature's display group, faction 219 (2026-11-03). Entity ids 1300009-1300012.
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`,`QuestChecklistIdx`) VALUES
+(1300009,0,35249,51,786,4866.0,-1023.89,-4223.0,0,0,0,24340,0,219,219,0),
+(1300010,0,35249,51,786,4878.0,-1023.89,-4223.0,0,0,0,24340,0,219,219,0),
+(1300011,0,35249,51,786,4866.0,-1023.89,-4235.0,0,0,0,24340,0,219,219,0),
+(1300012,0,35249,51,786,4878.0,-1023.89,-4235.0,0,0,0,24340,0,219,219,0);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1300009,10,13),(1300009,15,0),(1300010,10,13),(1300010,15,0),(1300011,10,13),(1300011,15,0),(1300012,10,13),(1300012,15,0);

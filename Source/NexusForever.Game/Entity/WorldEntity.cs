@@ -598,7 +598,9 @@ namespace NexusForever.Game.Entity
                 OnActivate(activator);
                 // a quest target without an activation spell (Fiery Vengeance's slaver shacks, burned in retail by a grenade
                 // spell the quest granted) is used directly: the use is the success (SEMANTICS: direct activation of quest targets)
-                if (IsActiveQuestActivateTarget(activator) || IsActiveQuestChecklistTarget(activator))
+                // a path mission gadget target (Fire in the Hole's canimid burrows, sealed in retail with Burrow Busters) the same way
+                if (IsActiveQuestActivateTarget(activator) || IsActiveQuestChecklistTarget(activator)
+                    || (CreatureInfo?.Entry != null && activator.PathMissionManager.IsGadgetTarget(CreatureInfo.Entry.Id, AssetManager.Instance.GetTargetGroupsForCreatureId(CreatureInfo.Entry.Id))))
                     OnActivateSuccess(activator);
                 return;
             }

@@ -25,6 +25,11 @@ namespace NexusForever.Game.Abstract.Entity
         void OnActivate(uint creatureId, IEnumerable<uint> targetGroupIds);
 
         /// <summary>
+        /// The creature is a target of an unfinished mission whose retail gadget was used on its targets (a SWAT mission's burrows).
+        /// </summary>
+        bool IsGadgetTarget(uint creatureId, IEnumerable<uint> targetGroupIds);
+
+        /// <summary>
         /// Invoked when the player completes a quest.
         /// </summary>
         void OnQuestComplete(uint questId);

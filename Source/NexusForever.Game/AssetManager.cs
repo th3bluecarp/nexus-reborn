@@ -112,6 +112,22 @@ namespace NexusForever.Game
                 }
             }
 
+            // faction groups ("weaken constructs and augmented beings": every creature of the Eldan, canimid and augmented
+            // factions) and creature race groups name creatures by Creature2 faction or race; index those creatures too, or
+            // the spell and kill objectives built on them (Unconventional Technology) never credit
+            foreach (TargetGroupEntry entry in GameTableManager.Instance.TargetGroup.Entries
+                .Where(e => (TargetGroupType)e.Type is TargetGroupType.FactionIdGroup or TargetGroupType.CreatureRaceIdGroup))
+            {
+                foreach (uint creatureId in CreaturesOfFactionOrRaceGroup(entry))
+                {
+                    if (!entries.ContainsKey(creatureId))
+                        entries.Add(creatureId, new List<uint>());
+
+                    if (!entries[creatureId].Contains(entry.Id))
+                        entries[creatureId].Add(entry.Id);
+                }
+            }
+
             // groups of groups ("kill Rootbrute Grimspores, Yeti Frostclaws and Yeti Snowstalkers") are what many kill objectives
             // point at, so a creature also belongs to every group that contains one of its groups
             var unhandled = new List<TargetGroupType>();
@@ -199,6 +215,10 @@ namespace NexusForever.Game
                 case TargetGroupType.CreatureIdGroup:
                     targetIds.AddRange(entry.DataEntries.Where(d => d != 0u));
                     break;
+                case TargetGroupType.FactionIdGroup:
+                case TargetGroupType.CreatureRaceIdGroup:
+                    targetIds.AddRange(CreaturesOfFactionOrRaceGroup(entry));
+                    break;
                 case TargetGroupType.OtherTargetGroup:
                 case TargetGroupType.OtherTargetGroupCreatures:
                     foreach (uint targetGroupId in entry.DataEntries.Where(d => d != 0u))
@@ -215,6 +235,19 @@ namespace NexusForever.Game
                         unhandledTargetGroups.Add((TargetGroupType)entry.Type);
                     break;
             }
+        }
+
+        /// <summary>
+        /// The creatures a faction group (type 3, Creature2.FactionId) or a creature race group (type 12, Creature2.UnitRaceId) names.
+        /// </summary>
+        private static IEnumerable<uint> CreaturesOfFactionOrRaceGroup(TargetGroupEntry entry)
+        {
+            var values = entry.DataEntries.Where(d => d != 0u).ToHashSet();
+            if (values.Count == 0)
+                return [];
+            return (TargetGroupType)entry.Type == TargetGroupType.FactionIdGroup
+                ? GameTableManager.Instance.Creature2.Entries.Where(c => values.Contains((uint)c.FactionId)).Select(c => c.Id)
+                : GameTableManager.Instance.Creature2.Entries.Where(c => values.Contains(c.UnitRaceId)).Select(c => c.Id);
         }
 
         private void CacheQuestObjectiveTargetGroups()

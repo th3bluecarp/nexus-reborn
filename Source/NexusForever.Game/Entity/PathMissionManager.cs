@@ -54,6 +54,8 @@ namespace NexusForever.Game.Entity
             public uint TargetGroupId { get; init; }
             public uint Count { get; init; }
             public uint[] Objects { get; init; } = [];
+            /// <summary>Retail used a gadget (a virtual item) on the targets; using the target stands in for the gadget.</summary>
+            public bool GadgetTargets { get; init; }
 
             public PathMissionState State { get; set; }
             public uint Progress { get; set; }
@@ -173,11 +175,12 @@ namespace NexusForever.Game.Entity
                 }
                 case (Path.Soldier, 7u):
                 {
-                    // SWAT: retail had a gadget used on the targets (VirtualItemIdDisplay), here killing them counts
+                    // SWAT: retail had a gadget used on the targets (VirtualItemIdDisplay); here killing them counts, and so does
+                    // using them, because some targets are objects that cannot be attacked (Fire in the Hole's canimid burrows)
                     PathSoldierSWATEntry swat = GameTableManager.Instance.PathSoldierSWAT.GetEntry(entry.ObjectId);
                     if (swat == null)
                         break;
-                    return new PathMission { Entry = entry, Kind = MissionKind.Kill, CreatureId = swat.Creature2Id, TargetGroupId = swat.TargetGroupId, Count = Math.Max(swat.Count, 1u) };
+                    return new PathMission { Entry = entry, Kind = MissionKind.Kill, CreatureId = swat.Creature2Id, TargetGroupId = swat.TargetGroupId, Count = Math.Max(swat.Count, 1u), GadgetTargets = swat.VirtualItemIdDisplay != 0u };
                 }
                 case (Path.Soldier, 5u):
                 case (Path.Soldier, 6u):
@@ -497,6 +500,13 @@ namespace NexusForever.Game.Entity
             OnCreature(MissionKind.Activate, creatureId, targetGroupIds);
         }
 
+        public bool IsGadgetTarget(uint creatureId, IEnumerable<uint> targetGroupIds)
+        {
+            var groups = targetGroupIds.ToHashSet();
+            return missions.Values.Any(m => m.GadgetTargets && !m.IsComplete
+                && ((m.CreatureId != 0u && m.CreatureId == creatureId) || (m.TargetGroupId != 0u && groups.Contains(m.TargetGroupId))));
+        }
+
         private bool IsAtLocation(uint worldLocationId, float minRadius)
         {
             WorldLocation2Entry location = GameTableManager.Instance.WorldLocation2.GetEntry(worldLocationId);
@@ -536,7 +546,9 @@ namespace NexusForever.Game.Entity
                     }
                 }
             }
-            foreach (PathMission mission in missions.Values.Where(m => m.Kind == kind && !m.IsComplete).ToList())
+            foreach (PathMission mission in missions.Values
+                .Where(m => !m.IsComplete && (m.Kind == kind || (kind == MissionKind.Activate && m.Kind == MissionKind.Kill && m.GadgetTargets)))
+                .ToList())
             {
                 bool match = (mission.CreatureId != 0u && mission.CreatureId == creatureId)
                     || (mission.TargetGroupId != 0u && groups.Contains(mission.TargetGroupId));

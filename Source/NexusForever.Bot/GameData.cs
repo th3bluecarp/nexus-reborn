@@ -115,7 +115,8 @@ internal sealed record PathMissionDefinition(
     IReadOnlyList<ushort> QuestIds,
     IReadOnlyList<ScavengerClueDefinition> ScavengerClues,
     SettlerInfrastructureDefinition? Infrastructure,
-    IReadOnlyList<uint> ExperimentationConsoleCreatureIds)
+    IReadOnlyList<uint> ExperimentationConsoleCreatureIds,
+    bool GadgetTargets = false)
 {
     public string TypeName => Enum.IsDefined(Type) ? Type.ToString() : $"Unknown{RawType}";
 }
@@ -339,6 +340,9 @@ internal sealed class BotGameData
         uint creatureId = 0u;
         uint targetGroupId = 0u;
         uint count = 1u;
+        // SWAT missions whose retail gadget (VirtualItemIdDisplay) was used on the targets: the server counts a use of the
+        // target as the gadget, and some targets (Fire in the Hole's canimid burrows) cannot be attacked at all
+        bool gadgetTargets = false;
         IReadOnlyList<IReadOnlyList<uint>> scanGroups = [];
         uint scansPerGroup = 0u;
         SettlerHubDefinition? settlerHub = null;
@@ -374,6 +378,11 @@ internal sealed class BotGameData
                         creatureId = objective.Creature2Id;
                         targetGroupId = objective.TargetGroupId;
                         count = Math.Max(objective.Count, 1u);
+                        // 47 of 55 SWAT entries name a gadget; only the ones whose targets are objects (Creature2 archetype 29: the
+                        // burrows, not the Deadstar camps or the yeti of Caving In) are used instead of killed
+                        IReadOnlyList<uint> swatTargets = objective.TargetGroupId != 0u ? ResolveTargetGroup(objective.TargetGroupId) : [objective.Creature2Id];
+                        gadgetTargets = objective.VirtualItemIdDisplay != 0u && swatTargets.Count > 0
+                            && swatTargets.All(id => creatures.GetEntry(id)?.Creature2ArcheTypeId == 29u);
                     }
                     break;
                 }
@@ -573,7 +582,8 @@ internal sealed class BotGameData
             questIds,
             scavengerClues,
             infrastructure,
-            experimentationConsoles);
+            experimentationConsoles,
+            gadgetTargets);
     }
 
     private IReadOnlyList<ScavengerClueDefinition> ResolveScavengerClues(uint huntId)
@@ -1368,6 +1378,18 @@ internal sealed class BotGameData
                 foreach (uint childId in entry.DataEntries.Where(value => value != 0))
                     ResolveTargetGroup(childId, visited, result);
                 break;
+            // a faction group names every creature of its factions (Unconventional Technology: constructs and augmented beings
+            // = the Eldan, canimid and augmented factions), a race group every creature of its Creature2 races
+            case TargetGroupType.FactionIdGroup:
+            case TargetGroupType.CreatureRaceIdGroup:
+            {
+                var values = entry.DataEntries.Where(value => value != 0u).ToHashSet();
+                bool byFaction = (TargetGroupType)entry.Type == TargetGroupType.FactionIdGroup;
+                result.AddRange(creatures.Entries
+                    .Where(creature => values.Contains(byFaction ? (uint)creature.FactionId : creature.UnitRaceId))
+                    .Select(creature => creature.Id));
+                break;
+            }
             // type 9 names marker entities (Icemaw Cavern's "Cave Entrance" objects for "Kill Yeti in Icemaw Cavern"): an area,
             // not the creatures to kill; neither the server nor the bot resolves it yet (SERVER GAP)
         }

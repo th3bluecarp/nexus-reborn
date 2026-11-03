@@ -51,6 +51,11 @@ namespace NexusForever.Game.Abstract.Entity
         void CheckPrerequisiteCommunicators();
 
         /// <summary>
+        /// The player stands in the world zone (or a sub zone): by the map file's area, or within 60 m of a WorldLocation2 row of the zone family.
+        /// </summary>
+        bool IsInWorldZone(uint worldZoneId);
+
+        /// <summary>
         /// Mention a quest from supplied <see cref="IQuestInfo"/>, skipping any prerequisites checks.
         /// </summary>
         void QuestMention(IQuestInfo info);
