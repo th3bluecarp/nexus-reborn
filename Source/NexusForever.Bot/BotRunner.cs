@@ -2533,7 +2533,9 @@ internal sealed class BotRunner
             && objective.Count >= 5u);
         // every quest of a zone run fights at con level + 5 (camps + 9): Algoroc's activation quests walk into Dominion camps
         // (Weapons of War's DREDplex) and a con-level bot died there before touching a grenade target
-        uint targetLevel = definition.Entry.ConLevel + (RequiresLevelBoost(definition) || options.ZoneId is not null ? (camp ? 9u : 5u) : 1u);
+        // zone runs always take the camp margin: Weapons of War's grenade targets stand inside a Dominion camp and a con + 5
+        // bot died there before using one (the zone cap below keeps it at 15 at most)
+        uint targetLevel = definition.Entry.ConLevel + (options.ZoneId is not null ? 9u : RequiresLevelBoost(definition) ? (camp ? 9u : 5u) : 1u);
         if (options.ZoneId is not null)
             targetLevel = Math.Min(15u, targetLevel);
 
@@ -3031,6 +3033,15 @@ internal sealed class BotRunner
                 $"communicator {offer.Id} requires level [{offer.MinLevel},{offer.MaxLevel}] but bot is level {currentLevel}");
 
         string offerDetail = FormatCommunicatorOffer(offer);
+
+        // a quest the server already mentioned (the communicator call fired) is accepted from anywhere; try that first, the
+        // receiver anchor only matters when the call has not fired (He's the Brains: the server had mentioned it, the bot
+        // never sent the accept because its receiver was out of view)
+        await RequireWorld().SendEncryptedAsync(GameMessageOpcode.ClientQuestAccept,
+            PacketCodec.ClientQuestAccept(definition.Id), cancellationToken);
+        if (await TryWaitForQuestStateAsync(QuestState.Accepted, QuestNpcConfirmationTimeout, cancellationToken))
+            return $"accepted from communicator (already mentioned, no anchor needed); {offerDetail}";
+
         QuestNpcUseResult? anchor = await TryEveryQuestNpcAsync(
             "receiver anchor",
             definition.ReceiverCreatureIds,
