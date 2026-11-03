@@ -813,6 +813,19 @@ internal sealed class BotGameData
     /// </summary>
     public WorldLocation2Entry? TryGetWorldLocation(uint id) => worldLocations.GetEntry(id);
 
+    /// <summary>
+    /// The WorldLocation2 rows of a zone and the zones below it in a world: where the server counts a player as standing in
+    /// the zone (within 60 m of one of them) when the map file says nothing about it.
+    /// </summary>
+    public IReadOnlyList<WorldLocation2Entry> ZoneLocations(uint zoneId, ushort worldId)
+    {
+        IReadOnlySet<uint> family = ZoneFamily(zoneId);
+        return worldLocations.Entries
+            .Where(entry => entry.WorldId == worldId && family.Contains(entry.WorldZoneId))
+            .OrderBy(entry => entry.Id)
+            .ToList();
+    }
+
     public IReadOnlySet<uint> ZoneFamily(uint zoneId)
     {
         if (zoneFamilies.TryGetValue(zoneId, out HashSet<uint>? cached))

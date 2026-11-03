@@ -2292,8 +2292,14 @@ internal sealed class BotRunner
     private void AddBlockedQuestReport(QuestDefinition definition, ushort prerequisiteId)
     {
         QuestRunReport questReport = CreateQuestReport(definition);
-        string failure = $"blocked by prerequisite {prerequisiteId}";
-        questReport.Result = "FAIL";
+        // a prerequisite this character never receives (instance or other zone content, reported SKIPPED) blocks the chain
+        // behind it the same way: Gallow's Strife waits for an instance quest in world 930
+        QuestRunReport? skippedPrerequisite = report.Quests.FirstOrDefault(previous => previous.QuestId == prerequisiteId && previous.Result == "SKIPPED");
+        string failure = skippedPrerequisite is null
+            ? $"blocked by prerequisite {prerequisiteId}"
+            : $"blocked by prerequisite {prerequisiteId}, content this character never receives ({skippedPrerequisite.Failure}); this quest never follows";
+        questReport.Result = skippedPrerequisite is null ? "FAIL" : "SKIPPED";
+        questReport.Skipped = skippedPrerequisite is not null;
         questReport.Failure = failure;
         questReport.EndTimestamp = DateTimeOffset.UtcNow;
         questReport.Steps.Add(new StepReport
@@ -3284,18 +3290,28 @@ internal sealed class BotRunner
         if (await TryWaitForQuestStateAsync(QuestState.Accepted, QuestNpcConfirmationTimeout, cancellationToken))
             return $"accepted from communicator (already mentioned, no anchor needed); {offerDetail}";
 
-        // a zone entry call (A Hidden Threat: zone 1083, The Hidden Grotto) fires when the player walks into its zone. The zone
-        // has no known location, but the quest's first objective marker is where the quest happens: stand there, wait for the
-        // call, then accept
+        // a zone entry call (A Hidden Threat: zone 1083, The Hidden Grotto) fires when the player walks into its zone. The server
+        // counts a player as in a zone within 60 m of a WorldLocation2 row of the zone or its sub zones when the map file has no
+        // area for it (the grotto's rows sit under its sub zones 2007-2010, 90 m from the quest's own marker, which lies in The
+        // Crystal Shards): stand at the zone row nearest the first objective marker, else at the marker, wait for the call, accept
         if (offer.WorldZoneId != 0u && questState != QuestState.Mentioned)
         {
-            WorldLocation2Entry? zoneHint = definition.Objectives
+            WorldLocation2Entry? objectiveMarker = definition.Objectives
                 .Where(candidate => candidate.WorldLocationId != 0u)
                 .Select(candidate => RequireGameData().TryGetWorldLocation(candidate.WorldLocationId))
                 .FirstOrDefault(candidate => candidate is not null && candidate.WorldId == questWorldId);
+            IReadOnlyList<WorldLocation2Entry> zoneRows = RequireGameData().ZoneLocations(offer.WorldZoneId, questWorldId);
+            WorldLocation2Entry? zoneHint = zoneRows.Count == 0
+                ? objectiveMarker
+                : objectiveMarker is null
+                    ? zoneRows[0]
+                    : zoneRows.MinBy(row => Vector3.DistanceSquared(
+                        new Vector3(row.Position0, row.Position1, row.Position2),
+                        new Vector3(objectiveMarker.Position0, objectiveMarker.Position1, objectiveMarker.Position2)));
             if (zoneHint is not null)
             {
-                log.Info($"communicator {offer.Id} waits for zone {offer.WorldZoneId}; standing at objective marker {zoneHint.Id} ({zoneHint.Position0:0},{zoneHint.Position1:0},{zoneHint.Position2:0}) for the call");
+                string where = zoneRows.Count == 0 ? "objective marker" : $"zone {zoneHint.WorldZoneId} location";
+                log.Info($"communicator {offer.Id} waits for zone {offer.WorldZoneId}; standing at {where} {zoneHint.Id} ({zoneHint.Position0:0},{zoneHint.Position1:0},{zoneHint.Position2:0}) for the call");
                 await TeleportToLocationAsync(zoneHint, 0f, cancellationToken);
                 if (await TryWaitForQuestStateAsync(QuestState.Mentioned, TimeSpan.FromSeconds(8), cancellationToken))
                 {
@@ -3305,7 +3321,7 @@ internal sealed class BotRunner
                         return $"accepted from communicator after entering its zone at objective marker {zoneHint.Id}; {offerDetail}";
                 }
                 else
-                    log.Info($"communicator {offer.Id}: no call within 8 s at objective marker {zoneHint.Id}; trying the receiver anchor");
+                    log.Info($"communicator {offer.Id}: no call within 8 s at location {zoneHint.Id}; trying the receiver anchor");
             }
         }
 
@@ -3805,7 +3821,11 @@ internal sealed class BotRunner
         return creatureIds.Length > 0 && creatureIds.All(creatureId => RequireGameData().IsAttackableCreature(creatureId));
     }
 
-    private const int LootBagSlotsToKeepFree = 28;
+    // a new character has 16 inventory slots (InventoryLocation.Inventory capacity); loot delivered into full bags is lost
+    // on the server side (the loot item is marked delivered even when ItemCreate refused it), so junk goes before the loot
+    private const int LootBagSlotsToKeepFree = 12;
+    // the server refused an item for lack of bag space since junk was last cleared
+    private bool bagsReportedFull;
 
     private async Task RunVirtualCollectObjectiveAsync(QuestObjectiveDefinition objective, CancellationToken cancellationToken)
     {
@@ -4790,9 +4810,10 @@ internal sealed class BotRunner
 
         // full bags lose the loot (ServerItemError ItemInventoryFull): the start item of Carcass Discovery never arrived from
         // nine Grimstone Mangler corpses; a player would clear junk first
-        if (inventory.Values.Count(item => item.Location == InventoryLocation.Inventory) >= LootBagSlotsToKeepFree
+        if ((bagsReportedFull || inventory.Values.Count(item => item.Location == InventoryLocation.Inventory) >= LootBagSlotsToKeepFree)
             && currentQuestReport is not null && questDefinitions.TryGetValue(currentQuestReport.QuestId, out QuestDefinition? lootQuest))
         {
+            bagsReportedFull = false;
             int freed = await FreeBagSpaceAsync(lootQuest, cancellationToken);
             if (freed > 0)
                 log.Info($"loot corpse {corpseGuid}: freed {freed} bag slot(s) before looting");
@@ -5772,6 +5793,8 @@ internal sealed class BotRunner
                 {
                     GenericError error = PacketCodec.ParseItemError(packet.Body);
                     lastItemError = error;
+                    if (error == GenericError.ItemInventoryFull)
+                        bagsReportedFull = true;
                     log.Info($"server item error: {error}");
                     currentQuestReport?.ServerMessages.Add($"item error: {error}");
                     break;
