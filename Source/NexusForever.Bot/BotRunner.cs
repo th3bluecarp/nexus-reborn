@@ -3195,6 +3195,31 @@ internal sealed class BotRunner
         if (await TryWaitForQuestStateAsync(QuestState.Accepted, QuestNpcConfirmationTimeout, cancellationToken))
             return $"accepted from communicator (already mentioned, no anchor needed); {offerDetail}";
 
+        // a zone entry call (A Hidden Threat: zone 1083, The Hidden Grotto) fires when the player walks into its zone. The zone
+        // has no known location, but the quest's first objective marker is where the quest happens: stand there, wait for the
+        // call, then accept
+        if (offer.WorldZoneId != 0u && questState != QuestState.Mentioned)
+        {
+            WorldLocation2Entry? zoneHint = definition.Objectives
+                .Where(candidate => candidate.WorldLocationId != 0u)
+                .Select(candidate => RequireGameData().TryGetWorldLocation(candidate.WorldLocationId))
+                .FirstOrDefault(candidate => candidate is not null && candidate.WorldId == questWorldId);
+            if (zoneHint is not null)
+            {
+                log.Info($"communicator {offer.Id} waits for zone {offer.WorldZoneId}; standing at objective marker {zoneHint.Id} ({zoneHint.Position0:0},{zoneHint.Position1:0},{zoneHint.Position2:0}) for the call");
+                await TeleportToLocationAsync(zoneHint, 0f, cancellationToken);
+                if (await TryWaitForQuestStateAsync(QuestState.Mentioned, TimeSpan.FromSeconds(8), cancellationToken))
+                {
+                    await RequireWorld().SendEncryptedAsync(GameMessageOpcode.ClientQuestAccept,
+                        PacketCodec.ClientQuestAccept(definition.Id), cancellationToken);
+                    if (await TryWaitForQuestStateAsync(QuestState.Accepted, QuestNpcConfirmationTimeout, cancellationToken))
+                        return $"accepted from communicator after entering its zone at objective marker {zoneHint.Id}; {offerDetail}";
+                }
+                else
+                    log.Info($"communicator {offer.Id}: no call within 8 s at objective marker {zoneHint.Id}; trying the receiver anchor");
+            }
+        }
+
         QuestNpcUseResult? anchor = await TryEveryQuestNpcAsync(
             "receiver anchor",
             definition.ReceiverCreatureIds,
@@ -3639,7 +3664,11 @@ internal sealed class BotRunner
             uint before = GetRawProgress(objective.Index);
             bool progressed = await CastQuestAbilityAsync(objective, entity, cancellationToken);
             usedGuids.Add(entity.Guid);
-            if (hostile && !combatTargetDestroyed && (entities.Get(entity.Guid)?.Health is null or > 0u))
+            if (IsObjectiveComplete(objective))
+                break;
+            // a usable object (the retrofitted cannon of Small But Effective, faction 219 with an activation spell) is never fought:
+            // the bot stood hitting it for the whole budget after the server had already credited the launch
+            if (hostile && data.IsAttackableCreature(entity.CreatureId ?? 0u) && !combatTargetDestroyed && (entities.Get(entity.Guid)?.Health is null or > 0u))
             {
                 // the target is awake now: finish it so the next cast is not made under attack (and a sibling kill objective counts)
                 _ = await FightUntilDeathAsync(entity.Guid, cancellationToken);

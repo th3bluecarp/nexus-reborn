@@ -1066,6 +1066,37 @@ internal sealed class BotGameData
     /// Quest ids a quest's Prerequisite table entry requires completed (AND trees only; an OR tree is a branch choice the
     /// run leaves to the server).
     /// </summary>
+    /// <summary>
+    /// Quests a giver creature's visibility prerequisite needs done: AND terms "quest completed" or "quest state not none", and
+    /// for an OR prerequisite the first such term (any branch shows the giver).
+    /// </summary>
+    public IReadOnlyList<ushort> GiverVisibilityPrerequisiteQuests(uint creatureId)
+    {
+        Creature2Entry? creature = creatures.GetEntry(creatureId);
+        if (creature is null || creature.PrerequisiteIdVisibility == 0u)
+            return [];
+        PrerequisiteEntry? prerequisite = prerequisites.GetEntry(creature.PrerequisiteIdVisibility);
+        if (prerequisite is null)
+            return [];
+        bool any = prerequisite.Flags == EvaluationMode.EvaluateOR;
+        var result = new List<ushort>();
+        for (int i = 0; i < prerequisite.PrerequisiteTypeId.Length; i++)
+        {
+            if (prerequisite.PrerequisiteTypeId[i] != PrerequisiteType.QuestState
+                || prerequisite.ObjectId[i] == 0u || prerequisite.ObjectId[i] > ushort.MaxValue)
+                continue;
+            bool doneSatisfies = prerequisite.PrerequisiteComparisonId[i] == PrerequisiteComparison.Equal && prerequisite.Value[i] == 3u
+                || prerequisite.PrerequisiteComparisonId[i] == PrerequisiteComparison.NotEqual && prerequisite.Value[i] == 0u
+                || prerequisite.PrerequisiteComparisonId[i] == PrerequisiteComparison.GreaterThanOrEqual && prerequisite.Value[i] <= 3u;
+            if (!doneSatisfies)
+                continue;
+            result.Add((ushort)prerequisite.ObjectId[i]);
+            if (any)
+                break;
+        }
+        return result;
+    }
+
     public IReadOnlyList<ushort> QuestStatePrerequisiteQuests(Quest2Entry entry)
     {
         var result = new List<ushort>();
@@ -1434,9 +1465,13 @@ internal sealed class BotGameData
             .Where(id => id != 0u)
             .Select(id => GetQuest(checked((ushort)id)))
             .ToArray();
-        // quests the Prerequisite table requires completed are prerequisites too (Algoroc chains use it instead of PrerequisiteQuests)
+        // quests the Prerequisite table requires completed are prerequisites too (Algoroc chains use it instead of PrerequisiteQuests),
+        // and so are quests a giver's visibility prerequisite needs done (Belle Walker of Power Struggle stays hidden until
+        // Closing the Circuit is at least accepted; this bot completes a prerequisite, which satisfies "accepted or later")
         QuestDefinition[] stateRequired = QuestStatePrerequisiteQuests(definition.Entry)
-            .Where(id => quests.GetEntry(id) is not null && candidates.All(candidate => candidate.Id != id))
+            .Concat(definition.GiverCreatureIds.SelectMany(GiverVisibilityPrerequisiteQuests))
+            .Where(id => id != definition.Id && quests.GetEntry(id) is not null && candidates.All(candidate => candidate.Id != id))
+            .Distinct()
             .Select(GetQuest)
             .ToArray();
         if (candidates.Length == 0)
