@@ -14,6 +14,8 @@ namespace NexusForever.Game.Quest
     {
         public uint Id => entry.Id;
         public ushort QuestId => (ushort)entry.QuestIdDelivered;
+        public uint WorldZoneId => entry.WorldZoneId;
+        public bool ZoneEntry => entry.WorldZoneId != 0u && entry.Quests.Any(q => q != 0u && q == entry.QuestIdDelivered);
 
         private readonly CommunicatorMessagesEntry entry;
 

@@ -171,6 +171,8 @@ namespace NexusForever.Game.Entity
                     spells.Remove(spell.CastingId);
             }
 
+            CrowdControlManager.Update(lastTick);
+
             statUpdateManager.Update(lastTick);
 
             if (expireTimer != null)
@@ -967,6 +969,9 @@ namespace NexusForever.Game.Entity
 
             ThreatManager.ClearThreatList();
             MovementManager.Finalise();
+
+            // death ends every stun, root and the like; a state left behind would still refuse casts after resurrection
+            CrowdControlManager.RemoveAllCCEffects("death");
 
             scriptCollection?.Invoke<IUnitScript>(s => s.OnDeath());
 

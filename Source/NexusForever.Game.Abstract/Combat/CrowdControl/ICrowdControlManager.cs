@@ -25,6 +25,17 @@ namespace NexusForever.Game.Combat.CrowdControl
         void RemoveCCEffect(CCState state);
 
         /// <summary>
+        /// Drops every <see cref="CCState"/> whose effect outlived its duration or its spell (the caster died or despawned
+        /// while the effect ran, so nothing ticked it to its end).
+        /// </summary>
+        void Update(double lastTick);
+
+        /// <summary>
+        /// Removes every <see cref="CCState"/> from the target, with the client told of each removal.
+        /// </summary>
+        void RemoveAllCCEffects(string reason);
+
+        /// <summary>
         /// Returns the <see cref="ISpellTargetEffectInfo"/> for the specified <see cref="CCState"/>.
         /// </summary>
         ISpellTargetEffectInfo GetCCEffect(CCState state);

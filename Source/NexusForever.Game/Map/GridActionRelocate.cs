@@ -10,5 +10,6 @@ namespace NexusForever.Game.Map
         public Vector3 Vector { get; init; }
         public OnRelocateDelegate Callback { get; init; }
         public OnExceptionDelegate Exception { get; init; }
+        public bool Movement { get; init; }
     }
 }

@@ -3,14 +3,21 @@ using NexusForever.Game.Abstract.Entity;
 using NexusForever.Game.Abstract.Spell.Target;
 using NexusForever.Game.Static.Combat.CrowdControl;
 using NexusForever.Game.Static.Entity;
+using NexusForever.Network.World.Message.Model.Entity;
+using NLog;
 
 namespace NexusForever.Game.Combat.CrowdControl
 {
     public class CrowdControlManager : ICrowdControlManager
     {
+        private static readonly Logger log = LogManager.GetCurrentClassLogger();
+
         private IUnitEntity owner;
 
         private readonly Dictionary<CCState, ISpellTargetEffectInfo> ccEffects = [];
+        // when each state must be gone at the latest: its effect's duration plus a grace second, or never for an open-ended state
+        private readonly Dictionary<CCState, DateTime> expiresAt = [];
+        private const double ExpiryGraceSeconds = 1d;
         private readonly Dictionary<ISpellTargetEffectInfo, ITemporaryInterruptArmour> temporaryInterruptArmour = [];
 
         public void Initialise(IUnitEntity entity)
@@ -63,6 +70,72 @@ namespace NexusForever.Game.Combat.CrowdControl
         public void AddCCEffect(CCState state, ISpellTargetEffectInfo effect)
         {
             ccEffects.Add(state, effect);
+
+            TimeSpan? duration = effect?.GetDuration();
+            expiresAt[state] = duration.HasValue && duration.Value > TimeSpan.Zero
+                ? DateTime.UtcNow + duration.Value + TimeSpan.FromSeconds(ExpiryGraceSeconds)
+                : DateTime.MaxValue;
+        }
+
+        /// <summary>
+        /// Drops every <see cref="CCState"/> whose effect outlived its duration or its spell.
+        /// </summary>
+        /// <remarks>
+        /// An effect's duration is ticked by its spell, and a spell is ticked by its caster: when the caster died or despawned
+        /// before the effect ended (a creature killed during its own 20 s stun in Algoroc), the stun on the player never ended,
+        /// every cast answered CCStun for the rest of the session and the player died over and over (2026-11-02).
+        /// </remarks>
+        public void Update(double lastTick)
+        {
+            if (ccEffects.Count == 0)
+                return;
+
+            foreach ((CCState state, ISpellTargetEffectInfo effect) in ccEffects.ToList())
+            {
+                bool spellGone = effect?.Target?.Collection?.Spell?.IsFinished ?? true;
+                bool expired   = expiresAt.TryGetValue(state, out DateTime at) && DateTime.UtcNow > at;
+                if (!spellGone && !expired)
+                    continue;
+
+                log.Warn($"Crowd control {state} on unit {owner.Guid} from spell {effect?.Target?.Collection?.Spell?.Spell4Id} outlived its {(spellGone ? "spell" : "duration")}, removing it.");
+                ReleaseCCEffect(state, effect);
+            }
+        }
+
+        /// <summary>
+        /// Removes every <see cref="CCState"/> from the target, with the client told of each removal.
+        /// </summary>
+        public void RemoveAllCCEffects(string reason)
+        {
+            if (ccEffects.Count == 0)
+                return;
+
+            foreach ((CCState state, ISpellTargetEffectInfo effect) in ccEffects.ToList())
+            {
+                log.Trace($"Crowd control {state} on unit {owner.Guid} removed: {reason}.");
+                ReleaseCCEffect(state, effect);
+            }
+        }
+
+        private void ReleaseCCEffect(CCState state, ISpellTargetEffectInfo effect)
+        {
+            // the effect's own finish runs the crowd control remove handler, which removes the state here and tells the client
+            if (effect != null && !effect.IsFinalised)
+                effect.Finish();
+
+            if (!ccEffects.ContainsKey(state))
+                return;
+
+            // the effect was already finalised without reaching us: drop the state and tell the client ourselves
+            RemoveCCEffect(state);
+            owner.EnqueueToVisible(new ServerEntityCCStateRemove
+            {
+                UnitId              = owner.Guid,
+                CCType              = state,
+                SpellCastUniqueId   = effect?.Target?.Collection?.Spell?.CastingId ?? 0u,
+                SpellEffectUniqueId = effect?.EffectId ?? 0u,
+                Removed             = true
+            }, true);
         }
 
         /// <summary>
@@ -76,6 +149,7 @@ namespace NexusForever.Game.Combat.CrowdControl
                 immuneUntil[state] = DateTime.UtcNow.AddSeconds(seconds);
             }
             ccEffects.Remove(state);
+            expiresAt.Remove(state);
         }
 
         /// <summary>

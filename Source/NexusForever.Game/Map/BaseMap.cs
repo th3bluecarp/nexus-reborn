@@ -126,17 +126,89 @@ namespace NexusForever.Game.Map
 
         private DateTime backlogWarnedAt = DateTime.MinValue;
 
+        // movement relocates that did not fit in the last tick's budget; a newer move of the same entity replaces them
+        private readonly List<IGridActionRelocate> carriedMovement = new();
+
         private void ProcessGridActions()
         {
             var newActions = new List<IGridAction>();
-            uint threshold = SharedConfiguration.Instance.Get<MapConfig>().GridActionThreshold ?? 2000u;
+            MapConfig config = SharedConfiguration.Instance.Get<MapConfig>();
+            uint threshold  = config.GridActionThreshold ?? 2000u;
+            double budgetMs = config.GridActionBudgetMs ?? 25d;
+
+            // Every action queued when the tick starts is taken. Adds, removes, visibility updates and relocates with a
+            // callback (player teleports, resurrections, holdout units) run first and all of them run; plain movement
+            // relocates are collapsed to the latest position per entity and run under a time budget. Before this, 100
+            // actions ran per tick and Algoroc's creature movement queued faster than that: 760,000 actions were waiting
+            // after an hour, a dead player's ghost never reached the map and no resurrection was offered (2026-11-02).
             int queued = pendingActions.Count;
-            if (queued > threshold && DateTime.UtcNow - backlogWarnedAt > TimeSpan.FromSeconds(10))
+            var priority   = new List<IGridAction>();
+            var movement   = new List<IGridActionRelocate>(carriedMovement);
+            carriedMovement.Clear();
+            var latestMove = new Dictionary<IGridEntity, int>();
+            for (int i = 0; i < movement.Count; i++)
+                latestMove[movement[i].Entity] = i;
+
+            int superseded = 0;
+            foreach (IGridAction action in pendingActions.Dequeue((uint)queued))
+            {
+                if (action is IGridActionRelocate relocate && relocate.Entity != null)
+                {
+                    if (latestMove.TryGetValue(relocate.Entity, out int index))
+                    {
+                        // a move queued before a newer move or before a teleport of the same entity is stale
+                        movement[index] = null;
+                        latestMove.Remove(relocate.Entity);
+                        superseded++;
+                    }
+
+                    if (relocate.Movement)
+                    {
+                        latestMove[relocate.Entity] = movement.Count;
+                        movement.Add(relocate);
+                        continue;
+                    }
+                }
+
+                priority.Add(action);
+            }
+
+            int total = priority.Count + latestMove.Count;
+            if (total > threshold && DateTime.UtcNow - backlogWarnedAt > TimeSpan.FromSeconds(10))
             {
                 backlogWarnedAt = DateTime.UtcNow;
-                log.Warn($"Map {Entry.Id} has {queued} grid actions queued, more than the {threshold} processed per tick; teleports and spawns wait.");
+                log.Warn($"Map {Entry.Id} has {total} grid actions this tick ({priority.Count} priority, {latestMove.Count} moves, {superseded} stale moves dropped); moves past {threshold} run until {budgetMs:0} ms is spent.");
             }
-            foreach (IGridAction action in pendingActions.Dequeue(threshold))
+
+            foreach (IGridAction action in priority)
+                ProcessGridAction(action, newActions);
+
+            var stopwatch = Stopwatch.StartNew();
+            uint processed = 0;
+            for (int i = 0; i < movement.Count; i++)
+            {
+                if (movement[i] == null)
+                    continue;
+
+                if (processed >= threshold && stopwatch.Elapsed.TotalMilliseconds > budgetMs)
+                {
+                    for (int j = i; j < movement.Count; j++)
+                        if (movement[j] != null)
+                            carriedMovement.Add(movement[j]);
+                    break;
+                }
+
+                ProcessGridAction(movement[i], newActions);
+                processed++;
+            }
+
+            // new actions are added to the queue after processing so they are processed starting next update
+            foreach (IGridAction action in newActions)
+                pendingActions.Enqueue(action);
+        }
+
+        private void ProcessGridAction(IGridAction action, List<IGridAction> newActions)
+        {
             {
                 try
                 {
@@ -200,10 +272,6 @@ namespace NexusForever.Game.Map
                     action.Exception?.Invoke(ex);
                 }
             }
-
-            // new actions are added to the queue after processing so they are processed starting next update
-            foreach (IGridAction action in newActions)
-                pendingActions.Enqueue(action);
         }
 
         private bool ProcessGridActionAdd(IGridActionAdd actionAdd)
@@ -398,14 +466,15 @@ namespace NexusForever.Game.Map
         /// <summary>
         /// Enqueue <see cref="IGridEntity"/> to be relocated in <see cref="IBaseMap"/> to <see cref="Vector3"/>.
         /// </summary>
-        public void EnqueueRelocate(IGridEntity entity, Vector3 position, OnRelocateDelegate callback = null, OnExceptionDelegate exception = null)
+        public void EnqueueRelocate(IGridEntity entity, Vector3 position, OnRelocateDelegate callback = null, OnExceptionDelegate exception = null, bool movement = false)
         {
             pendingActions.Enqueue(new GridActionRelocate
             {
                 Entity    = entity,
                 Vector    = position,
                 Callback  = callback,
-                Exception = exception
+                Exception = exception,
+                Movement  = movement
             });
         }
 

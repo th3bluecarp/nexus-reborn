@@ -425,12 +425,24 @@ namespace NexusForever.Game.Entity
                 if (info == null || DisableManager.Instance.IsDisabled(DisableType.Quest, message.QuestId))
                     continue;
 
+                // a zone entry call waits for the player to stand in its zone (or one of its sub zones)
+                if (message.ZoneEntry && !IsInWorldZone(message.WorldZoneId))
+                    continue;
+
                 bool prerequisites = MeetsPrerequisites(info);
                 bool messageMeets = message.Meets(player);
                 log.LogTrace($"Communicator {message.Id} for quest {message.QuestId}: prerequisites={prerequisites}, message={messageMeets}, player level {player.Level} zone {player.Zone?.Id}.");
                 if (prerequisites && messageMeets)
                     QuestMention(info);
             }
+        }
+
+        private bool IsInWorldZone(uint worldZoneId)
+        {
+            for (WorldZoneEntry zone = player.Zone; zone != null; zone = zone.ParentZoneId != 0u ? GameTableManager.Instance.WorldZone.GetEntry(zone.ParentZoneId) : null)
+                if (zone.Id == worldZoneId)
+                    return true;
+            return false;
         }
 
         /// <summary>

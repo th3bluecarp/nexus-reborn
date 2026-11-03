@@ -160,11 +160,18 @@ namespace NexusForever.Game.Quest
         private void InitialiseCommunicatorPrerequisites()
         {
             var builder = new Dictionary<ushort, List<ICommunicatorMessage>>();
+            // a call whose only quest condition is the offered quest itself in state 0 is a zone entry call: A Hidden Threat (4969)
+            // is offered by communicator 1881 when the player walks into zone 1083 with the quest never started; the quest state
+            // triggers skip a self reference, so it has to live here and be checked on every zone change
             foreach (CommunicatorMessagesEntry entry in GameTableManager.Instance.CommunicatorMessages.Entries
-                .Where(e => e.QuestIdDelivered != 0u && e.WorldId != 0u && e.Quests.All(q => q == 0u)))
+                .Where(e => e.QuestIdDelivered != 0u && e.WorldId != 0u && e.Quests.All(q => q == 0u || q == e.QuestIdDelivered)))
             {
                 Quest2Entry quest = GameTableManager.Instance.Quest2.GetEntry(entry.QuestIdDelivered);
-                if (quest == null || quest.PrerequisiteQuests.All(q => q == 0u))
+                if (quest == null)
+                    continue;
+
+                bool zoneEntry = entry.WorldZoneId != 0u && entry.Quests.Any(q => q != 0u && q == entry.QuestIdDelivered);
+                if (!zoneEntry && quest.PrerequisiteQuests.All(q => q == 0u))
                     continue;
 
                 if (!builder.ContainsKey((ushort)entry.WorldId))
