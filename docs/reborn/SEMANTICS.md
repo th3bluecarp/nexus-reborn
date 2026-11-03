@@ -113,6 +113,7 @@ Confidence: **High** = consistent across all the data we checked and no counter 
 
 | Item | Our meaning | Confidence | Notes |
 |---|---|---|---|
+| area marker target groups | a TargetGroup of type 9 names marker entities (Icemaw Cavern's three Cave Entrances for "Kill Yeti in Icemaw Cavern"); a hostile killed within 60 m of a marker counts for the group | Invented | 314 such groups; retail's rule is unknown |
 | checklist reuse | a checklist unit used again after its respawn fills the next free bit when its own bit is set (Algoroc has 3 Pure Loftite Veins for "Mark 4") | Invented | retail had enough units; ours come from Jabbithole pins |
 | reputation objective | an ActivateEntity objective with no creature and Count 1000 ("Raise your Reputation with the Algoroc Accord", 3 quests) fills with the player's reputation with the quest's reward faction, complete at 3000 (the first tier) | Invented | retail threshold unknown; the quest bot runs these quests after the zone's other quests |
 

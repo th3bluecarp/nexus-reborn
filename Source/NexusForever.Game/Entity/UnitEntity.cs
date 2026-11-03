@@ -1,4 +1,5 @@
-﻿using System.Numerics;
+﻿using System.Collections.Immutable;
+using System.Numerics;
 using SpellInit = NexusForever.Network.World.Message.Model.Shared.SpellInit;
 using Microsoft.Extensions.DependencyInjection;
 using NexusForever.Game.Abstract.Map;
@@ -1107,6 +1108,11 @@ namespace NexusForever.Game.Entity
         /// </summary>
         private const float GroupRewardRange = 100f;
 
+        /// <summary>
+        /// A kill this close to a marker entity of a type 9 target group counts for that group.
+        /// </summary>
+        private const float AreaMarkerRange = 60f;
+
         protected virtual void RewardKiller(IPlayer player)
         {
             player.QuestManager.ObjectiveUpdate(QuestObjectiveType.KillCreature, CreatureId, 1u);
@@ -1122,6 +1128,20 @@ namespace NexusForever.Game.Entity
                 player.QuestManager.ObjectiveUpdate(QuestObjectiveType.KillTargetGroup, targetGroupId, 1u);
                 player.QuestManager.ObjectiveUpdate(QuestObjectiveType.KillTargetGroups, targetGroupId, 1u);
                 player.QuestManager.RewardPaneObjectiveUpdate(QuestObjectiveType.VirtualCollect, targetGroupId, 1u);
+            }
+
+            // area marker groups (TargetGroup type 9): a hostile killed within AreaMarkerRange of one of the group's marker entities
+            // counts for the group (SEMANTICS: area marker target groups; retail's rule is unknown)
+            foreach ((uint targetGroupId, ImmutableList<uint> markerIds) in AssetManager.Instance.AreaMarkerTargetGroups)
+            {
+                if (markerIds.Contains(CreatureId))
+                    continue;
+                bool nearMarker = markerIds.Any(markerId => GetVisibleCreature<IWorldEntity>(markerId)
+                    .Any(marker => Vector3.DistanceSquared(marker.Position, Position) <= AreaMarkerRange * AreaMarkerRange));
+                if (!nearMarker)
+                    continue;
+                player.QuestManager.ObjectiveUpdate(QuestObjectiveType.KillTargetGroup, targetGroupId, 1u);
+                player.QuestManager.ObjectiveUpdate(QuestObjectiveType.KillTargetGroups, targetGroupId, 1u);
             }
 
             uint experience = KillExperience.Calculate(this, player);

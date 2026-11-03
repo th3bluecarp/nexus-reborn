@@ -1040,6 +1040,27 @@ internal sealed class BotGameData
     public bool IsAreaMarkerTargetGroup(uint id)
         => targetGroups.GetEntry(id) is TargetGroupEntry entry && (TargetGroupType)entry.Type == TargetGroupType.Unknown9;
 
+    /// <summary>The marker creature ids a type 9 target group names (entries that are creatures; nested groups are followed).</summary>
+    public IReadOnlyList<uint> AreaMarkerCreatureIds(uint id)
+    {
+        var result = new List<uint>();
+        void Collect(uint groupId, int depth)
+        {
+            TargetGroupEntry? entry = targetGroups.GetEntry(groupId);
+            if (entry is null || depth > 3)
+                return;
+            foreach (uint value in entry.DataEntries.Where(value => value != 0u))
+            {
+                if (creatures.GetEntry(value) is not null)
+                    result.Add(value);
+                else if (targetGroups.GetEntry(value) is not null)
+                    Collect(value, depth + 1);
+            }
+        }
+        Collect(id, 0);
+        return result.Distinct().ToArray();
+    }
+
     public CharacterCreationEntry GetBotCharacterCreation(BotCharacterStart start, BotFaction faction)
     {
         Faction requiredFaction = faction == BotFaction.Exile ? Faction.Exile : Faction.Dominion;

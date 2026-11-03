@@ -29,6 +29,12 @@ namespace NexusForever.Game.Abstract
         ImmutableList<uint> GetTargetGroupsForCreatureId(uint creatureId);
 
         /// <summary>
+        /// Target groups of type 9, which name marker entities (Icemaw Cavern's Cave Entrances for "Kill Yeti in Icemaw Cavern"):
+        /// group id to the creature ids of its markers.
+        /// </summary>
+        ImmutableDictionary<uint, ImmutableList<uint>> AreaMarkerTargetGroups { get; }
+
+        /// <summary>
         /// Returns an <see cref="ImmutableList{T}"/> containing all <see cref="RewardPropertyPremiumModifierEntry"/> for the given <see cref="AccountTier"/>.
         /// </summary>
         ImmutableList<RewardPropertyPremiumModifierEntry> GetRewardPropertiesForTier(AccountTier tier);

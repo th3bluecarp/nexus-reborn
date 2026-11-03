@@ -92,6 +92,8 @@ namespace NexusForever.Game
             zoneTutorials = zoneEntries.ToImmutable();
         }
 
+        public ImmutableDictionary<uint, ImmutableList<uint>> AreaMarkerTargetGroups { get; private set; } = ImmutableDictionary<uint, ImmutableList<uint>>.Empty;
+
         private void CacheCreatureTargetGroups()
         {
             var entries = ImmutableDictionary.CreateBuilder<uint, List<uint>>();
@@ -128,6 +130,29 @@ namespace NexusForever.Game
             }
 
             creatureAssociatedTargetGroups = entries.ToImmutableDictionary(e => e.Key, e => e.Value.ToImmutableList());
+
+            // type 9 groups name marker entities; a kill within AreaMarkerRange of one of them counts for the group
+            var markers = ImmutableDictionary.CreateBuilder<uint, ImmutableList<uint>>();
+            foreach (TargetGroupEntry entry in GameTableManager.Instance.TargetGroup.Entries.Where(e => (TargetGroupType)e.Type == TargetGroupType.Unknown9))
+            {
+                var markerIds = new List<uint>();
+                void Collect(TargetGroupEntry group, int depth)
+                {
+                    if (depth > 3)
+                        return;
+                    foreach (uint value in group.DataEntries.Where(v => v != 0u))
+                    {
+                        if (GameTableManager.Instance.Creature2.GetEntry(value) != null)
+                            markerIds.Add(value);
+                        else if (GameTableManager.Instance.TargetGroup.GetEntry(value) is TargetGroupEntry child)
+                            Collect(child, depth + 1);
+                    }
+                }
+                Collect(entry, 0);
+                if (markerIds.Count > 0)
+                    markers.Add(entry.Id, markerIds.Distinct().ToImmutableList());
+            }
+            AreaMarkerTargetGroups = markers.ToImmutable();
         }
 
         private void CacheRewardPropertiesByTier()

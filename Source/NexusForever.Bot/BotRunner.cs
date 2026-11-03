@@ -2720,7 +2720,14 @@ internal sealed class BotRunner
     {
         uint[] creatureIds = GetObjectiveCreatureIds(objective).ToArray();
         if (creatureIds.Length == 0 && RequireGameData().IsAreaMarkerTargetGroup(objective.Data))
-            throw new BotFailureException($"target group {objective.Data} is an area marker group (TargetGroup type 9: kill creatures near marker entities); the server does not resolve it; SERVER GAP");
+        {
+            // TargetGroup type 9 names marker entities (Icemaw Cavern's Cave Entrances): the kills that count are the hostile
+            // creatures within AreaMarkerRange of a marker (SEMANTICS: area marker target groups)
+            creatureIds = AreaMarkerCreatureIds(objective.Data).ToArray();
+            log.Info($"objective {objective.Index}: area marker group {objective.Data} resolves to hostile creatures near its markers: [{string.Join(',', creatureIds)}]");
+            if (creatureIds.Length == 0)
+                throw new BotFailureException($"target group {objective.Data} is an area marker group (TargetGroup type 9) but no hostile spawn stands within {AreaMarkerRange:0} m of its markers in world {questWorldId}");
+        }
         if (creatureIds.Length == 0)
             throw new BotFailureException($"target group {objective.Data} resolved to no creature ids");
 
@@ -3205,6 +3212,24 @@ internal sealed class BotRunner
             if (targetFinished)
                 finishedTargetGuids.Add(entity.Guid);
         }
+    }
+
+    private const float AreaMarkerRange = 60f;
+
+    /// <summary>
+    /// Creature ids of the hostile spawns within <see cref="AreaMarkerRange"/> of the marker entities a type 9 target group names.
+    /// </summary>
+    private IEnumerable<uint> AreaMarkerCreatureIds(uint targetGroupId)
+    {
+        IReadOnlyList<uint> markerIds = RequireGameData().AreaMarkerCreatureIds(targetGroupId);
+        Spawn[] markers = SpawnsFor(markerIds, questWorldId).ToArray();
+        double range = AreaMarkerRange * (double)AreaMarkerRange;
+        return spawns
+            .Where(spawn => spawn.WorldId == questWorldId && !markerIds.Contains(spawn.CreatureId)
+                && RequireGameData().IsHoldoutHostile(spawn.CreatureId)
+                && markers.Any(marker => spawn.DistanceSquared(marker.X, marker.Y, marker.Z) <= range))
+            .Select(spawn => spawn.CreatureId)
+            .Distinct();
     }
 
     private async Task<TrackedEntity?> AcquireCombatTargetAsync(
