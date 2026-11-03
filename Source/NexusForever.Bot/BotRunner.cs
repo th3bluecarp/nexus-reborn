@@ -137,7 +137,8 @@ internal sealed class BotRunner
     {
         NoProgress,
         Progressed,
-        TargetNotUsable
+        TargetNotUsable,
+        Stunned
     }
 
     private sealed record ActivationCastResponse(SpellCastStart? Start, SpellCastResult? Result);
@@ -2803,7 +2804,30 @@ internal sealed class BotRunner
                 continue;
             ActivationOutcome outcome = await RunActivationFlowAsync(objective.Index, before, entity, TimeSpan.FromSeconds(8), cancellationToken);
             log.Info($"objective {objective.Index}: used unit {entity.CreatureId} guid {entity.Guid}: {outcome}; progress {GetRawProgress(objective.Index)}/{objective.Count}");
+            if (outcome == ActivationOutcome.Stunned)
+                await RetreatFromStunAsync(spawn, attemptedSpawns, cancellationToken);
         }
+    }
+
+    private readonly Dictionary<uint, int> stunRetreats = [];
+
+    /// <summary>
+    /// Stunned while using a unit (a boss telegraph such as the Boulderback's Loftite Shards covers it): step 30 m away for a few
+    /// seconds, forget the attempt and come back, twice per spawn. Returns false once the retreats for this spawn are used up.
+    /// </summary>
+    private async Task<bool> RetreatFromStunAsync(Spawn spawn, HashSet<uint> attemptedSpawns, CancellationToken cancellationToken)
+    {
+        int retreats = stunRetreats.GetValueOrDefault(spawn.Id);
+        if (retreats >= 2)
+            return false;
+        stunRetreats[spawn.Id] = retreats + 1;
+        log.Info($"stunned at spawn {spawn.Id} (creature {spawn.CreatureId}); retreat {retreats + 1}/2: 30 m away for 8 s, then back");
+        var away = new Vector3(spawn.X + 30f, spawn.Y, spawn.Z + 30f);
+        await SendTeleportAsync(PacketCodec.TeleportCommand(away), false, cancellationToken);
+        lastPosition = away;
+        await DrainWorldPacketsAsync(TimeSpan.FromSeconds(8), cancellationToken);
+        attemptedSpawns.Remove(spawn.Id);
+        return true;
     }
 
     private async Task RunActivateObjectiveAsync(QuestObjectiveDefinition objective, CancellationToken cancellationToken)
@@ -2835,6 +2859,8 @@ internal sealed class BotRunner
             }
             ActivationOutcome outcome = await RunActivationFlowAsync(objective.Index, before, entity, TimeSpan.FromSeconds(8), cancellationToken);
             if (outcome == ActivationOutcome.TargetNotUsable)
+                continue;
+            if (outcome == ActivationOutcome.Stunned && await RetreatFromStunAsync(spawn, attemptedSpawns, cancellationToken))
                 continue;
             if (outcome != ActivationOutcome.Progressed
                 && attemptedSpawns.Count >= candidates.Count)
@@ -3048,6 +3074,8 @@ internal sealed class BotRunner
             await Task.Delay(TimeSpan.FromSeconds(3), cancellationToken);
             return (false, ActivationOutcome.TargetNotUsable);
         }
+        if (castResult.Result == CastResult.CCStun)
+            return (false, ActivationOutcome.Stunned); // the caller steps away from whatever stuns here and comes back
         if (retry < 3)
         {
             await Task.Delay(TimeSpan.FromSeconds(3), cancellationToken);
@@ -3078,6 +3106,8 @@ internal sealed class BotRunner
             ActivationOutcome outcome = await RunActivationFlowAsync(
                 objective.Index, before, entity, TimeSpan.FromSeconds(8), cancellationToken);
             if (outcome == ActivationOutcome.TargetNotUsable)
+                continue;
+            if (outcome == ActivationOutcome.Stunned && await RetreatFromStunAsync(spawn, attemptedSpawns, cancellationToken))
                 continue;
             if (outcome != ActivationOutcome.Progressed && attemptedSpawns.Count >= candidates.Count)
                 throw new BotFailureException($"CSI creature {objective.Data} did not provide enough activatable spawns");
