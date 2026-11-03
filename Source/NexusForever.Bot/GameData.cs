@@ -584,6 +584,8 @@ internal sealed class BotGameData
     {
         if (entry.Type == 5u)
             return "tradeskill work order (Quest2 type 5)";
+        if (entry.GroupSize >= 2u)
+            return $"group quest for {entry.GroupSize}+ players (WANTED: Demonclaw [GROUP 2+]); the bot plays alone";
         if (TradeskillPrerequisiteTier(entry) is uint tier)
             return $"tradeskill quest (prerequisite {entry.PrerequisiteId} needs TradeskillTier {tier})";
         return null;

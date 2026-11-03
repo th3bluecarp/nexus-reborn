@@ -2080,7 +2080,9 @@ internal sealed class BotRunner
         bool camp = definition.Objectives.Any(objective => objective.Type is QuestObjectiveType.KillCreature
             or QuestObjectiveType.KillCreature2 or QuestObjectiveType.KillTargetGroup or QuestObjectiveType.KillTargetGroups
             && objective.Count >= 5u);
-        uint targetLevel = definition.Entry.ConLevel + (RequiresLevelBoost(definition) ? (camp ? 9u : 5u) : 1u);
+        // every quest of a zone run fights at con level + 5 (camps + 9): Algoroc's activation quests walk into Dominion camps
+        // (Weapons of War's DREDplex) and a con-level bot died there before touching a grenade target
+        uint targetLevel = definition.Entry.ConLevel + (RequiresLevelBoost(definition) || options.ZoneId is not null ? (camp ? 9u : 5u) : 1u);
         if (options.ZoneId is not null)
             targetLevel = Math.Min(15u, targetLevel);
 
