@@ -425,7 +425,10 @@ namespace NexusForever.Game.Entity
                 if (info == null || DisableManager.Instance.IsDisabled(DisableType.Quest, message.QuestId))
                     continue;
 
-                if (MeetsPrerequisites(info) && message.Meets(player))
+                bool prerequisites = MeetsPrerequisites(info);
+                bool messageMeets = message.Meets(player);
+                log.LogTrace($"Communicator {message.Id} for quest {message.QuestId}: prerequisites={prerequisites}, message={messageMeets}, player level {player.Level} zone {player.Zone?.Id}.");
+                if (prerequisites && messageMeets)
                     QuestMention(info);
             }
         }

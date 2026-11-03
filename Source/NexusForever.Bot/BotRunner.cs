@@ -1964,13 +1964,13 @@ internal sealed class BotRunner
 
     private ushort DetermineQuestWorld(QuestDefinition definition)
     {
-        if (definition.Entry.PrerequisiteItem != 0u)
+        if (StartItem(definition) is uint startItem && startItem != 0u)
         {
-            ItemDropSources sources = itemDropSources.GetValueOrDefault(definition.Entry.PrerequisiteItem)
-                ?? throw new BotFailureException($"item {definition.Entry.PrerequisiteItem} has no drop source in the world database");
+            ItemDropSources sources = itemDropSources.GetValueOrDefault(startItem)
+                ?? throw new BotFailureException($"item {startItem} has no drop source in the world database");
             Spawn[] sourceSpawns = spawns.Where(spawn => sources.CreatureIds.Contains(spawn.CreatureId)).ToArray();
             if (sourceSpawns.Length == 0)
-                throw new BotFailureException($"No world spawn was found for item {definition.Entry.PrerequisiteItem} drop source(s) {string.Join(',', sources.CreatureIds)}.");
+                throw new BotFailureException($"No world spawn was found for item {startItem} drop source(s) {string.Join(',', sources.CreatureIds)}.");
             if (sourceSpawns.Any(spawn => spawn.WorldId == currentWorldId))
                 return currentWorldId;
 
@@ -4314,6 +4314,9 @@ internal sealed class BotRunner
                     if (unitId == playerGuid && dead)
                     {
                         botDied = true;
+                        // the offer for THIS death comes a moment later; accepting with the offer of an earlier death
+                        // (same quest, second death) was ignored by the server and the recovery waited 60 s for nothing
+                        resurrectionShow = null;
                         if (activeObjective is not null || combatTargetGuid is not null)
                             throw new BotFailureException("bot died");
                     }
