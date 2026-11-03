@@ -285,3 +285,7 @@ These fix a visible symptom without knowing the real rule, the kind of patch tha
 - **Zone entry communicator calls.** A communicator call whose only quest condition is the offered quest itself (state 0, never started) and that names a world zone is treated as "call when the player enters that zone"; the zone check walks the player's zone and its parents. Retail's exact trigger for these rows is unknown (the WorldZoneId check was commented out upstream as "trigger when the player gets here"); this reading matches A Hidden Threat.
 - **Public event quests are out of the bot's reach.** Quests whose prerequisite needs a running public event (type 117) are reported SKIPPED by the quest bot; the events themselves are tracked separately.
 - **Units re-sent after entering the world.** Once loading ends the server re-sends every visible non-player unit (Player.OnEnteredWorld). Added for the same wrong settler resource theory as the path switch refresh; kept as harmless.
+
+## EnterArea objectives without a marker
+
+Retail completed "enter area" objectives with map trigger volumes the server does not have. An objective with a map marker completes inside the marker (radius at least 10 m). One without a marker completes within 25 m of a creature its text names, within 30 m of a location its text links, or anywhere in the world zone its Data names (including sub zones). Approximation: the retail volume may have been smaller or larger than these.
