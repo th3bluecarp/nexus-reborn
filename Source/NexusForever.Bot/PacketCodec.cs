@@ -65,6 +65,7 @@ internal sealed record PathMissionStatus(
     PathMissionState? State,
     uint GiverUnitId);
 internal sealed record PathEpisodeProgress(ushort EpisodeId, IReadOnlyList<PathMissionStatus> Missions);
+internal sealed record ScientistExperimentationInvoke(uint UnitId, IReadOnlyList<uint> CurrentPattern);
 internal sealed record PathSoldierHoldoutWave(ushort EventId, uint WaveIndex, bool IsBoss);
 internal sealed record PathSoldierHoldoutStatus(
     ushort EventId,
@@ -190,6 +191,18 @@ internal static class PacketCodec
     // Both scientist path-action packets have zero-byte payloads.
     public static byte[] ClientPathScientistScan() => [];
     public static byte[] ClientPathScientistDismissScanbot() => [];
+
+    // ClientPathMissionAttemptScientistExperimentation.Read reads exactly four uint pattern ids.
+    public static byte[] ClientPathMissionAttemptScientistExperimentation(IReadOnlyList<uint> choices)
+    {
+        if (choices.Count != 4)
+            throw new ArgumentException("A scientist experimentation attempt requires exactly four choices.", nameof(choices));
+        return Write(writer =>
+        {
+            foreach (uint choice in choices)
+                writer.Write(choice);
+        });
+    }
 
     // ClientPathSettlerImprovementBuildTier.Read: 14-bit group id, then zero-based uint tier.
     public static byte[] ClientPathSettlerImprovementBuildTier(uint improvementGroupId, uint tier) => Write(writer =>
@@ -501,6 +514,12 @@ internal static class PacketCodec
 
     public static ushort ParsePathMissionAdvanced(byte[] body)
         => Read(body, reader => reader.ReadUShort(14));
+
+    // ServerPathScientistExperimentationInvoke.Write: uint UnitId followed by CurrentPattern[4].
+    public static ScientistExperimentationInvoke ParsePathScientistExperimentationInvoke(byte[] body)
+        => Read(body, reader => new ScientistExperimentationInvoke(
+            reader.ReadUInt(),
+            Enumerable.Range(0, 4).Select(_ => reader.ReadUInt()).ToArray()));
 
     public static PathSoldierHoldoutWave ParsePathSoldierHoldoutNextWave(byte[] body) => Read(body, reader =>
         new PathSoldierHoldoutWave(reader.ReadUShort(14), reader.ReadUInt(), reader.ReadBit()));

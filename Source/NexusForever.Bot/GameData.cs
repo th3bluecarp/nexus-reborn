@@ -111,13 +111,28 @@ internal sealed record PathMissionDefinition(
     IReadOnlyList<IReadOnlyList<uint>> ScanCreatureGroups,
     uint ScansPerGroup,
     SettlerHubDefinition? SettlerHub,
-    IReadOnlyList<CartographyPoint> CartographyPoints)
+    IReadOnlyList<CartographyPoint> CartographyPoints,
+    IReadOnlyList<ushort> QuestIds,
+    IReadOnlyList<ScavengerClueDefinition> ScavengerClues,
+    SettlerInfrastructureDefinition? Infrastructure,
+    IReadOnlyList<uint> ExperimentationConsoleCreatureIds)
 {
     public string TypeName => Enum.IsDefined(Type) ? Type.ToString() : $"Unknown{RawType}";
 }
 
 internal sealed record PrerequisiteContext(Class Class, BotPath Path, uint Level, Func<ushort, QuestState> QuestStateOf);
 internal sealed record CartographyPoint(uint HexGroupId, ushort WorldId, float X, float Y, float Z);
+internal sealed record ScavengerClueDefinition(
+    uint Id,
+    IReadOnlyList<uint> CreatureIds,
+    WorldLocation2Entry? Location,
+    float ActiveRadius);
+internal sealed record SettlerInfrastructureDefinition(
+    uint Id,
+    uint DepotCreatureId,
+    IReadOnlyList<uint> ResourceCreatureIds,
+    uint MaxStackCount,
+    uint MissionCount);
 internal sealed record SettlerResourceDefinition(uint ItemId, string Name, IReadOnlyList<uint> CreatureIds);
 internal sealed record SettlerBuildDefinition(
     uint GroupId,
@@ -152,10 +167,18 @@ internal sealed class BotGameData
     private readonly GameTable<PathSoldierAssassinateEntry> pathSoldierAssassinations;
     private readonly GameTable<PathSoldierSWATEntry> pathSoldierSwats;
     private readonly GameTable<PathSoldierActivateEntry> pathSoldierActivations;
+    private readonly GameTable<PathExplorerActivateEntry> pathExplorerActivations;
+    private readonly GameTable<PathExplorerScavengerHuntEntry> pathExplorerScavengerHunts;
+    private readonly GameTable<PathExplorerScavengerClueEntry> pathExplorerScavengerClues;
     private readonly GameTable<PathExplorerNodeEntry> pathExplorerNodes;
     private readonly GameTable<PathSettlerHubEntry> pathSettlerHubs;
     private readonly GameTable<PathSettlerImprovementGroupEntry> pathSettlerImprovementGroups;
     private readonly GameTable<PathSettlerImprovementEntry> pathSettlerImprovements;
+    private readonly GameTable<PathSettlerMayorEntry> pathSettlerMayors;
+    private readonly GameTable<PathSettlerSheriffEntry> pathSettlerSheriffs;
+    private readonly GameTable<PathSettlerInfrastructureEntry> pathSettlerInfrastructure;
+    private readonly GameTable<PathScientistExperimentationEntry> pathScientistExperimentations;
+    private readonly GameTable<PathScientistSpecimenSurveyEntry> pathScientistSpecimenSurveys;
     private readonly GameTable<MapZoneEntry> mapZones;
     private readonly GameTable<MapZoneHexGroupEntry> mapZoneHexGroups;
     private readonly GameTable<MapZoneHexGroupEntryEntry> mapZoneHexGroupEntries;
@@ -190,10 +213,18 @@ internal sealed class BotGameData
         pathSoldierAssassinations = Load<PathSoldierAssassinateEntry>(tablePath, "PathSoldierAssassinate.tbl");
         pathSoldierSwats = Load<PathSoldierSWATEntry>(tablePath, "PathSoldierSWAT.tbl");
         pathSoldierActivations = Load<PathSoldierActivateEntry>(tablePath, "PathSoldierActivate.tbl");
+        pathExplorerActivations = Load<PathExplorerActivateEntry>(tablePath, "PathExplorerActivate.tbl");
+        pathExplorerScavengerHunts = Load<PathExplorerScavengerHuntEntry>(tablePath, "PathExplorerScavengerHunt.tbl");
+        pathExplorerScavengerClues = Load<PathExplorerScavengerClueEntry>(tablePath, "PathExplorerScavengerClue.tbl");
         pathExplorerNodes = Load<PathExplorerNodeEntry>(tablePath, "PathExplorerNode.tbl");
         pathSettlerHubs = Load<PathSettlerHubEntry>(tablePath, "PathSettlerHub.tbl");
         pathSettlerImprovementGroups = Load<PathSettlerImprovementGroupEntry>(tablePath, "PathSettlerImprovementGroup.tbl");
         pathSettlerImprovements = Load<PathSettlerImprovementEntry>(tablePath, "PathSettlerImprovement.tbl");
+        pathSettlerMayors = Load<PathSettlerMayorEntry>(tablePath, "PathSettlerMayor.tbl");
+        pathSettlerSheriffs = Load<PathSettlerSheriffEntry>(tablePath, "PathSettlerSheriff.tbl");
+        pathSettlerInfrastructure = Load<PathSettlerInfrastructureEntry>(tablePath, "PathSettlerInfrastructure.tbl");
+        pathScientistExperimentations = Load<PathScientistExperimentationEntry>(tablePath, "PathScientistExperimentation.tbl");
+        pathScientistSpecimenSurveys = Load<PathScientistSpecimenSurveyEntry>(tablePath, "PathScientistSpecimenSurvey.tbl");
         mapZones = Load<MapZoneEntry>(tablePath, "MapZone.tbl");
         mapZoneHexGroups = Load<MapZoneHexGroupEntry>(tablePath, "MapZoneHexGroup.tbl");
         mapZoneHexGroupEntries = Load<MapZoneHexGroupEntryEntry>(tablePath, "MapZoneHexGroupEntry.tbl");
@@ -308,6 +339,11 @@ internal sealed class BotGameData
         uint scansPerGroup = 0u;
         SettlerHubDefinition? settlerHub = null;
         IReadOnlyList<CartographyPoint> cartographyPoints = [];
+        IReadOnlyList<ushort> questIds = [];
+        IReadOnlyList<ScavengerClueDefinition> scavengerClues = [];
+        SettlerInfrastructureDefinition? infrastructure = null;
+        IReadOnlyList<uint> experimentationConsoles = [];
+        IReadOnlyList<uint> additionalObjectiveCreatures = [];
         if (entry.PathTypeEnum == (uint)BotPath.Soldier)
         {
             switch (type)
@@ -358,11 +394,79 @@ internal sealed class BotGameData
             count = Math.Min((uint)scanGroups.Count * scansPerGroup, 32u);
         }
 
+        if (entry.PathTypeEnum == (uint)BotPath.Explorer && type == PathMissionType.Exploration)
+        {
+            PathExplorerActivateEntry? objective = pathExplorerActivations.GetEntry(entry.ObjectId);
+            if (objective is not null)
+            {
+                creatureId = objective.Creature2Id;
+                targetGroupId = objective.TargetGroupId;
+                count = Math.Max(objective.Count, 1u);
+            }
+        }
+
+        if (entry.PathTypeEnum == (uint)BotPath.Explorer && type == PathMissionType.ScavengerHunt)
+        {
+            scavengerClues = ResolveScavengerClues(entry.ObjectId);
+            count = (uint)scavengerClues.Count;
+            additionalObjectiveCreatures = scavengerClues.SelectMany(clue => clue.CreatureIds).Distinct().ToArray();
+        }
+
         if (entry.PathTypeEnum == (uint)BotPath.Settler && type == PathMissionType.Expansion)
         {
             settlerHub = ResolveSettlerHub(entry.ObjectId);
             if (settlerHub is not null)
                 count = Math.Max(settlerHub.MissionCount, 1u);
+        }
+
+        if (entry.PathTypeEnum == (uint)BotPath.Settler && type == PathMissionType.Sheriff)
+        {
+            PathSettlerSheriffEntry? sheriff = pathSettlerSheriffs.GetEntry(entry.ObjectId);
+            if (sheriff is not null)
+            {
+                questIds = new[]
+                    {
+                        sheriff.Quest2IdSheriff00, sheriff.Quest2IdSheriff01,
+                        sheriff.Quest2IdSheriff02, sheriff.Quest2IdSheriff03,
+                        sheriff.Quest2IdSheriff04, sheriff.Quest2IdSheriff05,
+                        sheriff.Quest2IdSheriff06, sheriff.Quest2IdSheriff07
+                    }
+                    .Where(id => id != 0u)
+                    .Select(id => checked((ushort)id))
+                    .ToArray();
+                count = (uint)questIds.Count;
+            }
+        }
+
+        if (entry.PathTypeEnum == (uint)BotPath.Settler && type == PathMissionType.Infrastructure)
+        {
+            infrastructure = ResolveSettlerInfrastructure(entry.ObjectId);
+            if (infrastructure is not null)
+            {
+                count = Math.Max(infrastructure.MissionCount, 1u);
+                additionalObjectiveCreatures = infrastructure.ResourceCreatureIds
+                    .Append(infrastructure.DepotCreatureId)
+                    .Distinct()
+                    .ToArray();
+            }
+        }
+
+        if (entry.PathTypeEnum == (uint)BotPath.Scientist && type == PathMissionType.Experimentation
+            && pathScientistExperimentations.GetEntry(entry.ObjectId) is not null)
+        {
+            experimentationConsoles = creatures.Entries
+                .Where(creature => creature.PathScientistExperimentationId == entry.ObjectId)
+                .Select(creature => creature.Id)
+                .Distinct()
+                .Order()
+                .ToArray();
+            additionalObjectiveCreatures = experimentationConsoles;
+        }
+
+        if (entry.PathTypeEnum == (uint)BotPath.Scientist && type == PathMissionType.DatacubeDiscovery)
+        {
+            additionalObjectiveCreatures = ResolveDatacubeRule(entry.Id);
+            count = (uint)additionalObjectiveCreatures.Count;
         }
 
         if (entry.PathTypeEnum == (uint)BotPath.Explorer && type == PathMissionType.Cartography)
@@ -387,6 +491,39 @@ internal sealed class BotGameData
             .Where(location => location is not null)
             .Cast<WorldLocation2Entry>()
             .ToArray();
+        if (entry.PathTypeEnum == (uint)BotPath.Settler && type == PathMissionType.Mayor
+            && pathSettlerMayors.GetEntry(entry.ObjectId) is PathSettlerMayorEntry mayor)
+        {
+            locations = new[]
+                {
+                    mayor.WorldLocation2Id00, mayor.WorldLocation2Id01,
+                    mayor.WorldLocation2Id02, mayor.WorldLocation2Id03,
+                    mayor.WorldLocation2Id04, mayor.WorldLocation2Id05,
+                    mayor.WorldLocation2Id06, mayor.WorldLocation2Id07
+                }
+                .Where(id => id != 0u)
+                .Select(id => worldLocations.GetEntry(id))
+                .Where(location => location is not null)
+                .Cast<WorldLocation2Entry>()
+                .ToArray();
+        }
+        if (entry.PathTypeEnum == (uint)BotPath.Scientist && type == PathMissionType.SpecimenSurvey
+            && pathScientistSpecimenSurveys.GetEntry(entry.ObjectId) is PathScientistSpecimenSurveyEntry survey)
+        {
+            locations = new[]
+                {
+                    survey.WorldLocation2Id00, survey.WorldLocation2Id01,
+                    survey.WorldLocation2Id02, survey.WorldLocation2Id03,
+                    survey.WorldLocation2Id04, survey.WorldLocation2Id05,
+                    survey.WorldLocation2Id06, survey.WorldLocation2Id07,
+                    survey.WorldLocation2Id08, survey.WorldLocation2Id09
+                }
+                .Where(id => id != 0u)
+                .Select(id => worldLocations.GetEntry(id))
+                .Where(location => location is not null)
+                .Cast<WorldLocation2Entry>()
+                .ToArray();
+        }
         if (locations.Length == 0
             && entry.PathTypeEnum == (uint)BotPath.Explorer
             && type is PathMissionType.StakingClaim or PathMissionType.Surveillance or PathMissionType.Vista)
@@ -399,6 +536,8 @@ internal sealed class BotGameData
                 .Take(32)
                 .ToArray();
         }
+        if (type is PathMissionType.Mayor or PathMissionType.Scout or PathMissionType.SpecimenSurvey)
+            count = (uint)locations.Length;
         uint[] holdoutConsoles = creatures.Entries
             .Where(creature => creature.PathMissionIdSoldier == entry.Id)
             .Select(creature => creature.Id)
@@ -417,6 +556,7 @@ internal sealed class BotGameData
                 .Concat(scanGroups.SelectMany(group => group))
                 .Concat(settlerHub?.Resources.SelectMany(resource => resource.CreatureIds) ?? [])
                 .Concat(settlerHub?.Builds.Select(build => build.DepotCreatureId) ?? [])
+                .Concat(additionalObjectiveCreatures)
                 .Distinct()
                 .ToArray(),
             count,
@@ -424,8 +564,99 @@ internal sealed class BotGameData
             scanGroups,
             scansPerGroup,
             settlerHub,
-            cartographyPoints);
+            cartographyPoints,
+            questIds,
+            scavengerClues,
+            infrastructure,
+            experimentationConsoles);
     }
+
+    private IReadOnlyList<ScavengerClueDefinition> ResolveScavengerClues(uint huntId)
+    {
+        PathExplorerScavengerHuntEntry? hunt = pathExplorerScavengerHunts.GetEntry(huntId);
+        if (hunt is null)
+            return [];
+
+        uint[] clueIds =
+        [
+            hunt.PathExplorerScavengerClueId00, hunt.PathExplorerScavengerClueId01,
+            hunt.PathExplorerScavengerClueId02, hunt.PathExplorerScavengerClueId03,
+            hunt.PathExplorerScavengerClueId04, hunt.PathExplorerScavengerClueId05,
+            hunt.PathExplorerScavengerClueId06
+        ];
+        return clueIds
+            .Where(id => id != 0u)
+            .Select(id => pathExplorerScavengerClues.GetEntry(id))
+            .Where(clue => clue is not null)
+            .Cast<PathExplorerScavengerClueEntry>()
+            .Select(clue => new ScavengerClueDefinition(
+                clue.Id,
+                (clue.Creature2Id == 0u ? [] : new[] { clue.Creature2Id })
+                    .Concat(ResolveTargetGroup(clue.TargetGroupId))
+                    .Distinct()
+                    .ToArray(),
+                clue.WorldLocation2IdMiniMap == 0u ? null : worldLocations.GetEntry(clue.WorldLocation2IdMiniMap),
+                clue.ActiveRadius))
+            .ToArray();
+    }
+
+    private SettlerInfrastructureDefinition? ResolveSettlerInfrastructure(uint infrastructureId)
+    {
+        PathSettlerInfrastructureEntry? infrastructure = pathSettlerInfrastructure.GetEntry(infrastructureId);
+        if (infrastructure is null)
+            return null;
+
+        uint[] resourceCreatures =
+        [
+            infrastructure.Creature2IdResource00,
+            infrastructure.Creature2IdResource01,
+            infrastructure.Creature2IdResource02
+        ];
+        resourceCreatures = resourceCreatures.Where(id => id != 0u).Distinct().ToArray();
+        if (resourceCreatures.Length == 0)
+        {
+            string objective = english.GetEntry(infrastructure.LocalizedTextIdObjective) ?? "";
+            Match match = Regex.Match(objective, @"^Collect (.+?) (?:for|from|to)\b", RegexOptions.IgnoreCase);
+            if (match.Success)
+            {
+                string resourceName = NormalizeName(match.Groups[1].Value);
+                resourceCreatures = creatures.Entries
+                    .Where(creature =>
+                    {
+                        string name = CreatureName(creature);
+                        return string.Equals(name, resourceName, StringComparison.OrdinalIgnoreCase)
+                            || string.Equals(name + "s", resourceName, StringComparison.OrdinalIgnoreCase);
+                    })
+                    .Select(creature => creature.Id)
+                    .Distinct()
+                    .Order()
+                    .ToArray();
+            }
+        }
+
+        // Mirror PathMissionManager.Infrastructure.cs: the server currently caps carried resources
+        // from the first two MaxStackCountResource fields and always allows at least one.
+        uint maxStackCount = Math.Max(
+            Math.Max(infrastructure.MaxStackCountResource00, infrastructure.MaxStackCountResource01),
+            1u);
+        return new SettlerInfrastructureDefinition(
+            infrastructure.Id,
+            infrastructure.Creature2IdDepot,
+            resourceCreatures,
+            maxStackCount,
+            Math.Max(infrastructure.MissionCount, 1u));
+    }
+
+    private static IReadOnlyList<uint> ResolveDatacubeRule(uint missionId)
+        => missionId switch
+        {
+            2136u =>
+            [
+                21894u, 21896u, 21897u, 21898u, 21899u, 21900u, 21901u,
+                21902u, 21903u, 21904u, 21905u, 21906u, 21907u
+            ],
+            _ => []
+        };
 
     private (IReadOnlyList<IReadOnlyList<uint>> Groups, uint ScansPerGroup) ResolveScientistScanRule(uint missionId)
     {

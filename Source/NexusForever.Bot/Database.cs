@@ -1,5 +1,6 @@
 using MySqlConnector;
 using NexusForever.Cryptography;
+using NexusForever.GameTable.Model;
 
 namespace NexusForever.Bot;
 
@@ -120,6 +121,58 @@ internal static class BotDatabase
                 reader.GetFloat(3),
                 reader.GetFloat(4),
                 reader.GetFloat(5)));
+        }
+        return result;
+    }
+
+    public static async Task<IReadOnlyList<Spawn>> LoadSpawnsNearLocationsAsync(
+        string connectionString,
+        IEnumerable<WorldLocation2Entry> locations,
+        float minimumRadius,
+        CancellationToken cancellationToken)
+    {
+        WorldLocation2Entry[] points = locations
+            .GroupBy(location => location.Id)
+            .Select(group => group.First())
+            .ToArray();
+        if (points.Length == 0)
+            return [];
+
+        await using var connection = new MySqlConnection(ForDatabase(connectionString, WorldDatabase));
+        await connection.OpenAsync(cancellationToken);
+        await using var command = connection.CreateCommand();
+        var clauses = new List<string>(points.Length);
+        for (int i = 0; i < points.Length; i++)
+        {
+            WorldLocation2Entry point = points[i];
+            float radius = Math.Max(point.Radius, minimumRadius);
+            clauses.Add($"(world = @world{i} AND x BETWEEN @minX{i} AND @maxX{i} AND y BETWEEN @minY{i} AND @maxY{i} AND z BETWEEN @minZ{i} AND @maxZ{i})");
+            command.Parameters.AddWithValue($"@world{i}", point.WorldId);
+            command.Parameters.AddWithValue($"@minX{i}", point.Position0 - radius);
+            command.Parameters.AddWithValue($"@maxX{i}", point.Position0 + radius);
+            command.Parameters.AddWithValue($"@minY{i}", point.Position1 - radius);
+            command.Parameters.AddWithValue($"@maxY{i}", point.Position1 + radius);
+            command.Parameters.AddWithValue($"@minZ{i}", point.Position2 - radius);
+            command.Parameters.AddWithValue($"@maxZ{i}", point.Position2 + radius);
+        }
+
+        command.CommandText = $"SELECT id, creature, world, x, y, z FROM entity WHERE creature <> 0 AND ({string.Join(" OR ", clauses)}) ORDER BY world, creature, id";
+        var result = new List<Spawn>();
+        await using MySqlDataReader reader = await command.ExecuteReaderAsync(cancellationToken);
+        while (await reader.ReadAsync(cancellationToken))
+        {
+            var spawn = new Spawn(
+                reader.GetFieldValue<uint>(0),
+                reader.GetFieldValue<uint>(1),
+                reader.GetFieldValue<ushort>(2),
+                reader.GetFloat(3),
+                reader.GetFloat(4),
+                reader.GetFloat(5));
+            bool inRange = points.Any(point => point.WorldId == spawn.WorldId
+                && spawn.DistanceSquared(point.Position0, point.Position1, point.Position2)
+                    <= Math.Pow(Math.Max(point.Radius, minimumRadius), 2d));
+            if (inRange)
+                result.Add(spawn);
         }
         return result;
     }
