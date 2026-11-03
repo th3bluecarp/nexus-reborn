@@ -537,9 +537,10 @@ namespace NexusForever.Game.Entity
                 scannedUnits.Add((ushort)mission.Entry.Id, scanned = []);
             scanned.Add(target.Guid);
 
-            // the scanbot goes to the target
-            IPetEntity scanbot = player.Map.GetEntity<IPetEntity>(scanbotGuid.Value);
-            scanbot?.MovementManager.Follow(target, 2f);
+            // the scanbot goes to the target; its guid can belong to a creature by now (a map change despawned the bot and the
+            // guid was reused): the cast to a pet threw and three BIOLOGY scans of Algoroc gave nothing
+            if (player.Map.GetEntity<IWorldEntity>(scanbotGuid.Value) is IPetEntity scanbot)
+                scanbot.MovementManager.Follow(target, 2f);
 
             player.Session.EnqueueMessageEncrypted(new ServerPathScientistUnitScanParameters
             {
@@ -549,6 +550,9 @@ namespace NexusForever.Game.Entity
             });
 
             Advance(mission, mission.Progress | (1u << slot));
+            // a scan is a scan: a unit named by a scan mission standing at a specimen survey location samples it too
+            // (Augmented Life's second location is inside the Augmented XAS Scientists of BIOLOGY: Augmented Scientists)
+            ScanSpecimen(target);
         }
     }
 }

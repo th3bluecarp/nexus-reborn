@@ -756,7 +756,9 @@ internal sealed class BotRunner
                 or PathMissionType.ScavengerHunt
                 or PathMissionType.Experimentation
                 or PathMissionType.SpecimenSurvey
-                or PathMissionType.DatacubeDiscovery))
+                or PathMissionType.DatacubeDiscovery
+                or PathMissionType.Checklist
+                or PathMissionType.FieldStudy))
             {
                 currentMissionReport.Result = "UNSUPPORTED";
                 currentMissionReport.FailedAt = "objective";
