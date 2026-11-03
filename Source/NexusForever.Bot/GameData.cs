@@ -1117,6 +1117,17 @@ internal sealed class BotGameData
         return null;
     }
 
+    /// <summary>A creature the bot fights: hostile to the bot and not a usable object (faction 219 or an activation spell).</summary>
+    public bool IsAttackableCreature(uint creatureId)
+    {
+        Creature2Entry? creature = creatures.GetEntry(creatureId);
+        return creature is not null
+            && IsHoldoutHostile(creatureId)
+            && (uint)creature.FactionId != 219u
+            && (creature.Spell4IdActivate == null || creature.Spell4IdActivate.All(id => id == 0u))
+            && creature.Creature2DifficultyId != 0u;
+    }
+
     public bool IsHoldoutHostile(uint creatureId)
     {
         Creature2Entry? creature = creatures.GetEntry(creatureId);

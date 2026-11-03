@@ -682,6 +682,18 @@ namespace NexusForever.Game.Entity
                 foreach (IQuestObjective objective in quest.ToList())
                     quest.ObjectiveUpdate(objective.ObjectiveInfo.Entry.Id, objective.ObjectiveInfo.Entry.Count);
 
+            // an activation objective that names nothing (no creature, no reward pane group, no map indicator) was a client
+            // cinematic in retail ("Look to the sky" of They're Back!): nothing in the world can complete it, it completes on
+            // accept (SEMANTICS: cinematic objectives)
+            foreach (IQuestObjective objective in quest.ToList())
+            {
+                QuestObjectiveEntry entry = objective.ObjectiveInfo.Entry;
+                if ((QuestObjectiveType)entry.Type == QuestObjectiveType.ActivateEntity && entry.Data == 0u && entry.TargetGroupIdRewardPane == 0u
+                    && entry.WorldLocationsIdIndicator00 == 0u && entry.WorldLocationsIdIndicator01 == 0u
+                    && entry.WorldLocationsIdIndicator02 == 0u && entry.WorldLocationsIdIndicator03 == 0u)
+                    quest.ObjectiveUpdate(entry.Id, entry.Count);
+            }
+
             log.LogTrace($"Accepted new quest {info.Entry.Id}.");
         }
 

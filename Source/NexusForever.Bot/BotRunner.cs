@@ -3677,8 +3677,11 @@ internal sealed class BotRunner
     private bool VirtualCollectIsFight(QuestObjectiveDefinition objective)
     {
         uint[] creatureIds = GetObjectiveCreatureIds(objective).ToArray();
-        return creatureIds.Length > 0 && creatureIds.All(creatureId => RequireGameData().IsHoldoutHostile(creatureId));
+        // a usable object (a Protostar Battery Pack on the sea floor, faction 219 with an activation spell) is used, not fought
+        return creatureIds.Length > 0 && creatureIds.All(creatureId => RequireGameData().IsAttackableCreature(creatureId));
     }
+
+    private const int LootBagSlotsToKeepFree = 28;
 
     private async Task RunVirtualCollectObjectiveAsync(QuestObjectiveDefinition objective, CancellationToken cancellationToken)
     {
@@ -4650,6 +4653,16 @@ internal sealed class BotRunner
             .Select(item => item.StaticId)
             .Distinct()
             .ToDictionary(itemId => itemId, GetInventoryItemCount);
+
+        // full bags lose the loot (ServerItemError ItemInventoryFull): the start item of Carcass Discovery never arrived from
+        // nine Grimstone Mangler corpses; a player would clear junk first
+        if (inventory.Values.Count(item => item.Location == InventoryLocation.Inventory) >= LootBagSlotsToKeepFree
+            && currentQuestReport is not null && questDefinitions.TryGetValue(currentQuestReport.QuestId, out QuestDefinition? lootQuest))
+        {
+            int freed = await FreeBagSpaceAsync(lootQuest, cancellationToken);
+            if (freed > 0)
+                log.Info($"loot corpse {corpseGuid}: freed {freed} bag slot(s) before looting");
+        }
 
         foreach (LootItemInfo lootItem in requested)
         {
