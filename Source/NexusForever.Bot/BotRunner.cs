@@ -121,6 +121,44 @@ internal sealed class BotRunner
     private DateTimeOffset nextCombatCastAllowedAt;
     private CancellationTokenSource? keepAliveCancellation;
     private Task? keepAliveTask;
+
+    // a frozen bot (the Explorer leg of 2026-11-02: no packet read or written, no keep-alive, for 45 minutes until the
+    // nightly's outer timeout killed it) now writes its report and exits 3 from a thread of its own
+    private const int WatchdogStallSeconds = 180;
+    private volatile bool watchdogStop;
+    private volatile string watchdogStep = "";
+
+    private void StartWatchdog()
+    {
+        var thread = new Thread(() =>
+        {
+            while (!watchdogStop)
+            {
+                Thread.Sleep(5000);
+                ProtocolClient? client = world;
+                if (watchdogStop || client is null || !client.Connected)
+                    continue;
+                double idle = (DateTime.UtcNow - client.LastActivity).TotalSeconds;
+                if (idle < WatchdogStallSeconds)
+                    continue;
+
+                string message = $"watchdog: no packet read or written for {idle:0} s (the keep-alive stopped too, the process is frozen); step \"{watchdogStep}\"; quest {currentQuestReport?.QuestId.ToString() ?? "-"}; mission {currentMissionReport?.MissionId.ToString() ?? "-"}; dropped log lines {log.DroppedLines}";
+                try { File.WriteAllText(options.Report + ".watchdog.txt", message + Environment.NewLine); }
+                catch { }
+                try { Console.Error.WriteLine(message); }
+                catch { }
+                try
+                {
+                    report.Result = "FAIL";
+                    report.Failure = message;
+                    report.WriteAsync(options.Report).Wait(TimeSpan.FromSeconds(15));
+                }
+                catch { }
+                Environment.Exit(3);
+            }
+        }) { IsBackground = true, Name = "bot-watchdog" };
+        thread.Start();
+    }
     private NexusForever.Game.Static.PlayerPath.Path activePath = NexusForever.Game.Static.PlayerPath.Path.None;
     private bool pathInitialiseReceived;
     private ushort currentPathEpisodeId;
@@ -185,6 +223,7 @@ internal sealed class BotRunner
             setupComplete = true;
 
             StartKeepAlive(wholeRun.Token);
+            StartWatchdog();
 
             if (options.Paths && options.MissionsFirst)
             {
@@ -220,6 +259,7 @@ internal sealed class BotRunner
         }
         finally
         {
+            watchdogStop = true;
             await StopKeepAliveAsync();
             await TryCleanupAsync(wholeRun.Token);
             if (world is not null)
@@ -2793,6 +2833,7 @@ internal sealed class BotRunner
         Func<CancellationToken, Task<string>> action)
     {
         int stepCount = report.Steps.Count;
+        watchdogStep = name;
         bool questNpcStep = name is "accept quest" or "turn in quest";
         if (questNpcStep)
         {

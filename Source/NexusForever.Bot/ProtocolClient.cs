@@ -22,6 +22,10 @@ internal sealed class ProtocolClient : IAsyncDisposable
     private NetworkStream? stream;
     private Task? readTask;
     private PacketCrypt crypt = new(PacketCrypt.GetKeyFromAuthBuildAndMessage());
+    private long lastActivityTicks = DateTime.UtcNow.Ticks;
+
+    /// <summary>The last moment a frame was read from or written to the socket (the stall watchdog reads it).</summary>
+    public DateTime LastActivity => new(Volatile.Read(ref lastActivityTicks), DateTimeKind.Utc);
 
     public bool Connected => tcpClient?.Connected == true && !lifetime.IsCancellationRequested;
 
@@ -67,6 +71,7 @@ internal sealed class ProtocolClient : IAsyncDisposable
             encrypted.CopyTo(wrapperBody.AsSpan(sizeof(uint)));
             frame = BuildFrame(GameMessageOpcode.ClientEncrypted, wrapperBody);
             await stream.WriteAsync(frame, cancellationToken);
+            Volatile.Write(ref lastActivityTicks, DateTime.UtcNow.Ticks);
             log.Packet("C->S", (ushort)opcode, inner.Length, "inner");
             log.Packet("C->S", (ushort)GameMessageOpcode.ClientEncrypted, frame.Length, "frame");
         }
@@ -100,6 +105,7 @@ internal sealed class ProtocolClient : IAsyncDisposable
                 await stream.ReadExactlyAsync(remainder, lifetime.Token);
                 GameMessageOpcode outerOpcode = (GameMessageOpcode)BinaryPrimitives.ReadUInt16LittleEndian(remainder);
                 byte[] outerBody = remainder[sizeof(ushort)..];
+                Volatile.Write(ref lastActivityTicks, DateTime.UtcNow.Ticks);
                 log.Packet("S->C", (ushort)outerOpcode, checked((int)totalSize), "frame");
 
                 if (outerOpcode is GameMessageOpcode.ServerAuthEncrypted or GameMessageOpcode.ServerRealmEncrypted)

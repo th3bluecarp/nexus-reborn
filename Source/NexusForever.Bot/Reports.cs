@@ -218,10 +218,19 @@ internal sealed class LootEvidence
 
 internal sealed class BotFailureException(string message) : Exception(message);
 
+/// <summary>
+/// The run log. Lines go through bounded queues to two writer threads (file, console) so a stalled disk or a stalled
+/// stdout pipe (the nightly runs the bot over ssh) can never block the packet loop, the keep-alive or the quest flow:
+/// the Explorer leg of 2026-11-02 froze completely, every task at the same instant, with the log as the one shared lock.
+/// </summary>
 internal sealed class BotLog : IAsyncDisposable
 {
     private readonly StreamWriter writer;
-    private readonly object sync = new();
+    private readonly System.Collections.Concurrent.BlockingCollection<string> fileQueue = new(200000);
+    private readonly System.Collections.Concurrent.BlockingCollection<string> consoleQueue = new(2000);
+    private readonly Thread fileThread;
+    private readonly Thread consoleThread;
+    private int droppedLines;
 
     public BotLog(string path)
     {
@@ -232,33 +241,76 @@ internal sealed class BotLog : IAsyncDisposable
         {
             AutoFlush = true
         };
+        fileThread = new Thread(() =>
+        {
+            foreach (string line in fileQueue.GetConsumingEnumerable())
+            {
+                try { writer.WriteLine(line); }
+                catch { }
+            }
+            try { writer.Flush(); }
+            catch { }
+        }) { IsBackground = true, Name = "bot-log" };
+        consoleThread = new Thread(() =>
+        {
+            foreach (string line in consoleQueue.GetConsumingEnumerable())
+            {
+                try { Console.WriteLine(line); }
+                catch { }
+            }
+        }) { IsBackground = true, Name = "bot-console" };
+        fileThread.Start();
+        consoleThread.Start();
+    }
+
+    /// <summary>Lines dropped because the file writer fell more than the queue behind (a stalled disk).</summary>
+    public int DroppedLines => Volatile.Read(ref droppedLines);
+
+    private void Enqueue(string line)
+    {
+        if (fileQueue.IsAddingCompleted)
+            return;
+        try
+        {
+            if (!fileQueue.TryAdd(line, 2000))
+                Interlocked.Increment(ref droppedLines);
+        }
+        catch (InvalidOperationException)
+        {
+        }
     }
 
     public void Info(string message)
     {
-        string line = $"{DateTimeOffset.UtcNow:O} INFO {message}";
-        lock (sync)
-            writer.WriteLine(line);
-        Console.WriteLine(message);
+        Enqueue($"{DateTimeOffset.UtcNow:O} INFO {message}");
+        if (!consoleQueue.IsAddingCompleted)
+        {
+            try { consoleQueue.TryAdd(message); }
+            catch (InvalidOperationException) { }
+        }
     }
 
     public void Debug(string message)
-    {
-        lock (sync)
-            writer.WriteLine($"{DateTimeOffset.UtcNow:O} DEBUG {message}");
-    }
+        => Enqueue($"{DateTimeOffset.UtcNow:O} DEBUG {message}");
 
     public void Packet(string direction, ushort opcode, int size, string? layer = null)
     {
         string suffix = layer is null ? "" : $" {layer}";
-        lock (sync)
-            writer.WriteLine($"{DateTimeOffset.UtcNow:O} {direction} opcode=0x{opcode:X4} size={size}{suffix}");
+        Enqueue($"{DateTimeOffset.UtcNow:O} {direction} opcode=0x{opcode:X4} size={size}{suffix}");
     }
 
     public ValueTask DisposeAsync()
     {
-        lock (sync)
-            writer.Dispose();
+        try
+        {
+            fileQueue.CompleteAdding();
+            consoleQueue.CompleteAdding();
+            fileThread.Join(TimeSpan.FromSeconds(10));
+            consoleThread.Join(TimeSpan.FromSeconds(2));
+        }
+        catch { }
+        try { writer.Dispose(); }
+        catch { }
         return ValueTask.CompletedTask;
     }
 }
