@@ -1908,7 +1908,9 @@ internal sealed class BotRunner
         await EquipGearForLevelAsync(cancellationToken);
 
         Stopwatch healthWait = Stopwatch.StartNew();
-        DateTimeOffset deadline = DateTimeOffset.UtcNow.AddSeconds(60);
+        // out of combat the server heals 1 % of max health every 0.5 s (HealthStatUpdater); the gear of the level nearly triples max health
+        // without refilling it, so a freshly dressed bot at 40 % needs about half a minute to fill up
+        DateTimeOffset deadline = DateTimeOffset.UtcNow.AddSeconds(150);
         while (currentHealth is not uint health
             || currentMaxHealth is not uint maxHealth
             || maxHealth == 0u
@@ -1921,7 +1923,7 @@ internal sealed class BotRunner
                 || await TryReadWorldPacketAsync(remaining, cancellationToken) is null)
             {
                 throw new BotFailureException(
-                    $"holdout preparation did not confirm alive at full health within 60 s (dead={botDied}; health={currentHealth?.ToString() ?? "unknown"}/{currentMaxHealth?.ToString() ?? "unknown"})");
+                    $"holdout preparation did not confirm alive at full health within 150 s (dead={botDied}; health={currentHealth?.ToString() ?? "unknown"}/{currentMaxHealth?.ToString() ?? "unknown"})");
             }
         }
 
