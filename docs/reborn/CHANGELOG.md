@@ -2,6 +2,10 @@
 
 Newest first. "Live" means running on our test server.
 
+## 2026-11-03
+
+- **A quest NPC stays in view while the player carries a quest only it turns in**: Sergeant Kormak (16664) hides once He's the Brains is done and his later copy takes over, but Technical Difficulties and DRED Reckoning still hand in to the first one and the copy does not take them; the quest bot lost both. A creature whose visibility prerequisite fails is kept visible while an accepted or achieved quest of the player is in its receive list (SEMANTICS: quest receivers stay visible).
+
 ## 2026-11-02
 
 - **Units used without an activation spell count for path missions**: an INFRASTRUCTURE mission's Pioneering League Supplies crates have no activation spell, so using one ran only the entity scripts and the carried resource never grew (the Settler bot waited at the crate for its whole hour). A plain activation now reaches the path missions as the spell path does.

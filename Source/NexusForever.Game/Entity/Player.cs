@@ -37,6 +37,7 @@ using NexusForever.Game.Static.Entity;
 using NexusForever.Game.Static.Guild;
 using NexusForever.Game.Static.PublicEvent;
 using NexusForever.Game.Static.PVP;
+using NexusForever.Game.Abstract.Quest;
 using NexusForever.Game.Static.Quest;
 using NexusForever.Game.Static.RBAC;
 using NexusForever.Game.Static.Reputation;
@@ -1041,6 +1042,27 @@ namespace NexusForever.Game.Entity
         }
 
         /// <summary>
+        /// A quest NPC whose visibility prerequisite fails stays in view while the player carries a quest only it turns in:
+        /// Sergeant Kormak (16664) hides once He's the Brains is done, but Technical Difficulties and DRED Reckoning still hand
+        /// in to him and his later copy (21263) does not take them (SEMANTICS: quest receivers stay visible).
+        /// </summary>
+        private bool ReceivesActiveQuest(IWorldEntity entity)
+        {
+            uint[] received = entity.CreatureInfo?.Entry?.QuestIdReceive;
+            if (received == null)
+                return false;
+
+            foreach (IQuest quest in QuestManager.GetActiveQuests())
+            {
+                if (quest.State is not (QuestState.Accepted or QuestState.Achieved))
+                    continue;
+                if (System.Array.IndexOf(received, (uint)quest.Id) >= 0)
+                    return true;
+            }
+            return false;
+        }
+
+        /// <summary>
         /// Returns if <see cref="IGridEntity"/> can see supplied <see cref="IGridEntity"/>.
         /// </summary>
         protected override bool CanSeeEntity(IGridEntity entity)
@@ -1053,7 +1075,8 @@ namespace NexusForever.Game.Entity
             // have a visibility prerequisite, unhandled prerequisite types leave the entity visible
             if (entity is IWorldEntity worldEntity
                 && worldEntity.CreatureInfo?.PrerequisiteVisibilityEntry != null
-                && !PrerequisiteManager.Instance.Meets(this, worldEntity.CreatureInfo.PrerequisiteVisibilityEntry.Id, new PrerequisiteParameters { UnhandledResult = true, EvaluatedUnit = worldEntity }))
+                && !PrerequisiteManager.Instance.Meets(this, worldEntity.CreatureInfo.PrerequisiteVisibilityEntry.Id, new PrerequisiteParameters { UnhandledResult = true, EvaluatedUnit = worldEntity })
+                && !ReceivesActiveQuest(worldEntity))
                 return false;
 
             // story NPCs that moved on in retail through server phasing that is lost: hide the earlier copy once the quest that sends
