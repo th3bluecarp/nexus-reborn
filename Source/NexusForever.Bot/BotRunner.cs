@@ -776,6 +776,27 @@ internal sealed class BotRunner
                 currentMissionReport = null;
                 continue;
             }
+            // Brian 2026-11-03: the Sheriff missions stay group content. Algoroc's three PUBLIC SAFETY missions each want a
+            // WANTED [GROUP 2+] boss (difficulty 6) that a solo character cannot kill; the bot reports them skipped instead
+            // of dying three times per settler leg
+            if (definition.Type == PathMissionType.Sheriff)
+            {
+                string[] groupQuests = definition.QuestIds
+                    .Select(questId => (questDefinitions.GetValueOrDefault(questId) ?? RequireGameData().GetQuest(questId)).Entry)
+                    .Where(entry => entry.GroupSize >= 2u)
+                    .Select(entry => $"{entry.Id} ({RequireGameData().QuestSkipReason(entry)})")
+                    .ToArray();
+                if (groupQuests.Length > 0)
+                {
+                    currentMissionReport.Result = "SKIPPED";
+                    currentMissionReport.FailedAt = "objective";
+                    currentMissionReport.Detail = $"SKIPPED: group content by decision (2026-11-03): sheriff quest(s) [{string.Join(", ", groupQuests)}]";
+                    currentMissionReport.EndTimestamp = DateTimeOffset.UtcNow;
+                    log.Info($"path mission {definition.Id}: {currentMissionReport.Detail}");
+                    currentMissionReport = null;
+                    continue;
+                }
+            }
             if (definition.Type == PathMissionType.Cartography && definition.CartographyPoints.Count == 0)
             {
                 currentMissionReport.Result = "UNSUPPORTED";
