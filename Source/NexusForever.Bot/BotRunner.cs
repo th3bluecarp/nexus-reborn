@@ -1060,18 +1060,35 @@ internal sealed class BotRunner
                 IReadOnlyList<Spawn> candidates = SpawnsFor(clue.CreatureIds, checked((ushort)definition.Episode.WorldId));
                 if (candidates.Count == 0)
                     throw new BotFailureException($"scavenger clue {clue.Id} has no spawn for creatures [{string.Join(',', clue.CreatureIds)}]");
+                // the clue's own map location, when it has one, says which of the creature's spawns is meant: those within its
+                // radius first; the hunt of 2026-11-02 walked 30 spawns of a common creature for six minutes and timed out
+                Spawn[] ordered = clue.Location is { } clueLocation
+                    ? candidates
+                        .OrderBy(candidate => candidate.DistanceSquared(clueLocation.Position0, clueLocation.Position1, clueLocation.Position2))
+                        .Take(ScavengerClueSpawnAttempts)
+                        .ToArray()
+                    : candidates
+                        .OrderBy(candidate => candidate.DistanceSquared(lastPosition.X, lastPosition.Y, lastPosition.Z))
+                        .Take(ScavengerClueSpawnAttempts)
+                        .ToArray();
+                log.Info($"path mission {definition.Id}: clue {clue.Id} ({index + 1}/{definition.ScavengerClues.Count}) creature(s) [{string.Join(',', clue.CreatureIds)}], {candidates.Count} spawn(s), trying {ordered.Length}"
+                    + (clue.Location is { } at ? FormattableString.Invariant($" nearest location {at.Id}@({at.Position0:0.#},{at.Position1:0.#},{at.Position2:0.#})") : ""));
 
                 bool progressed = false;
-                foreach (Spawn spawn in candidates.OrderBy(candidate => candidate.DistanceSquared(lastPosition.X, lastPosition.Y, lastPosition.Z)))
+                foreach (Spawn spawn in ordered)
                 {
                     TrackedEntity? entity = await TeleportAndTryFindWithRetryAsync(spawn, cancellationToken);
                     if (entity is null)
+                    {
+                        log.Info($"path mission {definition.Id}: clue {clue.Id} spawn {spawn.Id} (creature {spawn.CreatureId}) not visible");
                         continue;
+                    }
                     ActivationOutcome outcome = await RunPathActivationFlowAsync(
                         entity,
                         () => (GetPathMissionStatus(definition.Id)?.Progress & bit) != 0u || IsPathMissionComplete(definition.Id),
                         TimeSpan.FromSeconds(8),
                         cancellationToken);
+                    log.Info($"path mission {definition.Id}: clue {clue.Id} spawn {spawn.Id} guid {entity.Guid}: {outcome}; progress=0x{GetPathMissionStatus(definition.Id)?.Progress ?? 0u:X}");
                     if (outcome == ActivationOutcome.Progressed)
                     {
                         solved.Add($"clue={clue.Id}:activated creature={spawn.CreatureId}/guid={entity.Guid}");
@@ -1086,6 +1103,7 @@ internal sealed class BotRunner
             {
                 WorldLocation2Entry location = clue.Location
                     ?? throw new BotFailureException($"scavenger clue {clue.Id} has neither a creature/target group nor WorldLocation2IdMiniMap");
+                log.Info(FormattableString.Invariant($"path mission {definition.Id}: clue {clue.Id} ({index + 1}/{definition.ScavengerClues.Count}) stand at location {location.Id}@({location.Position0:0.#},{location.Position1:0.#},{location.Position2:0.#}) radius {Math.Max(location.Radius, clue.ActiveRadius):0.#}"));
                 await TeleportToLocationAsync(location, 0f, cancellationToken);
                 bool progressed = await WaitForPathMissionAsync(
                     definition.Id,
@@ -3491,6 +3509,8 @@ internal sealed class BotRunner
     }
 
     private const uint ZoneDeathRetryLevelCap = 18u;
+
+    private const int ScavengerClueSpawnAttempts = 6;
 
     private const float QuestAbilityTargetRadius = 60f;
 
