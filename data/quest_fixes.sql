@@ -27,3 +27,9 @@ INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY
 (1300006,0,16631,51,24,2987,-817,-4988,0,0,0,21335,0,743,743,0),
 (1300007,0,16631,51,24,2967,-817,-4982,0,0,0,21335,0,743,743,0);
 INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1300004,0,1502),(1300004,10,7),(1300004,15,0),(1300005,0,1502),(1300005,10,7),(1300005,15,0),(1300006,0,1502),(1300006,10,7),(1300006,15,0),(1300007,0,1502),(1300007,10,7),(1300007,15,0);
+
+-- Eldan Protector Mark II (creature 23850), the target of Soldier mission 1029 ASSASSINATION: Kill the Protector; no spawn in our data.
+-- Placed at the mission's own location WorldLocation2 28072 (4837,-1071,-4207, Algoroc tract 3). Level 14, display 24399, faction 763 (2026-11-02). Entity id 1300008.
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`,`QuestChecklistIdx`) VALUES
+(1300008,0,23850,51,786,4837.359,-1071.2158,-4207.437,0,0,0,24399,0,763,763,0);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1300008,10,14),(1300008,15,0);

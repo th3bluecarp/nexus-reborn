@@ -187,6 +187,12 @@ namespace NexusForever.Game.Entity
                         && IsInObjectiveArea(entry))
                         updates.Add((quest, objective.ObjectiveInfo.Id));
 
+                    // an EnterArea objective without an indicator names a world zone (Corrupted Reconnaissance: 4350): standing in
+                    // that zone or one of its sub zones completes it
+                    else if (objective.ObjectiveInfo.Type == QuestObjectiveType.EnterArea && !HasIndicator(entry)
+                        && entry.Data != 0u && IsInWorldZone(entry.Data))
+                        updates.Add((quest, objective.ObjectiveInfo.Id));
+
                     // complete an event whose public event cannot run here (no longer in the client data, or on a map that does not
                     // load): holding the objective's place for EventFallbackTime stands in for the event
                     else if (objective.ObjectiveInfo.Type == QuestObjectiveType.CompleteEvent && !CanEventRun(objective.ObjectiveInfo.Data))

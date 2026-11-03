@@ -3135,9 +3135,15 @@ internal sealed class BotRunner
                 case QuestObjectiveType.CollectItem:
                     await RunKillObjectiveAsync(objective, cancellationToken);
                     break;
+                case QuestObjectiveType.EnterArea when objective.WorldLocationId == 0u:
+                    await RunEnterZoneAreaObjectiveAsync(objective, cancellationToken);
+                    break;
                 case QuestObjectiveType.EnterArea:
                 case QuestObjectiveType.EnterZone:
                     await RunLocationObjectiveAsync(objective, cancellationToken);
+                    break;
+                case QuestObjectiveType.CompleteEvent:
+                    await RunCompleteEventObjectiveAsync(objective, cancellationToken);
                     break;
                 default:
                     throw new BotFailureException($"unsupported objective type {objective.Type}({(uint)objective.Type})");
@@ -4411,6 +4417,37 @@ internal sealed class BotRunner
         pendingCombatClientId = null;
         pendingCombatCastResult = null;
         pendingCombatServerId = null;
+    }
+
+    /// <summary>
+    /// An EnterArea objective without a map indicator names a world zone (Corrupted Reconnaissance: zone 4350); the server
+    /// completes it when the player stands in that zone or one of its sub zones, so go to a known location of the zone.
+    /// </summary>
+    private async Task RunEnterZoneAreaObjectiveAsync(QuestObjectiveDefinition objective, CancellationToken cancellationToken)
+    {
+        uint before = GetRawProgress(objective.Index);
+        WorldLocation2Entry location = RequireGameData().LocationInZone(objective.Data, questWorldId, lastPosition)
+            ?? throw new BotFailureException($"EnterArea objective has no indicator and no WorldLocation2 lies in zone {objective.Data} of world {questWorldId}");
+        log.Info($"objective {objective.Index}: EnterArea zone {objective.Data} via WorldLocation2 {location.Id} ({location.Position0:0},{location.Position1:0},{location.Position2:0})");
+        await TeleportToLocationAsync(location, 0f, cancellationToken);
+        if (!await TryWaitForObjectiveProgressAsync(objective.Index, before, TimeSpan.FromSeconds(15), cancellationToken))
+            throw new BotFailureException($"EnterArea zone {objective.Data} produced no progress 15 s after reaching WorldLocation2 {location.Id}");
+    }
+
+    /// <summary>
+    /// CompleteEvent: the server holds the objective's place for its EventFallbackTime (20 s) when the public event cannot run
+    /// here, so stand at the objective's indicator; a running event would need the event itself to be won.
+    /// </summary>
+    private async Task RunCompleteEventObjectiveAsync(QuestObjectiveDefinition objective, CancellationToken cancellationToken)
+    {
+        uint before = GetRawProgress(objective.Index);
+        if (objective.WorldLocationId == 0u)
+            throw new BotFailureException($"CompleteEvent objective for public event {objective.Data} has no map indicator to stand at");
+        WorldLocation2Entry location = RequireGameData().GetWorldLocation(objective.WorldLocationId);
+        await TeleportToLocationAsync(location, 0f, cancellationToken);
+        log.Info($"objective {objective.Index}: CompleteEvent {objective.Data}: standing at indicator {location.Id} for the server's event fallback");
+        if (!await TryWaitForObjectiveProgressAsync(objective.Index, before, TimeSpan.FromSeconds(45), cancellationToken))
+            throw new BotFailureException($"CompleteEvent {objective.Data} produced no progress after 45 s at indicator {location.Id}; the event may be running (unsupported) or the fallback did not fire");
     }
 
     private async Task RunLocationObjectiveAsync(QuestObjectiveDefinition objective, CancellationToken cancellationToken)

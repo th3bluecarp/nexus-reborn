@@ -475,7 +475,36 @@ namespace NexusForever.Game.Quest
             if (money != 0u)
                 player.CurrencyManager.CurrencyAddAmount(CurrencyType.Credits, money);
 
+            RewardZoneReputation();
+
             CompleteQuest();
+        }
+
+        /// <summary>
+        /// Reputation with the quest's reward factions (Quest2.Faction2IdRewardReputation00/01): the override amount when the
+        /// quest carries one, otherwise a default by con level. Our Quest2Reward rows hold almost no reputation (48 Algoroc
+        /// quests gave 20 in total), so "Raise your Reputation with the Algoroc Accord" could never fill (SEMANTICS: quest reputation).
+        /// </summary>
+        private const float DefaultQuestReputation = 100f;
+        private const float DefaultQuestReputationPerLevel = 10f;
+
+        private void RewardZoneReputation()
+        {
+            if (Info.Rewards.Values.Any(r => (QuestRewardType)r.Quest2RewardTypeId == QuestRewardType.Reputation))
+                return;
+
+            foreach ((uint factionId, float amountOverride) in new[]
+            {
+                (Info.Entry.Faction2IdRewardReputation00, Info.Entry.RewardReputationOverride00),
+                (Info.Entry.Faction2IdRewardReputation01, Info.Entry.RewardReputationOverride01)
+            })
+            {
+                if (factionId == 0u)
+                    continue;
+                float amount = amountOverride > 0f ? amountOverride : DefaultQuestReputation + DefaultQuestReputationPerLevel * Info.Entry.ConLevel;
+                player.ReputationManager.UpdateReputation((NexusForever.Game.Static.Reputation.Faction)factionId, amount);
+                log.LogTrace($"Quest {Info.Entry.Id} rewards {amount} reputation with faction {factionId}.");
+            }
         }
 
         private void RewardQuest(Quest2RewardEntry entry)
