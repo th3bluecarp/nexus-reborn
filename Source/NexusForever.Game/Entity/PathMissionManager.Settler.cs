@@ -71,10 +71,18 @@ namespace NexusForever.Game.Entity
         {
             Creature2Entry creature = GameTableManager.Instance.Creature2.GetEntry(creatureId);
             string name = creature == null ? null : GameTableManager.Instance.TextEnglish?.GetEntry(creature.LocalizedTextIdName);
-            if (name == null || !SettlerResourceItems().TryGetValue(Regex.Replace(name, @"\{p:[^}]*\}", ""), out uint itemId))
+            if (name == null)
                 return 0u;
 
-            return itemId;
+            // the node is named in the singular where the item is plural (Structural Carbon Rod / Structural Carbon Rods,
+            // Algoroc's three hubs): both spellings name the same resource
+            string stripped = Regex.Replace(name, @"\{p:[^}]*\}", "");
+            if (SettlerResourceItems().TryGetValue(stripped, out uint itemId)
+                || SettlerResourceItems().TryGetValue(stripped + "s", out itemId)
+                || (stripped.EndsWith('s') && SettlerResourceItems().TryGetValue(stripped[..^1], out itemId)))
+                return itemId;
+
+            return 0u;
         }
 
         public bool IsSettlerResource(uint creatureId)

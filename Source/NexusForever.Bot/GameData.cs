@@ -671,6 +671,15 @@ internal sealed class BotGameData
             ], 1u),
             160u => ([["Vitalium Crystal"]], 3u),
             648u => ([["Skeech Diviner", "Skeech Scratcher", "Skeech Shaman", "Cleaved Skeech Shaman"]], 3u),
+            // Algoroc scans (mission type 2), the server's ScanRules names
+            264u => ([["Grimstone Digger", "Grimstone Ruffian", "Grimstone Mangler", "Grimstone Savage", "Grimstone Ravager"]], 3u),
+            826u => ([["Augmented Slateform Slammer", "Augmented Slateform Charger", "Augmented Slateform Demolisher", "Hulking Gronyx", "Gronyx"]], 3u),
+            827u => ([["Pinewrath Barktooth", "Pinewrath Trunksplitter", "Pinewrath Stumpmaker", "Pinewrath Logchomper", "Pinewrath Branchsnapper", "Barktooth Stumpkin", "Trunksplitter Stumpkin"]], 3u),
+            201u => ([["Irradiated Icetail Leaper", "Irradiated Icetail Pouncer", "Irradiated Icetail Slayer", "Irradiated Icetail Stalker", "Irradiated Snoglug"]], 3u),
+            218u => ([["Large Loftite Formation"]], 3u),
+            266u => ([["Fiera Flower"]], 3u),
+            1978u => ([["Augmented XAS Scientist"]], 3u),
+            2139u => ([["Eldan Repair Construct"]], 3u),
             // Algoroc checklists (mission type 14), the server's ScanRules names
             262u => ([["Darkspur Cartel Terminal"]], 5u),
             701u => ([["Eldan Relic", "Eldan Relics"]], 8u),
@@ -705,7 +714,9 @@ internal sealed class BotGameData
             Item2Entry? item = items.GetEntry(itemId);
             string name = item is null ? $"item {itemId}" : NormalizeName(english.GetEntry(item.LocalizedTextIdName) ?? $"item {itemId}");
             uint[] resourceCreatures = creatures.Entries
-                .Where(creature => string.Equals(CreatureName(creature), name, StringComparison.OrdinalIgnoreCase))
+                .Where(creature => string.Equals(CreatureName(creature), name, StringComparison.OrdinalIgnoreCase)
+                    || string.Equals(CreatureName(creature) + "s", name, StringComparison.OrdinalIgnoreCase)
+                    || string.Equals(CreatureName(creature), name + "s", StringComparison.OrdinalIgnoreCase))
                 .Select(creature => creature.Id)
                 .Distinct()
                 .Order()

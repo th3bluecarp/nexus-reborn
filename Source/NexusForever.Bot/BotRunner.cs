@@ -1969,6 +1969,13 @@ internal sealed class BotRunner
                 }
                 else
                 {
+                    // the unit can be gone by now (a corpse looted away, a used node): the plain activation of a vanished guid was
+                    // an invalid packet to the server and dropped the session (Explorer leg, 2026-11-02)
+                    if (entities.Get(entity.Guid) is null)
+                    {
+                        log.Info($"activation target guid {entity.Guid} (creature {entity.CreatureId}) vanished before the plain activation; not usable");
+                        return ActivationOutcome.TargetNotUsable;
+                    }
                     await RequireWorld().SendEncryptedAsync(GameMessageOpcode.ClientActivateUnit,
                         PacketCodec.ClientActivateUnit(entity.Guid), cancellationToken);
                     await RequireWorld().SendEncryptedAsync(GameMessageOpcode.ClientEntityInteract,
@@ -3728,6 +3735,13 @@ internal sealed class BotRunner
                 }
                 else
                 {
+                    // the unit can be gone by now (a corpse looted away, a used node): the plain activation of a vanished guid was
+                    // an invalid packet to the server and dropped the session (Explorer leg, 2026-11-02)
+                    if (entities.Get(entity.Guid) is null)
+                    {
+                        log.Info($"activation target guid {entity.Guid} (creature {entity.CreatureId}) vanished before the plain activation; not usable");
+                        return ActivationOutcome.TargetNotUsable;
+                    }
                     await RequireWorld().SendEncryptedAsync(GameMessageOpcode.ClientActivateUnit,
                         PacketCodec.ClientActivateUnit(entity.Guid), cancellationToken);
                     await RequireWorld().SendEncryptedAsync(GameMessageOpcode.ClientEntityInteract,

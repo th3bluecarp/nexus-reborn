@@ -55,6 +55,14 @@ namespace NexusForever.Game.Entity
             if (GameTableManager.Instance.Datacube.GetEntry(id) == null)
                 throw new ArgumentException();
 
+            // a datacube used again (the quest bot's Datacube Discovery mission opens each one it finds): already in the
+            // journal, nothing to add; the dictionary add threw and the exception dropped the session
+            if (datacubes.TryGetValue(DatacubeHash(id, DatacubeType.Datacube), out IDatacube existing))
+            {
+                SendDatacube(existing);
+                return;
+            }
+
             var datacube = new Datacube(player, id, DatacubeType.Datacube, progress);
             datacubes.Add(DatacubeHash(id, DatacubeType.Datacube), datacube);
 

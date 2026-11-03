@@ -468,7 +468,10 @@ namespace NexusForever.Game.Entity
             if (scanbotGuid == null)
                 return;
 
-            player.Map?.GetEntity<IPetEntity>(scanbotGuid.Value)?.RemoveFromMap();
+            // the guid can belong to another unit by now (the scanbot despawned with its owner's map change and the guid was
+            // reused by a creature): the cast to a pet threw and the exception dropped the session
+            if (player.Map?.GetEntity<IWorldEntity>(scanbotGuid.Value) is IPetEntity scanbot)
+                scanbot.RemoveFromMap();
             scanbotGuid = null;
 
             player.Session.EnqueueMessageEncrypted(new ServerPathScientistScanbotState

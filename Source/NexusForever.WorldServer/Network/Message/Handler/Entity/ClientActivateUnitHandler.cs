@@ -10,8 +10,10 @@ namespace NexusForever.WorldServer.Network.Message.Handler.Entity
         public void HandleMessage(IWorldSession session, ClientActivateUnit activateUnit)
         {
             IWorldEntity entity = session.Player.GetVisible<IWorldEntity>(activateUnit.UnitId);
+            // the unit can despawn between the client's click and this packet (a looted corpse, a used node): a race, not a
+            // bad packet; the exception disconnected the client (the quest bot lost a whole Algoroc leg to it)
             if (entity == null)
-                throw new InvalidPacketValueException();
+                return;
 
             // TODO: sanity check for range etc.
 

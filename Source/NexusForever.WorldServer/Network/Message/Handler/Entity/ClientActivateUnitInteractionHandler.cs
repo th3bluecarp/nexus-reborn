@@ -14,8 +14,9 @@ namespace NexusForever.WorldServer.Network.Message.Handler.Entity
         public void HandleMessage(IWorldSession session, ClientCastBindPointSpell activateUnitInteraction)
         {
             IWorldEntity entity = session.Player.GetVisible<IWorldEntity>(activateUnitInteraction.UnitId);
+            // a unit that despawned on the way: ignore rather than disconnect the client
             if (entity == null)
-                throw new InvalidPacketValueException();
+                return;
 
             entity.OnActivateCast(session.Player, activateUnitInteraction.ClientSpellCastUniqueId);
         }
