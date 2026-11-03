@@ -15,6 +15,11 @@ namespace NexusForever.Game.Spell.Effect.Handler
     [SpellEffectHandler(SpellEffectType.ForcedMove)]
     public class SpellEffectForcedMoveHandler : ISpellEffectApplyHandler<ISpellEffectForcedMoveData>
     {
+        /// <summary>
+        /// Largest step up to the terrain heightmap a forced move takes; a bigger gap means the mover stands under cover.
+        /// </summary>
+        private const float TerrainSnapLimit = 4f;
+
         #region Dependency Injection
 
         private readonly IForcedMovementGenerator forcedMovementGenerator;
@@ -124,8 +129,12 @@ namespace NexusForever.Game.Spell.Effect.Handler
 
             // TODO: this needs to be smarter and take other geometry into account
             // once LoS maps are implemented might be able to use a ray instead
+            // the heightmap is the open-air surface: under an overhang, in a cave or inside a building (Inventor Hoom's
+            // DREDplex lab lies 128 m below it) snapping to it launched the target onto the roof of the world where nothing
+            // could reach it; only a step up within TerrainSnapLimit of the mover's own height is trusted
+            // (SEMANTICS: knockbacks keep their height under cover)
             float? terrainHeight = mover.Map.GetTerrainHeight(position.X, position.Z);
-            if (position.Y < terrainHeight)
+            if (position.Y < terrainHeight && terrainHeight.Value - mover.Position.Y <= TerrainSnapLimit)
                 position.Y = terrainHeight.Value;
 
             switch (data.MoveType)

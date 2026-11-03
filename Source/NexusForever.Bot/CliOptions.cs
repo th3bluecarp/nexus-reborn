@@ -23,7 +23,8 @@ internal sealed record RunOptions(
     string Report,
     string Log,
     int MaxMinutes,
-    string? KeepCharacter = null);
+    string? KeepCharacter = null,
+    bool MissionsFirst = false);
 
 internal enum BotFaction
 {
@@ -83,7 +84,7 @@ internal static class CliOptions
         Usage:
           NexusForever.Bot prep --db <connection-string> --email <email> --password <password>
           NexusForever.Bot info --tables <path> (--quest <id[,id...]> [--chain 1] [--db <connection-string>] | --path <zone-id>)
-          NexusForever.Bot run (--zone <id> --faction exile|dominion [--path soldier|settler|scientist|explorer] [--paths 0|1] | --quest <id[,id...]|none>) [--keep-character <name>] [--chain 0|1] [--start arkship|nexus] [--max-minutes <n>] (--sts <host:port> --password <password> | --token <guid>) --auth <host:port> --world <host[:port]> --db <connection-string> --tables <path> --email <email> --report <file.json> --log <file.log>
+          NexusForever.Bot run (--zone <id> --faction exile|dominion [--path soldier|settler|scientist|explorer] [--paths 0|1] [--missions-first 0|1] | --quest <id[,id...]|none>) [--keep-character <name>] [--chain 0|1] [--start arkship|nexus] [--max-minutes <n>] (--sts <host:port> --password <password> | --token <guid>) --auth <host:port> --world <host[:port]> --db <connection-string> --tables <path> --email <email> --report <file.json> --log <file.log>
         """;
 
     public static object Parse(string[] args)
@@ -133,7 +134,7 @@ internal static class CliOptions
 
     private static RunOptions ParseRun(Dictionary<string, string> values)
     {
-        RequireOnly(values, "quest", "zone", "faction", "path", "paths", "chain", "start", "max-minutes", "keep-character", "sts", "auth", "world", "db", "tables", "email", "password", "token", "report", "log");
+        RequireOnly(values, "quest", "zone", "faction", "path", "paths", "missions-first", "chain", "start", "max-minutes", "keep-character", "sts", "auth", "world", "db", "tables", "email", "password", "token", "report", "log");
 
         bool hasQuest = values.TryGetValue("quest", out string? questValue);
         bool hasZone = values.TryGetValue("zone", out string? zoneValue);
@@ -226,6 +227,15 @@ internal static class CliOptions
         };
         if (!int.TryParse(values.GetValueOrDefault("max-minutes", "180"), out int maxMinutes) || maxMinutes <= 0)
             throw new ArgumentException("--max-minutes must be a positive integer.");
+        bool missionsFirst = values.TryGetValue("missions-first", out string? missionsFirstValue) switch
+        {
+            false => false,
+            true when missionsFirstValue is "1" or "true" => true,
+            true when missionsFirstValue is "0" or "false" => false,
+            _ => throw new ArgumentException("--missions-first must be 0 or 1.")
+        };
+        if (missionsFirst && !paths)
+            throw new ArgumentException("--missions-first needs --paths 1.");
 
         return new RunOptions(
             questIds,
@@ -246,7 +256,8 @@ internal static class CliOptions
             Required(values, "report"),
             Required(values, "log"),
             maxMinutes,
-            values.TryGetValue("keep-character", out string? keepCharacter) && !string.IsNullOrWhiteSpace(keepCharacter) ? keepCharacter.Trim() : null);
+            values.TryGetValue("keep-character", out string? keepCharacter) && !string.IsNullOrWhiteSpace(keepCharacter) ? keepCharacter.Trim() : null,
+            missionsFirst);
     }
 
     private static Dictionary<string, string> ParsePairs(string[] args)

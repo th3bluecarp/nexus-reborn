@@ -186,9 +186,19 @@ internal sealed class BotRunner
 
             StartKeepAlive(wholeRun.Token);
 
-            await RunRequestedQuestAsync(wholeRun.Token);
-            if (options.Paths)
+            if (options.Paths && options.MissionsFirst)
+            {
+                // the Explorer, Scientist and Settler legs of a zone get an hour and Algoroc's quest phase alone runs
+                // 95 minutes: their missions come first and the quests fill whatever budget is left
                 await RunPathMissionsAsync(wholeRun.Token);
+                await RunRequestedQuestAsync(wholeRun.Token);
+            }
+            else
+            {
+                await RunRequestedQuestAsync(wholeRun.Token);
+                if (options.Paths)
+                    await RunPathMissionsAsync(wholeRun.Token);
+            }
 
             bool failed = report.Quests.Any(questReport => questReport.Result == "FAIL")
                 || report.Missions.Any(missionReport => missionReport.Result == "FAIL");
@@ -3752,6 +3762,7 @@ internal sealed class BotRunner
     private async Task RunKillObjectiveAsync(QuestObjectiveDefinition objective, CancellationToken cancellationToken)
     {
         uint[] creatureIds = GetObjectiveCreatureIds(objective).ToArray();
+        (Vector3 Center, float Range)[]? areaAnchors = null;
         if (creatureIds.Length == 0 && RequireGameData().IsAreaMarkerTargetGroup(objective.Data))
         {
             // a kill group of type 9 names marker entities (Yeti Extermination: the Cave Entrances of Icemaw Cavern); the server
@@ -3760,10 +3771,20 @@ internal sealed class BotRunner
             log.Info($"objective {objective.Index}: area marker kill group {objective.Data} resolves to hostile creatures near its markers: [{string.Join(',', creatureIds)}]");
             if (creatureIds.Length == 0)
                 throw new BotFailureException($"target group {objective.Data} is an area marker group (TargetGroup type 9) but no hostile spawn stands within {AreaMarkerRange:0} m of its markers in world {questWorldId}");
+            (Spawn[] markers, float markerRange) = AreaMarkerAnchors(objective);
+            areaAnchors = markers.Select(marker => (new Vector3(marker.X, marker.Y, marker.Z), markerRange)).ToArray();
         }
         if (creatureIds.Length == 0)
             throw new BotFailureException($"target group {objective.Data} resolved to no creature ids");
         IReadOnlyList<Spawn> candidates = SpawnsFor(creatureIds, questWorldId);
+        if (areaAnchors is not null)
+        {
+            // only a kill inside the counted radius progresses the objective: with every snoglug of Algoroc a candidate the
+            // bot drifted 270 m from Icemaw Cavern's indicator and none of its fourteen kills counted (Yeti Extermination)
+            int all = candidates.Count;
+            candidates = candidates.Where(spawn => InArea(areaAnchors, new Vector3(spawn.X, spawn.Y, spawn.Z))).ToList();
+            log.Info($"objective {objective.Index}: {candidates.Count} of {all} spawn(s) of the area marker creatures stand inside the counted radius; visible targets outside it are ignored");
+        }
         if (candidates.Count == 0)
             // script-spawned enemies (the arkship Virtual Legionnaires drop in when a Sim-Turret dies) have no database spawn:
             // keep watching for them until the objective budget runs out instead of giving up at once
@@ -3772,24 +3793,41 @@ internal sealed class BotRunner
         IReadOnlySet<uint> objectiveCreatureIds = creatureIds.ToHashSet();
         var spawnVisits = new Dictionary<uint, int>();
         var finishedTargetGuids = new HashSet<uint>();
-        while (!IsObjectiveComplete(objective))
+        combatAreaAnchors = areaAnchors;
+        try
         {
-            TrackedEntity? entity = await AcquireCombatTargetAsync(
-                objective, candidates, objectiveCreatureIds, finishedTargetGuids, spawnVisits, cancellationToken);
-            if (entity is null || IsObjectiveComplete(objective))
-                break;
-            await RequireWorld().SendEncryptedAsync(GameMessageOpcode.ClientEntitySelect,
-                PacketCodec.ClientEntitySelect(entity.Guid), cancellationToken);
+            while (!IsObjectiveComplete(objective))
+            {
+                TrackedEntity? entity = await AcquireCombatTargetAsync(
+                    objective, candidates, objectiveCreatureIds, finishedTargetGuids, spawnVisits, cancellationToken);
+                if (entity is null || IsObjectiveComplete(objective))
+                    break;
+                await RequireWorld().SendEncryptedAsync(GameMessageOpcode.ClientEntitySelect,
+                    PacketCodec.ClientEntitySelect(entity.Guid), cancellationToken);
 
-            uint before = GetRawProgress(objective.Index);
-            bool targetFinished = await FightUntilProgressAsync(
-                objective.Index, before, entity.Guid, cancellationToken);
-            if (targetFinished)
-                finishedTargetGuids.Add(entity.Guid);
+                uint before = GetRawProgress(objective.Index);
+                bool targetFinished = await FightUntilProgressAsync(
+                    objective.Index, before, entity.Guid, cancellationToken);
+                if (targetFinished)
+                    finishedTargetGuids.Add(entity.Guid);
+            }
+        }
+        finally
+        {
+            combatAreaAnchors = null;
         }
     }
 
     private const float AreaMarkerRange = 60f;
+
+    // the area a kill objective counts in (area marker groups): the visible-target search and the spawn candidates stay inside it
+    private IReadOnlyList<(Vector3 Center, float Range)>? combatAreaAnchors;
+
+    private bool InCombatArea(Vector3 position)
+        => combatAreaAnchors is null || InArea(combatAreaAnchors, position);
+
+    private static bool InArea(IReadOnlyList<(Vector3 Center, float Range)> anchors, Vector3 position)
+        => anchors.Any(anchor => Vector3.DistanceSquared(anchor.Center, position) <= anchor.Range * anchor.Range);
     private const float AreaMarkerIndicatorRange = 100f; // UnitEntity.AreaMarkerIndicatorRange
     private const int StunEscapeThreshold = 8;
     private int consecutiveStunResults;
@@ -3797,21 +3835,27 @@ internal sealed class BotRunner
     /// <summary>
     /// Creature ids of the hostile spawns within <see cref="AreaMarkerRange"/> of the marker entities a type 9 target group names.
     /// </summary>
-    private IEnumerable<uint> AreaMarkerCreatureIds(QuestObjectiveDefinition objective)
+    private (Spawn[] Markers, float Range) AreaMarkerAnchors(QuestObjectiveDefinition objective)
     {
         uint targetGroupId = objective.Data;
         IReadOnlyList<uint> markerIds = RequireGameData().AreaMarkerCreatureIds(targetGroupId);
         Spawn[] markers = SpawnsFor(markerIds, questWorldId).ToArray();
-        double range = AreaMarkerRange * (double)AreaMarkerRange;
         if (markers.Length == 0 && objective.WorldLocationId != 0u
             && RequireGameData().TryGetWorldLocation(objective.WorldLocationId) is { } indicator && indicator.WorldId == questWorldId)
         {
             // no marker of the group is spawned (Yeti Extermination's Cave Entrances): the server counts kills within
             // AreaMarkerIndicatorRange of the objective's map indicator instead (SEMANTICS: area marker target groups)
             log.Info($"objective {objective.Index}: no marker of group {targetGroupId} is spawned; using its map indicator {indicator.Id} with a {AreaMarkerIndicatorRange:0} m range");
-            markers = [new Spawn(0u, 0u, questWorldId, indicator.Position0, indicator.Position1, indicator.Position2)];
-            range = AreaMarkerIndicatorRange * (double)AreaMarkerIndicatorRange;
+            return ([new Spawn(0u, 0u, questWorldId, indicator.Position0, indicator.Position1, indicator.Position2)], AreaMarkerIndicatorRange);
         }
+        return (markers, AreaMarkerRange);
+    }
+
+    private IEnumerable<uint> AreaMarkerCreatureIds(QuestObjectiveDefinition objective)
+    {
+        IReadOnlyList<uint> markerIds = RequireGameData().AreaMarkerCreatureIds(objective.Data);
+        (Spawn[] markers, float markerRange) = AreaMarkerAnchors(objective);
+        double range = markerRange * (double)markerRange;
         return spawns
             .Where(spawn => spawn.WorldId == questWorldId && !markerIds.Contains(spawn.CreatureId)
                 && RequireGameData().IsHoldoutHostile(spawn.CreatureId)
@@ -3883,7 +3927,7 @@ internal sealed class BotRunner
     {
         if (currentWorldId != questWorldId || worldLoadPending)
             return null;
-        TrackedEntity? far = entities.FindNearestVisibleNonPlayer(creatureIds, lastPosition, 400f, excludedGuids);
+        TrackedEntity? far = entities.FindNearestVisibleNonPlayer(creatureIds, lastPosition, 400f, excludedGuids, InCombatArea);
         if (far?.Position is not Vector3 position)
             return null;
         float distance = Vector3.Distance(lastPosition, position);
@@ -4697,7 +4741,7 @@ internal sealed class BotRunner
         IReadOnlySet<uint> creatureIds,
         IReadOnlySet<uint> excludedGuids)
         => currentWorldId == worldId && !worldLoadPending
-            ? entities.FindNearestVisibleNonPlayer(creatureIds, lastPosition, 40f, excludedGuids)
+            ? entities.FindNearestVisibleNonPlayer(creatureIds, lastPosition, 40f, excludedGuids, InCombatArea)
             : null;
 
     private async Task WaitForLocalTeleportAsync(CancellationToken cancellationToken)

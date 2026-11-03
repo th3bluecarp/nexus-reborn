@@ -108,7 +108,8 @@ internal sealed class EntityTracker
         IReadOnlySet<uint> creatureIds,
         Vector3 origin,
         float radius,
-        IReadOnlySet<uint>? excludedGuids = null)
+        IReadOnlySet<uint>? excludedGuids = null,
+        Func<Vector3, bool>? positionFilter = null)
     {
         double radiusSquared = radius * radius;
         return entities.Values
@@ -119,7 +120,8 @@ internal sealed class EntityTracker
                 && (excludedGuids is null || !excludedGuids.Contains(entity.Guid))
                 && entity.Health is null or > 0u
                 && entity.Position is Vector3 position
-                && Vector3.DistanceSquared(origin, position) <= radiusSquared)
+                && Vector3.DistanceSquared(origin, position) <= radiusSquared
+                && (positionFilter is null || positionFilter(position)))
             .OrderBy(entity => Vector3.DistanceSquared(origin, entity.Position!.Value))
             .ThenBy(entity => entity.Guid)
             .FirstOrDefault();
