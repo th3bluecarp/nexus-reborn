@@ -4,6 +4,7 @@ Newest first. "Live" means running on our test server.
 
 ## 2026-11-03
 
+- **An accept that fails its prerequisites is refused, not thrown**: the server threw on it (an error in the session's handler); a client can race one by accepting a zone-gated quest a step after leaving the zone. The quest bot now accepts a zone-gated quest (A Hidden Threat in The Hidden Grotto) while standing in the zone instead of walking off to the giver first.
 - **A quest NPC stays in view while the player carries a quest only it turns in**: Sergeant Kormak (16664) hides once He's the Brains is done and his later copy takes over, but Technical Difficulties and DRED Reckoning still hand in to the first one and the copy does not take them; the quest bot lost both. A creature whose visibility prerequisite fails is kept visible while an accepted or achieved quest of the player is in its receive list (SEMANTICS: quest receivers stay visible).
 
 ## 2026-11-02

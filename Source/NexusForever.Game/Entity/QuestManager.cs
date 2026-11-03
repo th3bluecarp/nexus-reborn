@@ -563,10 +563,14 @@ namespace NexusForever.Game.Entity
                     throw new QuestException($"Player {player.CharacterId} tried to start quest {info.Entry.Id} without quest giver!");
             }
 
-            // server doesn't send an error message for prerequisites since the client does the exact same checks
-            // it's assumed that a player could never get here without cheating in some way
+            // server doesn't send an error message for prerequisites since the client does the exact same checks; a client
+            // can still race one (an accept sent a step after leaving the zone a prerequisite names): refused, not an error
+            // that costs the session
             if (!MeetsPrerequisites(info))
-                throw new QuestException($"Player {player.CharacterId} tried to start quest {info.Entry.Id} without meeting the prerequisites!");
+            {
+                log.LogWarning($"Player {player.CharacterId} tried to start quest {info.Entry.Id} without meeting the prerequisites; refused.");
+                return;
+            }
 
             QuestAdd(info);
         }

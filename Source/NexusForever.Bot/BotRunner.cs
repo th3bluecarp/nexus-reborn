@@ -2422,10 +2422,23 @@ internal sealed class BotRunner
                         ?? throw new BotFailureException($"no WorldLocation2 lies in zone {requiredZone} of world {questWorldId}");
                     await TeleportToLocationAsync(location, 0f, token);
                     await DrainWorldPacketsAsync(TimeSpan.FromSeconds(1), token);
-                    return $"zone {requiredZone} via WorldLocation2 {location.Id} ({location.Position0:0},{location.Position1:0},{location.Position2:0})";
+                    string where = $"zone {requiredZone} via WorldLocation2 {location.Id} ({location.Position0:0},{location.Position1:0},{location.Position2:0})";
+                    // the quest's own prerequisite is the zone: accept here, before walking off to the giver (A Hidden Threat's
+                    // communicator call fires in The Hidden Grotto and the accept from its giver outside was refused)
+                    if (questState != QuestState.Mentioned)
+                        await TryWaitForQuestStateAsync(QuestState.Mentioned, TimeSpan.FromSeconds(8), token);
+                    await RequireWorld().SendEncryptedAsync(GameMessageOpcode.ClientQuestAccept,
+                        PacketCodec.ClientQuestAccept(definition.Id), token);
+                    bool acceptedHere = await TryWaitForQuestStateAsync(QuestState.Accepted, TimeSpan.FromSeconds(5), token);
+                    return where + (acceptedHere ? "; accepted in the zone" : $"; accept in the zone not confirmed (state {questState}), trying the giver");
                 });
             }
-            await RunQuestStepAsync("accept quest", acceptTimeout, cancellationToken, AcceptQuestAsync);
+            if (questState == QuestState.Accepted)
+            {
+                questReport.Steps.Add(new StepReport { Name = "accept quest", Ok = true, ElapsedMs = 0, Detail = "accepted in the prerequisite zone" });
+            }
+            else
+                await RunQuestStepAsync("accept quest", acceptTimeout, cancellationToken, AcceptQuestAsync);
             await LevelForQuestIfNeededAsync(definition, cancellationToken);
 
             foreach (QuestObjectiveDefinition objective in definition.Objectives)
