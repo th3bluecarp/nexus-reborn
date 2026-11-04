@@ -648,11 +648,7 @@ internal sealed class BotRunner
                 finishedQuests.Add(definition.Id);
                 continue;
             }
-            TimeSpan questTimeout = HasSingleTargetKillRetry(definition)
-                ? PerQuestTimeout + CombatTimeout + TimeSpan.FromSeconds(60)
-                : PerQuestTimeout;
-            if (StartItem(definition) != 0u)
-                questTimeout += ItemDropAcceptTimeout;
+            TimeSpan questTimeout = QuestBudget(definition);
             using var questBudget = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
             questBudget.CancelAfter(questTimeout);
             try
@@ -2504,46 +2500,7 @@ internal sealed class BotRunner
                     });
                     continue;
                 }
-                TimeSpan timeout = objective.Type is QuestObjectiveType.KillCreature
-                    or QuestObjectiveType.KillCreature2
-                    or QuestObjectiveType.KillTargetGroup
-                    or QuestObjectiveType.KillTargetGroups
-                    or QuestObjectiveType.GatheResource
-                    // seven Augmented Gronyx (Grafted Gronyx, difficulty 4) took about 40 s each with the teleport between them and
-                    // overran the flat 300 s on the seventh: 50 s per kill, never under the combat budget
-                    ? TimeSpan.FromSeconds(Math.Max(CombatTimeout.TotalSeconds, Math.Max(1u, objective.Count) * 50d + 30d))
-                    // a virtual item held by hostile creatures (Rockridge Rascals: Arifo the Rascal, a named with 1.75x stats) is a fight
-                    : objective.Type == QuestObjectiveType.VirtualCollect && VirtualCollectIsFight(objective)
-                        ? TimeSpan.FromSeconds(Math.Max((uint)CombatTimeout.TotalSeconds, Math.Max(1u, objective.Count) * 55u))
-                    : objective.Type == QuestObjectiveType.VirtualCollect
-                        ? TimeSpan.FromSeconds(Math.Max(1u, objective.Count) * 55u)
-                    : objective.Type == QuestObjectiveType.SucceedCSI
-                        ? TimeSpan.FromSeconds(60)
-                    // a quest ability cast per target (Use Augmented Remains on eight constructs: a 3 s cast and a fight each)
-                    : objective.Type == QuestObjectiveType.SpellSuccess
-                        ? TimeSpan.FromSeconds(Math.Max(120u, Math.Max(1u, objective.Count) * 45u))
-                    // items collected by using units or looted from kills (By Leaps and Bounds: eight loftite fragments that drop
-                    // from 44 % of boulderback kills, so eighteen fights of about 25 s on average and the odd health recovery;
-                    // 390 s failed three legs of four): 75 s per item plus a respawn wait
-                    : objective.Type == QuestObjectiveType.CollectItem
-                        ? TimeSpan.FromSeconds(Math.Max(75u, Math.Max(1u, objective.Count) * 75u + 30u))
-                        : DefaultStepTimeout;
-                if (objective.Type is QuestObjectiveType.ActivateEntity
-                    or QuestObjectiveType.ActivateTargetGroup
-                    or QuestObjectiveType.ActivateTargetGroupChecklist
-                    or QuestObjectiveType.Unknown10
-                    or QuestObjectiveType.Unknown28
-                    or QuestObjectiveType.VirtualCollect
-                    or QuestObjectiveType.GatheResource
-                    or QuestObjectiveType.SucceedCSI)
-                {
-                    timeout = AllowEveryObjectiveSpawnAttempt(objective, timeout);
-                    // a used unit comes back on the respawn timer; the activation flow waits for it twice (35 s each)
-                    if (objective.Type == QuestObjectiveType.ActivateEntity && timeout < TimeSpan.FromSeconds(150))
-                        timeout = TimeSpan.FromSeconds(150);
-                }
-                if (IsSingleTargetKillRetryObjective(objective))
-                    timeout = SingleTargetKillRetryTimeout;
+                TimeSpan timeout = ObjectiveTimeout(objective);
                 await RunQuestStepAsync($"objective {objective.Index}", timeout, cancellationToken,
                     token => RunObjectiveWithRetriesAsync(objective, definition, token));
             }
@@ -2581,11 +2538,75 @@ internal sealed class BotRunner
 
     private TimeSpan AllowEveryObjectiveSpawnAttempt(
         QuestObjectiveDefinition objective,
-        TimeSpan baseline)
+        TimeSpan baseline,
+        ushort? worldId = null)
     {
-        int spawnCount = SpawnsFor(GetObjectiveCreatureIds(objective), questWorldId).Count;
+        int spawnCount = SpawnsFor(GetObjectiveCreatureIds(objective), worldId ?? questWorldId).Count;
         double everySpawnSeconds = spawnCount * EntityStreamTimeout.TotalSeconds * 2d + 15d;
         return TimeSpan.FromSeconds(Math.Max(baseline.TotalSeconds, everySpawnSeconds));
+    }
+
+    /// <summary>
+    /// The budget of one objective step: by type and count, never under the time to try every spawn of its creatures.
+    /// </summary>
+    private TimeSpan ObjectiveTimeout(QuestObjectiveDefinition objective, ushort? worldId = null)
+    {
+        TimeSpan timeout = objective.Type is QuestObjectiveType.KillCreature
+            or QuestObjectiveType.KillCreature2
+            or QuestObjectiveType.KillTargetGroup
+            or QuestObjectiveType.KillTargetGroups
+            or QuestObjectiveType.GatheResource
+            // seven Augmented Gronyx (Grafted Gronyx, difficulty 4) took about 40 s each with the teleport between them and
+            // overran the flat 300 s on the seventh: 50 s per kill, never under the combat budget
+            ? TimeSpan.FromSeconds(Math.Max(CombatTimeout.TotalSeconds, Math.Max(1u, objective.Count) * 50d + 30d))
+            // a virtual item held by hostile creatures (Rockridge Rascals: Arifo the Rascal, a named with 1.75x stats) is a fight
+            : objective.Type == QuestObjectiveType.VirtualCollect && VirtualCollectIsFight(objective)
+                ? TimeSpan.FromSeconds(Math.Max((uint)CombatTimeout.TotalSeconds, Math.Max(1u, objective.Count) * 55u))
+            : objective.Type == QuestObjectiveType.VirtualCollect
+                ? TimeSpan.FromSeconds(Math.Max(1u, objective.Count) * 55u)
+            : objective.Type == QuestObjectiveType.SucceedCSI
+                ? TimeSpan.FromSeconds(60)
+            // a quest ability cast per target (Use Augmented Remains on eight constructs: a 3 s cast and a fight each)
+            : objective.Type == QuestObjectiveType.SpellSuccess
+                ? TimeSpan.FromSeconds(Math.Max(120u, Math.Max(1u, objective.Count) * 50u))
+            // items collected by using units or looted from kills (By Leaps and Bounds: eight loftite fragments that drop
+            // from 44 % of boulderback kills, so eighteen fights of about 25 s on average and the odd health recovery;
+            // 390 s failed three legs of four): 75 s per item plus a respawn wait
+            : objective.Type == QuestObjectiveType.CollectItem
+                ? TimeSpan.FromSeconds(Math.Max(75u, Math.Max(1u, objective.Count) * 75u + 30u))
+                : DefaultStepTimeout;
+        if (objective.Type is QuestObjectiveType.ActivateEntity
+            or QuestObjectiveType.ActivateTargetGroup
+            or QuestObjectiveType.ActivateTargetGroupChecklist
+            or QuestObjectiveType.Unknown10
+            or QuestObjectiveType.Unknown28
+            or QuestObjectiveType.VirtualCollect
+            or QuestObjectiveType.GatheResource
+            or QuestObjectiveType.SucceedCSI)
+        {
+            timeout = AllowEveryObjectiveSpawnAttempt(objective, timeout, worldId);
+            // a used unit comes back on the respawn timer; the activation flow waits for it twice (35 s each)
+            if (objective.Type == QuestObjectiveType.ActivateEntity && timeout < TimeSpan.FromSeconds(150))
+                timeout = TimeSpan.FromSeconds(150);
+        }
+        if (IsSingleTargetKillRetryObjective(objective))
+            timeout = SingleTargetKillRetryTimeout;
+        return timeout;
+    }
+
+    /// <summary>
+    /// The per-quest budget is a safety net over the step timeouts: the accept wait plus every required objective's budget
+    /// plus the achieved and turn-in steps, never under the flat 8 minutes. The flat budget alone cut Grafted Gronyx (seven
+    /// kills of 50 s and then a second kill objective) and By Leaps and Bounds (eight 44 % drops at 75 s each) short.
+    /// </summary>
+    private TimeSpan QuestBudget(QuestDefinition definition)
+    {
+        ushort worldId = DetermineQuestWorld(definition);
+        double seconds = (StartItem(definition) == 0u ? DefaultStepTimeout : ItemDropAcceptTimeout).TotalSeconds
+            + definition.Objectives.Where(objective => (objective.Flags & 0x20u) == 0u)
+                .Sum(objective => ObjectiveTimeout(objective, worldId).TotalSeconds)
+            + DefaultStepTimeout.TotalSeconds * 2d + 60d;
+        return TimeSpan.FromSeconds(Math.Max(PerQuestTimeout.TotalSeconds, seconds));
     }
 
     private static TimeSpan AllowEveryQuestNpcSpawnAttempt(int spawnCount, TimeSpan baseline)
@@ -3832,7 +3853,7 @@ internal sealed class BotRunner
         }
     }
 
-    private async Task<bool> CastQuestAbilityAsync(QuestObjectiveDefinition objective, TrackedEntity entity, CancellationToken cancellationToken)
+    private async Task<bool> CastQuestAbilityAsync(QuestObjectiveDefinition objective, TrackedEntity entity, CancellationToken cancellationToken, int cooldownRetries = 0)
     {
         await FaceCombatTargetAsync(entity.Guid, true, cancellationToken);
         uint before = GetRawProgress(objective.Index);
@@ -3848,6 +3869,16 @@ internal sealed class BotRunner
             if (response.Result is SpellCastResult result && result.Result != CastResult.Ok)
             {
                 log.Info($"objective {objective.Index}: quest ability {objective.Data} refused: {result.Result}(0x{(uint)result.Result:X4})");
+                // the cast right after a fight lands in the global cooldown of the last combat ability (Unconventional
+                // Technology: every second target was skipped that way), and the ability has its own cooldown (10 s on
+                // Augmented Remains): wait it out and cast at the same target again
+                if (result.Result is CastResult.SpellGlobalCooldown or CastResult.SpellCooldown && cooldownRetries < 3)
+                {
+                    pendingActivationCastIds.Remove(clientUniqueId);
+                    activationCastResults.Remove(clientUniqueId);
+                    await DrainWorldPacketsAsync(result.Result == CastResult.SpellCooldown ? TimeSpan.FromSeconds(10) : TimeSpan.FromSeconds(1.5), cancellationToken);
+                    return await CastQuestAbilityAsync(objective, entity, cancellationToken, cooldownRetries + 1);
+                }
                 return false;
             }
             // the cast runs its cast time (2-3 s) before the server credits the objective
