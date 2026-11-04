@@ -653,7 +653,19 @@ internal sealed class BotRunner
                 finishedQuests.Add(definition.Id);
                 continue;
             }
-            TimeSpan questTimeout = QuestBudget(definition);
+            TimeSpan questTimeout;
+            try
+            {
+                questTimeout = QuestBudget(definition);
+            }
+            catch (BotFailureException exception)
+            {
+                // the quest world cannot be determined (no giver spawn and no communicator offer): that quest fails, not the run
+                // (the first Celestion soldier leg ended after Doom's Sting with the zone still to do)
+                AddFailedQuestReport(definition, exception.Message);
+                finishedQuests.Add(definition.Id);
+                continue;
+            }
             using var questBudget = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
             questBudget.CancelAfter(questTimeout);
             try
@@ -2324,6 +2336,17 @@ internal sealed class BotRunner
             : RequireGameData().MissingQuestStatePrerequisite(definition.Entry, completedQuests.Contains);
     }
 
+    private void AddFailedQuestReport(QuestDefinition definition, string failure)
+    {
+        QuestRunReport questReport = CreateQuestReport(definition);
+        questReport.Result = "FAIL";
+        questReport.Failure = failure;
+        questReport.EndTimestamp = DateTimeOffset.UtcNow;
+        questReport.Steps.Add(new StepReport { Name = "accept quest", Ok = false, ElapsedMs = 0, Detail = failure });
+        report.Quests.Add(questReport);
+        log.Info($"quest {definition.Id} FAIL: {failure}");
+    }
+
     private void AddBlockedQuestReport(QuestDefinition definition, ushort prerequisiteId)
     {
         QuestRunReport questReport = CreateQuestReport(definition);
@@ -2493,6 +2516,21 @@ internal sealed class BotRunner
             {
                 // optional objectives (flag 0x20: "Purchase ... from the In-Game Store" on Lots in Store!) are completed by the
                 // server once the required ones are done; the bot does not attempt them
+                // hidden script steps (type 10 with no target: From the Ashes of Greenbough, Predators and Prey) are completed by the
+                // server once every other step is done (SEMANTICS: hidden script steps complete themselves)
+                if (objective.Type == QuestObjectiveType.Unknown10 && objective.Data == 0u && objective.RewardTargetGroupId == 0u
+                    && !IsObjectiveComplete(objective))
+                {
+                    log.Info($"quest {definition.Id} objective {objective.Index}: hidden script step (type 10, no target), left to the server");
+                    questReport.Steps.Add(new StepReport
+                    {
+                        Name = $"objective {objective.Index}",
+                        Ok = true,
+                        ElapsedMs = 0,
+                        Detail = "hidden script step (type 10, no target) left to the server"
+                    });
+                    continue;
+                }
                 if ((objective.Flags & 0x20u) != 0u && !IsObjectiveComplete(objective))
                 {
                     log.Info($"quest {definition.Id} objective {objective.Index}: optional (flags 0x{objective.Flags:X}), skipped");
@@ -3621,6 +3659,19 @@ internal sealed class BotRunner
         CancellationToken cancellationToken)
     {
         uint[] creatureIds = GetObjectiveCreatureIds(objective).ToArray();
+        if (creatureIds.Length == 0 && RequireGameData().IsAreaMarkerTargetGroup(objective.Data))
+        {
+            // a type 9 group may name the creatures to talk to themselves (A Fiery Escape's Trapped Aurin: Frazzle, Frizz); when any
+            // of them is spawned they are the targets
+            uint[] markerIds = RequireGameData().AreaMarkerCreatureIds(objective.Data)
+                .Where(id => SpawnsFor([id], questWorldId).Count > 0)
+                .ToArray();
+            if (markerIds.Length > 0)
+            {
+                log.Info($"objective {objective.Index}: type 9 group {objective.Data} names spawned creatures [{string.Join(',', markerIds)}]; talking to them");
+                creatureIds = markerIds;
+            }
+        }
         if (creatureIds.Length == 0 && RequireGameData().IsAreaMarkerTargetGroup(objective.Data))
         {
             // TargetGroup type 9 names marker entities (Icemaw Cavern's Cave Entrances): the kills that count are the hostile

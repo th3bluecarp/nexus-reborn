@@ -1061,6 +1061,13 @@ internal sealed class BotGameData
                 bool met = true;
                 switch (prerequisite.PrerequisiteTypeId[i])
                 {
+                    // an objective of quest ObjectId complete (Composing a Toxoid and Flush the Ambush follow Predators and Prey): that
+                    // quest done satisfies it, and a quest the bot failed blocks this one like a missing state prerequisite
+                    case PrerequisiteType.QuestObjective when prerequisite.ObjectId[i] != 0u && prerequisite.ObjectId[i] <= ushort.MaxValue:
+                        met = isCompleted((ushort)prerequisite.ObjectId[i]);
+                        if (!met)
+                            missing ??= (ushort)prerequisite.ObjectId[i];
+                        break;
                     // Achieved (2) counts as done: the bot turns a quest in right after it is achieved, and a quest it failed is neither
                     case PrerequisiteType.QuestState when prerequisite.PrerequisiteComparisonId[i] == PrerequisiteComparison.Equal
                         && prerequisite.Value[i] is 2u or 3u && prerequisite.ObjectId[i] != 0u && prerequisite.ObjectId[i] <= ushort.MaxValue:
@@ -1133,6 +1140,9 @@ internal sealed class BotGameData
                 if (prerequisite.PrerequisiteTypeId[i] == PrerequisiteType.QuestState
                     && prerequisite.PrerequisiteComparisonId[i] == PrerequisiteComparison.Equal
                     && prerequisite.Value[i] == 3u && prerequisite.ObjectId[i] != 0u && prerequisite.ObjectId[i] <= ushort.MaxValue)
+                    result.Add((ushort)prerequisite.ObjectId[i]);
+                else if (prerequisite.PrerequisiteTypeId[i] == PrerequisiteType.QuestObjective
+                    && prerequisite.ObjectId[i] != 0u && prerequisite.ObjectId[i] <= ushort.MaxValue)
                     result.Add((ushort)prerequisite.ObjectId[i]);
                 else if (prerequisite.PrerequisiteTypeId[i] == PrerequisiteType.OtherPrerequisite)
                     Collect(prerequisite.ObjectId[i], depth + 1);

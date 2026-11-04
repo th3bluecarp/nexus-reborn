@@ -112,6 +112,21 @@ namespace NexusForever.Game
                 }
             }
 
+            // marker groups (type 9) also name the creatures a rescue step talks to (A Fiery Escape's Trapped Aurin: Frazzle and
+            // Frizz); a talk or use of those creatures credits the group like a creature group
+            foreach (TargetGroupEntry entry in GameTableManager.Instance.TargetGroup.Entries
+                .Where(e => (TargetGroupType)e.Type == TargetGroupType.Unknown9))
+            {
+                foreach (uint creatureId in entry.DataEntries.Where(v => v != 0u && GameTableManager.Instance.Creature2.GetEntry(v) != null))
+                {
+                    if (!entries.ContainsKey(creatureId))
+                        entries.Add(creatureId, new List<uint>());
+
+                    if (!entries[creatureId].Contains(entry.Id))
+                        entries[creatureId].Add(entry.Id);
+                }
+            }
+
             // faction groups ("weaken constructs and augmented beings": every creature of the Eldan, canimid and augmented
             // factions) and creature race groups name creatures by Creature2 faction or race; index those creatures too, or
             // the spell and kill objectives built on them (Unconventional Technology) never credit

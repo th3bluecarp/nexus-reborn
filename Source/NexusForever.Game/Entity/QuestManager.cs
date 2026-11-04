@@ -167,7 +167,7 @@ namespace NexusForever.Game.Entity
             if (player.Map == null)
                 return;
 
-            var updates = new List<(IQuest Quest, uint ObjectiveId)>();
+            var updates = new List<(IQuest Quest, uint ObjectiveId, uint Progress)>();
             foreach (IQuest quest in activeQuests.Values)
             {
                 if (quest.State != QuestState.Accepted)
@@ -182,12 +182,16 @@ namespace NexusForever.Game.Entity
                     bool targetless = objective.ObjectiveInfo.Type == QuestObjectiveType.ActivateEntity
                         && objective.ObjectiveInfo.Data == 0u && entry.TargetGroupIdRewardPane == 0u
                         && objective.ObjectiveInfo.EquipItemId == 0u;
+                    // type 10 steps with no target (From the Ashes of Greenbough's fifth planting, Predators and Prey's fourth cage; 36 game
+                    // wide) were scripted updates; they complete like the hidden activate steps below
+                    bool hiddenScriptStep = objective.ObjectiveInfo.Type == QuestObjectiveType.Unknown10
+                        && objective.ObjectiveInfo.Data == 0u && entry.TargetGroupIdRewardPane == 0u;
 
                     // EnterArea, and activate objectives with nothing to activate but a place to go (Follow the power cables,
                     // Investigate ship wreckage), complete inside the indicator location
                     if ((objective.ObjectiveInfo.Type == QuestObjectiveType.EnterArea || (targetless && HasIndicator(entry)))
                         && IsInObjectiveArea(entry))
-                        updates.Add((quest, objective.ObjectiveInfo.Id));
+                        updates.Add((quest, objective.ObjectiveInfo.Id, HoldProgress(objective)));
 
                     // an EnterArea objective without an indicator was a map trigger volume we do not have; its Data is a world zone
                     // for some (Corrupted Reconnaissance: 4350), standing in that zone or one of its sub zones completes it. For the
@@ -195,7 +199,7 @@ namespace NexusForever.Game.Entity
                     // completes near the creature it names or at the location it links
                     else if (objective.ObjectiveInfo.Type == QuestObjectiveType.EnterArea && !HasIndicator(entry)
                         && (entry.Data != 0u && IsInWorldZone(entry.Data) || IsNearTextCreature(entry) || IsAtTextLocation(entry)))
-                        updates.Add((quest, objective.ObjectiveInfo.Id));
+                        updates.Add((quest, objective.ObjectiveInfo.Id, 1u));
 
                     // complete an event whose public event cannot run here (no longer in the client data, or on a map that does not
                     // load): holding the objective's place for EventFallbackTime stands in for the event
@@ -209,7 +213,7 @@ namespace NexusForever.Game.Entity
                             if (held >= EventFallbackTime)
                             {
                                 eventFallback.Remove(objective.ObjectiveInfo.Id);
-                                updates.Add((quest, objective.ObjectiveInfo.Id));
+                                updates.Add((quest, objective.ObjectiveInfo.Id, 1u));
                             }
                         }
                         else
@@ -218,18 +222,26 @@ namespace NexusForever.Game.Entity
 
                     // a hidden step with no text, target or place (the last step of Contact with Thayd) was finished by a lost
                     // script once the other steps were done
-                    else if (targetless && !HasIndicator(entry) && (HasNoText(entry) || objective.ObjectiveInfo.IsHidden())
+                    else if ((targetless && !HasIndicator(entry) || hiddenScriptStep) && (HasNoText(entry) || objective.ObjectiveInfo.IsHidden())
                         && quest.Any(o => o != objective && !o.ObjectiveInfo.IsOptional())
                         && quest.Where(o => o != objective).All(o => o.IsComplete() || o.ObjectiveInfo.IsOptional()))
-                        updates.Add((quest, objective.ObjectiveInfo.Id));
+                        updates.Add((quest, objective.ObjectiveInfo.Id, objective.ObjectiveInfo.Entry.Count));
                 }
             }
 
-            foreach ((IQuest quest, uint objectiveId) in updates)
-                quest.ObjectiveUpdate(objectiveId, 1u);
+            foreach ((IQuest quest, uint objectiveId, uint progress) in updates)
+                quest.ObjectiveUpdate(objectiveId, progress);
         }
 
         private const double EventFallbackTime = 20d;
+
+        /// <summary>
+        /// Progress per second for an activate objective with a place but nothing to activate: a Count of 1 fills in a second, a
+        /// bar such as The Protectors of Celestion's 3500 reputation (hunting with Aurin Hunters watching, a lost script) in 20 s
+        /// of holding the place (SEMANTICS: places with nothing to activate).
+        /// </summary>
+        private static uint HoldProgress(IQuestObjective objective)
+            => Math.Max(1u, (uint)Math.Ceiling(objective.ObjectiveInfo.Entry.Count / 20d));
         private readonly Dictionary<uint, double> eventFallback = [];
 
         /// <summary>
