@@ -42,3 +42,15 @@ INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY
 (1300011,0,35249,51,786,4866.0,-1023.89,-4235.0,0,0,0,24340,0,219,219,0),
 (1300012,0,35249,51,786,4878.0,-1023.89,-4235.0,0,0,0,24340,0,219,219,0);
 INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1300009,10,13),(1300009,15,0),(1300010,10,13),(1300010,15,0),(1300011,10,13),(1300011,15,0),(1300012,10,13),(1300012,15,0);
+
+-- Enraged Grimstone Manglers (creature 18902) for Carcass Discovery (quest 4539): its starter Dead Chua's Datapad (item 12320) drops from the Enraged Grimstone Mangler at 20%,
+-- and from the Grimstone cave's Grimstone Mangler (20215) at 6.84%, Grimstone Digger (4148) at 1.5% and Grimstone Ravager (61561) at 2.15% (Jabbithole rates in loot.sql).
+-- The world database spawns a single Enraged one (entity 1162, the Tree Hugger quest's) against 31 of the weak sources, so three bot runs killed 21-33 cave creatures in 9-14 minutes
+-- without a datapad. Four more stand beside Grimstone Mangler spawns 1536, 1539, 1541 and 1543 across the cave (area 694); display 21553, faction 190 and stats copied from 1162 (2026-11-04).
+-- Entity ids 1300013-1300016.
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`,`QuestChecklistIdx`) VALUES
+(1300013,0,18902,51,694,3246.67,-1023.90,-3950.48,0,0,0,21553,0,190,190,0),
+(1300014,0,18902,51,694,3255.01,-1010.64,-3862.56,0,0,0,21553,0,190,190,0),
+(1300015,0,18902,51,694,3063.02,-980.02,-3855.63,0,0,0,21553,0,190,190,0),
+(1300016,0,18902,51,694,2884.94,-970.74,-3811.69,0,0,0,21553,0,190,190,0);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1300013,0,1262),(1300013,10,7),(1300013,15,0),(1300014,0,1262),(1300014,10,7),(1300014,15,0),(1300015,0,1262),(1300015,10,7),(1300015,15,0),(1300016,0,1262),(1300016,10,7),(1300016,15,0);

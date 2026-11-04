@@ -4,6 +4,7 @@ Newest first. "Live" means running on our test server.
 
 ## 2026-11-04
 
+- **Enraged Grimstone Manglers for Carcass Discovery** (world data, `data/quest_fixes.sql`): the Dead Chua's Datapad that starts Carcass Discovery drops from the Enraged Grimstone Mangler at 20% and from the cave's Grimstone Manglers, Diggers and Ravagers at 7%, 1.5% and 2%, and the world database spawned a single Enraged one, the Tree Hugger quest's. Three bot runs killed 21 to 33 cave creatures in 9 to 14 minutes and never saw a datapad. Four more Enraged Grimstone Manglers now stand beside Grimstone Mangler spawns across the cave (entity ids 1300013-1300016, display, faction and stats from the original). The server reads spawns at start, so it takes effect at the next deploy.
 - **Holdout waves sized for one soldier**: waves brought 2, 3, 4 then 5 enemies on a 35 s timer, drawn at random from everything hostile near the control point, Prime-rank elites included. Mechanical Hostiles (M314) drew its Prime Site 14 guard (1.75x damage) in waves 2, 3 (twice) and 4 and the bot entered the boss wave at half health with seven enemies alive; the same holdout had passed the run before with two Primes fewer. Waves are now 2, 3, 3 and the boss with two companions, and creatures of Superior rank and above stay out of the pool while anything else lives there. **Bot: a drop-started quest waits 14 minutes for its drop** (bot only): Carcass Discovery's datapad (20 % of Enraged Grimstone Manglers) did not fall in 16 kills; 21 kills give 99 %.
 
 ## 2026-11-03

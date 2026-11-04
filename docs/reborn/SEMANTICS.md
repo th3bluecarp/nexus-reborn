@@ -138,7 +138,7 @@ Confidence: **High** = consistent across all the data we checked and no counter 
 | quest targets with no Jabbithole page | placed at the objective indicator world locations, terrain height from the map files | Low | 121 creatures | the marker may be an area centre, not where the creature stood |
 | loot tables | observed drops / (kills + 5), a small sample correction; quest items only while their CollectItem objective is open | Medium | small samples on rare creatures; quest item rates are per kill of players who happened to be on the quest |
 | creature abilities | spells seen on the Abilities tab; instant ones as auto attacks | Low | not the real rotation or conditions |
-| quest-starter creatures | creatures that only drop a quest-starting item are neither givers nor objectives, so the spawn builder skips them; the Coldburrow Xenobreeder (Off with Her Head!) is placed by hand at the three quest-marker positions in its Coldburrow Cavern pin cluster, three Superior spawns at level 5, with its archived drops (data/quest_fixes.sql) | Medium | retail count and exact spots unknown |
+| quest-starter creatures | creatures that only drop a quest-starting item are neither givers nor objectives, so the spawn builder skips them; the Coldburrow Xenobreeder (Off with Her Head!) is placed by hand at the three quest-marker positions in its Coldburrow Cavern pin cluster, three Superior spawns at level 5, with its archived drops (data/quest_fixes.sql) | Medium | retail count and exact spots unknown; the Enraged Grimstone Mangler (Carcass Discovery's datapad at 20%, the cave's other girroks at 1.5-7%) had one spawn, four more stand beside the Grimstone Mangler spawns across the cave (2026-11-04) |
 
 
 ## Other invented values
