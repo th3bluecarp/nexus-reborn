@@ -18,10 +18,21 @@ internal sealed record Spawn(uint Id, uint CreatureId, ushort WorldId, float X, 
     }
 }
 
+/// <summary>
+/// Where an item drops: the creatures and container items whose loot groups hold it, with each creature's chance per kill
+/// in percent (the item row's probability times every group probability up the chain to the root group).
+/// </summary>
 internal sealed record ItemDropSources(
     uint ItemId,
     IReadOnlyList<uint> CreatureIds,
-    IReadOnlyList<uint> ContainerItemIds);
+    IReadOnlyList<uint> ContainerItemIds,
+    IReadOnlyDictionary<uint, double> CreatureRates)
+{
+    public double RateOf(uint creatureId) => CreatureRates.GetValueOrDefault(creatureId);
+
+    public string DescribeCreatures()
+        => string.Join(',', CreatureIds.OrderByDescending(RateOf).Select(id => $"{id}@{RateOf(id):0.#}%"));
+}
 
 internal static class BotDatabase
 {
@@ -227,14 +238,18 @@ internal static class BotDatabase
 
         foreach (uint itemId in ids)
         {
-            uint[] creatureIds = await LoadLootOwnersAsync(connection, "entity_loot", itemId, cancellationToken);
-            uint[] containerItemIds = await LoadLootOwnersAsync(connection, "item_loot", itemId, cancellationToken);
-            result[itemId] = new ItemDropSources(itemId, creatureIds, containerItemIds);
+            (uint Id, double Rate)[] creatures = await LoadLootOwnersAsync(connection, "entity_loot", itemId, cancellationToken);
+            (uint Id, double Rate)[] containers = await LoadLootOwnersAsync(connection, "item_loot", itemId, cancellationToken);
+            result[itemId] = new ItemDropSources(
+                itemId,
+                creatures.Select(owner => owner.Id).ToArray(),
+                containers.Select(owner => owner.Id).ToArray(),
+                creatures.ToDictionary(owner => owner.Id, owner => owner.Rate));
         }
         return result;
     }
 
-    private static async Task<uint[]> LoadLootOwnersAsync(
+    private static async Task<(uint Id, double Rate)[]> LoadLootOwnersAsync(
         MySqlConnection connection,
         string ownerTable,
         uint itemId,
@@ -246,28 +261,29 @@ internal static class BotDatabase
         await using var command = connection.CreateCommand();
         command.CommandText =
             $"""
-            WITH RECURSIVE item_groups (id) AS
+            WITH RECURSIVE item_groups (id, rate) AS
             (
-                SELECT li.id
+                SELECT li.id, li.probability / 100
                 FROM loot_item li
                 WHERE li.type = 0 AND li.staticId = @itemId
                 UNION DISTINCT
-                SELECT lg.parentId
+                SELECT lg.parentId, child.rate * lg.probability / 100
                 FROM loot_group lg
                 INNER JOIN item_groups child ON child.id = lg.id
                 WHERE lg.parentId IS NOT NULL
             )
-            SELECT DISTINCT owner.id
+            SELECT owner.id, MAX(groups_with_item.rate) * 100
             FROM {ownerTable} owner
             INNER JOIN item_groups groups_with_item ON groups_with_item.id = owner.lootGroupId
+            GROUP BY owner.id
             ORDER BY owner.id
             """;
         command.Parameters.AddWithValue("@itemId", itemId);
 
-        var owners = new List<uint>();
+        var owners = new List<(uint Id, double Rate)>();
         await using MySqlDataReader reader = await command.ExecuteReaderAsync(cancellationToken);
         while (await reader.ReadAsync(cancellationToken))
-            owners.Add(reader.GetFieldValue<uint>(0));
+            owners.Add((reader.GetFieldValue<uint>(0), reader.IsDBNull(1) ? 0d : Convert.ToDouble(reader.GetValue(1))));
         return owners.ToArray();
     }
 

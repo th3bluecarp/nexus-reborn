@@ -3228,25 +3228,43 @@ internal sealed class BotRunner
                 throw new BotFailureException($"No spawn in world {questWorldId} for item {itemId} drop source(s) {string.Join(',', sources.CreatureIds)}.");
 
             IReadOnlySet<uint> creatureIds = sources.CreatureIds.ToHashSet();
+            // the best sources first: Carcass Discovery's datapad drops from the Enraged Grimstone Mangler at 20 % and from the
+            // cave's other Grimstone creatures at 1.5-7 %, and three runs of 21-33 mixed kills never saw it. The hunt visits the
+            // spawns of creatures within half the best rate until each has been visited twice, then everything once, and so on
+            double bestRate = creatureIds.Select(sources.RateOf).DefaultIfEmpty(0d).Max();
+            IReadOnlySet<uint> preferredIds = bestRate > 0d
+                ? creatureIds.Where(id => sources.RateOf(id) >= bestRate / 2d).ToHashSet()
+                : creatureIds;
+            IReadOnlyList<Spawn> preferredCandidates = SpawnsFor(preferredIds, questWorldId);
+            bool preferredPhase = preferredCandidates.Count > 0 && preferredIds.Count < creatureIds.Count;
+            if (preferredPhase)
+                log.Info($"item {itemId} hunt: preferring creature(s) [{string.Join(',', preferredIds.OrderByDescending(sources.RateOf).Select(id => $"{id}@{sources.RateOf(id):0.#}%"))}] with {preferredCandidates.Count} spawn(s) over [{sources.DescribeCreatures()}]");
             var spawnVisits = new Dictionary<uint, int>();
             var finishedTargetGuids = new HashSet<uint>();
             while ((item = FindInventoryItem(itemId)) is null)
             {
+                IReadOnlySet<uint> huntIds = preferredPhase ? preferredIds : creatureIds;
+                IReadOnlyList<Spawn> huntCandidates = preferredPhase ? preferredCandidates : candidates;
                 TrackedEntity? target = await TryFindVisibleCombatTargetAsync(
-                    creatureIds, finishedTargetGuids, CombatLocalTargetSearchTimeout, cancellationToken);
+                    huntIds, finishedTargetGuids, CombatLocalTargetSearchTimeout, cancellationToken);
                 if (target is null)
                 {
-                    Spawn? spawn = ChooseNextCombatSpawn(candidates, spawnVisits);
+                    Spawn? spawn = ChooseNextCombatSpawn(huntCandidates, spawnVisits);
                     if (spawn is null)
                     {
                         spawnVisits.Clear();
+                        if (preferredCandidates.Count > 0 && preferredIds.Count < creatureIds.Count)
+                        {
+                            preferredPhase = !preferredPhase;
+                            log.Info($"item {itemId} hunt: {(preferredPhase ? "back to the preferred" : "every")} source spawn(s) after {kills} kill(s)");
+                        }
                         continue;
                     }
                     spawnVisits[spawn.Id] = spawnVisits.GetValueOrDefault(spawn.Id) + 1;
                     spawnHops++;
-                    itemHuntProgress = FormatItemHunt(itemId, sources, kills, killsByCreature, spawnVisits.Count, candidates.Count, spawnHops);
+                    itemHuntProgress = FormatItemHunt(itemId, sources, kills, killsByCreature, spawnVisits.Count, huntCandidates.Count, spawnHops);
                     target = await TeleportAndTryFindCombatTargetAsync(
-                        spawn, creatureIds, finishedTargetGuids, CombatSpawnTargetSearchTimeout, cancellationToken);
+                        spawn, huntIds, finishedTargetGuids, CombatSpawnTargetSearchTimeout, cancellationToken);
                     if (target is null)
                         continue;
                 }
@@ -3260,7 +3278,7 @@ internal sealed class BotRunner
                     uint killedCreature = target.CreatureId ?? 0u;
                     killsByCreature[killedCreature] = killsByCreature.GetValueOrDefault(killedCreature) + 1;
                     finishedTargetGuids.Add(target.Guid);
-                    itemHuntProgress = FormatItemHunt(itemId, sources, kills, killsByCreature, spawnVisits.Count, candidates.Count, spawnHops);
+                    itemHuntProgress = FormatItemHunt(itemId, sources, kills, killsByCreature, spawnVisits.Count, huntCandidates.Count, spawnHops);
                 }
             }
         }
@@ -3271,7 +3289,7 @@ internal sealed class BotRunner
         await WaitForQuestStateAsync(QuestState.Accepted, cancellationToken);
         ushort acquisitionWorld = questWorldId;
         questWorldId = DetermineItemQuestProgressWorld(definition);
-        return $"item {itemId} from creature(s) [{string.Join(',', sources.CreatureIds)}] after {kills} kill(s); accepted from {item.Location} slot {item.BagIndex}; acquisition world {acquisitionWorld}, quest world {questWorldId}";
+        return $"item {itemId} from creature(s) [{sources.DescribeCreatures()}] after {kills} kill(s); accepted from {item.Location} slot {item.BagIndex}; acquisition world {acquisitionWorld}, quest world {questWorldId}";
     }
 
     private static string FormatItemHunt(
@@ -3286,7 +3304,7 @@ internal sealed class BotRunner
         string perCreature = killsByCreature.Count == 0
             ? "none"
             : string.Join(',', killsByCreature.Select(pair => $"{pair.Key}x{pair.Value}"));
-        return $"item {itemId} hunt: {kills} kill(s) [{perCreature}] of source creature(s) [{string.Join(',', sources.CreatureIds)}], "
+        return $"item {itemId} hunt: {kills} kill(s) [{perCreature}] of source creature(s) [{sources.DescribeCreatures()}], "
             + $"{spawnsVisited} of {spawnCount} spawn(s) visited in {spawnHops} teleport(s), no drop yet";
     }
 
