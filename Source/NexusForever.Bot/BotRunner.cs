@@ -77,6 +77,11 @@ internal sealed class BotRunner
     private readonly Dictionary<ushort, PathMissionStatus> pathMissionStates = [];
     private readonly List<uint> questNpcAttemptCreatureIds = [];
     private readonly List<string> questNpcAttemptDetails = [];
+    /// <summary>
+    /// Progress of the current drop-started quest's item hunt, for the accept-step timeout detail ("attempted creature
+    /// ids=[none]" said nothing about the 33 kills Carcass Discovery made before its 840 s ran out).
+    /// </summary>
+    private string? itemHuntProgress;
     private readonly List<string> holdoutProgressPackets = [];
     private readonly List<string> resurrectionPacketsAfterAccept = [];
     private readonly HashSet<uint> usedSettlerResourceSpawnIds = [];
@@ -3090,6 +3095,7 @@ internal sealed class BotRunner
         {
             questNpcAttemptCreatureIds.Clear();
             questNpcAttemptDetails.Clear();
+            itemHuntProgress = null;
         }
         try
         {
@@ -3211,6 +3217,9 @@ internal sealed class BotRunner
             throw new BotFailureException($"item {itemId} has no drop source in the world database");
 
         int kills = 0;
+        itemHuntProgress = null;
+        var killsByCreature = new SortedDictionary<uint, int>();
+        int spawnHops = 0;
         InventoryItemInfo? item = FindInventoryItem(itemId);
         if (item is null)
         {
@@ -3234,6 +3243,8 @@ internal sealed class BotRunner
                         continue;
                     }
                     spawnVisits[spawn.Id] = spawnVisits.GetValueOrDefault(spawn.Id) + 1;
+                    spawnHops++;
+                    itemHuntProgress = FormatItemHunt(itemId, sources, kills, killsByCreature, spawnVisits.Count, candidates.Count, spawnHops);
                     target = await TeleportAndTryFindCombatTargetAsync(
                         spawn, creatureIds, finishedTargetGuids, CombatSpawnTargetSearchTimeout, cancellationToken);
                     if (target is null)
@@ -3246,10 +3257,14 @@ internal sealed class BotRunner
                 if (killed)
                 {
                     kills++;
+                    uint killedCreature = target.CreatureId ?? 0u;
+                    killsByCreature[killedCreature] = killsByCreature.GetValueOrDefault(killedCreature) + 1;
                     finishedTargetGuids.Add(target.Guid);
+                    itemHuntProgress = FormatItemHunt(itemId, sources, kills, killsByCreature, spawnVisits.Count, candidates.Count, spawnHops);
                 }
             }
         }
+        itemHuntProgress = null;
 
         await RequireWorld().SendEncryptedAsync(GameMessageOpcode.ClientQuestAccept,
             PacketCodec.ClientQuestAccept(definition.Id, item.Location, item.BagIndex), cancellationToken);
@@ -3257,6 +3272,22 @@ internal sealed class BotRunner
         ushort acquisitionWorld = questWorldId;
         questWorldId = DetermineItemQuestProgressWorld(definition);
         return $"item {itemId} from creature(s) [{string.Join(',', sources.CreatureIds)}] after {kills} kill(s); accepted from {item.Location} slot {item.BagIndex}; acquisition world {acquisitionWorld}, quest world {questWorldId}";
+    }
+
+    private static string FormatItemHunt(
+        uint itemId,
+        ItemDropSources sources,
+        int kills,
+        IReadOnlyDictionary<uint, int> killsByCreature,
+        int spawnsVisited,
+        int spawnCount,
+        int spawnHops)
+    {
+        string perCreature = killsByCreature.Count == 0
+            ? "none"
+            : string.Join(',', killsByCreature.Select(pair => $"{pair.Key}x{pair.Value}"));
+        return $"item {itemId} hunt: {kills} kill(s) [{perCreature}] of source creature(s) [{string.Join(',', sources.CreatureIds)}], "
+            + $"{spawnsVisited} of {spawnCount} spawn(s) visited in {spawnHops} teleport(s), no drop yet";
     }
 
     private ushort DetermineItemQuestProgressWorld(QuestDefinition definition)
@@ -4259,7 +4290,9 @@ internal sealed class BotRunner
     }
 
     private string FormatQuestNpcTimeoutDetail()
-        => $"{FormatQuestNpcAttempts()}; {FormatNearbyTrackedCreatures()}";
+        => itemHuntProgress is { Length: > 0 } hunt
+            ? $"{hunt}; {FormatNearbyTrackedCreatures()}"
+            : $"{FormatQuestNpcAttempts()}; {FormatNearbyTrackedCreatures()}";
 
     private string FormatNearbyTrackedCreatures()
     {
