@@ -2557,8 +2557,10 @@ internal sealed class BotRunner
             or QuestObjectiveType.KillTargetGroups
             or QuestObjectiveType.GatheResource
             // seven Augmented Gronyx (Grafted Gronyx, difficulty 4) took about 40 s each with the teleport between them and
-            // overran the flat 300 s on the seventh: 50 s per kill, never under the combat budget
-            ? TimeSpan.FromSeconds(Math.Max(CombatTimeout.TotalSeconds, Math.Max(1u, objective.Count) * 50d + 30d))
+            // overran the flat 300 s on the seventh: 50 s per kill, never under the combat budget. The per-kill budget grows
+            // with the toughest target's spawn health: the Augmented Slateform Slammer (3870) and Demolisher (4828) took
+            // 45-58 s each at level 17, so seven of them overran 380 s on 2026-11-04 (six fails in seven legs)
+            ? TimeSpan.FromSeconds(Math.Max(CombatTimeout.TotalSeconds, Math.Max(1u, objective.Count) * KillSeconds(objective, worldId) + 30d))
             // a virtual item held by hostile creatures (Rockridge Rascals: Arifo the Rascal, a named with 1.75x stats) is a fight
             : objective.Type == QuestObjectiveType.VirtualCollect && VirtualCollectIsFight(objective)
                 ? TimeSpan.FromSeconds(Math.Max((uint)CombatTimeout.TotalSeconds, Math.Max(1u, objective.Count) * 55u))
@@ -2592,6 +2594,20 @@ internal sealed class BotRunner
         if (IsSingleTargetKillRetryObjective(objective))
             timeout = SingleTargetKillRetryTimeout;
         return timeout;
+    }
+
+    /// <summary>
+    /// Seconds budgeted per kill of an objective: 50 for an ordinary creature, more for a tough one (10 s plus the
+    /// toughest spawn's health over 60, the bot's observed damage per second at level 17 with a three-slot action set:
+    /// 3870 health = 75 s, 4828 = 90 s).
+    /// </summary>
+    private double KillSeconds(QuestObjectiveDefinition objective, ushort? worldId)
+    {
+        uint health = SpawnsFor(GetObjectiveCreatureIds(objective), worldId ?? questWorldId)
+            .Select(spawn => spawn.Health)
+            .DefaultIfEmpty(0u)
+            .Max();
+        return Math.Max(50d, 10d + health / 60d);
     }
 
     /// <summary>

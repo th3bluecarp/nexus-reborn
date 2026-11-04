@@ -4,7 +4,10 @@ using NexusForever.GameTable.Model;
 
 namespace NexusForever.Bot;
 
-internal sealed record Spawn(uint Id, uint CreatureId, ushort WorldId, float X, float Y, float Z)
+/// <summary>
+/// A world spawn; <paramref name="Health"/> is the entity_stats health (stat 0) when the loader read it, else 0.
+/// </summary>
+internal sealed record Spawn(uint Id, uint CreatureId, ushort WorldId, float X, float Y, float Z, uint Health = 0u)
 {
     public double DistanceSquared(float x, float y, float z)
     {
@@ -109,7 +112,9 @@ internal static class BotDatabase
             command.Parameters.AddWithValue(name, ids[i]);
         }
 
-        command.CommandText = $"SELECT id, creature, world, x, y, z FROM entity WHERE creature IN ({string.Join(',', parameterNames)}) ORDER BY world, creature, id";
+        // the spawn's health (entity_stats stat 0) sizes the kill budget: an Augmented Slateform Slammer has 3870 at level 13
+        // against about 1500 for an ordinary quest creature, and the bot needs 45-58 s per kill on it
+        command.CommandText = $"SELECT e.id, e.creature, e.world, e.x, e.y, e.z, COALESCE(s.value, 0) FROM entity e LEFT JOIN entity_stats s ON s.id = e.id AND s.stat = 0 WHERE e.creature IN ({string.Join(',', parameterNames)}) ORDER BY e.world, e.creature, e.id";
         var result = new List<Spawn>();
         await using MySqlDataReader reader = await command.ExecuteReaderAsync(cancellationToken);
         while (await reader.ReadAsync(cancellationToken))
@@ -120,7 +125,8 @@ internal static class BotDatabase
                 reader.GetFieldValue<ushort>(2),
                 reader.GetFloat(3),
                 reader.GetFloat(4),
-                reader.GetFloat(5)));
+                reader.GetFloat(5),
+                (uint)Math.Max(0d, Convert.ToDouble(reader.GetValue(6)))));
         }
         return result;
     }
