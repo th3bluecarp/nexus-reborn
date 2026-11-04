@@ -37,7 +37,7 @@ internal sealed class BotRunner
     // a quest started by a dropped item (A Heart of Stone: Stonefist's Heart, 74 % of kills; The Soul of Gloomstone: 60 %): the
     // creature has one spawn point and comes back 60 s after its corpse goes, so a miss costs a respawn wait plus a fight; five
     // tries leave a 1 % chance of failing on bad luck (the 75 s default allowed one kill, the 300 s combat budget three)
-    private static readonly TimeSpan ItemDropAcceptTimeout = TimeSpan.FromSeconds(540);
+    private static readonly TimeSpan ItemDropAcceptTimeout = TimeSpan.FromSeconds(840);
     private static readonly TimeSpan SingleTargetKillRetryTimeout = TimeSpan.FromSeconds(660);
     private const float CombatTargetMovementThreshold = 2f;
     private const float CombatStandOffDistance = 2f;

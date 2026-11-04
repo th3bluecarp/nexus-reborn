@@ -2,6 +2,10 @@
 
 Newest first. "Live" means running on our test server.
 
+## 2026-11-04
+
+- **Holdout waves sized for one soldier**: waves brought 2, 3, 4 then 5 enemies on a 35 s timer, drawn at random from everything hostile near the control point, Prime-rank elites included. Mechanical Hostiles (M314) drew its Prime Site 14 guard (1.75x damage) in waves 2, 3 (twice) and 4 and the bot entered the boss wave at half health with seven enemies alive; the same holdout had passed the run before with two Primes fewer. Waves are now 2, 3, 3 and the boss with two companions, and creatures of Superior rank and above stay out of the pool while anything else lives there. **Bot: a drop-started quest waits 14 minutes for its drop** (bot only): Carcass Discovery's datapad (20 % of Enraged Grimstone Manglers) did not fall in 16 kills; 21 kills give 99 %.
+
 ## 2026-11-03
 
 - **Bot: a quest ability is cast again after a cooldown refusal, and the quest budget is the sum of its steps** (bot only, no server change): Unconventional Technology reached 5 of 8 casts once faction target groups counted, but every cast made right after a fight was refused with SpellGlobalCooldown (the last combat ability's global cooldown) or SpellCooldown (Augmented Remains has a 10 s cooldown), and the bot then gave that target up and fought it for nothing. The bot now waits the cooldown out (1.5 s or 10 s) and casts at the same target again, three times at most. The flat 8-minute per-quest budget also cut Grafted Gronyx (seven 50 s kills, then a second kill objective) and By Leaps and Bounds (eight 44 % drops at 75 s each) short on the Soldier leg of 1103g; the budget is now the accept wait plus every required objective's own budget plus the achieved and turn-in steps, never under 8 minutes.

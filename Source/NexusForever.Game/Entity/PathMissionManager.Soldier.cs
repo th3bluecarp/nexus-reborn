@@ -97,6 +97,8 @@ namespace NexusForever.Game.Entity
         });
 
         private const uint HoldoutBossDifficulty = 5u;
+        // pool creatures of this Creature2Difficulty and above are elites and stay out of the waves
+        private const uint HoldoutPoolMaxDifficulty = 4u;
 
         private const float HoldoutPoolRange   = 150f;
         private const float HoldoutLeaveRange  = 60f;
@@ -134,10 +136,17 @@ namespace NexusForever.Game.Entity
             Vector3 center = player.Position;
             var check = new SearchCheckRange<IUnitEntity>();
             check.Initialise(center, HoldoutPoolRange);
-            uint[] pool = player.Map.Search(center, HoldoutPoolRange, check)
+            IUnitEntity[] nearby = player.Map.Search(center, HoldoutPoolRange, check)
                 .Where(u => u is not IPlayer && u.CreatureId != 0u && u.IsAlive && u.CanAttack(player) && u.SummonerGuid == null
                     && GameTableManager.Instance.Creature2.GetEntry(u.CreatureId)?.PathMissionIdSoldier == 0u
                     && u.Level <= player.Level + 3u)
+                .ToArray();
+            // elites (Superior rank and up, 1.66x damage and more) are for groups: left out of a lone soldier's waves while
+            // anything else lives nearby (M314 drew its Prime-rank Site 14 guard four times in a row and killed the bot)
+            IUnitEntity[] regulars = nearby
+                .Where(u => (GameTableManager.Instance.Creature2.GetEntry(u.CreatureId)?.Creature2DifficultyId ?? 0u) < HoldoutPoolMaxDifficulty)
+                .ToArray();
+            uint[] pool = (regulars.Length > 0 ? regulars : nearby)
                 .GroupBy(u => u.CreatureId)
                 .OrderByDescending(g => g.Count())
                 .Take(4)
@@ -395,7 +404,9 @@ namespace NexusForever.Game.Entity
 
             var creatureInfoManager = LegacyServiceProvider.Provider.GetService<ICreatureInfoManager>();
             var entityFactory       = LegacyServiceProvider.Provider.GetService<IEntityFactory>();
-            int count = Math.Min(2 + holdout.WaveIndex, 5);
+            // a solo fight: two then three enemies a wave, and the boss wave is the boss with two companions (waves of 2 to 5
+            // piled up on a lone soldier before the boss came; the bot died at 4758/9380 health entering the boss wave of M314)
+            int count = boss ? 3 : Math.Min(2 + holdout.WaveIndex, 3);
             Holdout current = holdout;
 
             // with the mission's own creatures the waves climb the ranks: wave n draws from the weakest n/Waves of the roster,
