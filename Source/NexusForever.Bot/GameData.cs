@@ -684,6 +684,12 @@ internal sealed class BotGameData
                 21894u, 21896u, 21897u, 21898u, 21899u, 21900u, 21901u,
                 21902u, 21903u, 21904u, 21905u, 21906u, 21907u
             ],
+            // Celestion, the server's DatacubeRules (PathMissionManager.Discovery)
+            3104u =>
+            [
+                30418u, 30419u, 30420u, 30421u, 30422u, 30423u, 30424u, 30425u,
+                30426u, 30427u, 30428u, 30429u, 30430u, 30431u, 30432u, 34503u
+            ],
             _ => []
         };
 
