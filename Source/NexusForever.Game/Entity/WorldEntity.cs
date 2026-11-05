@@ -651,6 +651,9 @@ namespace NexusForever.Game.Entity
                 activator.QuestManager.ObjectiveUpdate(QuestObjectiveType.ActivateEntity, CreatureInfo.Entry.Id, 1u);
                 activator.QuestManager.ObjectiveUpdate(QuestObjectiveType.GatheResource, CreatureInfo.Entry.Id, 1u);
                 activator.QuestManager.ObjectiveUpdate(QuestObjectiveType.SucceedCSI, CreatureInfo.Entry.Id, 1u);
+                // a type 10 step that names the creature itself (Greenbough Guardian's Firestorm Flingatrons, smashed in retail by
+                // a summoned Witch Giant whose script is lost) counts each use of one
+                activator.QuestManager.ObjectiveUpdate(QuestObjectiveType.Unknown10, CreatureInfo.Entry.Id, 1u);
 
                 foreach (uint targetGroupId in AssetManager.Instance.GetTargetGroupsForCreatureId(CreatureInfo.Entry.Id))
                 {
@@ -981,6 +984,11 @@ namespace NexusForever.Game.Entity
                         // client gates them on their checklist bit
                         case QuestObjectiveType.ActivateTargetGroup:
                             if (targetGroups.Contains(entry.Data))
+                                return true;
+                            break;
+                        // a type 10 step whose Data is this creature (not a group) is used directly
+                        case QuestObjectiveType.Unknown10:
+                            if (entry.Data == creatureId)
                                 return true;
                             break;
                         case QuestObjectiveType.VirtualCollect:

@@ -69,10 +69,22 @@ namespace NexusForever.Game.Quest
             questInfoStore = builder.ToImmutable();
         }
 
+        /// <summary>
+        /// Quests whose giver is not in Creature2.QuestIdGiven (the script that offered them is lost), by the creature the quest
+        /// text names as the one who sent the player.
+        /// </summary>
+        private static readonly Dictionary<ushort, uint[]> LostQuestGivers = new()
+        {
+            [9033] = [31603u] // A Captain in Need: "Naida Zavlonov informed you that Captain Milo is in need of some assistance"
+        };
+
         private void InitialiseQuestRelations()
         {
             var questGivers = new Dictionary<ushort, List<uint>>();
             var questReceivers = new Dictionary<ushort, List<uint>>();
+
+            foreach ((ushort questId, uint[] creatureIds) in LostQuestGivers)
+                questGivers.Add(questId, new List<uint>(creatureIds));
 
             foreach (Creature2Entry entry in GameTableManager.Instance.Creature2.Entries)
             {

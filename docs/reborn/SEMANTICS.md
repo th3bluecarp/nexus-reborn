@@ -81,6 +81,9 @@ Confidence: **High** = consistent across all the data we checked and no counter 
 - **An auto-complete quest nobody gives is offered by its receiver.** Quests such as A Failed Experiment and Making Amends were started by using an object that lists them only as received; the quest has no objectives and the AutoComplete flag. The script that offered it is lost, so the receiving object offers it too (GlobalQuestManager.InitialiseQuestRelations): use it once to accept, once to complete.
 - **A named monster drops its quest item every time.** Doomsting drops the Doomsting Stinger at 100% instead of the 9.71% Jabbithole share, because one Doomsting spawns in Celestion (`data/quest_fixes.sql`).
 
+- **A type 10 step that names a creature counts its use.** Objective type 10 normally names a target group of things to use; when its Data is a Creature2 id (Greenbough Guardian's Firestorm Flingatrons, smashed in retail by a summoned Witch Giant) each direct use of that creature counts one (WorldEntity.OnActivateSuccess).
+- **Lost quest givers are named by hand.** A quest no creature lists as given, whose text names who sent the player (A Captain in Need: Naida Zavlonov), gets that creature as its giver in GlobalQuestManager.LostQuestGivers.
+
 ## Damage formula
 
 - **Crit severity** is CriticalHitSeverityMultiplier (UnitProperty2 default 1.5) plus the rating share from GameFormula 1232, capped at 300 percent. Critical mitigation scales only the bonus above 100 percent. Crit deflect and critical mitigation do not apply to heals. High confidence on the 1.5 base, Medium on how mitigation applies. Before this, the base was 0, so a crit with no severity rating did 0 damage.

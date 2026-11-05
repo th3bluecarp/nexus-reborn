@@ -290,10 +290,18 @@ internal sealed class BotGameData
         // an auto-complete quest nobody gives is offered by the object that receives it (GlobalQuestManager does the same)
         if (givers.Length == 0 && (entry.Flags & 1u) != 0u && entry.PrerequisiteItem == 0u)
             givers = receivers;
+        // givers the server adds for quests whose offering script is lost (GlobalQuestManager.LostQuestGivers)
+        if (givers.Length == 0 && LostQuestGivers.TryGetValue(id, out uint[]? lostGivers))
+            givers = lostGivers;
 
         string title = english.GetEntry(entry.LocalizedTextIdTitle) ?? $"Quest {id}";
         return new QuestDefinition(id, title, entry, questObjectives, givers, receivers);
     }
+
+    private static readonly Dictionary<ushort, uint[]> LostQuestGivers = new()
+    {
+        [9033] = [31603u] // A Captain in Need: Naida Zavlonov
+    };
 
     /// <summary>
     /// The item whose use starts the quest (Item2.Quest2IdActivation; A Heart of Stone starts from a dropped gronyx heart),
