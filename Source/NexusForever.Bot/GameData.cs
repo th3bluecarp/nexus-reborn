@@ -287,6 +287,9 @@ internal sealed class BotGameData
             .Select(creature => creature.Id)
             .Distinct()
             .ToArray();
+        // an auto-complete quest nobody gives is offered by the object that receives it (GlobalQuestManager does the same)
+        if (givers.Length == 0 && (entry.Flags & 1u) != 0u && entry.PrerequisiteItem == 0u)
+            givers = receivers;
 
         string title = english.GetEntry(entry.LocalizedTextIdTitle) ?? $"Quest {id}";
         return new QuestDefinition(id, title, entry, questObjectives, givers, receivers);

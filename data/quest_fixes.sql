@@ -64,3 +64,9 @@ INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY
 (1300017,0,30923,51,1620,1199.31,-909.15,-3084.69,0,0,0,28125,0,363,363,0),
 (1300018,0,30924,51,1620,1380.43,-912.15,-2987.99,0,0,0,28123,0,363,363,0);
 INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1300017,0,1578),(1300017,10,7),(1300017,15,1),(1300018,0,1578),(1300018,10,7),(1300018,15,0);
+
+-- Doom's Sting (6630) starts from the Doomsting Stinger (item 17621), which Jabbithole saw drop from Doomsting (creature 30321, a [BAM])
+-- at 9.71% among that monster's other loot. The world database spawns one Doomsting in Celestion (entity 4826), so a bot run killed it
+-- once in 14 minutes of waiting for respawns and never saw the stinger. The named monster drops its quest item every time (2026-11-04).
+-- loot.sql reloads reset this row: run this file after it.
+UPDATE `loot_item` SET `probability` = 100 WHERE `id` = 1000524 AND `staticId` = 17621;

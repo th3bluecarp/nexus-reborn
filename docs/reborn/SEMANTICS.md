@@ -78,6 +78,9 @@ Confidence: **High** = consistent across all the data we checked and no counter 
 
 - **A spell that fails to update is finished.** A spell whose update throws (an interaction whose target left the map before it finished) is finished and dropped with one error line (UnitEntity.Update). Retail would never have reached this state; without it the entity's whole update stopped for good, which read as a permanent global cooldown.
 
+- **An auto-complete quest nobody gives is offered by its receiver.** Quests such as A Failed Experiment and Making Amends were started by using an object that lists them only as received; the quest has no objectives and the AutoComplete flag. The script that offered it is lost, so the receiving object offers it too (GlobalQuestManager.InitialiseQuestRelations): use it once to accept, once to complete.
+- **A named monster drops its quest item every time.** Doomsting drops the Doomsting Stinger at 100% instead of the 9.71% Jabbithole share, because one Doomsting spawns in Celestion (`data/quest_fixes.sql`).
+
 ## Damage formula
 
 - **Crit severity** is CriticalHitSeverityMultiplier (UnitProperty2 default 1.5) plus the rating share from GameFormula 1232, capped at 300 percent. Critical mitigation scales only the bonus above 100 percent. Crit deflect and critical mitigation do not apply to heals. High confidence on the 1.5 base, Medium on how mitigation applies. Before this, the base was 0, so a crit with no severity rating did 0 damage.

@@ -3571,6 +3571,10 @@ internal sealed class BotRunner
                     await RunVirtualCollectObjectiveAsync(objective, cancellationToken);
                     break;
                 case QuestObjectiveType.SpellSuccess:
+                case QuestObjectiveType.SpellSuccess2:
+                case QuestObjectiveType.SpellSuccess3:
+                case QuestObjectiveType.SpellSuccess4:
+                    // the server credits all four kinds from the same successful cast (Quest.SpellSuccessUpdate)
                     await RunSpellSuccessObjectiveAsync(objective, cancellationToken);
                     break;
                 case QuestObjectiveType.GatheResource:

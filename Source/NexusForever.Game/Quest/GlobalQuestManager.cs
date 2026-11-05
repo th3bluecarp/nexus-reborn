@@ -95,6 +95,19 @@ namespace NexusForever.Game.Quest
                 }
             }
 
+            // quests started by using the object that also completes them (reading the Scientist Plans, communing at the
+            // Lightkeeper Shrine): the object lists the quest only as received and the quest completes on its own.
+            // The script that offered it is lost, so the receiver offers it.
+            foreach (Quest2Entry entry in GameTableManager.Instance.Quest2.Entries)
+            {
+                ushort questId = (ushort)entry.Id;
+                if (((QuestFlags)entry.Flags & QuestFlags.AutoComplete) == 0 || entry.PrerequisiteItem != 0u
+                    || questGivers.ContainsKey(questId) || !questReceivers.TryGetValue(questId, out List<uint> receivers))
+                    continue;
+
+                questGivers.Add(questId, new List<uint>(receivers));
+            }
+
             questGiverStore = questGivers.ToImmutableDictionary(k => k.Key, v => v.Value.ToImmutableList());
             questReceiverStore = questReceivers.ToImmutableDictionary(k => k.Key, v => v.Value.ToImmutableList());
         }
