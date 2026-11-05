@@ -329,6 +329,11 @@ internal sealed class BotRunner
 
         IEnumerable<uint> objectiveCreatures = allQuestDefinitions.SelectMany(definition => definition.Objectives)
             .SelectMany(GetObjectiveCreatureIds);
+        // marker entities of type 9 groups (cave entrances a kill counts near, the Trapped Aurin a rescue step talks to) are
+        // spawns too; without them every marker group read as "no marker is spawned"
+        IEnumerable<uint> markerCreatures = allQuestDefinitions.SelectMany(definition => definition.Objectives)
+            .Where(objective => objective.Data != 0u && RequireGameData().IsAreaMarkerTargetGroup(objective.Data))
+            .SelectMany(objective => RequireGameData().AreaMarkerCreatureIds(objective.Data));
         IEnumerable<uint> itemSourceCreatures = itemDropSources.Values.SelectMany(sources => sources.CreatureIds);
         IEnumerable<uint> pathCreatures = pathMissionPlan.SelectMany(mission => mission.ObjectiveCreatureIds)
             .Concat(pathMissionPlan.Select(mission => mission.Entry.Creature2IdUnlock))
@@ -336,6 +341,7 @@ internal sealed class BotRunner
         uint[] creatureIds = allQuestDefinitions.SelectMany(definition => definition.GiverCreatureIds)
             .Concat(allQuestDefinitions.SelectMany(definition => definition.ReceiverCreatureIds))
             .Concat(objectiveCreatures)
+            .Concat(markerCreatures)
             .Concat(itemSourceCreatures)
             .Concat(pathCreatures)
             .Distinct()

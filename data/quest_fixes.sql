@@ -54,3 +54,13 @@ INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY
 (1300015,0,18902,51,694,3063.02,-980.02,-3855.63,0,0,0,21553,0,190,190,0),
 (1300016,0,18902,51,694,2884.94,-970.74,-3811.69,0,0,0,21553,0,190,190,0);
 INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1300013,0,1262),(1300013,10,7),(1300013,15,0),(1300014,0,1262),(1300014,10,7),(1300014,15,0),(1300015,0,1262),(1300015,10,7),(1300015,15,0),(1300016,0,1262),(1300016,10,7),(1300016,15,0);
+
+-- A Fiery Escape (6671): the Trapped Aurin of its rescue steps, Frazzle (30923, target group 3665) and Frizz (30924, 3666),
+-- are spawned only in world 22. They stand at the objective locations Western Embertree (WorldLocation2 23810) and
+-- Eastern Embertree (23811); display, faction and stats from entities 65099/65100. Entity ids 1300017-1300018.
+DELETE FROM `entity_stats` WHERE `Id` IN (1300017,1300018);
+DELETE FROM `entity` WHERE `Id` IN (1300017,1300018);
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`,`QuestChecklistIdx`) VALUES
+(1300017,0,30923,51,1620,1199.31,-909.15,-3084.69,0,0,0,28125,0,363,363,0),
+(1300018,0,30924,51,1620,1380.43,-912.15,-2987.99,0,0,0,28123,0,363,363,0);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1300017,0,1578),(1300017,10,7),(1300017,15,1),(1300018,0,1578),(1300018,10,7),(1300018,15,0);
