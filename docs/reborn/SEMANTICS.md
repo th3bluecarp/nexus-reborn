@@ -307,3 +307,11 @@ Retail completed "enter area" objectives with map trigger volumes the server doe
 ## The quest bot wears gear of its level
 
 A player of level N wears quest and vendor gear of about power level N. The bot has no quest-reward or vendor flow, so after each level raise it adds (GM `!item add`) and equips a plain green greatsword, heavy armor set and shield of its level: the highest power level at or below the level among Item2 rows of quality 2 with no class, quest or flag lock (shields carry flag 0x4000 on every plain one, allowed). Each replaced piece is deleted as a player vendors it. Approximation: real gear is green to blue with stats; the bot's has the slot's base armor, health and shield only, so it is a floor for a player's survivability, not a ceiling.
+
+## Lost content that stays missing
+
+Content whose creatures, spawns, locations or scripts are all gone from the data is not invented. It is listed here so the parity
+tracker and the zone pages can say why it is missing.
+
+- **Celestion, Dancing with Data (challenge 536).** "Consecutively mine Data Nodes from Darkwhisper's database without missing one": a scripted minigame. No Data Node creature exists in Creature2, the challenge has no tiers, and only File Selector Reticules and a Datapad Interface stand near its indicator (WorldLocation2 26775). Decided 2026-11-04.
+- **Celestion, Hidden ICI Lab (event 550) and Abandoned Hideout (event 569).** Two cave events (zones 4067 and 4062) with one objective each: activate ten Weapons Caches (creature 56317) and exterminate Torine Battlemaidens (58421). Neither creature is spawned anywhere, the events have no start location and nothing stands within 80 m of the Blackhoods location. Decided 2026-11-04.
