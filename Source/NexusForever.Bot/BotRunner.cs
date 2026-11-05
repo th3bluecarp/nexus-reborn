@@ -5190,13 +5190,28 @@ internal sealed class BotRunner
     private async Task RunCompleteEventObjectiveAsync(QuestObjectiveDefinition objective, CancellationToken cancellationToken)
     {
         uint before = GetRawProgress(objective.Index);
-        if (objective.WorldLocationId == 0u)
-            throw new BotFailureException($"CompleteEvent objective for public event {objective.Data} has no map indicator to stand at");
-        WorldLocation2Entry location = RequireGameData().GetWorldLocation(objective.WorldLocationId);
+        BotGameData data = RequireGameData();
+        WorldLocation2Entry? location;
+        string locationSource;
+        if (objective.WorldLocationId != 0u)
+        {
+            location = data.GetWorldLocation(objective.WorldLocationId);
+            locationSource = "indicator";
+        }
+        else
+        {
+            location = data.GetLocationIdsFromText(objective.Text)
+                .Select(data.TryGetWorldLocation)
+                .FirstOrDefault(candidate => candidate?.WorldId == questWorldId);
+            if (location is null)
+                throw new BotFailureException($"CompleteEvent objective for public event {objective.Data} has no map indicator or text location in world {questWorldId} to stand at");
+            locationSource = "objective text";
+        }
+
         await TeleportToLocationAsync(location, 0f, cancellationToken);
-        log.Info($"objective {objective.Index}: CompleteEvent {objective.Data}: standing at indicator {location.Id} for the server's event fallback");
+        log.Info($"objective {objective.Index}: CompleteEvent {objective.Data}: standing at {locationSource} location {location.Id} for the server's event fallback");
         if (!await TryWaitForObjectiveProgressAsync(objective.Index, before, TimeSpan.FromSeconds(45), cancellationToken))
-            throw new BotFailureException($"CompleteEvent {objective.Data} produced no progress after 45 s at indicator {location.Id}; the event may be running (unsupported) or the fallback did not fire");
+            throw new BotFailureException($"CompleteEvent {objective.Data} produced no progress after 45 s at {locationSource} location {location.Id}; the event may be running (unsupported) or the fallback did not fire");
     }
 
     private async Task RunLocationObjectiveAsync(QuestObjectiveDefinition objective, CancellationToken cancellationToken)

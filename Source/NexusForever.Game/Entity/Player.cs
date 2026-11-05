@@ -1062,6 +1062,35 @@ namespace NexusForever.Game.Entity
             return false;
         }
 
+        private readonly HashSet<(ushort QuestId, byte ObjectiveIndex, uint EntityGuid)> talkToVisibilityOverrides = [];
+
+        /// <summary>
+        /// A creature named by an open TalkTo objective must remain visible even when a lost script step makes its normal
+        /// visibility prerequisite fail.
+        /// </summary>
+        private bool IsOpenTalkToTarget(IWorldEntity entity)
+        {
+            foreach (IQuest quest in QuestManager.GetActiveQuests())
+            {
+                if (quest.State != QuestState.Accepted)
+                    continue;
+
+                foreach (IQuestObjective objective in quest)
+                {
+                    if (objective.ObjectiveInfo.Type != QuestObjectiveType.TalkTo
+                        || objective.IsComplete() || !quest.IsObjectiveActive(objective.Index)
+                        || objective.ObjectiveInfo.Data != entity.CreatureId)
+                        continue;
+
+                    if (talkToVisibilityOverrides.Add((quest.Id, objective.Index, entity.Guid)))
+                        log.Debug($"Keeping creature {entity.CreatureId} entity {entity.EntityId} visible for open TalkTo objective {objective.ObjectiveInfo.Id} of quest {quest.Id} despite its visibility prerequisite.");
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
         /// <summary>
         /// Returns if <see cref="IGridEntity"/> can see supplied <see cref="IGridEntity"/>.
         /// </summary>
@@ -1076,7 +1105,8 @@ namespace NexusForever.Game.Entity
             if (entity is IWorldEntity worldEntity
                 && worldEntity.CreatureInfo?.PrerequisiteVisibilityEntry != null
                 && !PrerequisiteManager.Instance.Meets(this, worldEntity.CreatureInfo.PrerequisiteVisibilityEntry.Id, new PrerequisiteParameters { UnhandledResult = true, EvaluatedUnit = worldEntity })
-                && !ReceivesActiveQuest(worldEntity))
+                && !ReceivesActiveQuest(worldEntity)
+                && !IsOpenTalkToTarget(worldEntity))
                 return false;
 
             // story NPCs that moved on in retail through server phasing that is lost: hide the earlier copy once the quest that sends

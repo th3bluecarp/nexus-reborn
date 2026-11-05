@@ -34,7 +34,11 @@ namespace NexusForever.Game.Prerequisite.Check
             else
             {
                 IQuest quest = player.QuestManager.GetActiveQuest((ushort)objectId);
-                complete = quest?.GetQuestObjectiveByIndex((byte)value)?.IsComplete() ?? false;
+                IQuestObjective objective = quest?.GetQuestObjectiveByIndex((byte)value);
+                complete = objective?.IsComplete() ?? false;
+                if (complete && objective.ObjectiveInfo.IsHidden() && objective.ObjectiveInfo.Entry.Data == 0u
+                    && quest.Any(other => other.Index < objective.Index && !other.ObjectiveInfo.IsHidden() && !other.IsComplete()))
+                    complete = false;
             }
 
             bool? result = PrerequisiteCompare.Is(comparison, complete);

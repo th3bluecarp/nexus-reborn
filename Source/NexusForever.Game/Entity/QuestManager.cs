@@ -151,7 +151,7 @@ namespace NexusForever.Game.Entity
         private readonly UpdateTimer areaTimer = new(TimeSpan.FromSeconds(1d));
 
         /// <summary>
-        /// Progress <see cref="QuestObjectiveType.EnterArea"/> objectives the player is standing in.
+        /// Progress location objectives the player is standing in.
         /// </summary>
         /// <remarks>
         /// Retail used map trigger volumes we don't have, the objective's map marker world location (radius at least 10m) stands in for the volume.
@@ -187,9 +187,14 @@ namespace NexusForever.Game.Entity
                     bool hiddenScriptStep = objective.ObjectiveInfo.Type == QuestObjectiveType.Unknown10
                         && objective.ObjectiveInfo.Data == 0u && entry.TargetGroupIdRewardPane == 0u;
 
+                    // EnterZone objectives whose map zone is unavailable still have a usable indicator location.
+                    if (objective.ObjectiveInfo.Type == QuestObjectiveType.EnterZone && HasIndicator(entry)
+                        && IsInObjectiveArea(entry))
+                        updates.Add((quest, objective.ObjectiveInfo.Id, 1u));
+
                     // EnterArea, and activate objectives with nothing to activate but a place to go (Follow the power cables,
                     // Investigate ship wreckage), complete inside the indicator location
-                    if ((objective.ObjectiveInfo.Type == QuestObjectiveType.EnterArea || (targetless && HasIndicator(entry)))
+                    else if ((objective.ObjectiveInfo.Type == QuestObjectiveType.EnterArea || (targetless && HasIndicator(entry)))
                         && IsInObjectiveArea(entry))
                         updates.Add((quest, objective.ObjectiveInfo.Id, HoldProgress(objective)));
 
@@ -223,8 +228,7 @@ namespace NexusForever.Game.Entity
                     // a hidden step with no text, target or place (the last step of Contact with Thayd) was finished by a lost
                     // script once the other steps were done
                     else if ((targetless && !HasIndicator(entry) || hiddenScriptStep) && (HasNoText(entry) || objective.ObjectiveInfo.IsHidden())
-                        && quest.Any(o => o != objective && !o.ObjectiveInfo.IsOptional())
-                        && quest.Where(o => o != objective).All(o => o.IsComplete() || o.ObjectiveInfo.IsOptional()))
+                        && OtherVisibleObjectivesAreComplete(quest, objective))
                         updates.Add((quest, objective.ObjectiveInfo.Id, objective.ObjectiveInfo.Entry.Count));
                 }
             }
@@ -234,6 +238,18 @@ namespace NexusForever.Game.Entity
         }
 
         private const double EventFallbackTime = 20d;
+
+        /// <summary>
+        /// The other steps a hidden script step waits for: every visible, required step is done (optional steps such as the
+        /// two Fallen Trees of A Fiery Escape may stay open).
+        /// </summary>
+        private static bool OtherVisibleObjectivesAreComplete(IQuest quest, IQuestObjective objective)
+        {
+            IQuestObjective[] requiredObjectives = quest
+                .Where(other => other != objective && !other.ObjectiveInfo.IsHidden() && !other.ObjectiveInfo.IsOptional())
+                .ToArray();
+            return requiredObjectives.Length > 0 && requiredObjectives.All(other => other.IsComplete());
+        }
 
         /// <summary>
         /// Progress per second for an activate objective with a place but nothing to activate: a Count of 1 fills in a second, a

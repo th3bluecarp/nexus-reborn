@@ -593,9 +593,9 @@ namespace NexusForever.Game.Spell
             // Add Targeted Entity with the appropriate SpellEffectTargetFlags.
             if (Parameters.PrimaryTargetId > 0)
             {
-                IUnitEntity explicitTargetEntity = Caster.GetVisible<IUnitEntity>(Parameters.PrimaryTargetId);
-                if (explicitTargetEntity != null)
-                    executionContext.TargetCollection.AddTarget(SpellEffectTargetFlags.ExplicitTarget, explicitTargetEntity);
+                IGridEntity explicitTargetEntity = Caster.GetVisible<IGridEntity>(Parameters.PrimaryTargetId);
+                if (explicitTargetEntity is IUnitEntity unitEntity)
+                    executionContext.TargetCollection.AddTarget(SpellEffectTargetFlags.ExplicitTarget, unitEntity);
             }
             else
                 executionContext.TargetCollection.AddTarget(SpellEffectTargetFlags.ExplicitTarget, Caster);

@@ -39,7 +39,8 @@ namespace NexusForever.Game.Spell.Type
                 return false;
 
             double castTime = Parameters.CastTimeOverride > 0 ? Parameters.CastTimeOverride / 1000d : Parameters.SpellInfo.Entry.CastTime / 1000d;
-            if ((CastMethod)Parameters.SpellInfo.BaseInfo.Entry.CastMethod != CastMethod.ClientSideInteraction)
+            if (Parameters.ClientSideInteraction == null
+                || (CastMethod)Parameters.SpellInfo.BaseInfo.Entry.CastMethod != CastMethod.ClientSideInteraction)
                 events.EnqueueEvent(new SpellEvent(castTime, SucceedClientInteraction));
 
             status = SpellStatus.Casting;
@@ -71,9 +72,13 @@ namespace NexusForever.Game.Spell.Type
         /// </summary>
         public void SucceedClientInteraction()
         {
+            bool hasActivateEffect = Parameters.SpellInfo.Effects.Any(x => x.EffectType == SpellEffectType.Activate);
+            IGridEntity primaryTarget = Parameters.PrimaryTargetId == 0u
+                ? Caster
+                : Caster.GetVisible<IGridEntity>(Parameters.PrimaryTargetId);
             Execute();
 
-            if (Parameters.SpellInfo.Effects.FirstOrDefault(x => x.EffectType == SpellEffectType.Activate) == null)
+            if (!hasActivateEffect || primaryTarget is not IUnitEntity)
                 Parameters.ClientSideInteraction?.HandleSuccess(this);
         }
 
@@ -92,7 +97,7 @@ namespace NexusForever.Game.Spell.Type
             switch (status)
             {
                 case SpellStatus.Casting:
-                    if (Parameters.ClientSideInteraction.Entry != null)
+                    if (Parameters.ClientSideInteraction?.Entry != null || Parameters.ClientSideInteraction == null)
                         SendSpellStart();
                     else
                         SendSpellStartClientInteraction();
@@ -102,7 +107,7 @@ namespace NexusForever.Game.Spell.Type
 
         protected override uint GetPrimaryTargetId()
         {
-            return Parameters.ClientSideInteraction.Entry != null ? Caster.Guid : Parameters.PrimaryTargetId;
+            return Parameters.ClientSideInteraction?.Entry != null ? Caster.Guid : Parameters.PrimaryTargetId;
         }
     }
 }
