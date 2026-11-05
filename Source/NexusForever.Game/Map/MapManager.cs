@@ -68,6 +68,8 @@ namespace NexusForever.Game.Map
             var toRemove = new List<IPlayerAddToMapContext>();
             foreach (IPlayerAddToMapContext context in processing)
             {
+                try
+                {
                 switch (context.Status)
                 {
                     case PlayerAddToMapStatus.RemoveFromMap:
@@ -86,6 +88,16 @@ namespace NexusForever.Game.Map
                         toRemove.Add(context);
                         break;
                     }
+                }
+                }
+                catch (Exception ex)
+                {
+                    // a map that cannot be created (InGamePreview, world 49, has no .nfmap; a Celestion scientist leg was sent there)
+                    // threw here every tick, which stalled the whole world: the request fails once and is dropped instead
+                    log.LogError(ex, $"Adding player {context.Player.CharacterId} to map failed; the request is dropped.");
+                    context.OnException?.Invoke(ex);
+                    context.Status = PlayerAddToMapStatus.Complete;
+                    toRemove.Add(context);
                 }
             }
 
@@ -138,7 +150,19 @@ namespace NexusForever.Game.Map
                 context.Status = PlayerAddToMapStatus.Complete;
             }
 
-            IMap map = CreateMap(position.Info.Entry);
+            IMap map;
+            try
+            {
+                map = CreateMap(position.Info.Entry);
+            }
+            catch (Exception ex) when (destination && context.SourcePosition != null)
+            {
+                // the destination map cannot be created: put the player back where they came from
+                log.LogError(ex, $"Map {position.Info.Entry.Id} cannot be created for player {context.Player.CharacterId}; returning to map {context.SourcePosition.Info.Entry.Id}.");
+                context.OnError?.Invoke(GenericError.InstanceNotFound);
+                AddToMap(context, false);
+                return;
+            }
             switch (map)
             {
                 case IBaseMap baseMap:

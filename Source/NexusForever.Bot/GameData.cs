@@ -504,6 +504,9 @@ internal sealed class BotGameData
             .Select(id => worldLocations.GetEntry(id))
             .Where(location => location is not null)
             .Cast<WorldLocation2Entry>()
+            // the datacube missions of Algoroc, Celestion, Deradune and Ellevar (3103, 3104, 3105, 2167) carry a location in world 49
+            // (InGamePreview), which has no map; a location outside the episode's world is not somewhere to go
+            .Where(location => episode.WorldId == 0u || location.WorldId == episode.WorldId)
             .ToArray();
         if (entry.PathTypeEnum == (uint)BotPath.Settler && type == PathMissionType.Mayor
             && pathSettlerMayors.GetEntry(entry.ObjectId) is PathSettlerMayorEntry mayor)
