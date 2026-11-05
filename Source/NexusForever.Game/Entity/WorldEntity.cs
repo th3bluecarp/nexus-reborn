@@ -967,6 +967,8 @@ namespace NexusForever.Game.Entity
                         case QuestObjectiveType.ActivateEntity:
                         case QuestObjectiveType.ActivateEntity2:
                         case QuestObjectiveType.SucceedCSI:
+                        // a gather node (the Fallen Trees of A Fiery Escape are HarvestUnits with no health) is used directly
+                        case QuestObjectiveType.GatheResource:
                             if (objective.ObjectiveInfo.Data == creatureId || (targetGroups.Contains(objective.ObjectiveInfo.Data)
                                 && GameTableManager.Instance.Creature2.GetEntry(objective.ObjectiveInfo.Data) == null))
                                 return true;

@@ -4073,19 +4073,36 @@ internal sealed class BotRunner
         if (objective.Data == 0u)
             throw new BotFailureException("GatheResource objective has no creature id");
         var attemptedSpawns = new HashSet<uint>();
+        IReadOnlyList<Spawn> candidates = SpawnsFor([objective.Data], questWorldId);
+        log.Info($"objective {objective.Index}: gather node creature {objective.Data}, {candidates.Count} spawn(s) in world {questWorldId}; using it, or fighting it when it can be fought");
+        int fruitlessRounds = 0;
         while (!IsObjectiveComplete(objective))
         {
             Spawn spawn = ChooseCombatSpawn([objective.Data], questWorldId, attemptedSpawns);
             attemptedSpawns.Add(spawn.Id);
             TrackedEntity? entity = await TeleportAndTryFindWithRetryAsync(spawn, cancellationToken);
             if (entity is null)
+            {
+                log.Info($"objective {objective.Index}: gather node spawn {spawn.Id} at ({spawn.X:0},{spawn.Y:0},{spawn.Z:0}) is not visible; {FormatNearbyTrackedCreatures()}");
+                if (++fruitlessRounds >= Math.Max(3, candidates.Count * 2))
+                    throw new BotFailureException($"gather node creature {objective.Data} was not visible at its {candidates.Count} spawn(s)");
                 continue;
+            }
             uint before = GetRawProgress(objective.Index);
             ActivationOutcome outcome = await RunActivationFlowAsync(objective.Index, before, entity, TimeSpan.FromSeconds(8), cancellationToken);
+            log.Info($"objective {objective.Index}: gather node guid {entity.Guid} ({entity.Type}, creature {entity.CreatureId}) activation: {outcome}");
             if (outcome == ActivationOutcome.Progressed)
+            {
+                fruitlessRounds = 0;
                 continue;
+            }
             if (outcome == ActivationOutcome.TargetNotUsable || !CanFight(entity.Type))
+            {
+                // a node that is neither usable nor a unit to fight (a HarvestUnit without health) never progresses
+                if (++fruitlessRounds >= Math.Max(3, candidates.Count * 2))
+                    throw new BotFailureException($"gather node creature {objective.Data} ({entity.Type}) gave no progress when used and cannot be fought; last activation {outcome}");
                 continue;
+            }
             await RequireWorld().SendEncryptedAsync(GameMessageOpcode.ClientEntitySelect,
                 PacketCodec.ClientEntitySelect(entity.Guid), cancellationToken);
             _ = await FightUntilProgressAsync(objective.Index, before, entity.Guid, cancellationToken);
