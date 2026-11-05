@@ -700,6 +700,19 @@ internal sealed class BotGameData
             701u => ([["Eldan Relic", "Eldan Relics"]], 8u),
             2132u => ([["DREDplex Data Terminal"]], 10u),
             2133u => ([["Deadstar Data Terminal", "Deadstar Footlocker", "Deadstar Clothesline"]], 3u),
+            // Celestion scans and checklists, the server's ScanRules names
+            1714u => ([["Hoogle Guardian Totem", "Transmorphing Flight Hoogle Totem"]], 3u),
+            1719u => ([["Draken Garden Gnome"], ["Draken Backscratcher"], ["Draken Chamberpot"]], 1u),
+            1724u => ([["Weave Portal"]], 3u),
+            1725u => ([["Moodie Mojo"]], 3u),
+            1828u => ([["Augmented Celestial Razortusk", "Augmented Nightfang Creeper", "Augmented Nightfang Weaver", "Augmented Nightfang Widow", "Augmented Buzzbing", "Augmented Nightfang Flayer"]], 3u),
+            1830u => ([["Amorous Rowsdower"]], 10u),
+            1840u => ([["Rowsdower's Corpse", "Sunhorn Roamer's Corpse", "Ravenous Corpse"]], 3u),
+            1841u => ([["Mordesh Vitality Extractor"]], 3u),
+            1845u => ([["Water of Life"]], 5u),
+            1847u => ([["Ravenous Ripper", "Ravenous Ghoul", "Ravenous Horror", "Ravenous Fiend", "Ravenous Reaver", "Ravenous Malignant", "Ravenous Mordesh"]], 3u),
+            1854u => ([["Communication Controls", "Communication Dish"]], 4u),
+            1859u => ([["Shield Generator", "Bio-Containment Shield"]], 3u),
             _ => null
         };
         if (rule is null)

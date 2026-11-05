@@ -641,7 +641,7 @@ namespace NexusForever.Game.Entity
             if (CreatureInfo?.Entry != null && CreatureInfo.Entry.BindPointId != 0u && Map != null)
                 activator.SetBindPoint((ushort)CreatureInfo.Entry.BindPointId, (ushort)Map.Entry.Id, activator.Position);
 
-            if (CreatureInfo.Entry != null)
+            if (CreatureInfo?.Entry != null)
             {
                 // activate spells with a QuestAdvanceObjective effect give that quest its credit, the updates below would count it again
                 using IDisposable suppressed = activator.QuestManager.SuppressObjectiveUpdates(ActivateSpellQuests());
@@ -666,8 +666,10 @@ namespace NexusForever.Game.Entity
                     // ActivateEntity objectives with no target (Rescue Exile Prisoners) name the creatures to use in the reward pane group
                     activator.QuestManager.RewardPaneObjectiveUpdate(QuestObjectiveType.ActivateEntity, targetGroupId, 1u);
 
-                    Map.PublicEventManager.UpdateObjective(activator, PublicEventObjectiveType.ActivateTargetGroup, targetGroupId, 1);
-                    Map.PublicEventManager.UpdateObjective(activator, PublicEventObjectiveType.ActivateTargetGroupChecklist, targetGroupId, QuestChecklistIdx);
+                    // the used entity can already be off the map when a client-side interaction finishes (a looted corpse,
+                    // a despawned item): the player's map runs the public event
+                    activator.Map?.PublicEventManager.UpdateObjective(activator, PublicEventObjectiveType.ActivateTargetGroup, targetGroupId, 1);
+                    activator.Map?.PublicEventManager.UpdateObjective(activator, PublicEventObjectiveType.ActivateTargetGroupChecklist, targetGroupId, QuestChecklistIdx);
                 }
             }
 

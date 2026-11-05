@@ -551,7 +551,8 @@ namespace NexusForever.Game.Map
         {
             if (!entities.TryGetValue(guid, out IGridEntity entity))
                 return default;
-            return (T)entity;
+            // a guid of another kind (a creature asked for as a player) is no entity of that kind
+            return entity is T typed ? typed : default;
         }
 
         /// <summary>

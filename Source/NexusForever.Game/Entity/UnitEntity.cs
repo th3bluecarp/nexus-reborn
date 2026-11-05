@@ -42,6 +42,7 @@ namespace NexusForever.Game.Entity
     public abstract class UnitEntity : WorldEntity, IUnitEntity
     {
         private static readonly NLog.ILogger combatLog = NLog.LogManager.GetLogger("Combat");
+        private static readonly NLog.ILogger log = NLog.LogManager.GetCurrentClassLogger();
 
         public float HitRadius { get; protected set; } = 1f;
 
@@ -165,8 +166,28 @@ namespace NexusForever.Game.Entity
 
             foreach (ISpell spell in spells.Values)
             {
-                spell.Update(lastTick);
-                spell.LateUpdate(lastTick);
+                try
+                {
+                    spell.Update(lastTick);
+                    spell.LateUpdate(lastTick);
+                }
+                catch (Exception ex)
+                {
+                    // a spell that throws from its update would throw again every tick and end every later update of this
+                    // entity (cooldowns, quests, missions) for good: it is finished instead
+                    log.Error(ex, $"Spell cast {spell.CastingId} of {Guid} (creature {CreatureId}) failed to update and was finished.");
+                    try
+                    {
+                        spell.Finish();
+                    }
+                    catch (Exception finishException)
+                    {
+                        log.Error(finishException, $"Spell cast {spell.CastingId} of {Guid} could not be finished.");
+                    }
+                    spells.Remove(spell.CastingId);
+                    continue;
+                }
+
                 if (spell.IsFinished)
                     spells.Remove(spell.CastingId);
             }
