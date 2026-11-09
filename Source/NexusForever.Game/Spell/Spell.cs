@@ -650,7 +650,11 @@ namespace NexusForever.Game.Spell
             if (Caster is IPlayer player)
             {
                 // Ensure caster can apply this effect
-                if (spell4EffectsEntry.PrerequisiteIdCasterApply > 0 && !PrerequisiteManager.Instance.Meets(player, spell4EffectsEntry.PrerequisiteIdCasterApply))
+                if (spell4EffectsEntry.PrerequisiteIdCasterApply > 0
+                    && !PrerequisiteManager.Instance.Meets(player, spell4EffectsEntry.PrerequisiteIdCasterApply, new PrerequisiteParameters
+                    {
+                        ExcludedSpellCastingId = CastingId
+                    }))
                     return false;
             }
             else if (spell4EffectsEntry.PrerequisiteIdCasterApply > 0
@@ -710,7 +714,10 @@ namespace NexusForever.Game.Spell
                 // TODO
                 if (spell4EffectsEntry.PrerequisiteIdCasterApply > 0)
                 {
-                    effectCanApply = PrerequisiteManager.Instance.Meets(player, spell4EffectsEntry.PrerequisiteIdCasterApply);
+                    effectCanApply = PrerequisiteManager.Instance.Meets(player, spell4EffectsEntry.PrerequisiteIdCasterApply, new PrerequisiteParameters
+                    {
+                        ExcludedSpellCastingId = CastingId
+                    });
                 }
             }
 

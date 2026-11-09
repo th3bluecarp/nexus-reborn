@@ -26,12 +26,17 @@ namespace NexusForever.Game.Prerequisite.Check
             if (value == 0 && objectId == 0)
                 return false;
 
+            uint? excludedCastingId = (parameters as PrerequisiteParameters)?.ExcludedSpellCastingId;
+            bool hasSpell = player.HasSpell(
+                spell => spell.CastingId != excludedCastingId && spell.Spell4Id == value,
+                out ISpell _);
+
             switch (comparison)
             {
                 case PrerequisiteComparison.Equal:
-                    return player.HasSpell(s => s.Spell4Id == value, out ISpell equalSpell);
+                    return hasSpell;
                 case PrerequisiteComparison.NotEqual:
-                    return !player.HasSpell(s => s.Spell4Id == value, out ISpell notEqualSpell);
+                    return !hasSpell;
                 default:
                     log.LogWarning($"Unhandled PrerequisiteComparison {comparison} for {PrerequisiteType.UnderSpell}!");
                     return false;

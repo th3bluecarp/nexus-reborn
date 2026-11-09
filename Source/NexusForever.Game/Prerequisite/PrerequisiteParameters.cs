@@ -12,5 +12,11 @@ namespace NexusForever.Game.Prerequisite
         public ushort? TaxiNode { get; set; }
         public bool UnhandledResult { get; set; }
         public IWorldEntity EvaluatedUnit { get; set; }
+
+        /// <summary>
+        /// Spell cast to exclude from UnderSpell-style checks while evaluating that spell's effect prerequisites.
+        /// The executing spell is present in the caster's spell collection but is not an aura the caster was already under.
+        /// </summary>
+        public uint? ExcludedSpellCastingId { get; set; }
     }
 }

@@ -196,6 +196,13 @@ internal sealed class BotRunner
         Stunned
     }
 
+    private enum QuestAbilityCastOutcome
+    {
+        NoProgress,
+        Progressed,
+        CasterPrerequisiteFailed
+    }
+
     private sealed record ActivationCastResponse(SpellCastStart? Start, SpellCastResult? Result);
     private sealed record CombatFacing(Vector3 TargetPosition, DateTimeOffset SentAt);
     private sealed record QuestNpcUseResult(TrackedEntity Entity, string Attempts);
@@ -4007,8 +4014,22 @@ internal sealed class BotRunner
 
             await RequireWorld().SendEncryptedAsync(GameMessageOpcode.ClientEntitySelect,
                 PacketCodec.ClientEntitySelect(entity.Guid), cancellationToken);
-            uint before = GetRawProgress(objective.Index);
-            bool progressed = await CastQuestAbilityAsync(objective, entity, cancellationToken);
+            QuestAbilityCastOutcome castOutcome = await CastQuestAbilityAsync(objective, entity, cancellationToken);
+            if (castOutcome == QuestAbilityCastOutcome.CasterPrerequisiteFailed
+                && indicator is not null && indicator.WorldId == questWorldId)
+            {
+                // Some target-less quest abilities are location gated. Only retry casts the normal target flow refused,
+                // so objectives that already work keep their existing target selection and combat behavior.
+                log.Info($"objective {objective.Index}: quest ability {objective.Data} failed its caster prerequisite; retrying without a target at indicator {indicator.Id}");
+                await TeleportToSpawnLocationAsync(
+                    new Spawn(0u, 0u, questWorldId, indicator.Position0, indicator.Position1, indicator.Position2),
+                    cancellationToken);
+                atIndicator = true;
+                await RequireWorld().SendEncryptedAsync(GameMessageOpcode.ClientEntitySelect,
+                    PacketCodec.ClientEntitySelect(0), cancellationToken);
+                castOutcome = await CastQuestAbilityAtIndicatorAsync(objective, indicator, cancellationToken);
+            }
+            bool progressed = castOutcome == QuestAbilityCastOutcome.Progressed;
             usedGuids.Add(entity.Guid);
             if (IsObjectiveComplete(objective))
                 break;
@@ -4025,19 +4046,42 @@ internal sealed class BotRunner
         }
     }
 
-    private async Task<bool> CastQuestAbilityAsync(QuestObjectiveDefinition objective, TrackedEntity entity, CancellationToken cancellationToken, int cooldownRetries = 0)
+    private async Task<QuestAbilityCastOutcome> CastQuestAbilityAsync(
+        QuestObjectiveDefinition objective,
+        TrackedEntity entity,
+        CancellationToken cancellationToken)
     {
         await FaceCombatTargetAsync(entity.Guid, true, cancellationToken);
+        Vector3 position = entities.Get(entity.Guid)?.Position ?? entity.Position ?? lastPosition;
+        return await CastQuestAbilityAsync(objective, entity.Guid, position, cancellationToken);
+    }
+
+    private Task<QuestAbilityCastOutcome> CastQuestAbilityAtIndicatorAsync(
+        QuestObjectiveDefinition objective,
+        WorldLocation2Entry indicator,
+        CancellationToken cancellationToken)
+        => CastQuestAbilityAsync(
+            objective,
+            0u,
+            new Vector3(indicator.Position0, indicator.Position1, indicator.Position2),
+            cancellationToken);
+
+    private async Task<QuestAbilityCastOutcome> CastQuestAbilityAsync(
+        QuestObjectiveDefinition objective,
+        uint targetGuid,
+        Vector3 position,
+        CancellationToken cancellationToken,
+        int cooldownRetries = 0)
+    {
         uint before = GetRawProgress(objective.Index);
         uint clientUniqueId = spellCastId++;
         pendingActivationCastIds.Add(clientUniqueId);
         try
         {
-            Vector3 position = entities.Get(entity.Guid)?.Position ?? entity.Position ?? lastPosition;
             await RequireWorld().SendEncryptedAsync(GameMessageOpcode.ClientCastObjectiveAbility,
-                PacketCodec.ClientCastObjectiveAbility(clientUniqueId, objective.Data, entity.Guid, position), cancellationToken);
+                PacketCodec.ClientCastObjectiveAbility(clientUniqueId, objective.Data, targetGuid, position), cancellationToken);
             ActivationCastResponse response = await TryWaitForActivationCastResponseAsync(
-                clientUniqueId, entity.Guid, TimeSpan.FromSeconds(5), cancellationToken);
+                clientUniqueId, targetGuid, TimeSpan.FromSeconds(5), cancellationToken);
             if (response.Result is SpellCastResult result && result.Result != CastResult.Ok)
             {
                 log.Info($"objective {objective.Index}: quest ability {objective.Data} refused: {result.Result}(0x{(uint)result.Result:X4})");
@@ -4049,12 +4093,16 @@ internal sealed class BotRunner
                     pendingActivationCastIds.Remove(clientUniqueId);
                     activationCastResults.Remove(clientUniqueId);
                     await DrainWorldPacketsAsync(result.Result == CastResult.SpellCooldown ? TimeSpan.FromSeconds(10) : TimeSpan.FromSeconds(1.5), cancellationToken);
-                    return await CastQuestAbilityAsync(objective, entity, cancellationToken, cooldownRetries + 1);
+                    return await CastQuestAbilityAsync(objective, targetGuid, position, cancellationToken, cooldownRetries + 1);
                 }
-                return false;
+                return result.Result == CastResult.PrereqCasterCast
+                    ? QuestAbilityCastOutcome.CasterPrerequisiteFailed
+                    : QuestAbilityCastOutcome.NoProgress;
             }
             // the cast runs its cast time (2-3 s) before the server credits the objective
-            return await TryWaitForObjectiveProgressAsync(objective.Index, before, TimeSpan.FromSeconds(12), cancellationToken);
+            return await TryWaitForObjectiveProgressAsync(objective.Index, before, TimeSpan.FromSeconds(12), cancellationToken)
+                ? QuestAbilityCastOutcome.Progressed
+                : QuestAbilityCastOutcome.NoProgress;
         }
         finally
         {
