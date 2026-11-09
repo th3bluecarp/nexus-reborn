@@ -316,6 +316,8 @@ A player of level N wears quest and vendor gear of about power level N. The bot 
 - **Open-ended crowd control (2026-11-09).** A durationless crowd control from a spell that never finishes would last forever. An AbilityRestriction of that kind outside a vehicle or transformation is released after 120 s, and one from a quest spell ends when the quest leaves the accepted state. The Vegging Out Transmorphing form (34861) ends when its vegetable-gathering step (objective 2) completes, since the original script that ended it is lost.
 - **EnterZone with no indicator (2026-11-09).** The step completes in the named zone or in any area whose parent chain contains it.
 
+- **Settler project resources without a resource creature (2026-11-09).** When a project lists no resource creature, its resources are the creatures named in its "Collect ..." text, else the creatures whose activation casts the project's resource spell, else text names compared with plurals ignored.
+
 ## Lost content that stays missing
 
 Content whose creatures, spawns, locations or scripts are all gone from the data is not invented. It is listed here so the parity

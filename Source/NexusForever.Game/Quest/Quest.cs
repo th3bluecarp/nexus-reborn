@@ -560,6 +560,11 @@ namespace NexusForever.Game.Quest
         /// </summary>
         private static bool NamesTextCreature(IQuestObjective objective, uint creatureId)
         {
+            // checklist objectives need the entity's QuestChecklistIdx, not the ordinary creature update amount; text targets
+            // are matched explicitly by TextChecklistObjectiveUpdate below
+            if (objective.ObjectiveInfo.Type is QuestObjectiveType.ActivateTargetGroupChecklist or QuestObjectiveType.Unknown10)
+                return false;
+
             return objective.ObjectiveInfo.TextCreatureId != 0u
                 && objective.ObjectiveInfo.TextCreatureId == creatureId
                 && objective.ObjectiveInfo.Data != creatureId;
@@ -595,10 +600,34 @@ namespace NexusForever.Game.Quest
             if (targetGroupId == 0u)
                 return;
 
+            if (type is QuestObjectiveType.ActivateTargetGroupChecklist or QuestObjectiveType.Unknown10)
+            {
+                // Some checklist rows have no Data target and put the group in the reward pane instead. Keep this group-only:
+                // creature and target-group ids can overlap, so text-creature fallback uses TextChecklistObjectiveUpdate.
+                ObjectiveUpdate(o => o.ObjectiveInfo.Entry.Type == (uint)type
+                    && o.ObjectiveInfo.Data == 0u
+                    && o.ObjectiveInfo.Entry.TargetGroupIdRewardPane == targetGroupId, progress);
+                return;
+            }
+
             // ActivateEntity objectives with a creature target progress through it, those without one (or naming the reward pane group
             // itself, Captives of the Dominion) use the reward pane group
             ObjectiveUpdate(o => o.ObjectiveInfo.Entry.Type == (uint)type && o.ObjectiveInfo.Entry.TargetGroupIdRewardPane == targetGroupId
                 && (type != QuestObjectiveType.ActivateEntity || o.ObjectiveInfo.Data == 0u || o.ObjectiveInfo.Data == targetGroupId || IsUnknownData(o.ObjectiveInfo.Data)), progress);
+        }
+
+        /// <summary>
+        /// Update a Data-less checklist that has no reward-pane group and names this creature in its objective text.
+        /// </summary>
+        public void TextChecklistObjectiveUpdate(QuestObjectiveType type, uint creatureId, uint progress)
+        {
+            if (creatureId == 0u || type is not (QuestObjectiveType.ActivateTargetGroupChecklist or QuestObjectiveType.Unknown10))
+                return;
+
+            ObjectiveUpdate(o => o.ObjectiveInfo.Entry.Type == (uint)type
+                && o.ObjectiveInfo.Data == 0u
+                && o.ObjectiveInfo.Entry.TargetGroupIdRewardPane == 0u
+                && o.ObjectiveInfo.TextCreatureId == creatureId, progress);
         }
 
         /// <summary>

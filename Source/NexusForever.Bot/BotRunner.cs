@@ -2527,6 +2527,7 @@ internal sealed class BotRunner
                 // hidden script steps (type 10 with no target: From the Ashes of Greenbough, Predators and Prey) are completed by the
                 // server once every other step is done (SEMANTICS: hidden script steps complete themselves)
                 if (objective.Type == QuestObjectiveType.Unknown10 && objective.Data == 0u && objective.RewardTargetGroupId == 0u
+                    && RequireGameData().GetCreatureIdsFromText(objective.Text).Count == 0
                     && !IsObjectiveComplete(objective))
                 {
                     log.Info($"quest {definition.Id} objective {objective.Index}: hidden script step (type 10, no target), left to the server");
@@ -2620,7 +2621,10 @@ internal sealed class BotRunner
             : objective.Type == QuestObjectiveType.SucceedCSI
                 ? TimeSpan.FromSeconds(60)
             // a quest ability cast per target (Use Augmented Remains on eight constructs: a 3 s cast and a fight each)
-            : objective.Type == QuestObjectiveType.SpellSuccess
+            : objective.Type is QuestObjectiveType.SpellSuccess
+                or QuestObjectiveType.SpellSuccess2
+                or QuestObjectiveType.SpellSuccess3
+                or QuestObjectiveType.SpellSuccess4
                 ? TimeSpan.FromSeconds(Math.Max(120u, Math.Max(1u, objective.Count) * 50u))
             // items collected by using units or looted from kills (By Leaps and Bounds: eight loftite fragments that drop
             // from 44 % of boulderback kills, so eighteen fights of about 25 s on average and the odd health recovery;
@@ -2642,6 +2646,9 @@ internal sealed class BotRunner
             if (objective.Type == QuestObjectiveType.ActivateEntity && timeout < TimeSpan.FromSeconds(150))
                 timeout = TimeSpan.FromSeconds(150);
         }
+        if (IsTargetlessHoldObjective(objective))
+            timeout = TimeSpan.FromSeconds(Math.Max(timeout.TotalSeconds,
+                TargetlessHoldCompletionTimeout(objective.Count).TotalSeconds + EntityStreamTimeout.TotalSeconds));
         if (IsSingleTargetKillRetryObjective(objective))
             timeout = SingleTargetKillRetryTimeout;
         return timeout;
@@ -3848,6 +3855,20 @@ internal sealed class BotRunner
 
         WorldLocation2Entry location = RequireGameData().GetWorldLocation(objective.WorldLocationId);
         await TeleportToLocationAsync(location, 0f, cancellationToken);
+        if (IsTargetlessHoldObjective(objective))
+        {
+            TimeSpan holdTimeout = TargetlessHoldCompletionTimeout(objective.Count);
+            DateTimeOffset deadline = DateTimeOffset.UtcNow + holdTimeout;
+            while (!IsObjectiveComplete(objective))
+            {
+                TimeSpan remaining = deadline - DateTimeOffset.UtcNow;
+                if (remaining <= TimeSpan.Zero
+                    || await TryReadWorldPacketAsync(remaining, cancellationToken) is null)
+                    throw new BotFailureException($"target-less ActivateEntity reached {GetRawProgress(objective.Index)}/{objective.Count} at indicator {location.Id} after holding for {holdTimeout.TotalSeconds:0} s");
+            }
+            return;
+        }
+
         if (await TryWaitForObjectiveProgressAsync(objective.Index, before, TimeSpan.FromSeconds(20), cancellationToken))
             return;
 
@@ -3855,6 +3876,25 @@ internal sealed class BotRunner
         await TeleportToLocationAsync(location, step, cancellationToken);
         if (!await TryWaitForObjectiveProgressAsync(objective.Index, before, TimeSpan.FromSeconds(10), cancellationToken))
             throw new BotFailureException($"target-less ActivateEntity produced no progress at indicator {location.Id} (radius {location.Radius:R}) after 20 s plus a {step:R} m step and 10 s");
+    }
+
+    private static bool IsTargetlessHoldObjective(QuestObjectiveDefinition objective)
+        => objective.Type == QuestObjectiveType.ActivateEntity
+            && objective.Data == 0u
+            && objective.RewardTargetGroupId == 0u
+            && objective.EquipItemId == 0u
+            && objective.WorldLocationId != 0u
+            && objective.Count > 1u;
+
+    /// <summary>
+    /// The server adds ceil(Count / 20) once per second while the player remains in the indicator, so the bar fills in at
+    /// most twenty ticks. Five seconds covers entry-timer alignment and packet delivery without moving away from the marker.
+    /// </summary>
+    private static TimeSpan TargetlessHoldCompletionTimeout(uint count)
+    {
+        uint progressPerSecond = Math.Max(1u, (uint)Math.Ceiling(count / 20d));
+        uint seconds = (count + progressPerSecond - 1u) / progressPerSecond;
+        return TimeSpan.FromSeconds(seconds + 5u);
     }
 
     private async Task RunTargetGroupActivateObjectiveAsync(QuestObjectiveDefinition objective, CancellationToken cancellationToken)
@@ -3972,11 +4012,12 @@ internal sealed class BotRunner
             usedGuids.Add(entity.Guid);
             if (IsObjectiveComplete(objective))
                 break;
-            // a usable object (the retrofitted cannon of Small But Effective, faction 219 with an activation spell) is never fought:
-            // the bot stood hitting it for the whole budget after the server had already credited the launch
-            if (hostile && data.IsAttackableCreature(entity.CreatureId ?? 0u) && !combatTargetDestroyed && (entities.Get(entity.Guid)?.Health is null or > 0u))
+            // A usable object (the retrofitted cannon of Small But Effective) is never fought. A hostile is only fought when
+            // the cast did not credit (the ability may require a kill), or when it has put the player in combat. GOOPed! credits
+            // each cast itself, so killing every untouched target between casts only consumes the objective budget.
+            if ((!progressed || playerInCombat) && hostile && data.IsAttackableCreature(entity.CreatureId ?? 0u)
+                && !combatTargetDestroyed && (entities.Get(entity.Guid)?.Health is null or > 0u))
             {
-                // the target is awake now: finish it so the next cast is not made under attack (and a sibling kill objective counts)
                 _ = await FightUntilDeathAsync(entity.Guid, cancellationToken);
             }
             if (!progressed)
@@ -4133,8 +4174,16 @@ internal sealed class BotRunner
             {
                 await RequireWorld().SendEncryptedAsync(GameMessageOpcode.ClientActivateUnitCast,
                     PacketCodec.ClientActivateUnitCast(clientUniqueId, entity.Guid), cancellationToken);
+                bool plainActivationOnly = entity.CreatureId is uint creatureId
+                    && RequireGameData().GetCreatureActivationData(creatureId).ActivationSpellIds.Count == 0;
+                Func<bool>? plainActivationProgressed = plainActivationOnly
+                    ? () => GetRawProgress(objectiveIndex) > before
+                    : null;
                 ActivationCastResponse response = await TryWaitForActivationCastResponseAsync(
-                    clientUniqueId, entity.Guid, TimeSpan.FromSeconds(5), cancellationToken);
+                    clientUniqueId, entity.Guid, TimeSpan.FromSeconds(5), cancellationToken,
+                    plainActivationProgressed);
+                if (plainActivationOnly && GetRawProgress(objectiveIndex) > before)
+                    return ActivationOutcome.Progressed;
                 if (response.Result is SpellCastResult castResult)
                 {
                     (bool shouldRetry, ActivationOutcome? outcome) = await HandleActivationCastResultAsync(
@@ -4264,11 +4313,14 @@ internal sealed class BotRunner
         uint clientUniqueId,
         uint targetGuid,
         TimeSpan timeout,
-        CancellationToken cancellationToken)
+        CancellationToken cancellationToken,
+        Func<bool>? progressObserved = null)
     {
         DateTimeOffset deadline = DateTimeOffset.UtcNow + timeout;
         while (true)
         {
+            if (progressObserved?.Invoke() == true)
+                return new ActivationCastResponse(null, null);
             TimeSpan remaining = deadline - DateTimeOffset.UtcNow;
             if (remaining <= TimeSpan.Zero)
                 return new ActivationCastResponse(null, null);
@@ -4276,6 +4328,8 @@ internal sealed class BotRunner
                 return new ActivationCastResponse(null, existingResult);
             ProtocolPacket? packet = await TryReadWorldPacketAsync(remaining, cancellationToken);
             if (packet is null)
+                return new ActivationCastResponse(null, null);
+            if (progressObserved?.Invoke() == true)
                 return new ActivationCastResponse(null, null);
 
             if (activationCastResults.Remove(clientUniqueId, out SpellCastResult? result))

@@ -188,6 +188,9 @@ internal sealed class BotGameData
     private readonly GameTable<CommunicatorMessagesEntry>? communicatorMessages;
     private readonly TextTable english;
     private readonly Dictionary<ushort, PrerequisiteBranchChoice> prerequisiteBranchChoices = [];
+    private readonly Lazy<Dictionary<uint, uint[]>> infrastructureCreaturesByActivateSpell;
+
+    private const uint GenericActivateSpell = 1817u;
 
     public BotGameData(string tablePath, bool allowMissingCommunicatorMessages = false)
     {
@@ -206,6 +209,16 @@ internal sealed class BotGameData
         worldZones = Load<WorldZoneEntry>(tablePath, "WorldZone.tbl");
         objectives = Load<QuestObjectiveEntry>(tablePath, "QuestObjective.tbl");
         creatures = Load<Creature2Entry>(tablePath, "Creature2.tbl");
+        infrastructureCreaturesByActivateSpell = new Lazy<Dictionary<uint, uint[]>>(() =>
+            creatures.Entries
+                .SelectMany(creature => creature.Spell4IdActivate
+                    .Where(spellId => spellId != 0u && spellId != GenericActivateSpell)
+                    .Distinct()
+                    .Select(spellId => (SpellId: spellId, CreatureId: creature.Id)))
+                .GroupBy(pair => pair.SpellId)
+                .ToDictionary(
+                    group => group.Key,
+                    group => group.Select(pair => pair.CreatureId).Distinct().Order().ToArray()));
         spells = Load<Spell4Entry>(tablePath, "Spell4.tbl");
         creatureDifficulties = Load<Creature2DifficultyEntry>(tablePath, "Creature2Difficulty.tbl");
         items = Load<Item2Entry>(tablePath, "Item2.tbl");
@@ -642,13 +655,15 @@ internal sealed class BotGameData
             infrastructure.Creature2IdResource02
         ];
         resourceCreatures = resourceCreatures.Where(id => id != 0u).Distinct().ToArray();
+        // same order as PathMissionManager.ResolveResourceCreatures: fields, exact text name, resource spell, singular text name
+        string? resourceName = null;
         if (resourceCreatures.Length == 0)
         {
             string objective = english.GetEntry(infrastructure.LocalizedTextIdObjective) ?? "";
             Match match = Regex.Match(objective, @"^Collect (.+?) (?:for|from|to)\b", RegexOptions.IgnoreCase);
             if (match.Success)
             {
-                string resourceName = NormalizeName(match.Groups[1].Value);
+                resourceName = NormalizeName(match.Groups[1].Value);
                 resourceCreatures = creatures.Entries
                     .Where(creature =>
                     {
@@ -661,6 +676,35 @@ internal sealed class BotGameData
                     .Order()
                     .ToArray();
             }
+        }
+        if (resourceCreatures.Length == 0)
+        {
+            uint[] resourceSpells =
+            [
+                infrastructure.Spell4IdResource00,
+                infrastructure.Spell4IdResource01,
+                infrastructure.Spell4IdResource02
+            ];
+            resourceCreatures = resourceSpells
+                .Where(spellId => spellId != 0u && spellId != GenericActivateSpell)
+                .Distinct()
+                .SelectMany(spellId => infrastructureCreaturesByActivateSpell.Value.GetValueOrDefault(spellId) ?? [])
+                .Distinct()
+                .Order()
+                .ToArray();
+        }
+        if (resourceCreatures.Length == 0 && resourceName is not null)
+        {
+            string singularResourceName = SingularizeWords(resourceName);
+            resourceCreatures = creatures.Entries
+                .Where(creature => string.Equals(
+                    SingularizeWords(CreatureName(creature)),
+                    singularResourceName,
+                    StringComparison.OrdinalIgnoreCase))
+                .Select(creature => creature.Id)
+                .Distinct()
+                .Order()
+                .ToArray();
         }
 
         // Mirror PathMissionManager.Infrastructure.cs: the server currently caps carried resources
@@ -850,6 +894,19 @@ internal sealed class BotGameData
 
     private static string NormalizeName(string name)
         => Regex.Replace(name, @"\{p:[^}]*\}", "");
+
+    private static string SingularizeWords(string value)
+    {
+        return Regex.Replace(value, @"\b[\p{L}]{4,}\b", match =>
+        {
+            string word = match.Value;
+            if (word.EndsWith("es", StringComparison.OrdinalIgnoreCase))
+                return word[..^2];
+            if (word.EndsWith("s", StringComparison.OrdinalIgnoreCase))
+                return word[..^1];
+            return word;
+        });
+    }
 
     /// <summary>
     /// The zone and every zone below it (WorldZone.ParentZoneId).

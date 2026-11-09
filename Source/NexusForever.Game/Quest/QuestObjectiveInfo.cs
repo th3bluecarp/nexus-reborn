@@ -22,7 +22,7 @@ namespace NexusForever.Game.Quest
         /// <summary>
         /// The single creature named in the objective text ($(creature=N)), 0 when none or several. Activating or killing it
         /// counts even when Data names another id (The Face of the Enemy mine 3: Data 5968 is an unnamed Creature2 row, the
-        /// mine the player detonates is 73668).
+        /// mine the player detonates is 73668). A Data-less checklist can also use it when it has no reward-pane target group.
         /// </summary>
         public uint TextCreatureId { get; }
 
@@ -38,7 +38,8 @@ namespace NexusForever.Game.Quest
                 : entry.Data;
             if (Type == QuestObjectiveType.ActivateEntity && entry.Data == 0u)
                 EquipItemId = EquipItemFromText(entry.LocalizedTextIdFull);
-            if (Type is QuestObjectiveType.ActivateEntity or QuestObjectiveType.SucceedCSI or QuestObjectiveType.KillCreature)
+            if (Type is QuestObjectiveType.ActivateEntity or QuestObjectiveType.SucceedCSI or QuestObjectiveType.KillCreature
+                or QuestObjectiveType.ActivateTargetGroupChecklist or QuestObjectiveType.Unknown10)
                 TextCreatureId = CreatureFromText(entry.LocalizedTextIdFull);
         }
 

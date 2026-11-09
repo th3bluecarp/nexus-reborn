@@ -185,7 +185,8 @@ namespace NexusForever.Game.Entity
                     // type 10 steps with no target (From the Ashes of Greenbough's fifth planting, Predators and Prey's fourth cage; 36 game
                     // wide) were scripted updates; they complete like the hidden activate steps below
                     bool hiddenScriptStep = objective.ObjectiveInfo.Type == QuestObjectiveType.Unknown10
-                        && objective.ObjectiveInfo.Data == 0u && entry.TargetGroupIdRewardPane == 0u;
+                        && objective.ObjectiveInfo.Data == 0u && entry.TargetGroupIdRewardPane == 0u
+                        && objective.ObjectiveInfo.TextCreatureId == 0u;
 
                     // EnterZone objectives whose map zone is unavailable still have a usable indicator location.
                     if (objective.ObjectiveInfo.Type == QuestObjectiveType.EnterZone && HasIndicator(entry)
@@ -1113,6 +1114,17 @@ namespace NexusForever.Game.Entity
             foreach (IQuest quest in activeQuests.Values.ToList())
                 if (!suppressedQuests.Contains(quest.Id))
                     quest.RewardPaneObjectiveUpdate(type, targetGroupId, progress);
+        }
+
+        /// <summary>
+        /// Update Data-less checklist objectives that fall back to a creature named in their text. This stays separate from
+        /// reward-pane group updates because Creature2 and TargetGroup ids can have the same numeric value.
+        /// </summary>
+        public void TextChecklistObjectiveUpdate(QuestObjectiveType type, uint creatureId, uint progress)
+        {
+            foreach (IQuest quest in activeQuests.Values.ToList())
+                if (!suppressedQuests.Contains(quest.Id) && quest is NexusForever.Game.Quest.Quest concreteQuest)
+                    concreteQuest.TextChecklistObjectiveUpdate(type, creatureId, progress);
         }
 
         public IDisposable SuppressObjectiveUpdates(IEnumerable<ushort> questIds)

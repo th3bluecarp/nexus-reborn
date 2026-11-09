@@ -654,6 +654,13 @@ namespace NexusForever.Game.Entity
                 // a type 10 step that names the creature itself (Greenbough Guardian's Firestorm Flingatrons, smashed in retail by
                 // a summoned Witch Giant whose script is lost) counts each use of one
                 activator.QuestManager.ObjectiveUpdate(QuestObjectiveType.Unknown10, CreatureInfo.Entry.Id, 1u);
+                // A Data-less checklist with neither a Data nor reward-pane group falls back to the creature named in its text.
+                // Keep creature matching separate from reward groups because their numeric id namespaces can overlap.
+                if (activator.QuestManager is QuestManager questManager)
+                {
+                    questManager.TextChecklistObjectiveUpdate(QuestObjectiveType.Unknown10, CreatureInfo.Entry.Id, QuestChecklistIdx);
+                    questManager.TextChecklistObjectiveUpdate(QuestObjectiveType.ActivateTargetGroupChecklist, CreatureInfo.Entry.Id, QuestChecklistIdx);
+                }
 
                 foreach (uint targetGroupId in AssetManager.Instance.GetTargetGroupsForCreatureId(CreatureInfo.Entry.Id))
                 {
@@ -663,6 +670,9 @@ namespace NexusForever.Game.Entity
                     activator.QuestManager.ObjectiveUpdate(QuestObjectiveType.Unknown10, targetGroupId, QuestChecklistIdx);
                     // checklist objectives name the target group of their units and set the unit's checklist bit
                     activator.QuestManager.ObjectiveUpdate(QuestObjectiveType.ActivateTargetGroupChecklist, targetGroupId, QuestChecklistIdx);
+                    // Data-less checklist objectives put that target group in the reward pane instead.
+                    activator.QuestManager.RewardPaneObjectiveUpdate(QuestObjectiveType.Unknown10, targetGroupId, QuestChecklistIdx);
+                    activator.QuestManager.RewardPaneObjectiveUpdate(QuestObjectiveType.ActivateTargetGroupChecklist, targetGroupId, QuestChecklistIdx);
                     activator.QuestManager.RewardPaneObjectiveUpdate(QuestObjectiveType.VirtualCollect, targetGroupId, 1u);
                     // rescue objectives (Unknown28) name the cage to open in their reward pane target group
                     activator.QuestManager.RewardPaneObjectiveUpdate(QuestObjectiveType.Unknown28, targetGroupId, 1u);
@@ -937,13 +947,18 @@ namespace NexusForever.Game.Entity
             if (CreatureInfo?.Entry == null)
                 return false;
 
-            var targetGroups = AssetManager.Instance.GetTargetGroupsForCreatureId(CreatureInfo.Entry.Id);
+            uint creatureId = CreatureInfo.Entry.Id;
+            var targetGroups = AssetManager.Instance.GetTargetGroupsForCreatureId(creatureId);
             return activator.QuestManager.GetActiveQuests()
                 .Where(quest => quest.State == QuestState.Accepted)
                 .SelectMany(quest => quest)
                 .Any(objective => !objective.IsComplete()
                     && (objective.ObjectiveInfo.Type is QuestObjectiveType.ActivateTargetGroupChecklist or QuestObjectiveType.Unknown10)
-                    && targetGroups.Contains(objective.ObjectiveInfo.Data));
+                    && (targetGroups.Contains(objective.ObjectiveInfo.Data)
+                        || objective.ObjectiveInfo.Data == 0u
+                            && (targetGroups.Contains(objective.ObjectiveInfo.Entry.TargetGroupIdRewardPane)
+                                || objective.ObjectiveInfo.Entry.TargetGroupIdRewardPane == 0u
+                                    && objective.ObjectiveInfo.TextCreatureId == creatureId)));
         }
 
         private bool IsActiveQuestActivateTarget(IPlayer activator)

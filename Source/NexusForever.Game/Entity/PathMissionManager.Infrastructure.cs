@@ -21,8 +21,30 @@ namespace NexusForever.Game.Entity
     public partial class PathMissionManager
     {
         private const float BuilderRange = 8f;
+        private const uint GenericActivateSpell = 1817u;
 
         private readonly Dictionary<uint, uint> carriedResources = [];
+
+        private static readonly Lazy<Dictionary<uint, uint[]>> infrastructureCreaturesByActivateSpell = new(() =>
+            GameTableManager.Instance.Creature2.Entries
+                .SelectMany(creature => creature.Spell4IdActivate
+                    .Where(spellId => spellId != 0u && spellId != GenericActivateSpell)
+                    .Distinct()
+                    .Select(spellId => (SpellId: spellId, CreatureId: creature.Id)))
+                .GroupBy(pair => pair.SpellId)
+                .ToDictionary(
+                    group => group.Key,
+                    group => group.Select(pair => pair.CreatureId).Distinct().Order().ToArray()));
+
+        private static readonly Lazy<Dictionary<string, uint[]>> infrastructureCreaturesByName = new(() =>
+            GameTableManager.Instance.Creature2.Entries
+                .Select(creature => (creature.Id, Name: CreatureName(creature)))
+                .Where(creature => creature.Name != null)
+                .GroupBy(creature => creature.Name, StringComparer.OrdinalIgnoreCase)
+                .ToDictionary(
+                    group => group.Key,
+                    group => group.Select(creature => creature.Id).Distinct().Order().ToArray(),
+                    StringComparer.OrdinalIgnoreCase));
 
         /// <summary>
         /// State of a settler infrastructure project as the InfrastructureState prerequisite reads it: 2 built, 1 under way, 0 not started.
@@ -40,11 +62,82 @@ namespace NexusForever.Game.Entity
             return mission.Progress > 0u || mission.State == Static.PlayerPath.PathMissionState.Started ? 1u : 0u;
         }
 
+        private static readonly System.Collections.Concurrent.ConcurrentDictionary<uint, uint[]> resourceCreatureCache = new();
+
         private static uint[] ResourceCreatures(PathSettlerInfrastructureEntry infrastructure)
+            => resourceCreatureCache.GetOrAdd(infrastructure.Id, _ => ResolveResourceCreatures(infrastructure));
+
+        private static uint[] ResolveResourceCreatures(PathSettlerInfrastructureEntry infrastructure)
         {
-            return new[] { infrastructure.Creature2IdResource00, infrastructure.Creature2IdResource01, infrastructure.Creature2IdResource02 }
+            uint[] resources = new[] { infrastructure.Creature2IdResource00, infrastructure.Creature2IdResource01, infrastructure.Creature2IdResource02 }
                 .Where(c => c != 0u)
+                .Distinct()
                 .ToArray();
+            if (resources.Length > 0)
+                return resources;
+
+            // exact name first, so projects that resolved through their text before (Algoroc 53: Eldan Relics) keep it
+            string resourceName = ObjectiveResource(infrastructure);
+            if (resourceName != null)
+            {
+                resources = ExactNameCreatures(resourceName);
+                if (resources.Length > 0)
+                    return resources;
+            }
+
+            // creatures whose activation casts the project resource spell (Celestion 34: Sylvan Glade Tenders give Arborian Seeds)
+            resources = new[] { infrastructure.Spell4IdResource00, infrastructure.Spell4IdResource01, infrastructure.Spell4IdResource02 }
+                .Where(spellId => spellId != 0u && spellId != GenericActivateSpell)
+                .Distinct()
+                .SelectMany(spellId => infrastructureCreaturesByActivateSpell.Value.GetValueOrDefault(spellId) ?? [])
+                .Distinct()
+                .Order()
+                .ToArray();
+            if (resources.Length > 0)
+                return resources;
+
+            if (resourceName == null)
+                return [];
+
+            string singularResourceName = SingularizeWords(resourceName);
+            return infrastructureCreaturesByName.Value
+                .Where(pair => string.Equals(SingularizeWords(pair.Key), singularResourceName, StringComparison.OrdinalIgnoreCase))
+                .SelectMany(pair => pair.Value)
+                .Distinct()
+                .Order()
+                .ToArray();
+        }
+
+        private static uint[] ExactNameCreatures(string resourceName)
+        {
+            var resources = new HashSet<uint>();
+            if (infrastructureCreaturesByName.Value.TryGetValue(resourceName, out uint[] exact))
+                resources.UnionWith(exact);
+
+            foreach ((string name, uint[] creatureIds) in infrastructureCreaturesByName.Value)
+                if (string.Equals(name + "s", resourceName, StringComparison.OrdinalIgnoreCase))
+                    resources.UnionWith(creatureIds);
+
+            return resources.Order().ToArray();
+        }
+
+        private static string CreatureName(Creature2Entry creature)
+        {
+            string name = GameTableManager.Instance.TextEnglish?.GetEntry(creature.LocalizedTextIdName);
+            return name == null ? null : Regex.Replace(name, @"\{p:[^}]*\}", "");
+        }
+
+        private static string SingularizeWords(string value)
+        {
+            return Regex.Replace(value, @"\b[\p{L}]{4,}\b", match =>
+            {
+                string word = match.Value;
+                if (word.EndsWith("es", StringComparison.OrdinalIgnoreCase))
+                    return word[..^2];
+                if (word.EndsWith("s", StringComparison.OrdinalIgnoreCase))
+                    return word[..^1];
+                return word;
+            });
         }
 
         /// <summary>
@@ -57,25 +150,12 @@ namespace NexusForever.Game.Entity
                 return null;
 
             Match match = Regex.Match(text, @"^Collect (.+?) (?:for|from|to)\b", RegexOptions.IgnoreCase);
-            return match.Success ? match.Groups[1].Value : null;
+            return match.Success ? Regex.Replace(match.Groups[1].Value, @"\{p:[^}]*\}", "") : null;
         }
 
         private static bool IsResource(PathSettlerInfrastructureEntry infrastructure, uint creatureId)
         {
-            uint[] resources = ResourceCreatures(infrastructure);
-            if (resources.Length > 0)
-                return resources.Contains(creatureId);
-
-            string resource = ObjectiveResource(infrastructure);
-            Creature2Entry creature = GameTableManager.Instance.Creature2.GetEntry(creatureId);
-            string name = creature == null ? null : GameTableManager.Instance.TextEnglish?.GetEntry(creature.LocalizedTextIdName);
-            if (resource == null || name == null)
-                return false;
-
-            name = Regex.Replace(name, @"\{p:[^}]*\}", "");
-            // "Eldan Relics" in the text, "Eldan Relic" and "Eldan Relics" as creatures
-            return string.Equals(name, resource, StringComparison.OrdinalIgnoreCase)
-                || string.Equals(name + "s", resource, StringComparison.OrdinalIgnoreCase);
+            return ResourceCreatures(infrastructure).Contains(creatureId);
         }
 
         private void GatherInfrastructureResource(uint creatureId)
