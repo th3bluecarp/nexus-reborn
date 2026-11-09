@@ -313,6 +313,9 @@ Retail completed "enter area" objectives with map trigger volumes the server doe
 
 A player of level N wears quest and vendor gear of about power level N. The bot has no quest-reward or vendor flow, so after each level raise it adds (GM `!item add`) and equips a plain green greatsword, heavy armor set and shield of its level: the highest power level at or below the level among Item2 rows of quality 2 with no class, quest or flag lock (shields carry flag 0x4000 on every plain one, allowed). Each replaced piece is deleted as a player vendors it. Approximation: real gear is green to blue with stats; the bot's has the slot's base armor, health and shield only, so it is a floor for a player's survivability, not a ceiling.
 
+- **Open-ended crowd control (2026-11-09).** A durationless crowd control from a spell that never finishes would last forever. An AbilityRestriction of that kind outside a vehicle or transformation is released after 120 s, and one from a quest spell ends when the quest leaves the accepted state. The Vegging Out Transmorphing form (34861) ends when its vegetable-gathering step (objective 2) completes, since the original script that ended it is lost.
+- **EnterZone with no indicator (2026-11-09).** The step completes in the named zone or in any area whose parent chain contains it.
+
 ## Lost content that stays missing
 
 Content whose creatures, spawns, locations or scripts are all gone from the data is not invented. It is listed here so the parity

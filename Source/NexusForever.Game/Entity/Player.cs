@@ -906,7 +906,12 @@ namespace NexusForever.Game.Entity
                     });
                 }
 
-                QuestManager.ObjectiveUpdate(QuestObjectiveType.EnterZone, Zone.Id, 1);
+                // EnterZone names any level of the WorldZone hierarchy. The map reports the most specific area, so entering a
+                // child of (for example) zone 380 must also satisfy an objective for zone 380.
+                var enteredZones = new HashSet<uint>();
+                for (WorldZoneEntry enteredZone = Zone; enteredZone != null && enteredZones.Add(enteredZone.Id);
+                    enteredZone = enteredZone.ParentZoneId != 0u ? GameTableManager.Instance.WorldZone.GetEntry(enteredZone.ParentZoneId) : null)
+                    QuestManager.ObjectiveUpdate(QuestObjectiveType.EnterZone, enteredZone.Id, 1);
                 PathMissionManager.OnZoneUpdate(Zone);
                 ChallengeManager.OnZoneUpdate(Zone);
                 // communicator calls gated on a zone (InSubZone prerequisites) fire when the player walks into it,

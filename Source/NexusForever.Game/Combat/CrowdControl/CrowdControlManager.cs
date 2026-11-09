@@ -3,6 +3,8 @@ using NexusForever.Game.Abstract.Entity;
 using NexusForever.Game.Abstract.Spell.Target;
 using NexusForever.Game.Static.Combat.CrowdControl;
 using NexusForever.Game.Static.Entity;
+using NexusForever.Game.Static.Quest;
+using NexusForever.Game.Static.Spell;
 using NexusForever.Network.World.Message.Model.Entity;
 using NLog;
 
@@ -17,7 +19,12 @@ namespace NexusForever.Game.Combat.CrowdControl
         private readonly Dictionary<CCState, ISpellTargetEffectInfo> ccEffects = [];
         // when each state must be gone at the latest: its effect's duration plus a grace second, or never for an open-ended state
         private readonly Dictionary<CCState, DateTime> expiresAt = [];
+        private readonly Dictionary<CCState, DateTime> appliedAt = [];
         private const double ExpiryGraceSeconds = 1d;
+        private const double OpenEndedAbilityRestrictionMaximumSeconds = 120d;
+        private const ushort VeggingOutQuestId = 6665;
+        private const byte VeggingOutGatherObjectiveIndex = 2;
+        private const uint VeggingOutTransformationSpellId = 34861;
         private readonly Dictionary<ISpellTargetEffectInfo, ITemporaryInterruptArmour> temporaryInterruptArmour = [];
 
         public void Initialise(IUnitEntity entity)
@@ -71,9 +78,10 @@ namespace NexusForever.Game.Combat.CrowdControl
         {
             ccEffects.Add(state, effect);
 
+            appliedAt[state] = DateTime.UtcNow;
             TimeSpan? duration = effect?.GetDuration();
             expiresAt[state] = duration.HasValue && duration.Value > TimeSpan.Zero
-                ? DateTime.UtcNow + duration.Value + TimeSpan.FromSeconds(ExpiryGraceSeconds)
+                ? appliedAt[state] + duration.Value + TimeSpan.FromSeconds(ExpiryGraceSeconds)
                 : DateTime.MaxValue;
         }
 
@@ -92,14 +100,85 @@ namespace NexusForever.Game.Combat.CrowdControl
 
             foreach ((CCState state, ISpellTargetEffectInfo effect) in ccEffects.ToList())
             {
+                DateTime now = DateTime.UtcNow;
                 bool spellGone = effect?.Target?.Collection?.Spell?.IsFinished ?? true;
-                bool expired   = expiresAt.TryGetValue(state, out DateTime at) && DateTime.UtcNow > at;
-                if (!spellGone && !expired)
+                bool hasNoDuration = expiresAt.TryGetValue(state, out DateTime at) && at == DateTime.MaxValue;
+                bool expired = !hasNoDuration && now > at;
+                bool questEnded = hasNoDuration && QuestSpellLeftAcceptedState(effect);
+                bool questPhaseEnded = hasNoDuration && QuestSpellPhaseEnded(effect);
+                bool abilityRestrictionCap = state == CCState.AbilityRestriction && hasNoDuration
+                    && appliedAt.TryGetValue(state, out DateTime applied)
+                    && now - applied > TimeSpan.FromSeconds(OpenEndedAbilityRestrictionMaximumSeconds)
+                    && !IsActiveVehicleOrForm(effect);
+                if (!spellGone && !expired && !questEnded && !questPhaseEnded && !abilityRestrictionCap)
                     continue;
 
-                log.Warn($"Crowd control {state} on unit {owner.Guid} from spell {effect?.Target?.Collection?.Spell?.Spell4Id} outlived its {(spellGone ? "spell" : "duration")}, removing it.");
+                string reason = spellGone ? "spell"
+                    : expired ? "duration"
+                    : questEnded ? "accepted quest"
+                    : questPhaseEnded ? "quest phase"
+                    : $"open-ended {OpenEndedAbilityRestrictionMaximumSeconds:0} s safety cap";
+                log.Warn($"Crowd control {state} on unit {owner.Guid} from spell {effect?.Target?.Collection?.Spell?.Spell4Id} outlived its {reason}, removing it.");
+                if (questPhaseEnded)
+                    effect.Target.Collection.Spell.Finish();
                 ReleaseCCEffect(state, effect);
             }
+        }
+
+        /// <summary>
+        /// Open-ended effects belonging to a quest are no longer valid once none of the quests advanced by that spell remains
+        /// accepted. QuestAdvanceObjective stores its quest id in DataBits00.
+        /// </summary>
+        private bool QuestSpellLeftAcceptedState(ISpellTargetEffectInfo effect)
+        {
+            if (owner is not IPlayer player)
+                return false;
+
+            ushort[] questIds = effect?.Target?.Collection?.Spell?.Parameters?.SpellInfo?.Effects
+                .Where(entry => entry.EffectType == SpellEffectType.QuestAdvanceObjective && entry.DataBits00 <= ushort.MaxValue)
+                .Select(entry => (ushort)entry.DataBits00)
+                .Distinct()
+                .ToArray() ?? [];
+            return questIds.Length > 0
+                && questIds.All(questId => player.QuestManager.GetQuestState(questId) != QuestState.Accepted);
+        }
+
+        /// <summary>
+        /// Vegging Out transforms the player while they fish vegetables from the stew (objectives 0-2). Spell 34861 has
+        /// open-ended disguise and AbilityRestriction effects, so explicitly end them when the gathering phase completes and
+        /// the quest moves to its combat objective. This is deliberately quest-specific: other active transformations retain
+        /// their normal spell-owned lifetime.
+        /// </summary>
+        private bool QuestSpellPhaseEnded(ISpellTargetEffectInfo effect)
+        {
+            if (owner is not IPlayer player
+                || effect?.Target?.Collection?.Spell?.Spell4Id != VeggingOutTransformationSpellId)
+                return false;
+
+            var quest = player.QuestManager.GetActiveQuest(VeggingOutQuestId);
+            return quest?.GetQuestObjectiveByIndex(VeggingOutGatherObjectiveIndex)?.IsComplete() == true;
+        }
+
+        /// <summary>
+        /// Vehicles and transformation forms can intentionally restrict the normal action bar for their whole lifetime.
+        /// Their owning spell, rather than the generic safety cap, remains responsible for ending the state.
+        /// </summary>
+        private bool IsActiveVehicleOrForm(ISpellTargetEffectInfo effect)
+        {
+            if (owner is not IPlayer player)
+                return false;
+
+            if (effect?.Target == null)
+                return false;
+
+            bool spellSummonsVehicle = effect.Target.Collection?.Spell?.Parameters?.SpellInfo?.Effects?
+                .Any(entry => entry.EffectType == SpellEffectType.SummonVehicle) ?? false;
+            if (player.PlatformGuid.HasValue && spellSummonsVehicle)
+                return true;
+
+            return effect.Target.GetEffectsByType(SpellEffectType.Disguise).Any(formEffect => !formEffect.IsFinalised)
+                || effect.Target.GetEffectsByType(SpellEffectType.MimicDisguise).Any(formEffect => !formEffect.IsFinalised)
+                || effect.Target.GetEffectsByType(SpellEffectType.DisguiseOutfit).Any(formEffect => !formEffect.IsFinalised);
         }
 
         /// <summary>
@@ -150,6 +229,7 @@ namespace NexusForever.Game.Combat.CrowdControl
             }
             ccEffects.Remove(state);
             expiresAt.Remove(state);
+            appliedAt.Remove(state);
         }
 
         /// <summary>

@@ -1038,6 +1038,50 @@ internal sealed class BotGameData
             : candidates.OrderBy(location => location.Id).FirstOrDefault();
     }
 
+    /// <summary>
+    /// Centre of the map bounds for a zone (or one of its child zones), with height borrowed from the nearest known location
+    /// in the same world. This is a last-resort destination for EnterZone objectives with no indicator or zone location.
+    /// </summary>
+    public WorldLocation2Entry? ZoneMapCentre(uint zoneId, ushort worldId)
+    {
+        IReadOnlySet<uint> family = ZoneFamily(zoneId);
+        MapZoneEntry? mapZone = mapZones.Entries
+            .Where(entry => family.Contains(entry.WorldZoneId)
+                && entry.HexLimX >= entry.HexMinX && entry.HexLimY >= entry.HexMinY)
+            .OrderBy(entry => entry.WorldZoneId == zoneId ? 0 : 1)
+            .ThenBy(entry => entry.Id)
+            .FirstOrDefault();
+        if (mapZone is null)
+            return null;
+
+        const float zoneMapBoundary = 64f * 512f; // MapDefines.WorldGridOrigin * MapDefines.GridSize
+        float hexX = (mapZone.HexMinX + mapZone.HexLimX) / 2f;
+        float hexY = (mapZone.HexMinY + mapZone.HexLimY) / 2f;
+        float x = 48f * hexX - 16f - zoneMapBoundary;
+        float z = 27.712812f * (2f * hexY - 1f) - zoneMapBoundary;
+        WorldLocation2Entry? heightAnchor = worldLocations.Entries
+            .Where(location => location.WorldId == worldId)
+            .OrderBy(location =>
+            {
+                double dx = location.Position0 - x;
+                double dz = location.Position2 - z;
+                return dx * dx + dz * dz;
+            })
+            .FirstOrDefault();
+        if (heightAnchor is null)
+            return null;
+
+        return new WorldLocation2Entry
+        {
+            Id = 0u,
+            Position0 = x,
+            Position1 = heightAnchor.Position1,
+            Position2 = z,
+            WorldId = worldId,
+            WorldZoneId = zoneId
+        };
+    }
+
     private bool PrerequisiteAllowsClass(uint prerequisiteId, int depth)
     {
         PrerequisiteEntry? prerequisite = prerequisites.GetEntry(prerequisiteId);

@@ -42,6 +42,7 @@ internal sealed class BotRunner
     private const float CombatTargetMovementThreshold = 2f;
     private const float CombatStandOffDistance = 2f;
     private const int MaximumCombatSpawnVisits = 2;
+    private const int StuckAbilityRestrictionResultLimit = 20;
 
     private readonly RunOptions options;
     private readonly RunReport report;
@@ -91,6 +92,7 @@ internal sealed class BotRunner
     private QuestRunReport? currentQuestReport;
     private PathMissionRunReport? currentMissionReport;
     private QuestObjectiveDefinition? activeObjective;
+    private int consecutiveAbilityRestrictionResults;
     private ResurrectionShow? resurrectionShow;
     private DateTimeOffset resurrectionShowReceivedAt;
     private IReadOnlyList<Spawn> spawns = [];
@@ -3529,6 +3531,7 @@ internal sealed class BotRunner
     private async Task<string> RunObjectiveAsync(QuestObjectiveDefinition objective, CancellationToken cancellationToken)
     {
         activeObjective = objective;
+        consecutiveAbilityRestrictionResults = 0;
         objectiveCastResultDetails.Clear();
         ObjectiveReport objectiveReport = RequireObjectiveReport(objective.Index);
         try
@@ -3596,6 +3599,7 @@ internal sealed class BotRunner
                     await RunKillObjectiveAsync(objective, cancellationToken);
                     break;
                 case QuestObjectiveType.EnterArea when objective.WorldLocationId == 0u:
+                case QuestObjectiveType.EnterZone when objective.WorldLocationId == 0u:
                     await RunEnterZoneAreaObjectiveAsync(objective, cancellationToken);
                     break;
                 case QuestObjectiveType.EnterArea:
@@ -3632,6 +3636,7 @@ internal sealed class BotRunner
         finally
         {
             activeObjective = null;
+            consecutiveAbilityRestrictionResults = 0;
         }
     }
 
@@ -5137,17 +5142,34 @@ internal sealed class BotRunner
     }
 
     /// <summary>
-    /// An EnterArea objective without a map indicator was a map trigger volume the server does not have. The server completes
-    /// it near a creature the text names ("Search for Botsmith Redfield inside Halsen's Claim"), at a location the text links,
-    /// or in the world zone its Data names (Corrupted Reconnaissance: zone 4350); the bot goes to the first of those it can
-    /// resolve in the quest's world. The Data is not always a zone of this world (Beyond the Realm of Medicine: 2026 lies in
-    /// another world), which is why the text comes first.
+    /// An EnterArea or EnterZone objective without a map indicator was a map trigger volume the server does not have. EnterZone
+    /// goes to a location in the named zone or its map centre. EnterArea uses a creature or location named by the text first,
+    /// because its Data is not always a zone of this world (Beyond the Realm of Medicine: 2026 lies in another world).
     /// </summary>
     private async Task RunEnterZoneAreaObjectiveAsync(QuestObjectiveDefinition objective, CancellationToken cancellationToken)
     {
         uint before = GetRawProgress(objective.Index);
         BotGameData data = RequireGameData();
+        string objectiveType = objective.Type.ToString();
         string reached;
+
+        if (objective.Type == QuestObjectiveType.EnterZone)
+        {
+            WorldLocation2Entry? zoneLocation = data.LocationInZone(objective.Data, questWorldId, lastPosition)
+                ?? data.ZoneMapCentre(objective.Data, questWorldId);
+            if (zoneLocation is null)
+                throw new BotFailureException($"EnterZone objective has no indicator and zone {objective.Data} has no WorldLocation2 or map bounds destination in world {questWorldId}");
+
+            reached = zoneLocation.Id != 0u
+                ? $"zone {objective.Data} WorldLocation2 {zoneLocation.Id}"
+                : $"zone {objective.Data} map bounds centre";
+            log.Info($"objective {objective.Index}: EnterZone {objective.Data} via {reached} ({zoneLocation.Position0:0},{zoneLocation.Position1:0},{zoneLocation.Position2:0})");
+            await TeleportToLocationAsync(zoneLocation, 0f, cancellationToken);
+            if (!await TryWaitForObjectiveProgressAsync(objective.Index, before, TimeSpan.FromSeconds(15), cancellationToken))
+                throw new BotFailureException($"EnterZone {objective.Data} produced no progress 15 s after reaching {reached}");
+            return;
+        }
+
         IReadOnlyList<uint> textCreatureIds = data.GetCreatureIdsFromText(objective.Text);
         Spawn? textSpawn = null;
         if (textCreatureIds.Count > 0)
@@ -5161,7 +5183,7 @@ internal sealed class BotRunner
         if (textSpawn is not null)
         {
             reached = $"creature {textSpawn.CreatureId} named in the text (spawn {textSpawn.Id} at {textSpawn.X:0},{textSpawn.Y:0},{textSpawn.Z:0})";
-            log.Info($"objective {objective.Index}: EnterArea {objective.Data} via {reached}");
+            log.Info($"objective {objective.Index}: {objectiveType} {objective.Data} via {reached}");
             await TeleportToSpawnLocationAsync(textSpawn, cancellationToken);
         }
         else
@@ -5172,15 +5194,17 @@ internal sealed class BotRunner
             reached = location is null ? "" : $"text location WorldLocation2 {location.Id}";
             if (location is null)
             {
-                location = data.LocationInZone(objective.Data, questWorldId, lastPosition)
-                    ?? throw new BotFailureException($"EnterArea objective has no indicator, its text names no creature or location of world {questWorldId}, and no WorldLocation2 lies in zone {objective.Data} of that world");
-                reached = $"zone {objective.Data} WorldLocation2 {location.Id}";
+                location = data.LocationInZone(objective.Data, questWorldId, lastPosition);
+                if (location is not null)
+                    reached = $"zone {objective.Data} WorldLocation2 {location.Id}";
+                if (location is null)
+                    throw new BotFailureException($"EnterArea objective has no indicator, its text names no creature or location of world {questWorldId}, and no WorldLocation2 lies in zone {objective.Data} of that world");
             }
-            log.Info($"objective {objective.Index}: EnterArea {objective.Data} via {reached} ({location.Position0:0},{location.Position1:0},{location.Position2:0})");
+            log.Info($"objective {objective.Index}: {objectiveType} {objective.Data} via {reached} ({location.Position0:0},{location.Position1:0},{location.Position2:0})");
             await TeleportToLocationAsync(location, 0f, cancellationToken);
         }
         if (!await TryWaitForObjectiveProgressAsync(objective.Index, before, TimeSpan.FromSeconds(15), cancellationToken))
-            throw new BotFailureException($"EnterArea {objective.Data} produced no progress 15 s after reaching {reached}");
+            throw new BotFailureException($"{objectiveType} {objective.Data} produced no progress 15 s after reaching {reached}");
     }
 
     /// <summary>
@@ -5792,6 +5816,20 @@ internal sealed class BotRunner
                         : "";
                     string detail = $"client={result.ClientUniqueId}{correlation}, spell={result.Spell4Id}, result={result.Result}(0x{(uint)result.Result:X4})";
                     log.Info($"spell cast result: {detail}");
+                    if (activeObjective is not null)
+                    {
+                        consecutiveAbilityRestrictionResults = result.Result == CastResult.CCAbilityRestriction
+                            ? consecutiveAbilityRestrictionResults + 1
+                            : 0;
+                        if (consecutiveAbilityRestrictionResults >= StuckAbilityRestrictionResultLimit)
+                        {
+                            // This is the actionable failure; do not bury it under the preceding repeated packet details.
+                            objectiveCastResultDetails.Clear();
+                            throw new BotFailureException("stuck crowd control AbilityRestriction");
+                        }
+                    }
+                    else
+                        consecutiveAbilityRestrictionResults = 0;
                     if (correlatedClientId is uint activationClientId)
                     {
                         activationCastResults[activationClientId] = result;

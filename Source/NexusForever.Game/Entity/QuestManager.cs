@@ -192,6 +192,12 @@ namespace NexusForever.Game.Entity
                         && IsInObjectiveArea(entry))
                         updates.Add((quest, objective.ObjectiveInfo.Id, 1u));
 
+                    // An EnterZone without an indicator names the WorldZone itself. Check it continuously as well as on the
+                    // zone-change event, because a sequential objective can become active while the player is already inside it.
+                    else if (objective.ObjectiveInfo.Type == QuestObjectiveType.EnterZone && !HasIndicator(entry)
+                        && entry.Data != 0u && IsInWorldZone(entry.Data))
+                        updates.Add((quest, objective.ObjectiveInfo.Id, 1u));
+
                     // EnterArea, and activate objectives with nothing to activate but a place to go (Follow the power cables,
                     // Investigate ship wreckage), complete inside the indicator location
                     else if ((objective.ObjectiveInfo.Type == QuestObjectiveType.EnterArea || (targetless && HasIndicator(entry)))
