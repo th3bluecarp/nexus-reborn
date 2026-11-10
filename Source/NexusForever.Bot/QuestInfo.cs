@@ -129,6 +129,24 @@ internal static class QuestInfo
                 Console.WriteLine(visibility is null
                     ? $"    giver {giver.Id} visibility prerequisite={giver.PrerequisiteIdVisibility} NOT FOUND"
                     : $"    giver {giver.Id} visibility prerequisite={giver.PrerequisiteIdVisibility} mode={visibility.Flags} checks=[{string.Join("; ", visibility.PrerequisiteTypeId.Select((type, index) => type == PrerequisiteType.None ? null : $"{type}({(uint)type}) {visibility.PrerequisiteComparisonId[index]} obj={visibility.ObjectId[index]} value={visibility.Value[index]}").Where(check => check is not null))}]");
+                if (visibility is not null)
+                {
+                    void Expand(PrerequisiteEntry parent, int depth)
+                    {
+                        if (depth > 4) return;
+                        for (int i = 0; i < parent.PrerequisiteTypeId.Length; i++)
+                        {
+                            if (parent.PrerequisiteTypeId[i] != PrerequisiteType.OtherPrerequisite) continue;
+                            PrerequisiteEntry? child = prerequisites.GetEntry(parent.ObjectId[i]);
+                            Console.WriteLine(child is null
+                                ? $"      {new string(' ', depth * 2)}sub {parent.ObjectId[i]} NOT FOUND"
+                                : $"      {new string(' ', depth * 2)}sub {parent.ObjectId[i]} mode={child.Flags} checks=[{string.Join("; ", child.PrerequisiteTypeId.Select((type, index) => type == PrerequisiteType.None ? null : $"{type}({(uint)type}) {child.PrerequisiteComparisonId[index]} obj={child.ObjectId[index]} value={child.Value[index]}").Where(check => check is not null))}]");
+                            if (child is not null) Expand(child, depth + 1);
+                        }
+                    }
+                    Expand(visibility, 0);
+                    Console.WriteLine($"      ending quests (progress hides this giver): [{string.Join(",", gameData.GiverVisibilityEndingQuests(giver.Id))}]");
+                }
             }
             Console.WriteLine($"  receivers: {string.Join(", ", receivers.Select(c => $"{c.Id} {english.GetEntry(c.LocalizedTextIdName)}"))}");
             IReadOnlyList<CommunicatorOffer> offers = gameData.GetCommunicatorOffers(id);

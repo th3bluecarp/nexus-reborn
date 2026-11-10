@@ -1262,7 +1262,8 @@ internal sealed class BotGameData
     }
 
     /// <summary>
-    /// Quests whose transition from untouched to accepted definitely makes a creature's visibility prerequisite false.
+    /// Quests whose progress (accepting, or for "not Achieved/Completed" terms finishing it, as the run always does) definitely
+    /// makes a creature's visibility prerequisite false.
     /// An AND tree is broken by any such term; an OR tree is broken only when every branch requires the same quest to
     /// remain untouched. Other checks are deliberately left unknown rather than guessed.
     /// </summary>
@@ -1289,6 +1290,17 @@ internal sealed class BotGameData
                     case PrerequisiteType.QuestState
                         when prerequisite.PrerequisiteComparisonId[i] == PrerequisiteComparison.Equal
                             && prerequisite.Value[i] == (uint)QuestState.Unknown
+                            && prerequisite.ObjectId[i] != 0u
+                            && prerequisite.ObjectId[i] <= ushort.MaxValue:
+                        branch = [checked((ushort)prerequisite.ObjectId[i])];
+                        break;
+                    // "QuestState NotEqual Achieved/Completed": the giver leaves once that quest is finished. Alchemist
+                    // Polovic (32804, prerequisite 14187 -> 14186) stays only while Horizon (6959) is neither Achieved nor
+                    // Completed, and he alone offers Spilling Lifeblood (6964).
+                    case PrerequisiteType.QuestState
+                        when prerequisite.PrerequisiteComparisonId[i] == PrerequisiteComparison.NotEqual
+                            && (prerequisite.Value[i] == (uint)QuestState.Achieved
+                                || prerequisite.Value[i] == (uint)QuestState.Completed)
                             && prerequisite.ObjectId[i] != 0u
                             && prerequisite.ObjectId[i] <= ushort.MaxValue:
                         branch = [checked((ushort)prerequisite.ObjectId[i])];
