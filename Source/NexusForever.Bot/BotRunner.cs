@@ -2746,7 +2746,10 @@ internal sealed class BotRunner
                 .First();
         }
 
-        if (questState == QuestState.Mentioned)
+        // QuestBudget resolves the world before ConfigureQuest copies this quest's state into questState. Read the
+        // per-quest store directly so every server-pushed quest (including giver-less tutorial roots) takes its
+        // objective-world path during both budgeting and execution.
+        if (questStates.GetValueOrDefault(definition.Id, QuestState.Unknown) == QuestState.Mentioned)
             return DetermineObjectiveWorld(definition) ?? currentWorldId;
 
         Spawn[] giverSpawns = spawns.Where(spawn => definition.GiverCreatureIds.Contains(spawn.CreatureId)).ToArray();
