@@ -2,6 +2,10 @@
 
 Newest first. "Live" means running on our test server.
 
+## 2026-11-10
+
+- **Northern Wilds: The Tower can be turned in at its control panel again** (server, found in nightly runs 20261103-020002 through 20261110-020004): quest 3667 uses the Master Control Panel (11194) for both its only activation objective and its turn-in. The 2026-11-02 direct-activation fallback credited the spell-less panel, then the generic lost-script fallback despawned it for the open-world respawn delay before the bot could turn in. A directly activated quest target now stays when its Creature2 data receives that same quest; ordinary one-use targets still despawn. This is data-driven and also covers any other objective/receiver object with the same shape.
+
 ## 2026-11-09
 
 - **Spilling Lifeblood ordering, corrected** (bot, verify run 20261109-191849-zone248 still failed 6964): Polovic 32804's visibility prerequisite 14187 is really "Horizon (6959) is not Achieved and not Completed" (sub-prerequisite 14186), not "Horizon untouched", so the first version found no ending quest. The planner now also treats a sole giver's "quest state not Achieved/Completed" term as an ending quest (the run always finishes the quests it accepts). Quest info expands nested visibility prerequisites and prints each giver's ending quests.

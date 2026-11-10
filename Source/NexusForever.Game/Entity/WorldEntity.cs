@@ -599,7 +599,7 @@ namespace NexusForever.Game.Entity
                 // a quest target without an activation spell (Fiery Vengeance's slaver shacks, burned in retail by a grenade
                 // spell the quest granted) is used directly: the use is the success (SEMANTICS: direct activation of quest targets)
                 // a path mission gadget target (Fire in the Hole's canimid burrows, sealed in retail with Burrow Busters) the same way
-                if (IsActiveQuestActivateTarget(activator) || IsActiveQuestChecklistTarget(activator)
+                if (ActiveQuestActivateTarget(activator).IsTarget || IsActiveQuestChecklistTarget(activator)
                     || (CreatureInfo?.Entry != null && activator.PathMissionManager.IsGadgetTarget(CreatureInfo.Entry.Id, AssetManager.Instance.GetTargetGroupsForCreatureId(CreatureInfo.Entry.Id))))
                     OnActivateSuccess(activator);
                 return;
@@ -633,7 +633,7 @@ namespace NexusForever.Game.Entity
         public virtual void OnActivateSuccess(IPlayer activator)
         {
             // checked before the updates below complete the objective
-            bool questTarget = IsActiveQuestActivateTarget(activator);
+            (bool questTarget, bool receivesTargetQuest) = ActiveQuestActivateTarget(activator);
             // settler resource nodes are used up when gathered and come back on the respawn timer, as in retail
             bool settlerResource = CreatureInfo?.Entry != null && activator.PathMissionManager.IsSettlerResource(CreatureInfo.Entry.Id);
 
@@ -722,9 +722,11 @@ namespace NexusForever.Game.Entity
             }
 
             // Quest creatures (trapped survivors, cages, cannons) go away once used and come back on the respawn timer when
-            // their activate spells give no rule of their own. Spells with a DespawnUnit effect remove the object themselves and
-            // spells that clear SetBusy after a delay mean a reusable object, both are left to the data.
+            // their activate spells give no rule of their own. A target that receives the same quest must remain for its turn-in
+            // (The Tower's Master Control Panel). Spells with a DespawnUnit effect remove the object themselves and spells that
+            // clear SetBusy after a delay mean a reusable object, both are left to the data.
             if ((questTarget || settlerResource) && this is IUnitEntity unit && unit is not IPlayer && !ActivateSpellsHandleUse()
+                && !receivesTargetQuest
                 && !ScriptedTransports.ContainsKey(CreatureInfo.Entry.Id))
                 unit.Despawn();
         }
@@ -937,9 +939,6 @@ namespace NexusForever.Game.Entity
         }
 
         /// <summary>
-        /// Returns if activating this entity progresses an unfinished objective of one of the activator's accepted quests.
-        /// </summary>
-        /// <summary>
         /// Returns if an accepted quest of the activator has an unfinished checklist objective naming a target group this entity belongs to.
         /// </summary>
         private bool IsActiveQuestChecklistTarget(IPlayer activator)
@@ -961,13 +960,19 @@ namespace NexusForever.Game.Entity
                                     && objective.ObjectiveInfo.TextCreatureId == creatureId)));
         }
 
-        private bool IsActiveQuestActivateTarget(IPlayer activator)
+        /// <summary>
+        /// Returns whether activating this entity progresses an unfinished objective of one of the activator's accepted quests,
+        /// and whether the entity receives the same quest.
+        /// </summary>
+        private (bool IsTarget, bool IsReceiver) ActiveQuestActivateTarget(IPlayer activator)
         {
             if (CreatureInfo?.Entry == null)
-                return false;
+                return (false, false);
 
             uint creatureId = CreatureInfo.Entry.Id;
             var targetGroups = AssetManager.Instance.GetTargetGroupsForCreatureId(creatureId);
+            bool isTarget = false;
+            bool isReceiver = false;
 
             foreach (IQuest quest in activator.QuestManager.GetActiveQuests())
             {
@@ -980,6 +985,7 @@ namespace NexusForever.Game.Entity
                         continue;
 
                     QuestObjectiveEntry entry = objective.ObjectiveInfo.Entry;
+                    bool matches = false;
                     switch (objective.ObjectiveInfo.Type)
                     {
                         case QuestObjectiveType.ActivateEntity:
@@ -989,32 +995,39 @@ namespace NexusForever.Game.Entity
                         case QuestObjectiveType.GatheResource:
                             if (objective.ObjectiveInfo.Data == creatureId || (targetGroups.Contains(objective.ObjectiveInfo.Data)
                                 && GameTableManager.Instance.Creature2.GetEntry(objective.ObjectiveInfo.Data) == null))
-                                return true;
+                                matches = true;
                             if (objective.ObjectiveInfo.Type == QuestObjectiveType.ActivateEntity && (objective.ObjectiveInfo.Data == 0u || objective.ObjectiveInfo.Data == entry.TargetGroupIdRewardPane
                                     || (GameTableManager.Instance.Creature2.GetEntry(objective.ObjectiveInfo.Data) == null && GameTableManager.Instance.TargetGroup.GetEntry(objective.ObjectiveInfo.Data) == null))
                                 && targetGroups.Contains(entry.TargetGroupIdRewardPane))
-                                return true;
+                                matches = true;
                             break;
                         // checklist objectives (types 10 and 14: Skeech huts, Dominion cannons) are not listed, their units stay and the
                         // client gates them on their checklist bit
                         case QuestObjectiveType.ActivateTargetGroup:
                             if (targetGroups.Contains(entry.Data))
-                                return true;
+                                matches = true;
                             break;
                         // a type 10 step whose Data is this creature (not a group) is used directly
                         case QuestObjectiveType.Unknown10:
                             if (entry.Data == creatureId)
-                                return true;
+                                matches = true;
                             break;
                         case QuestObjectiveType.VirtualCollect:
                             if (targetGroups.Contains(entry.TargetGroupIdRewardPane))
-                                return true;
+                                matches = true;
                             break;
                     }
+
+                    if (!matches)
+                        continue;
+
+                    isTarget = true;
+                    if (CreatureInfo.Entry.QuestIdReceive.Contains((uint)quest.Id))
+                        isReceiver = true;
                 }
             }
 
-            return false;
+            return (isTarget, isReceiver);
         }
 
         /// <summary>
