@@ -3830,7 +3830,7 @@ internal sealed class BotRunner
             }
             ActivationOutcome outcome = await RunActivationFlowAsync(objective.Index, before, entity, TimeSpan.FromSeconds(8), cancellationToken);
             if (outcome == ActivationOutcome.Progressed && CanFight(entity.Type) && entity.CreatureId is uint usedCreatureId
-                && RequireGameData().IsHoldoutHostile(usedCreatureId) && entities.Get(entity.Guid)?.Health is null or > 0u)
+                && RequireGameData().IsAttackableCreature(usedCreatureId) && entities.Get(entity.Guid)?.Health is null or > 0u)
             {
                 // a used hostile (Weapons of War: a loftite grenade on a Dominion Sentry) is awake now; finish it before the next
                 // one, six sentries attacking at once killed the bot twice
