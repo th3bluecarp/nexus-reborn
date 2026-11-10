@@ -1261,6 +1261,65 @@ internal sealed class BotGameData
         return result;
     }
 
+    /// <summary>
+    /// Quests whose transition from untouched to accepted definitely makes a creature's visibility prerequisite false.
+    /// An AND tree is broken by any such term; an OR tree is broken only when every branch requires the same quest to
+    /// remain untouched. Other checks are deliberately left unknown rather than guessed.
+    /// </summary>
+    public IReadOnlyList<ushort> GiverVisibilityEndingQuests(uint creatureId)
+    {
+        Creature2Entry? creature = creatures.GetEntry(creatureId);
+        if (creature is null || creature.PrerequisiteIdVisibility == 0u)
+            return [];
+
+        HashSet<ushort> DefiniteBlockers(uint prerequisiteId, HashSet<uint> visited, int depth)
+        {
+            PrerequisiteEntry? prerequisite = prerequisites.GetEntry(prerequisiteId);
+            if (prerequisite is null || depth > 4 || !visited.Add(prerequisiteId))
+                return [];
+
+            var branches = new List<HashSet<ushort>>();
+            for (int i = 0; i < prerequisite.PrerequisiteTypeId.Length; i++)
+            {
+                HashSet<ushort> branch;
+                switch (prerequisite.PrerequisiteTypeId[i])
+                {
+                    // Mentioned reads as Unknown on the server; accepting the quest is the first state change that
+                    // makes an "Equal Unknown" visibility term false.
+                    case PrerequisiteType.QuestState
+                        when prerequisite.PrerequisiteComparisonId[i] == PrerequisiteComparison.Equal
+                            && prerequisite.Value[i] == (uint)QuestState.Unknown
+                            && prerequisite.ObjectId[i] != 0u
+                            && prerequisite.ObjectId[i] <= ushort.MaxValue:
+                        branch = [checked((ushort)prerequisite.ObjectId[i])];
+                        break;
+                    case PrerequisiteType.OtherPrerequisite
+                        when prerequisite.PrerequisiteComparisonId[i] == PrerequisiteComparison.Equal:
+                        branch = DefiniteBlockers(prerequisite.ObjectId[i], new HashSet<uint>(visited), depth + 1);
+                        break;
+                    case PrerequisiteType.None:
+                        continue;
+                    default:
+                        branch = [];
+                        break;
+                }
+                branches.Add(branch);
+            }
+
+            if (branches.Count == 0)
+                return [];
+            if (prerequisite.Flags == EvaluationMode.EvaluateAND)
+                return branches.SelectMany(branch => branch).ToHashSet();
+
+            HashSet<ushort> intersection = new(branches[0]);
+            foreach (HashSet<ushort> branch in branches.Skip(1))
+                intersection.IntersectWith(branch);
+            return intersection;
+        }
+
+        return DefiniteBlockers(creature.PrerequisiteIdVisibility, [], 0).Order().ToArray();
+    }
+
     public IReadOnlyList<ushort> QuestStatePrerequisiteQuests(Quest2Entry entry)
     {
         var result = new List<ushort>();
@@ -1385,6 +1444,7 @@ internal sealed class BotGameData
                     .Select(prerequisite => prerequisite.Id)
                     .Where(requested.ContainsKey)
                     .ToHashSet());
+            AddGiverVisibilityOrderConstraints(requested, requestedDependencies);
             return TopologicalOrder(requested, requestedDependencies);
         }
 
@@ -1419,6 +1479,7 @@ internal sealed class BotGameData
         foreach (QuestDefinition root in roots)
             Gather(root);
 
+        AddGiverVisibilityOrderConstraints(definitions, dependencies);
         return TopologicalOrder(definitions, dependencies);
     }
 
@@ -1453,6 +1514,7 @@ internal sealed class BotGameData
         }
 
         Gather(requestedId);
+        AddGiverVisibilityOrderConstraints(definitions, dependencies);
         return TopologicalOrder(definitions, dependencies);
     }
 
@@ -1719,6 +1781,46 @@ internal sealed class BotGameData
     private bool HasAvailableGiver(QuestDefinition definition, IReadOnlySet<uint> spawnedGiverCreatureIds)
         => definition.GiverCreatureIds.Any(spawnedGiverCreatureIds.Contains)
             || GetCommunicatorOffers(definition.Id).Count > 0;
+
+    /// <summary>
+    /// Order a quest before the quest that phases out its only table-listed giver. Spilling Lifeblood (6964), for
+    /// example, is available from Alchemist Polovic's earlier creature row while Horizon (6959) is untouched; accepting
+    /// Horizon swaps in the later row at the same location. This is an offer-window constraint, not a quest prerequisite.
+    /// </summary>
+    private void AddGiverVisibilityOrderConstraints(
+        IReadOnlyDictionary<ushort, QuestDefinition> definitions,
+        IReadOnlyDictionary<ushort, HashSet<ushort>> dependencies)
+    {
+        bool DependsOn(ushort questId, ushort possibleDependency, HashSet<ushort> visited)
+        {
+            if (!visited.Add(questId) || !dependencies.TryGetValue(questId, out HashSet<ushort>? direct))
+                return false;
+            return direct.Contains(possibleDependency)
+                || direct.Any(dependency => DependsOn(dependency, possibleDependency, visited));
+        }
+
+        foreach (QuestDefinition definition in definitions.Values)
+        {
+            if (definition.GiverCreatureIds.Count != 1
+                || definition.Entry.PrerequisiteItem != 0u
+                || GetQuestActivationItem(definition.Id) != 0u
+                || GetCommunicatorOffers(definition.Id).Count != 0)
+                continue;
+
+            uint giverId = definition.GiverCreatureIds[0];
+            foreach (ushort endingQuestId in GiverVisibilityEndingQuests(giverId))
+            {
+                if (endingQuestId == definition.Id
+                    || !definitions.ContainsKey(endingQuestId)
+                    // If the offered quest needs the phase-changing quest first, the table describes no usable early
+                    // offer window; do not turn that data problem into a dependency cycle.
+                    || DependsOn(definition.Id, endingQuestId, []))
+                    continue;
+
+                dependencies[endingQuestId].Add(definition.Id);
+            }
+        }
+    }
 
     private static IReadOnlyList<QuestDefinition> TopologicalOrder(
         IReadOnlyDictionary<ushort, QuestDefinition> definitions,

@@ -1,4 +1,5 @@
 using System.Text;
+using NexusForever.Game.Static.Prerequisite;
 using NexusForever.Game.Static.Quest;
 using NexusForever.GameTable;
 using NexusForever.GameTable.Model;
@@ -122,6 +123,13 @@ internal static class QuestInfo
             IEnumerable<Creature2Entry> givers = creatures.Entries.Where(c => c.QuestIdGiven.Contains(id));
             IEnumerable<Creature2Entry> receivers = creatures.Entries.Where(c => c.QuestIdReceive.Contains(id));
             Console.WriteLine($"  givers: {string.Join(", ", givers.Select(c => $"{c.Id} {english.GetEntry(c.LocalizedTextIdName)}"))}");
+            foreach (Creature2Entry giver in givers.Where(giver => giver.PrerequisiteIdVisibility != 0u))
+            {
+                PrerequisiteEntry? visibility = prerequisites.GetEntry(giver.PrerequisiteIdVisibility);
+                Console.WriteLine(visibility is null
+                    ? $"    giver {giver.Id} visibility prerequisite={giver.PrerequisiteIdVisibility} NOT FOUND"
+                    : $"    giver {giver.Id} visibility prerequisite={giver.PrerequisiteIdVisibility} mode={visibility.Flags} checks=[{string.Join("; ", visibility.PrerequisiteTypeId.Select((type, index) => type == PrerequisiteType.None ? null : $"{type}({(uint)type}) {visibility.PrerequisiteComparisonId[index]} obj={visibility.ObjectId[index]} value={visibility.Value[index]}").Where(check => check is not null))}]");
+            }
             Console.WriteLine($"  receivers: {string.Join(", ", receivers.Select(c => $"{c.Id} {english.GetEntry(c.LocalizedTextIdName)}"))}");
             IReadOnlyList<CommunicatorOffer> offers = gameData.GetCommunicatorOffers(id);
             Console.WriteLine(offers.Count == 0
