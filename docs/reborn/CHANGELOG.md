@@ -2,6 +2,10 @@
 
 Newest first. "Live" means running on our test server.
 
+## 2026-11-11
+
+- **Celestion soldier holdout stops fighting ambient enemies** (bot, found in runs 20261109-212322 and 20261110-193307): the bot treated every hostile that became visible during a holdout as a wave attacker. In the timeout run it switched in wave 4 to ambient creature 33582, cast at it for the remaining 121 seconds and never attacked the three boss-wave units; in the death run it also diverted to ambient creature 33603 while scheduled waves accumulated. The bot now records hostile units created within 60 m of the control point during the two-second delivery window after each `ServerPathSoldierHoldOutNextWave` packet and attacks only those wave-delivery guids. A temporarily unavailable (for example, repeatedly stunning) target is deferred for five seconds so another wave unit can be tried. The server's invented 2/3/3/3/3 composition and scaling are unchanged.
+
 ## 2026-11-10
 
 - **Arkship root quest is run from its server-pushed state again** (bot, regression in `991d6c9b`, found in Northern Wilds runs 20261105-020002 through 20261110-132723): both the passing 20261103 run and the failing runs created a novice `PreTutorial` character in world 3460. The server still supplied giver-less quest 10518 as `Mentioned`, but the new step-sized per-quest budget resolved its world before `ConfigureQuest` copied that quest's state into the runner's current-state field. It therefore reported "no giver spawn and no communicator offer" before reaching the existing mentioned-quest accept path. World resolution now reads the server's per-quest state store directly, so any pushed giver-less quest uses its objective world during budgeting and execution; there is no quest-id special case.

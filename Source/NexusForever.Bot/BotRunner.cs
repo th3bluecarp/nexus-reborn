@@ -180,9 +180,15 @@ internal sealed class BotRunner
     private PlayerPathSoldierResult? holdoutResult;
     private ushort? activeHoldoutEventId;
     private int? currentHoldoutWave;
+    private readonly HashSet<uint> holdoutWaveTargetGuids = [];
+    private readonly Dictionary<uint, DateTimeOffset> holdoutTargetRetryAfter = [];
+    private Vector3? holdoutCenter;
+    private DateTimeOffset holdoutWaveTargetCaptureUntil = DateTimeOffset.MinValue;
     private DateTimeOffset? holdoutNoTargetSince;
     private DateTimeOffset holdoutLastNoTargetLog = DateTimeOffset.MinValue;
     private const float HoldoutTargetRadius = 60f;
+    private static readonly TimeSpan HoldoutWaveTargetCaptureTime = TimeSpan.FromSeconds(2);
+    private static readonly TimeSpan HoldoutTargetRetryDelay = TimeSpan.FromSeconds(5);
     private string? holdoutPreparationDetail;
     private bool scientistScanbotSummoned;
     private ScientistExperimentationInvoke? latestExperimentationInvoke;
@@ -1006,6 +1012,10 @@ internal sealed class BotRunner
                 holdoutResult = null;
                 activeHoldoutEventId = null;
                 currentHoldoutWave = null;
+                holdoutWaveTargetGuids.Clear();
+                holdoutTargetRetryAfter.Clear();
+                holdoutCenter = null;
+                holdoutWaveTargetCaptureUntil = DateTimeOffset.MinValue;
                 holdoutProgressPackets.Clear();
                 holdoutPreparationDetail = null;
             }
@@ -1867,27 +1877,32 @@ internal sealed class BotRunner
             definition,
             cancellationToken);
         holdoutProgressPackets.Clear();
+        holdoutWaveTargetGuids.Clear();
+        holdoutTargetRetryAfter.Clear();
+        holdoutCenter = lastPosition;
+        holdoutWaveTargetCaptureUntil = DateTimeOffset.MinValue;
         currentHoldoutWave = null;
         activeHoldoutEventId = checked((ushort)definition.Entry.ObjectId);
         holdoutPreparationDetail = await PrepareForHoldoutAsync(cancellationToken);
-        IReadOnlySet<uint> existingNonPlayers = entities.GetVisibleNonPlayerGuids();
         holdoutResult = null;
         await RequireWorld().SendEncryptedAsync(GameMessageOpcode.ClientActivateUnit,
             PacketCodec.ClientActivateUnit(console.Guid), cancellationToken);
         log.Info($"path mission {definition.Id}: activated holdout console creature {console.CreatureId} guid {console.Guid}");
 
-        var ignoredGuids = existingNonPlayers.ToHashSet();
-        ignoredGuids.Add(console.Guid);
         while (holdoutResult is null)
         {
-            TrackedEntity? target = await FindNextHoldoutTargetAsync(ignoredGuids, cancellationToken);
+            TrackedEntity? target = await FindNextHoldoutTargetAsync(cancellationToken);
             if (target is null)
                 continue;
 
             await RequireWorld().SendEncryptedAsync(GameMessageOpcode.ClientEntitySelect,
                 PacketCodec.ClientEntitySelect(target.Guid), cancellationToken);
-            if (!await FightUntilDeathAsync(target.Guid, cancellationToken, lootCorpse: false))
-                ignoredGuids.Add(target.Guid);
+            if (!await FightUntilDeathAsync(target.Guid, cancellationToken, lootCorpse: false)
+                && holdoutResult is null)
+            {
+                holdoutTargetRetryAfter[target.Guid] = DateTimeOffset.UtcNow + HoldoutTargetRetryDelay;
+                log.Info($"holdout: target guid {target.Guid} temporarily unavailable; trying another wave target for {HoldoutTargetRetryDelay.TotalSeconds:0} s");
+            }
         }
 
         if (holdoutResult != PlayerPathSoldierResult.Success)
@@ -1903,20 +1918,26 @@ internal sealed class BotRunner
         }
     }
 
-    private async Task<TrackedEntity?> FindNextHoldoutTargetAsync(
-        IReadOnlySet<uint> ignoredGuids,
-        CancellationToken cancellationToken)
+    private async Task<TrackedEntity?> FindNextHoldoutTargetAsync(CancellationToken cancellationToken)
     {
         DateTimeOffset deadline = DateTimeOffset.UtcNow.AddSeconds(2);
         while (true)
         {
             if (holdoutResult is not null)
                 return null;
-            TrackedEntity? target = entities.FindNearestVisibleNonPlayer(
+            DateTimeOffset now = DateTimeOffset.UtcNow;
+            foreach (uint guid in holdoutTargetRetryAfter
+                .Where(entry => entry.Value <= now)
+                .Select(entry => entry.Key)
+                .ToArray())
+                holdoutTargetRetryAfter.Remove(guid);
+            IReadOnlySet<uint> eligibleGuids = holdoutTargetRetryAfter.Count == 0
+                ? holdoutWaveTargetGuids
+                : holdoutWaveTargetGuids.Where(guid => !holdoutTargetRetryAfter.ContainsKey(guid)).ToHashSet();
+            TrackedEntity? target = entities.FindNearestVisibleNonPlayerByGuid(
+                eligibleGuids,
                 lastPosition,
-                HoldoutTargetRadius,
-                ignoredGuids,
-                RequireGameData().IsHoldoutHostile);
+                HoldoutTargetRadius);
             if (target is not null)
             {
                 holdoutNoTargetSince = null;
@@ -1927,7 +1948,7 @@ internal sealed class BotRunner
             if (remaining <= TimeSpan.Zero
                 || await TryReadWorldPacketAsync(remaining, cancellationToken) is null)
             {
-                LogHoldoutNoTarget(ignoredGuids);
+                LogHoldoutNoTarget();
                 return null;
             }
         }
@@ -1937,7 +1958,7 @@ internal sealed class BotRunner
     /// After 10 s without a holdout target, say what is around so a wave creature standing out of reach (stuck, far spawn,
     /// not hostile by our rule) can be told apart from a wave that is simply over.
     /// </summary>
-    private void LogHoldoutNoTarget(IReadOnlySet<uint> ignoredGuids)
+    private void LogHoldoutNoTarget()
     {
         DateTimeOffset now = DateTimeOffset.UtcNow;
         holdoutNoTargetSince ??= now;
@@ -1951,7 +1972,7 @@ internal sealed class BotRunner
             .Select(entry => $"{entry.CreatureId}@{entry.Distance:0}m{(RequireGameData().IsHoldoutHostile(entry.CreatureId) ? "" : " (not hostile)")}"));
         log.Info($"holdout: no target within {HoldoutTargetRadius:0} m for {(now - holdoutNoTargetSince.Value).TotalSeconds:0} s "
             + $"(wave {FormatCurrentHoldoutWave()}, health {currentHealth?.ToString() ?? "?"}/{currentMaxHealth?.ToString() ?? "?"}, "
-            + $"{ignoredGuids.Count} guid(s) ignored); creatures within 150 m: [{nearby}]");
+            + $"{holdoutWaveTargetGuids.Count} wave guid(s) tracked); creatures within 150 m: [{nearby}]");
     }
 
     private async Task<string> PrepareForHoldoutAsync(CancellationToken cancellationToken)
@@ -5821,6 +5842,19 @@ internal sealed class BotRunner
                         ? FormattableString.Invariant($"({value.X:R},{value.Y:R},{value.Z:R})")
                         : "none";
                     log.Debug($"ENT guid={entity.Guid} EntityType={entity.Type} creatureId={entity.CreatureId?.ToString() ?? "none"} position={position}");
+                    if (activeHoldoutEventId is not null
+                        && DateTimeOffset.UtcNow <= holdoutWaveTargetCaptureUntil
+                        && entity.Type is EntityType.NonPlayer or EntityType.AiTurret
+                        && entity.CreatureId is uint holdoutCreatureId
+                        && RequireGameData().IsHoldoutHostile(holdoutCreatureId)
+                        && entity.Position is Vector3 holdoutPosition
+                        && holdoutCenter is Vector3 center
+                        && Vector3.DistanceSquared(center, holdoutPosition) <= HoldoutTargetRadius * HoldoutTargetRadius)
+                    {
+                        holdoutWaveTargetGuids.Add(entity.Guid);
+                        log.Info($"holdout wave target guid={entity.Guid} creature={holdoutCreatureId} level={entity.Level?.ToString() ?? "?"} "
+                            + $"health={entity.Health?.ToString() ?? "?"}/{entity.MaxHealth?.ToString() ?? "?"}");
+                    }
                     if (entity.Guid == playerGuid && entity.Type == EntityType.Player)
                     {
                         if (entity.Level is uint level)
@@ -6092,6 +6126,7 @@ internal sealed class BotRunner
                     if (activeHoldoutEventId is null || activeHoldoutEventId == wave.EventId)
                     {
                         currentHoldoutWave = checked((int)wave.WaveIndex + 1);
+                        holdoutWaveTargetCaptureUntil = DateTimeOffset.UtcNow + HoldoutWaveTargetCaptureTime;
                         holdoutProgressPackets.Add(
                             $"next-wave(event={wave.EventId},rawIndex={wave.WaveIndex},wave={currentHoldoutWave},boss={wave.IsBoss.ToString().ToLowerInvariant()})");
                     }

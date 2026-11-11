@@ -175,6 +175,25 @@ internal sealed class EntityTracker
             .FirstOrDefault();
     }
 
+    /// <summary>Nearest visible combat unit whose entity guid belongs to the supplied set.</summary>
+    public TrackedEntity? FindNearestVisibleNonPlayerByGuid(
+        IReadOnlySet<uint> includedGuids,
+        Vector3 origin,
+        float radius)
+    {
+        float radiusSquared = radius * radius;
+        return includedGuids
+            .Select(guid => Get(guid))
+            .Where(entity => entity is not null
+                && IsCombatUnit(entity.Type)
+                && entity.Health is null or > 0u
+                && entity.Position is Vector3 position
+                && Vector3.DistanceSquared(origin, position) <= radiusSquared)
+            .OrderBy(entity => Vector3.DistanceSquared(origin, entity!.Position!.Value))
+            .ThenBy(entity => entity!.Guid)
+            .FirstOrDefault();
+    }
+
     public IReadOnlyList<(uint CreatureId, float Distance)> GetNearbyCreatureIds(
         Vector3 origin,
         float radius,
