@@ -595,10 +595,14 @@ namespace NexusForever.Game.Entity
         /// </remarks>
         public void Save(Action callback = null)
         {
-            Session.Events.EnqueueEvent(new TaskEvent(DatabaseManager.Instance.GetDatabase<AuthDatabase>().Save(Save),
+            // the models are built (and the dirty flags cleared) when each save is started, a save that fails afterwards loses those changes,
+            // so a failure must never go unnoticed
+            Task authSave = ObserveSave(DatabaseManager.Instance.GetDatabase<AuthDatabase>().Save(Save), "account");
+            Session.Events.EnqueueEvent(new TaskEvent(authSave,
             () =>
             {
-                Session.Events.EnqueueEvent(new TaskEvent(DatabaseManager.Instance.GetDatabase<CharacterDatabase>().Save(Save),
+                Task characterSave = ObserveSave(DatabaseManager.Instance.GetDatabase<CharacterDatabase>().Save(Save), "character");
+                Session.Events.EnqueueEvent(new TaskEvent(characterSave,
                 () =>
                 {
                     callback?.Invoke();
@@ -618,12 +622,30 @@ namespace NexusForever.Game.Entity
         /// </summary>
         /// <remarks>
         /// This is an instant save, <see cref="AuthContext"/> changes are saved first followed by <see cref="CharacterContext"/> changes.
-        /// This will block the calling thread until the database save is complete.
+        /// The returned <see cref="Task"/> completes once both saves have finished, a failure is logged instead of thrown.
         /// </remarks>
-        public async void SaveDirect()
+        public async Task SaveDirect()
         {
-            await DatabaseManager.Instance.GetDatabase<AuthDatabase>().Save(Save);
-            await DatabaseManager.Instance.GetDatabase<CharacterDatabase>().Save(Save);
+            try
+            {
+                await DatabaseManager.Instance.GetDatabase<AuthDatabase>().Save(Save);
+                await DatabaseManager.Instance.GetDatabase<CharacterDatabase>().Save(Save);
+                log.Info($"Direct save of character {Name}({CharacterId}) completed.");
+            }
+            catch (Exception e)
+            {
+                log.Error(e, $"Direct save of character {Name}({CharacterId}) FAILED, unsaved changes are lost.");
+            }
+        }
+
+        /// <summary>
+        /// Log a failure of the supplied database save, a faulted <see cref="TaskEvent"/> is otherwise silently ignored.
+        /// </summary>
+        private Task ObserveSave(Task save, string stage)
+        {
+            save.ContinueWith(t => log.Error(t.Exception?.GetBaseException(), $"Save of the {stage} data of character {Name}({CharacterId}) FAILED, the changes it carried are lost."),
+                TaskContinuationOptions.OnlyOnFaulted);
+            return save;
         }
 
         /// <summary>

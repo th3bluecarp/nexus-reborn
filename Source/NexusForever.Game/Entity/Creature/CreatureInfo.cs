@@ -122,7 +122,8 @@ namespace NexusForever.Game.Entity.Creature
         /// </summary>
         public uint GetLevel()
         {
-            return (uint)Random.Shared.Next((int)Entry.MinLevel, (int)Entry.MaxLevel);
+            // the upper bound of Next is exclusive, MaxLevel is a level the creature can have
+            return (uint)Random.Shared.Next((int)Entry.MinLevel, (int)Math.Max(Entry.MinLevel, Entry.MaxLevel) + 1);
         }
 
         /// <summary>

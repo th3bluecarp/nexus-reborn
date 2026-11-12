@@ -1,4 +1,6 @@
 ﻿using System;
+using System.IO;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Hosting;
@@ -11,6 +13,7 @@ using NexusForever.Game.Abstract.Entity.Creature;
 using NexusForever.Game.Abstract.Matching.Match;
 using NexusForever.Game.Abstract.Matching.Queue;
 using NexusForever.Game.Abstract.PublicEvent;
+using NexusForever.Game.Static.Entity;
 using NexusForever.Game.Achievement;
 using NexusForever.Game.Character;
 using NexusForever.Game.Cinematic;
@@ -28,6 +31,7 @@ using NexusForever.GameTable;
 using NexusForever.GameTable.Text.Filter;
 using NexusForever.GameTable.Text.Search;
 using NexusForever.Network.Message;
+using NexusForever.Network.World.Message.Model;
 using NexusForever.Network.Session;
 using NexusForever.Network.World.Entity;
 using NexusForever.Network.World.Message;
@@ -164,6 +168,8 @@ namespace NexusForever.WorldServer.Service
 
                 ShutdownManager.Instance.Update(lastTick);
 
+                UpdateGracefulStop(lastTick);
+
                 // process commands after everything else in the tick has processed
                 CommandManager.Instance.Update(lastTick);
             });
@@ -175,6 +181,79 @@ namespace NexusForever.WorldServer.Service
             CommandManager.Instance.Initialise();
 
             log.LogInformation("Started!");
+        }
+
+        /// <summary>
+        /// File that asks the running world server to log every player out, wait for their saves and then stop (deploy scripts create it).
+        /// </summary>
+        public static readonly string GracefulStopFile = Path.Combine(AppContext.BaseDirectory, "shutdown.request");
+
+        /// <summary>
+        /// Seconds the logout saves of a graceful stop may take before the server stops anyway.
+        /// </summary>
+        private const double GracefulStopTimeout = 90d;
+
+        private double gracefulStopPoll;
+        private double gracefulStopElapsed;
+        private bool gracefulStop;
+
+        /// <summary>
+        /// Invoked each world tick, starts and finishes a graceful stop.
+        /// </summary>
+        /// <remarks>
+        /// A killed process loses every change not yet committed (a player who just left, the last minute of a periodic save), so a stop first sends
+        /// every player through the normal logout, whose cleanup saves the character, and only stops once no session has a pending save.
+        /// </remarks>
+        private void UpdateGracefulStop(double lastTick)
+        {
+            if (!gracefulStop)
+            {
+                gracefulStopPoll += lastTick;
+                if (gracefulStopPoll < 2d)
+                    return;
+
+                gracefulStopPoll = 0d;
+                if (!File.Exists(GracefulStopFile))
+                    return;
+
+                try
+                {
+                    File.Delete(GracefulStopFile);
+                }
+                catch (IOException e)
+                {
+                    log.LogWarning(e, "Could not delete the graceful stop request file.");
+                }
+
+                gracefulStop = true;
+                log.LogInformation("Graceful stop requested, logging out every player and waiting for their saves.");
+
+                foreach (IWorldSession session in networkManager.ToList())
+                {
+                    if (session.Player?.LogoutManager.State is LogoutState.Logout or LogoutState.Finished)
+                        continue;
+
+                    session.Player?.LogoutManager.Finish(LogoutReason.WorldServerConnectionLost);
+                }
+
+                return;
+            }
+
+            gracefulStopElapsed += lastTick;
+
+            bool pending = networkManager.Any(s => s.Player != null || s.Events.PendingEvents);
+            if (pending && gracefulStopElapsed < GracefulStopTimeout)
+                return;
+
+            if (pending)
+                log.LogError($"Graceful stop gave up after {gracefulStopElapsed:0} s with players or saves still pending.");
+            else
+                log.LogInformation($"Graceful stop: every player is saved and logged out after {gracefulStopElapsed:0.0} s, stopping.");
+
+            // stops the host, StopAsync below saves anything still left
+            WorldServer.Shutdown();
+            gracefulStop = false;
+            gracefulStopPoll = double.MinValue;
         }
 
         /// <summary>
@@ -202,8 +281,10 @@ namespace NexusForever.WorldServer.Service
             GlobalResidenceManager.Instance.Shutdown();
             GlobalGuildManager.Instance.Shutdown();
 
-            foreach (IWorldSession worldSession in networkManager)
-                worldSession.Player?.SaveDirect();
+            // wait for the saves, the process ends as soon as this returns
+            Task[] saves = networkManager.Where(s => s.Player != null).Select(s => s.Player.SaveDirect()).ToArray();
+            if (!Task.WaitAll(saves, TimeSpan.FromSeconds(60)))
+                log.LogError("Not every player save finished within 60 s of stopping.");
 
             log.LogInformation("Stopped!");
             return Task.CompletedTask;

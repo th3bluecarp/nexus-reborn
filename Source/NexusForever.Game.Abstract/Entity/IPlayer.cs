@@ -200,9 +200,9 @@ namespace NexusForever.Game.Abstract.Entity
         /// </summary>
         /// <remarks>
         /// This is an instant save, <see cref="AuthContext"/> changes are saved first followed by <see cref="CharacterContext"/> changes.
-        /// This will block the calling thread until the database save is complete. 
+        /// The returned <see cref="Task"/> completes once both saves have finished, a failure is logged instead of thrown.
         /// </remarks>
-        void SaveDirect();
+        Task SaveDirect();
 
         ItemProficiency GetItemProficiencies();
 

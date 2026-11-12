@@ -24,7 +24,8 @@ namespace NexusForever.Game.Entity
     /// Northern Wilds ones: Fierce Yeti Icefang and the Frost Giant for M156), and those are used. For the rest each wave brings
     /// 2 more enemies than the one before (2 to 5), picked from the hostile
     /// creatures living within 150 m of the control point, spawned 14 to 18 m away and sent at the soldier. The last wave of a
-    /// wave event is a boss: one of the wave raised to the Prime rank (Creature2Difficulty 5) and a level up.
+    /// wave event is a boss: one of the wave raised to the Prime rank (Creature2Difficulty 6, health x3.5) at the highest level
+    /// of the wave and drawn larger, and a roster boss that does not outrank its wave is raised the same way.
     /// PathSoldierEvent.PathSoldierEventType (client enum, Holdout 0 Defend 1 Timed 2 TimedDefend 3 TowerDefense 4 WhackAMole 5
     /// WhackAMoleTimed 6 StopTheThieves 7 StopTheThievesTimed 8) decides the win: timed events are won by lasting until the
     /// event time runs out, the others by beating every wave before it does (running out of time is FailTimeOut). Both lose on
@@ -96,7 +97,10 @@ namespace NexusForever.Game.Entity
                 .ToDictionary(g => g.Key, g => g.OrderBy(x => x.Entry.Id).Select(x => x.Entry.Id).ToArray());
         });
 
-        private const uint HoldoutBossDifficulty = 5u;
+        // Prime. Creature2Difficulty 5 is Superior (health x0.96), 6 is Prime (health x3.5, damage ratings x2.65 against x1.75)
+        private const uint HoldoutBossDifficulty = 6u;
+        // model scale of a generic boss, the one visible mark that it is not one of the wave (the same SetScale command the scale spells use)
+        private const float HoldoutBossScale = 1.5f;
         // pool creatures of this Creature2Difficulty and above are elites and stay out of the waves
         private const uint HoldoutPoolMaxDifficulty = 4u;
 
@@ -417,25 +421,28 @@ namespace NexusForever.Game.Entity
                 : current.Pool.Length;
             count = Math.Max(count, bosses.Length);
 
+            // the boss wave is built up front so the boss can be set against the rest of it: levels are rolled now (not at spawn)
+            uint[] spawnIds = new uint[count];
+            ICreatureInfo[] infos = new ICreatureInfo[count];
             for (int i = 0; i < count; i++)
             {
-                uint spawnId = i < bosses.Length ? bosses[i] : current.Pool[Random.Shared.Next(reach)];
-                ICreatureInfo creatureInfo = creatureInfoManager.GetCreatureInfo(spawnId);
+                spawnIds[i] = i < bosses.Length ? bosses[i] : current.Pool[Random.Shared.Next(reach)];
+                ICreatureInfo info = creatureInfoManager.GetCreatureInfo(spawnIds[i]);
+                if (info != null && boss)
+                    info = new CreatureInfoOverride().SetCreatureInfoOverride(info).SetLevelOverride(info.GetLevel());
+                infos[i] = info;
+            }
+
+            int genericBoss = boss ? PromoteHoldoutBosses(current, bosses.Length, infos) : -1;
+
+            for (int i = 0; i < count; i++)
+            {
+                uint spawnId = spawnIds[i];
+                ICreatureInfo creatureInfo = infos[i];
                 if (creatureInfo == null)
                     continue;
 
-                // no boss creature known: the first of the boss wave leads it, Prime rank (more health and damage) and a level
-                // above the rest (timed events with a roster have no boss, their last wave is the roster's strongest)
-                if (boss && i == 0 && current.Bosses.Length == 0 && !(current.HasRoster && current.IsTimed)
-                    && (creatureInfo.DifficultyEntry == null || creatureInfo.DifficultyEntry.Id < HoldoutBossDifficulty))
-                {
-                    Creature2DifficultyEntry bossDifficulty = GameTableManager.Instance.Creature2Difficulty.GetEntry(HoldoutBossDifficulty);
-                    if (bossDifficulty != null)
-                        creatureInfo = new CreatureInfoOverride()
-                            .SetCreatureInfoOverride(creatureInfo)
-                            .SetDifficultyEntryOverride(bossDifficulty)
-                            .SetLevelOverride(creatureInfo.GetLevel() + 1u);
-                }
+                bool largeBoss = i == genericBoss;
 
                 float angle;
                 Vector3 position;
@@ -465,6 +472,9 @@ namespace NexusForever.Game.Entity
                     if (map.GetEntity<IUnitEntity>(guid) is not IUnitEntity unit || player.Map != map)
                         return;
 
+                    if (largeBoss)
+                        unit.MovementManager.SetScale(HoldoutBossScale);
+
                     holdoutLog.Info($"M{current.Mission.Entry.Id} wave {current.WaveIndex + 1}: spawned creature {spawnId} guid {guid} level {unit.Level} "
                         + $"difficulty {spawnedInfo.DifficultyEntry?.Id ?? 0u} health {unit.MaxHealth} at {vector} ({Vector3.Distance(vector, current.Center):0} m from the point)");
 
@@ -474,6 +484,48 @@ namespace NexusForever.Game.Entity
                     unit.ThreatManager.UpdateThreat(defenders.Length > 0 ? defenders[Random.Shared.Next(defenders.Length)] : player, 10);
                 });
             }
+        }
+
+        /// <summary>
+        /// Raise the boss of a boss wave above the rest of it. Returns the index of a generic boss (made here from an ordinary wave creature), else -1.
+        /// </summary>
+        /// <remarks>
+        /// A roster boss whose difficulty is not above every regular creature of the wave is raised to Prime and to the highest level of the wave
+        /// (M156's Frost Giant is Superior like the roster creatures it leads). Without a roster boss the first creature of the wave is promoted the same way.
+        /// </remarks>
+        private int PromoteHoldoutBosses(Holdout current, int rosterBosses, ICreatureInfo[] infos)
+        {
+            Creature2DifficultyEntry prime = GameTableManager.Instance.Creature2Difficulty.GetEntry(HoldoutBossDifficulty);
+            if (prime == null || infos.All(i => i == null))
+                return -1;
+
+            uint waveLevel = infos.Where(i => i != null).Max(i => i.GetLevel());
+            uint regularRank = infos.Skip(rosterBosses).Where(i => i != null).Select(i => i.DifficultyEntry?.Id ?? 0u).DefaultIfEmpty(0u).Max();
+
+            ICreatureInfo Raise(ICreatureInfo info) => new CreatureInfoOverride()
+                .SetCreatureInfoOverride(info)
+                .SetDifficultyEntryOverride(prime)
+                .SetLevelOverride(waveLevel);
+
+            for (int i = 0; i < Math.Min(rosterBosses, infos.Length); i++)
+            {
+                uint rank = infos[i]?.DifficultyEntry?.Id ?? 0u;
+                if (infos[i] == null || rank >= HoldoutBossDifficulty || rank > regularRank)
+                    continue;
+
+                holdoutLog.Info($"M{current.Mission.Entry.Id} boss {infos[i].Entry.Id} (difficulty {rank}) does not outrank its wave (difficulty {regularRank}), raised to Prime at level {waveLevel}");
+                infos[i] = Raise(infos[i]);
+            }
+
+            // no boss creature known: the first of the boss wave leads it (timed events with a roster have no boss, their last wave is the roster's strongest)
+            if (rosterBosses == 0 && !(current.HasRoster && current.IsTimed) && infos[0] != null && (infos[0].DifficultyEntry?.Id ?? 0u) < HoldoutBossDifficulty)
+            {
+                holdoutLog.Info($"M{current.Mission.Entry.Id} boss wave has no boss creature, creature {infos[0].Entry.Id} made Prime at level {waveLevel}");
+                infos[0] = Raise(infos[0]);
+                return 0;
+            }
+
+            return -1;
         }
 
         private void EndHoldout(PlayerPathSoldierResult result)
