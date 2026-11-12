@@ -4,6 +4,7 @@ using NexusForever.Game.Abstract.Entity;
 using NexusForever.Game.Abstract.Entity.Creature;
 using NexusForever.Game.Entity.Creature;
 using NexusForever.Game.Map.Search;
+using NexusForever.Game.Static.Entity;
 using NexusForever.Game.Static.PlayerPath;
 using NexusForever.GameTable;
 using NexusForever.GameTable.Model;
@@ -25,7 +26,9 @@ namespace NexusForever.Game.Entity
     /// 2 more enemies than the one before (2 to 5), picked from the hostile
     /// creatures living within 150 m of the control point, spawned 14 to 18 m away and sent at the soldier. The last wave of a
     /// wave event is a boss: one of the wave raised to the Prime rank (Creature2Difficulty 6, health x3.5) at the highest level
-    /// of the wave and drawn larger, and a roster boss that does not outrank its wave is raised the same way.
+    /// of the wave and drawn larger, and a roster boss that does not outrank its wave is raised the same way. In an event won by
+    /// beating every wave a raised boss whose wave could not fall in the event time left keeps Prime damage and rank but gets the
+    /// health that fits (FitHoldoutBossHealth).
     /// PathSoldierEvent.PathSoldierEventType (client enum, Holdout 0 Defend 1 Timed 2 TimedDefend 3 TowerDefense 4 WhackAMole 5
     /// WhackAMoleTimed 6 StopTheThieves 7 StopTheThievesTimed 8) decides the win: timed events are won by lasting until the
     /// event time runs out, the others by beating every wave before it does (running out of time is FailTimeOut). Both lose on
@@ -101,6 +104,12 @@ namespace NexusForever.Game.Entity
         private const uint HoldoutBossDifficulty = 6u;
         // model scale of a generic boss, the one visible mark that it is not one of the wave (the same SetScale command the scale spells use)
         private const float HoldoutBossScale = 1.5f;
+        // a boss raised to Prime in a kill-everything event: at the pace the regular waves ask for, the whole boss wave should fall within
+        // this share of the event time left, otherwise the boss gets the health that fits (Prime x3.5 health could not die in time, M1850)
+        private const double HoldoutBossTimeShare = 0.5d;
+        // a fitted boss never drops below Superior health (the boss rank before Prime) nor below this many times its strongest regular
+        private const uint HoldoutBossFloorDifficulty = 5u;
+        private const float HoldoutBossFloorRegular = 1.5f;
         // pool creatures of this Creature2Difficulty and above are elites and stay out of the waves
         private const uint HoldoutPoolMaxDifficulty = 4u;
 
@@ -502,10 +511,15 @@ namespace NexusForever.Game.Entity
             uint waveLevel = infos.Where(i => i != null).Max(i => i.GetLevel());
             uint regularRank = infos.Skip(rosterBosses).Where(i => i != null).Select(i => i.DifficultyEntry?.Id ?? 0u).DefaultIfEmpty(0u).Max();
 
-            ICreatureInfo Raise(ICreatureInfo info) => new CreatureInfoOverride()
-                .SetCreatureInfoOverride(info)
-                .SetDifficultyEntryOverride(prime)
-                .SetLevelOverride(waveLevel);
+            var raised = new List<int>();
+            void Raise(int i)
+            {
+                infos[i] = new CreatureInfoOverride()
+                    .SetCreatureInfoOverride(infos[i])
+                    .SetDifficultyEntryOverride(prime)
+                    .SetLevelOverride(waveLevel);
+                raised.Add(i);
+            }
 
             for (int i = 0; i < Math.Min(rosterBosses, infos.Length); i++)
             {
@@ -514,18 +528,135 @@ namespace NexusForever.Game.Entity
                     continue;
 
                 holdoutLog.Info($"M{current.Mission.Entry.Id} boss {infos[i].Entry.Id} (difficulty {rank}) does not outrank its wave (difficulty {regularRank}), raised to Prime at level {waveLevel}");
-                infos[i] = Raise(infos[i]);
+                Raise(i);
             }
 
             // no boss creature known: the first of the boss wave leads it (timed events with a roster have no boss, their last wave is the roster's strongest)
+            int generic = -1;
             if (rosterBosses == 0 && !(current.HasRoster && current.IsTimed) && infos[0] != null && (infos[0].DifficultyEntry?.Id ?? 0u) < HoldoutBossDifficulty)
             {
                 holdoutLog.Info($"M{current.Mission.Entry.Id} boss wave has no boss creature, creature {infos[0].Entry.Id} made Prime at level {waveLevel}");
-                infos[0] = Raise(infos[0]);
-                return 0;
+                Raise(0);
+                generic = 0;
             }
 
-            return -1;
+            // timed events are won by lasting the clock, their boss never has to die
+            if (!current.IsTimed && raised.Count > 0)
+                FitHoldoutBossHealth(current, rosterBosses, raised, infos);
+
+            return generic;
+        }
+
+        /// <summary>
+        /// Lower the health of the bosses raised to Prime so the boss wave of a kill-everything holdout can be beaten in the event time left.
+        /// </summary>
+        /// <remarks>
+        /// The pace a soldier is expected to keep is the one the regular waves ask for: a wave of the last regular size, made of creatures like
+        /// the boss wave's regulars, beaten within one wave timer (PathSoldierEvent.MaxTimeBetweenWaves). At that pace the whole boss wave
+        /// should fall within <see cref="HoldoutBossTimeShare"/> of the event time left (MaxEventTime minus the time spent); a boss that would
+        /// not gets the health that fits, never less than Superior health or <see cref="HoldoutBossFloorRegular"/> times the strongest regular,
+        /// and keeps Prime damage, rank and size. M1850 (event 330, 32 s waves, 240 s event) reached its boss wave with 111.5 s left and a Prime
+        /// boss of 17,950 health, about 126 s of work at that pace, and failed on time.
+        /// </remarks>
+        private void FitHoldoutBossHealth(Holdout current, int rosterBosses, List<int> raised, ICreatureInfo[] infos)
+        {
+            int[] regulars = Enumerable.Range(0, infos.Length)
+                .Where(i => i >= rosterBosses && infos[i] != null && !raised.Contains(i))
+                .ToArray();
+            if (regulars.Length == 0)
+            {
+                holdoutLog.Info($"M{current.Mission.Entry.Id} boss wave has no regular creature to set the pace, boss health left at Prime");
+                return;
+            }
+
+            float[] regularHealth = regulars.Select(i => HoldoutCreatureHealth(infos[i], infos[i].DifficultyEntry)).ToArray();
+            int regularWaveSize = Math.Min(2 + Math.Max(current.Waves - 2, 0), 3);
+            double waveTime = Math.Max(current.Event.MaxTimeBetweenWaves, 10000u) / 1000d;
+            double pace = regularWaveSize * regularHealth.Average() / waveTime;
+            double timeLeft = Math.Max(current.Event.MaxEventTime / 1000d - current.Elapsed, 0d);
+
+            // the regulars and any roster boss that kept its own rank take their share of the time first
+            double otherHealth = regularHealth.Sum() + Enumerable.Range(0, Math.Min(rosterBosses, infos.Length))
+                .Where(i => infos[i] != null && !raised.Contains(i))
+                .Sum(i => (double)HoldoutCreatureHealth(infos[i], infos[i].DifficultyEntry));
+            double share = (pace * timeLeft * HoldoutBossTimeShare - otherHealth) / raised.Count;
+
+            Creature2DifficultyEntry superior = GameTableManager.Instance.Creature2Difficulty.GetEntry(HoldoutBossFloorDifficulty);
+            foreach (int i in raised)
+            {
+                if (infos[i] is not ICreatureInfoOverride boss || boss.DifficultyEntry?.UnitPropertyMultiplier == null)
+                    continue;
+
+                // a fixed health property replaces the rank multiplier altogether, there is nothing to scale
+                if (boss.GetPropertyOverrides().Any(p => p.Property == Property.BaseHealth))
+                {
+                    holdoutLog.Info($"M{current.Mission.Entry.Id} boss {boss.Entry.Id} has a fixed health property, health not fitted to the time left");
+                    continue;
+                }
+
+                float unranked = HoldoutCreatureHealth(boss, null);
+                if (unranked <= 0f)
+                    continue;
+
+                float primeHealth = unranked * boss.DifficultyEntry.UnitPropertyMultiplier[(uint)Property.BaseHealth];
+                float floor = Math.Max(
+                    superior != null ? unranked * superior.UnitPropertyMultiplier[(uint)Property.BaseHealth] : 0f,
+                    HoldoutBossFloorRegular * regularHealth.Max());
+                float health = (float)Math.Clamp(share, Math.Min(floor, primeHealth), primeHealth);
+
+                string numbers = $"{timeLeft:0.0} s left, pace {pace:0} health/s from {regulars.Length} regular(s) and {waveTime:0} s waves, "
+                    + $"boss share {Math.Max(share, 0d):0}, floor {floor:0}, Prime {primeHealth:0}";
+                if (health >= primeHealth)
+                {
+                    holdoutLog.Info($"M{current.Mission.Entry.Id} boss {boss.Entry.Id} keeps Prime health {primeHealth:0} ({numbers})");
+                    continue;
+                }
+
+                boss.SetDifficultyEntryOverride(WithHealthMultiplier(boss.DifficultyEntry, health / unranked));
+                holdoutLog.Info($"M{current.Mission.Entry.Id} boss {boss.Entry.Id} health fitted to the time left: {health:0} ({numbers}), "
+                    + $"boss wave about {(otherHealth + health * raised.Count) / pace:0} s at that pace");
+            }
+        }
+
+        /// <summary>
+        /// Max health a creature spawns with, the way <see cref="NonPlayerEntity"/> works it out: the level's base health times the archetype,
+        /// rank (<paramref name="difficulty"/>, none for the health without a rank) and tier multipliers, unless a fixed health property replaces it.
+        /// </summary>
+        private static float HoldoutCreatureHealth(ICreatureInfo info, Creature2DifficultyEntry difficulty)
+        {
+            ICreatureInfoProperty fixedHealth = info.GetPropertyOverrides().FirstOrDefault(p => p.Property == Property.BaseHealth);
+            if (fixedHealth != null)
+                return fixedHealth.Value;
+
+            CreatureLevelEntry level = GameTableManager.Instance.CreatureLevel.GetEntry(info.GetLevel());
+            if (level == null)
+                return 0f;
+
+            const uint index = (uint)Property.BaseHealth;
+            float health = level.UnitPropertyValue[index];
+            health *= info.ArcheTypeEntry?.UnitPropertyMultiplier[index] ?? 1f;
+            health *= difficulty?.UnitPropertyMultiplier[index] ?? 1f;
+            health *= info.TierEntry?.UnitPropertyMultiplier[index] ?? 1f;
+            return health;
+        }
+
+        /// <summary>
+        /// A copy of a <see cref="Creature2DifficultyEntry"/> (same id, so the same rank everywhere) with another health multiplier.
+        /// </summary>
+        private static Creature2DifficultyEntry WithHealthMultiplier(Creature2DifficultyEntry entry, float multiplier)
+        {
+            float[] multipliers = (float[])entry.UnitPropertyMultiplier.Clone();
+            multipliers[(uint)Property.BaseHealth] = multiplier;
+            return new Creature2DifficultyEntry
+            {
+                Id                                 = entry.Id,
+                LocalizedTextIdTitle               = entry.LocalizedTextIdTitle,
+                PathScientistScanMultiplier        = entry.PathScientistScanMultiplier,
+                ClusterContributionValueDifficulty = entry.ClusterContributionValueDifficulty,
+                RankValue                          = entry.RankValue,
+                GroupValue                         = entry.GroupValue,
+                UnitPropertyMultiplier             = multipliers
+            };
         }
 
         private void EndHoldout(PlayerPathSoldierResult result)
