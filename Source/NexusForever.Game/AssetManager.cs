@@ -325,6 +325,21 @@ namespace NexusForever.Game
         }
 
         /// <summary>
+        /// Returns all creature IDs named by the supplied target group, including nested, faction and race groups.
+        /// </summary>
+        public ImmutableList<uint> GetTargetGroupCreatureIds(uint targetGroupId)
+        {
+            TargetGroupEntry targetGroup = GameTableManager.Instance.TargetGroup.GetEntry(targetGroupId);
+            if (targetGroup == null)
+                return [];
+
+            var targetIds = new List<uint>();
+            var unhandledTargetGroups = new List<TargetGroupType>();
+            AddToTargets(targetGroup, ref targetIds, ref unhandledTargetGroups);
+            return targetIds.Distinct().ToImmutableList();
+        }
+
+        /// <summary>
         /// Returns an <see cref="ImmutableList{T}"/> containing all target ID's associated with the questObjectiveId.
         /// </summary>
         public ImmutableList<uint> GetQuestObjectiveTargetIds(uint questObjectiveId)

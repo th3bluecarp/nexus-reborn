@@ -852,7 +852,7 @@ namespace NexusForever.Game.Quest
             {
                 QuestId   = Id,
                 QuestObjectiveIndex     = objective.Index,
-                Completed = objective.Progress
+                Completed = objective.ClientProgress
             });
         }
 

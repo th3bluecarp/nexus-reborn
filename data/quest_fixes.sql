@@ -82,3 +82,44 @@ INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY
 (1300021,0,19201,51,1088,4308.0,-812.75,-2156.0,0,0,0,25836,8981,171,171,3);
 INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES
 (1300019,10,14),(1300019,15,0),(1300020,10,14),(1300020,15,0),(1300021,10,14),(1300021,15,0);
+
+-- Galeras item-started quests whose starter items have no archived drop rows. These are playable source approximations:
+-- 4877 The Lost Bauble: the Darkspur Purveyor (53577), 100%.
+-- 5307 Delectable Drumsticks: the six Razorbeak Ravenok named by the quest's only objective, 100%.
+-- 4975 Motherly Love: Ravenok and Elder Ravenok near the Ravenok-nest objective, 100%.
+-- 4793 Explosive Ammunition: five Crimson creature rows around Windspire Vigil, immediately before the Crimson Base objective, 100%.
+-- 4513 A Book of Blood: the four Thundercall Pell types that attack the nearby XAS camp, 100%.
+-- Starter drops are unconditional, as in retail item-started quests; SEMANTICS.md records the missing exact sources/rates.
+INSERT INTO `loot_group` (`id`,`parentId`,`probability`,`minCount`,`maxCount`,`conditionType`,`condition`,`comment`) VALUES
+(4000002,NULL,100,0,0,0,0,'[supplemental] Galeras Razorbeak quest starter'),
+(4000003,NULL,100,0,0,0,0,'[supplemental] Galeras Ravenok quest starter'),
+(4000004,NULL,100,0,0,0,0,'[supplemental] Galeras Crimson quest starter');
+INSERT INTO `loot_item` (`id`,`type`,`staticId`,`probability`,`minCount`,`maxCount`,`comment`) VALUES
+(4000002,0,13270,100,1,1,'Delectable Drumstick'),
+(4000003,0,12662,100,1,1,'Motherly Love starter'),
+(4000004,0,13096,100,1,1,'Explosive Ammunition starter');
+INSERT INTO `entity_loot` (`Id`,`lootGroupId`,`comment`) VALUES
+(19184,4000002,'Razorbeak Chick'),
+(19185,4000002,'Razorbeak Ripper'),
+(18934,4000002,'Razorbeak Forager'),
+(61655,4000002,'Razorbeak Thrasher'),
+(61731,4000002,'Razorbeak Screecher'),
+(61733,4000002,'Bloodwing the Engorged'),
+(18821,4000003,'Ravenok'),
+(18822,4000003,'Elder Ravenok'),
+(17947,4000004,'Crimson Advance Scout'),
+(23307,4000004,'Crimson Advance Scout'),
+(48223,4000004,'Crimson Skitterbot'),
+(61632,4000004,'Crimson Assault Trooper'),
+(61630,4000004,'Crimson Ranger');
+
+DELETE FROM `loot_item` WHERE `id` = 1000497 AND `type` = 0 AND `staticId` = 12539;
+INSERT INTO `loot_item` (`id`,`type`,`staticId`,`probability`,`minCount`,`maxCount`,`comment`)
+VALUES (1000497,0,12539,100,1,1,'Lost Bauble quest starter');
+
+DELETE FROM `loot_item` WHERE `id` IN (1000772,1000773,1000774,1000775) AND `type` = 0 AND `staticId` = 12299;
+INSERT INTO `loot_item` (`id`,`type`,`staticId`,`probability`,`minCount`,`maxCount`,`comment`) VALUES
+(1000772,0,12299,100,1,1,'Book of Blood quest starter'),
+(1000773,0,12299,100,1,1,'Book of Blood quest starter'),
+(1000774,0,12299,100,1,1,'Book of Blood quest starter'),
+(1000775,0,12299,100,1,1,'Book of Blood quest starter');

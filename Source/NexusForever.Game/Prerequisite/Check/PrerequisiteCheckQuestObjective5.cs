@@ -39,7 +39,7 @@ namespace NexusForever.Game.Prerequisite.Check
             {
                 IQuest quest = player.QuestManager.GetActiveQuest((ushort)objectId);
                 IQuestObjective objective = quest?.GetQuestObjectiveByIndex(5);
-                progress = objective?.Progress ?? 0u;
+                progress = objective?.ClientProgress ?? 0u;
             }
 
             bool? result = PrerequisiteCompare.Compare(comparison, progress, value);

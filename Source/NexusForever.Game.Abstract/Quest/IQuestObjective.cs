@@ -9,6 +9,7 @@ namespace NexusForever.Game.Abstract.Quest
         IQuestObjectiveInfo ObjectiveInfo { get; }
         byte Index { get; }
         uint Progress { get; set; }
+        uint ClientProgress { get; }
 
         /// <summary>
         /// Set objective progress to an absolute value, capped at the objective maximum.

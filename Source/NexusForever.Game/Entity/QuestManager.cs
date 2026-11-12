@@ -392,7 +392,7 @@ namespace NexusForever.Game.Entity
                         QuestTimeElapsed      = q.Timer ?? 0u,
                         Objectives = q.Select(o => new ServerQuestInit.QuestActive.Objective
                         {
-                            Progress = o.Progress,
+                            Progress = o.ClientProgress,
                             TimeElapsed    = 0u
                         }).ToList()
                     }).ToList()

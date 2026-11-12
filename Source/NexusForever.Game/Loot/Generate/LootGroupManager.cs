@@ -16,6 +16,7 @@ namespace NexusForever.Game.Loot.Generate
         private readonly Dictionary<ulong, ILootGroup> lootGroups = [];
         private readonly Dictionary<uint, List<ILootGroup>> entityLoot = [];
         private readonly Dictionary<uint, List<ILootGroup>> itemLoot = [];
+        private readonly HashSet<ulong> supplementalLootGroups = [];
 
         #region Dependency Injection
 
@@ -69,6 +70,8 @@ namespace NexusForever.Game.Loot.Generate
                 ILootGroup lootGroup = lootGroupFactory.Resolve();
                 lootGroup.Initialise(lootGroupModel, builder);
                 lootGroups.Add(lootGroup.Id, lootGroup);
+                if (lootGroupModel.Comment?.StartsWith("[supplemental]", StringComparison.OrdinalIgnoreCase) == true)
+                    supplementalLootGroups.Add(lootGroup.Id);
             }
         }
 
@@ -88,7 +91,13 @@ namespace NexusForever.Game.Loot.Generate
 
                 (string, uint) key = (creature.Description, (uint)creature.FactionId);
                 if (entityLoot.TryGetValue(creature.Id, out List<ILootGroup> groups))
-                    donors.TryAdd(key, groups);
+                {
+                    List<ILootGroup> baseGroups = groups.Where(group => !supplementalLootGroups.Contains(group.Id)).ToList();
+                    if (baseGroups.Count > 0)
+                        donors.TryAdd(key, baseGroups);
+                    else
+                        missing.Add((creature.Id, key));
+                }
                 else
                     missing.Add((creature.Id, key));
             }
@@ -103,14 +112,16 @@ namespace NexusForever.Game.Loot.Generate
                     continue;
                 }
 
-                entityLoot[id] = groups;
+                AddBorrowedLoot(id, groups);
                 borrowed++;
             }
 
             // no sibling: a creature of the same race (and archetype when there is one) within 10 levels, so a Dominion soldier drops
             // what a Dominion soldier of about its level drops. Critters keep dropping nothing, as most did in retail.
             ILookup<uint, Creature2Entry> withLoot = GameTableManager.Instance.Creature2.Entries
-                .Where(c => c.UnitRaceId != 0u && entityLoot.ContainsKey(c.Id))
+                .Where(c => c.UnitRaceId != 0u
+                    && entityLoot.TryGetValue(c.Id, out List<ILootGroup> groups)
+                    && groups.Any(group => !supplementalLootGroups.Contains(group.Id)))
                 .ToLookup(c => c.UnitRaceId);
             foreach (uint id in stillMissing)
             {
@@ -127,11 +138,26 @@ namespace NexusForever.Game.Loot.Generate
                 if (donor == null)
                     continue;
 
-                entityLoot[id] = entityLoot[donor.Id];
+                AddBorrowedLoot(id, entityLoot[donor.Id]
+                    .Where(group => !supplementalLootGroups.Contains(group.Id)));
                 borrowed++;
             }
 
             return borrowed;
+        }
+
+        /// <summary>
+        /// Add a sibling's ordinary loot without replacing explicit supplemental groups such as quest-starter drops.
+        /// </summary>
+        private void AddBorrowedLoot(uint id, IEnumerable<ILootGroup> groups)
+        {
+            if (!entityLoot.TryGetValue(id, out List<ILootGroup> existing))
+            {
+                entityLoot[id] = groups.ToList();
+                return;
+            }
+
+            existing.AddRange(groups.Where(group => !existing.Contains(group)));
         }
 
         private void BuildLoot(uint id, ulong lootGroupId, Dictionary<uint, List<ILootGroup>> storage)

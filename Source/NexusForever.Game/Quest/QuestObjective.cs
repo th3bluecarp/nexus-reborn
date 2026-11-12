@@ -36,6 +36,13 @@ namespace NexusForever.Game.Quest
 
         private uint progress;
 
+        /// <summary>
+        /// Progress represented in the count format expected by the client. Some server-side objective state uses a bitmask.
+        /// </summary>
+        public uint ClientProgress => IsKillRewardTargetGroup()
+            ? (IsComplete() ? ObjectiveInfo.Entry.Count : 0u)
+            : Progress;
+
         public uint? Timer
         {
             get => timer;
@@ -135,7 +142,6 @@ namespace NexusForever.Game.Quest
             // dynamic objectives have their progress based on percentage rather than count
             return ObjectiveInfo.Type is QuestObjectiveType.KillCreature
                     or QuestObjectiveType.KillTargetGroups
-                    or QuestObjectiveType.Unknown15
                     or QuestObjectiveType.KillTargetGroup
                     or QuestObjectiveType.KillCreature2
                 && ObjectiveInfo.Entry.Count > 1u
@@ -151,6 +157,16 @@ namespace NexusForever.Game.Quest
             return ObjectiveInfo.Type is QuestObjectiveType.ActivateTargetGroupChecklist or QuestObjectiveType.Unknown10;
         }
 
+        private bool IsKillRewardTargetGroup()
+        {
+            return ObjectiveInfo.Type == QuestObjectiveType.KillRewardTargetGroup;
+        }
+
+        private System.Collections.Immutable.ImmutableList<uint> GetKillRewardTargets()
+        {
+            return AssetManager.Instance.GetTargetGroupCreatureIds(ObjectiveInfo.Entry.TargetGroupIdRewardPane);
+        }
+
         /// <summary>
         /// Return if the <see cref="QuestObjective"/> has been completed.
         /// </summary>
@@ -158,6 +174,14 @@ namespace NexusForever.Game.Quest
         {
             if (IsChecklist())
                 return System.Numerics.BitOperations.PopCount(progress) >= ObjectiveInfo.Entry.Count;
+
+            if (IsKillRewardTargetGroup())
+            {
+                int targetCount = Math.Min(GetKillRewardTargets().Count, 32);
+                return targetCount == 0
+                    ? progress >= ObjectiveInfo.Entry.Count
+                    : System.Numerics.BitOperations.PopCount(progress) >= targetCount;
+            }
 
             return progress >= GetMaxValue();
         }
@@ -172,6 +196,17 @@ namespace NexusForever.Game.Quest
         /// </summary>
         public void ObjectiveUpdate(uint update)
         {
+            // Type 15's Count is one even when its reward-pane group names several required creatures. Keep one bit per
+            // distinct creature entry so killing one member repeatedly cannot complete the group.
+            if (IsKillRewardTargetGroup())
+            {
+                System.Collections.Immutable.ImmutableList<uint> targets = GetKillRewardTargets();
+                int index = targets.IndexOf(update);
+                if (index >= 0 && index < 32)
+                    Progress = progress | (1u << index);
+                return;
+            }
+
             // checklist updates carry the unit's checklist index
             if (IsChecklist())
             {
@@ -202,11 +237,29 @@ namespace NexusForever.Game.Quest
         /// </summary>
         public void ObjectiveSet(uint value)
         {
+            if (IsKillRewardTargetGroup())
+            {
+                if (value >= ObjectiveInfo.Entry.Count)
+                    Complete();
+                else
+                    Progress = 0u;
+                return;
+            }
+
             Progress = Math.Min(value, GetMaxValue());
         }
 
         public void Complete()
         {
+            if (IsKillRewardTargetGroup())
+            {
+                int targetCount = Math.Min(GetKillRewardTargets().Count, 32);
+                Progress = targetCount == 0
+                    ? ObjectiveInfo.Entry.Count
+                    : targetCount == 32 ? uint.MaxValue : (1u << targetCount) - 1u;
+                return;
+            }
+
             if (IsChecklist())
             {
                 uint bits = progress;

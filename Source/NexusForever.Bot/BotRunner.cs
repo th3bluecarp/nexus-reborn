@@ -407,8 +407,13 @@ internal sealed class BotRunner
             or QuestObjectiveType.Unknown10 or QuestObjectiveType.Unknown28)
             return GetTargetGroupActivateCreatureIds(objective);
         if (objective.Type is QuestObjectiveType.KillTargetGroup or QuestObjectiveType.KillTargetGroups
-            or QuestObjectiveType.TalkToTargetGroup)
-            return RequireGameData().ResolveTargetGroup(RequireGameData().GetObjectiveTargetGroup(objective));
+            or QuestObjectiveType.KillRewardTargetGroup or QuestObjectiveType.TalkToTargetGroup)
+        {
+            uint targetGroupId = objective.Type == QuestObjectiveType.KillRewardTargetGroup
+                ? objective.RewardTargetGroupId
+                : RequireGameData().GetObjectiveTargetGroup(objective);
+            return RequireGameData().ResolveTargetGroup(targetGroupId);
+        }
         if (objective.Type is QuestObjectiveType.TalkTo
             or QuestObjectiveType.KillCreature
             or QuestObjectiveType.KillCreature2
@@ -2633,6 +2638,7 @@ internal sealed class BotRunner
     {
         TimeSpan timeout = objective.Type is QuestObjectiveType.KillCreature
             or QuestObjectiveType.KillCreature2
+            or QuestObjectiveType.KillRewardTargetGroup
             or QuestObjectiveType.KillTargetGroup
             or QuestObjectiveType.KillTargetGroups
             or QuestObjectiveType.GatheResource
@@ -2683,7 +2689,7 @@ internal sealed class BotRunner
     }
 
     /// <summary>
-    /// Seconds budgeted per kill of an objective: 50 for an ordinary creature, more for a tough one (10 s plus the
+    /// Seconds budgeted per kill of an objective: 75 for a creature whose spawn has no health row, more for a tough one (10 s plus the
     /// toughest spawn's health over 60, the bot's observed damage per second at level 17 with a three-slot action set:
     /// 3870 health = 75 s, 4828 = 90 s).
     /// </summary>
@@ -2693,7 +2699,7 @@ internal sealed class BotRunner
             .Select(spawn => spawn.Health)
             .DefaultIfEmpty(0u)
             .Max();
-        return Math.Max(50d, 10d + health / 60d);
+        return Math.Max(75d, 10d + health / 60d);
     }
 
     /// <summary>
@@ -2936,15 +2942,17 @@ internal sealed class BotRunner
         // a start item farmed from a drop source is a named creature fight (A Heart of Stone: Stonefist, a difficulty 5 named
         // with 1.75x stats, killed the bot at con level + 5 twice), so it gets the camp margin as well
         bool camp = StartItem(definition) != 0u || definition.Objectives.Any(objective => objective.Type is QuestObjectiveType.KillCreature
-            or QuestObjectiveType.KillCreature2 or QuestObjectiveType.KillTargetGroup or QuestObjectiveType.KillTargetGroups
+            or QuestObjectiveType.KillCreature2 or QuestObjectiveType.KillRewardTargetGroup
+            or QuestObjectiveType.KillTargetGroup or QuestObjectiveType.KillTargetGroups
             && objective.Count >= 5u);
         // every quest of a zone run fights at con level + 5 (camps + 9): Algoroc's activation quests walk into Dominion camps
         // (Weapons of War's DREDplex) and a con-level bot died there before touching a grenade target
         // zone runs always take the camp margin: Weapons of War's grenade targets stand inside a Dominion camp and a con + 5
-        // bot died there before using one (the zone cap below keeps it at 15 at most)
+        // bot died there before using one. Early-zone quests retain the level-15 floor; later quests must not be
+        // down-levelled below their own con level.
         uint targetLevel = definition.Entry.ConLevel + (options.ZoneId is not null ? 9u : RequiresLevelBoost(definition) ? (camp ? 9u : 5u) : 1u);
         if (options.ZoneId is not null)
-            targetLevel = Math.Min(15u, targetLevel);
+            targetLevel = Math.Max(definition.Entry.ConLevel, Math.Min(15u, targetLevel));
 
         if (targetLevel <= currentLevel)
         {
@@ -2985,6 +2993,7 @@ internal sealed class BotRunner
         => StartItem(definition) != 0u // the start item is farmed from a drop source (A Heart of Stone: a named gronyx)
             || definition.Objectives.Any(objective => objective.Type is QuestObjectiveType.KillCreature
             or QuestObjectiveType.KillCreature2
+            or QuestObjectiveType.KillRewardTargetGroup
             or QuestObjectiveType.KillTargetGroup
             or QuestObjectiveType.KillTargetGroups
             or QuestObjectiveType.CollectItem
@@ -3631,6 +3640,7 @@ internal sealed class BotRunner
                     break;
                 case QuestObjectiveType.KillCreature:
                 case QuestObjectiveType.KillCreature2:
+                case QuestObjectiveType.KillRewardTargetGroup:
                 case QuestObjectiveType.KillTargetGroup:
                 case QuestObjectiveType.KillTargetGroups:
                 case QuestObjectiveType.CollectItem:
@@ -3853,8 +3863,10 @@ internal sealed class BotRunner
                 continue;
             }
             ActivationOutcome outcome = await RunActivationFlowAsync(objective.Index, before, entity, TimeSpan.FromSeconds(8), cancellationToken);
-            if (outcome == ActivationOutcome.Progressed && CanFight(entity.Type) && entity.CreatureId is uint usedCreatureId
-                && RequireGameData().IsAttackableCreature(usedCreatureId) && entities.Get(entity.Guid)?.Health is null or > 0u)
+            if (outcome == ActivationOutcome.Progressed && !IsObjectiveComplete(objective)
+                && CanFight(entity.Type) && entity.CreatureId is uint usedCreatureId
+                && RequireGameData().IsAttackableCreature(usedCreatureId)
+                && (entities.Get(entity.Guid)?.Health is null or > 0u))
             {
                 // a used hostile (Weapons of War: a loftite grenade on a Dominion Sentry) is awake now; finish it before the next
                 // one, six sentries attacking at once killed the bot twice

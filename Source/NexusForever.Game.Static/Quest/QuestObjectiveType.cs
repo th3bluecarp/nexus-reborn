@@ -14,7 +14,7 @@
         SucceedCSI                   = 12, // data = CreatureId, ObjectiveText describes interacting with object after succeeding a ClientSideInteraction event (Count: 1187)
         SpellSuccess2                = 13, // data = Spell4Id, ObjectiveText describes casting spell (Count: 3)
         ActivateTargetGroupChecklist = 14, // data = TargetGroupId, ObjectiveText describes using a creature, Creature casts spell which has an Activate effect, Creature IDs are part of TargetGroup entry (Effect ID 7) (Count: 426)
-        Unknown15                    = 15, // data = unknown, ObjectiveText describes killing a single or number of named creatures (Count: 26)
+        KillRewardTargetGroup        = 15, // reward pane target group names the creatures to kill; Data is unrelated (Count: 26)
         KillTargetGroup              = 16, // data = TargetGroupId, ObjectiveText describes killing creatures, Creature IDs are part of TargetGroup entry (Count: 55)
         EnterZone                    = 17, // data = ZoneId, ObjectiveText describes entering an area (Count: 199)
         TalkToTargetGroup            = 18, // data = TargetGroupId, ObjectiveText describes talking with creatures, Creature IDs are part of TargetGroup entry (Count: 35)
