@@ -70,3 +70,15 @@ INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1300017,0,1578),(130001
 -- once in 14 minutes of waiting for respawns and never saw the stinger. The named monster drops its quest item every time (2026-11-04).
 -- loot.sql reloads reset this row: run this file after it.
 UPDATE `loot_item` SET `probability` = 100 WHERE `id` = 1000524 AND `staticId` = 17621;
+
+-- Unlikely Heroes (4944): the three named recruits in muster target group 1892 have no world-51 spawns.
+-- Placed around the quest's muster marker (WorldLocation2 13911) on the Thayd plaza floor. Area, display, outfit,
+-- faction and stats come from the two Sergeant Renzig phase rows at the same marker (entities 900217/900237);
+-- exact retail positions and recruit appearances are lost. Checklist indices follow their target-group order.
+-- Entity ids 1300019-1300021 (2026-11-11).
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`,`QuestChecklistIdx`) VALUES
+(1300019,0,19197,51,1088,4293.0,-812.75,-2165.0,0,0,0,25836,8981,171,171,1),
+(1300020,0,19199,51,1088,4301.0,-812.75,-2161.0,0,0,0,25836,8981,171,171,2),
+(1300021,0,19201,51,1088,4308.0,-812.75,-2156.0,0,0,0,25836,8981,171,171,3);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES
+(1300019,10,14),(1300019,15,0),(1300020,10,14),(1300020,15,0),(1300021,10,14),(1300021,15,0);

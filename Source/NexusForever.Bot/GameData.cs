@@ -44,6 +44,8 @@ internal sealed record CommunicatorOffer(
     uint MinLevel,
     uint MaxLevel,
     IReadOnlyList<(ushort QuestId, QuestState State)> QuestConditions,
+    uint FactionId,
+    uint ClassId,
     uint PrerequisiteId);
 
 internal sealed record CreatureActivationData(
@@ -963,7 +965,12 @@ internal sealed class BotGameData
     /// </summary>
     public string? PrerequisiteBlockReason(Quest2Entry entry, PrerequisiteContext context)
     {
-        if (entry.PrerequisiteId == 0u)
+        return PrerequisiteBlockReason(entry.PrerequisiteId, context);
+    }
+
+    private string? PrerequisiteBlockReason(uint prerequisiteId, PrerequisiteContext context)
+    {
+        if (prerequisiteId == 0u)
             return null;
         var reasons = new List<string>();
         bool Evaluate(uint prerequisiteId, int depth)
@@ -1013,6 +1020,13 @@ internal sealed class BotGameData
                         if (!met)
                             reasons.Add($"tradeskill tier {objectId} required");
                         break;
+                    case PrerequisiteType.UnderSpell:
+                        // The zone run starts without encounter auras and has no way to seek one out. Quests offered only
+                        // while a spell is active are therefore unavailable, just like tradeskill and public-event quests.
+                        met = (value != 0u || objectId != 0u) && comparison == PrerequisiteComparison.NotEqual;
+                        if (!met)
+                            reasons.Add($"active spell {value} required (prerequisite type 15); the bot has no source for it");
+                        break;
                     case PrerequisiteType.OtherPrerequisite:
                         met = Evaluate(objectId, depth + 1);
                         break;
@@ -1030,9 +1044,9 @@ internal sealed class BotGameData
                 return true;
             return prerequisite.Flags == EvaluationMode.EvaluateOR ? any : all;
         }
-        return Evaluate(entry.PrerequisiteId, 0)
+        return Evaluate(prerequisiteId, 0)
             ? null
-            : $"prerequisite {entry.PrerequisiteId}: {string.Join(" / ", reasons.Distinct())}";
+            : $"prerequisite {prerequisiteId}: {string.Join(" / ", reasons.Distinct())}";
     }
 
     private static bool Compare(uint actual, PrerequisiteComparison comparison, uint value) => comparison switch
@@ -1445,14 +1459,14 @@ internal sealed class BotGameData
         if (options.ZoneId is null)
         {
             if (options.QuestIds.Count == 1 && options.Chain)
-                return GetQuestClosure(options.QuestIds[0], includePrerequisites: true, options.Faction, spawnedGiverCreatureIds);
+                return GetQuestClosure(options.QuestIds[0], includePrerequisites: true, options.Faction, options.Path, spawnedGiverCreatureIds);
 
             Dictionary<ushort, QuestDefinition> requested = options.QuestIds
                 .Select(GetQuest)
                 .ToDictionary(definition => definition.Id);
             Dictionary<ushort, HashSet<ushort>> requestedDependencies = requested.Values.ToDictionary(
                 definition => definition.Id,
-                definition => SelectPrerequisites(definition, options.Faction, spawnedGiverCreatureIds)
+                definition => SelectPrerequisites(definition, options.Faction, options.Path, spawnedGiverCreatureIds)
                     .Select(prerequisite => prerequisite.Id)
                     .Where(requested.ContainsKey)
                     .ToHashSet());
@@ -1481,7 +1495,7 @@ internal sealed class BotGameData
                 throw new BotFailureException($"Quest prerequisite cycle includes quest {definition.Id}.");
 
             definitions.Add(definition.Id, definition);
-            var selected = SelectPrerequisites(definition, options.Faction, spawnedGiverCreatureIds).ToArray();
+            var selected = SelectPrerequisites(definition, options.Faction, options.Path, spawnedGiverCreatureIds).ToArray();
             dependencies[definition.Id] = selected.Select(item => item.Id).ToHashSet();
             foreach (QuestDefinition prerequisite in selected)
                 Gather(prerequisite);
@@ -1499,6 +1513,7 @@ internal sealed class BotGameData
         ushort requestedId,
         bool includePrerequisites,
         BotFaction faction,
+        BotPath path,
         IReadOnlySet<uint> spawnedGiverCreatureIds)
     {
         var definitions = new Dictionary<ushort, QuestDefinition>();
@@ -1514,7 +1529,7 @@ internal sealed class BotGameData
             QuestDefinition definition = GetQuest(id);
             definitions.Add(id, definition);
             QuestDefinition[] selected = includePrerequisites
-                ? SelectPrerequisites(definition, faction, spawnedGiverCreatureIds).ToArray()
+                ? SelectPrerequisites(definition, faction, path, spawnedGiverCreatureIds).ToArray()
                 : [];
             dependencies[id] = selected.Select(prerequisite => prerequisite.Id).ToHashSet();
             if (includePrerequisites)
@@ -1668,6 +1683,10 @@ internal sealed class BotGameData
 
         return communicatorMessages.Entries
             .Where(entry => entry.QuestIdDelivered == questId)
+            // A message conditioned on the delivered quest already being Achieved/Completed is its turn-in call, not an
+            // offer. Self-Unknown remains a real zone-entry offer (A Hidden Threat).
+            .Where(entry => !entry.Quests.Select((id, index) => (Id: id, Index: index))
+                .Any(item => item.Id == questId && (QuestState)entry.States[item.Index] != QuestState.Unknown))
             .Select(entry => new CommunicatorOffer(
                 entry.Id,
                 entry.WorldId,
@@ -1678,9 +1697,153 @@ internal sealed class BotGameData
                     .Where(item => item.Id != 0u)
                     .Select(item => (checked((ushort)item.Id), (QuestState)entry.States[item.Index]))
                     .ToArray(),
+                entry.FactionId,
+                entry.ClassId,
                 entry.PrerequisiteId))
             .OrderBy(entry => entry.Id)
             .ToArray();
+    }
+
+    /// <summary>
+    /// Quest-state conditions every usable communicator offer requires Achieved or Completed. Completing these quests first
+    /// makes the server send the offer; conditions that differ between alternative messages are not mandatory.
+    /// </summary>
+    private IReadOnlyList<ushort> CommunicatorPrerequisiteQuests(
+        QuestDefinition definition,
+        BotFaction faction,
+        BotPath path)
+    {
+        Faction requiredFaction = faction == BotFaction.Exile ? Faction.Exile : Faction.Dominion;
+        uint plannedLevel = definition.Entry.ConLevel + 1u;
+        CommunicatorOffer[] offers = GetCommunicatorOffers(definition.Id)
+            .Where(offer => (offer.FactionId == 0u || offer.FactionId == (uint)requiredFaction)
+                && (offer.ClassId == 0u || offer.ClassId == (uint)BotClass)
+                && (offer.MinLevel == 0u || plannedLevel >= offer.MinLevel)
+                && (offer.MaxLevel == 0u || plannedLevel <= offer.MaxLevel)
+                && CommunicatorPrerequisiteCanApply(offer.PrerequisiteId, requiredFaction, path, plannedLevel))
+            .ToArray();
+        if (offers.Length == 0)
+            return [];
+
+        HashSet<ushort>? requiredByEveryOffer = null;
+        foreach (CommunicatorOffer offer in offers)
+        {
+            HashSet<ushort> required = offer.QuestConditions
+                .Where(condition => condition.QuestId != definition.Id
+                    && condition.State is QuestState.Achieved or QuestState.Completed)
+                .Select(condition => condition.QuestId)
+                .Concat(CommunicatorPrerequisiteQuestIds(offer.PrerequisiteId))
+                .ToHashSet();
+            if (requiredByEveryOffer is null)
+                requiredByEveryOffer = required;
+            else
+                requiredByEveryOffer.IntersectWith(required);
+        }
+
+        return requiredByEveryOffer?.Order().ToArray() ?? [];
+    }
+
+    /// <summary>
+    /// Whether a communicator prerequisite's immutable character checks can apply to this run. Quest-state/objective and
+    /// other dynamic checks remain feasible here; mandatory quest dependencies are extracted separately below.
+    /// </summary>
+    private bool CommunicatorPrerequisiteCanApply(uint prerequisiteId, Faction faction, BotPath path, uint level)
+    {
+        bool? Evaluate(uint id, int depth)
+        {
+            PrerequisiteEntry? prerequisite = prerequisites.GetEntry(id);
+            if (prerequisite is null || depth > 4)
+                return null;
+            var results = new List<bool?>();
+            for (int i = 0; i < prerequisite.PrerequisiteTypeId.Length; i++)
+            {
+                PrerequisiteComparison comparison = prerequisite.PrerequisiteComparisonId[i];
+                uint value = prerequisite.Value[i];
+                bool? met = prerequisite.PrerequisiteTypeId[i] switch
+                {
+                    PrerequisiteType.None                 => null,
+                    PrerequisiteType.Level                => Compare(level, comparison, value),
+                    PrerequisiteType.Class                => Compare((uint)BotClass, comparison, value),
+                    PrerequisiteType.Faction              => Compare((uint)faction, comparison, value),
+                    PrerequisiteType.Path                 => Compare((uint)path, comparison, value),
+                    PrerequisiteType.TradeSkillProfession => Compare(0u, comparison, value),
+                    PrerequisiteType.UnderSpell           => (value != 0u || prerequisite.ObjectId[i] != 0u)
+                        && comparison == PrerequisiteComparison.NotEqual,
+                    PrerequisiteType.PublicEvent117       => false,
+                    PrerequisiteType.OtherPrerequisite    => comparison switch
+                    {
+                        PrerequisiteComparison.Equal    => Evaluate(prerequisite.ObjectId[i], depth + 1),
+                        PrerequisiteComparison.NotEqual => Evaluate(prerequisite.ObjectId[i], depth + 1) is bool child ? !child : null,
+                        _                               => null
+                    },
+                    _                                      => null
+                };
+                if (prerequisite.PrerequisiteTypeId[i] == PrerequisiteType.None)
+                    continue;
+                results.Add(met);
+            }
+            if (results.Count == 0)
+                return null;
+            if (prerequisite.Flags == EvaluationMode.EvaluateOR)
+                return results.Any(result => result == true) ? true
+                    : results.All(result => result == false) ? false : null;
+            return results.Any(result => result == false) ? false
+                : results.All(result => result == true) ? true : null;
+        }
+
+        // Dynamic/unknown checks may become true during play and do not make the message statically unusable.
+        return prerequisiteId == 0u || Evaluate(prerequisiteId, 0) != false;
+    }
+
+    /// <summary>
+    /// Mandatory quest progress inside a communicator message's prerequisite. OR trees are alternative branches and do not
+    /// impose one dependency; AND trees order states that a completed prerequisite quest will satisfy.
+    /// </summary>
+    private IReadOnlyList<ushort> CommunicatorPrerequisiteQuestIds(uint prerequisiteId)
+    {
+        HashSet<ushort> Collect(uint id, int depth)
+        {
+            PrerequisiteEntry? prerequisite = prerequisites.GetEntry(id);
+            if (prerequisite is null || depth > 4)
+                return [];
+            var branches = new List<HashSet<ushort>>();
+            for (int i = 0; i < prerequisite.PrerequisiteTypeId.Length; i++)
+            {
+                uint objectId = prerequisite.ObjectId[i];
+                HashSet<ushort> branch = [];
+                if (prerequisite.PrerequisiteTypeId[i] == PrerequisiteType.OtherPrerequisite
+                    && prerequisite.PrerequisiteComparisonId[i] == PrerequisiteComparison.Equal)
+                {
+                    if (objectId != 0u)
+                        branch = Collect(objectId, depth + 1);
+                }
+                else if (objectId != 0u && objectId <= ushort.MaxValue
+                    && prerequisite.PrerequisiteTypeId[i] == PrerequisiteType.QuestState
+                    && (prerequisite.PrerequisiteComparisonId[i] == PrerequisiteComparison.Equal
+                            && prerequisite.Value[i] is (uint)QuestState.Achieved or (uint)QuestState.Completed
+                        || prerequisite.PrerequisiteComparisonId[i] == PrerequisiteComparison.NotEqual
+                            && prerequisite.Value[i] == (uint)QuestState.Unknown))
+                    branch.Add((ushort)objectId);
+                else if (objectId != 0u && objectId <= ushort.MaxValue
+                    && prerequisite.PrerequisiteTypeId[i] == PrerequisiteType.QuestObjective)
+                    branch.Add((ushort)objectId);
+
+                if (prerequisite.PrerequisiteTypeId[i] != PrerequisiteType.None)
+                    branches.Add(branch);
+            }
+
+            if (branches.Count == 0)
+                return [];
+            if (prerequisite.Flags == EvaluationMode.EvaluateAND)
+                return branches.SelectMany(branch => branch).ToHashSet();
+
+            HashSet<ushort> common = new(branches[0]);
+            foreach (HashSet<ushort> branch in branches.Skip(1))
+                common.IntersectWith(branch);
+            return common;
+        }
+
+        return prerequisiteId == 0u ? [] : Collect(prerequisiteId, 0).Order().ToArray();
     }
 
     public CreatureActivationData GetCreatureActivationData(uint creatureId)
@@ -1753,6 +1916,7 @@ internal sealed class BotGameData
     private IEnumerable<QuestDefinition> SelectPrerequisites(
         QuestDefinition definition,
         BotFaction faction,
+        BotPath path,
         IReadOnlySet<uint> spawnedGiverCreatureIds)
     {
         QuestDefinition[] candidates = definition.Entry.PrerequisiteQuests
@@ -1764,6 +1928,7 @@ internal sealed class BotGameData
         // Closing the Circuit is at least accepted; this bot completes a prerequisite, which satisfies "accepted or later")
         QuestDefinition[] stateRequired = QuestStatePrerequisiteQuests(definition.Entry)
             .Concat(definition.GiverCreatureIds.SelectMany(GiverVisibilityPrerequisiteQuests))
+            .Concat(CommunicatorPrerequisiteQuests(definition, faction, path))
             .Where(id => id != definition.Id && quests.GetEntry(id) is not null && candidates.All(candidate => candidate.Id != id))
             .Distinct()
             .Select(GetQuest)

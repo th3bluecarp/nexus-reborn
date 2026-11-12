@@ -918,6 +918,12 @@ namespace NexusForever.Game.Entity
                 .Where(s => s != 0u)
                 .SelectMany(s => activateSpellQuests.GetOrAdd(s, id => GameTableManager.Instance.Spell4Effects.Entries
                     .Where(e => e.SpellId == id && e.EffectType == SpellEffectType.QuestAdvanceObjective)
+                    // Suppress the generic activation fallback only when the spell handler can really apply this effect.
+                    // Some retail rows point at a missing objective and otherwise swallow the only usable quest credit.
+                    .Where(e => e.DataBits00 <= ushort.MaxValue
+                        && GameTableManager.Instance.Quest2.GetEntry(e.DataBits00) is Quest2Entry quest
+                        && e.DataBits01 < (uint)quest.Objectives.Length
+                        && quest.Objectives[e.DataBits01] != 0u)
                     .Select(e => (ushort)e.DataBits00)
                     .ToArray()))
                 .Distinct();

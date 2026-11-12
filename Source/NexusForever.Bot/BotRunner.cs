@@ -3563,7 +3563,7 @@ internal sealed class BotRunner
         string questConditions = offer.QuestConditions.Count == 0
             ? "none"
             : string.Join(",", offer.QuestConditions.Select(item => $"{item.QuestId}:{item.State}"));
-        return $"communicator={offer.Id}; entryWorld={offer.WorldId}; currentWorld={questWorldId}; levels=[{offer.MinLevel},{offer.MaxLevel}]; questStates=[{questConditions}]; prerequisite={offer.PrerequisiteId}";
+        return $"communicator={offer.Id}; entryWorld={offer.WorldId}; currentWorld={questWorldId}; levels=[{offer.MinLevel},{offer.MaxLevel}]; questStates=[{questConditions}]; faction={offer.FactionId}; class={offer.ClassId}; prerequisite={offer.PrerequisiteId}";
     }
 
     private async Task<string> RunObjectiveAsync(QuestObjectiveDefinition objective, CancellationToken cancellationToken)

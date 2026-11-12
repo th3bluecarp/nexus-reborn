@@ -178,7 +178,7 @@ internal static class QuestInfo
         string questConditions = offer.QuestConditions.Count == 0
             ? "none"
             : string.Join(",", offer.QuestConditions.Select(item => $"{item.QuestId}:{item.State}"));
-        return $"id={offer.Id} world={offer.WorldId} zone={offer.WorldZoneId} levels=[{offer.MinLevel},{offer.MaxLevel}] questStates=[{questConditions}] prerequisite={offer.PrerequisiteId}";
+        return $"id={offer.Id} world={offer.WorldId} zone={offer.WorldZoneId} levels=[{offer.MinLevel},{offer.MaxLevel}] questStates=[{questConditions}] faction={offer.FactionId} class={offer.ClassId} prerequisite={offer.PrerequisiteId}";
     }
 
     private static void PrintPathMissions(BotGameData gameData, uint zoneId)

@@ -674,12 +674,12 @@ namespace NexusForever.Game.Quest
             player.VisibilityUpdate();
 
             if (RequiredObjectivesComplete())
-                CompleteOptionalObjectives();
-
-            if (objectives.All(o => o.IsComplete()))
             {
                 if (State == QuestState.Accepted)
+                {
+                    CompleteOptionalObjectives();
                     State = QuestState.Achieved;
+                }
             }
             else if (State == QuestState.Achieved)
                 State = QuestState.Accepted;
@@ -765,12 +765,11 @@ namespace NexusForever.Game.Quest
 
             player.VisibilityUpdate();
 
-            // TODO: Should you be able to complete optional objectives after required are completed?
             if (RequiredObjectivesComplete())
+            {
                 CompleteOptionalObjectives();
-
-            if (objectives.All(o => o.IsComplete()))
                 State = QuestState.Achieved;
+            }
         }
 
         /// <summary>
@@ -804,12 +803,11 @@ namespace NexusForever.Game.Quest
 
             player.VisibilityUpdate();
 
-            // TODO: Should you be able to complete optional objectives after required are completed?
             if (RequiredObjectivesComplete())
+            {
                 CompleteOptionalObjectives();
-
-            if (objectives.All(o => o.IsComplete()))
                 State = QuestState.Achieved;
+            }
         }
 
         private bool CanUpdateObjective(IQuestObjective objective)
