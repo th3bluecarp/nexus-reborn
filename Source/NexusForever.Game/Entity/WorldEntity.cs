@@ -1002,8 +1002,10 @@ namespace NexusForever.Game.Entity
                             if (objective.ObjectiveInfo.Data == creatureId || (targetGroups.Contains(objective.ObjectiveInfo.Data)
                                 && GameTableManager.Instance.Creature2.GetEntry(objective.ObjectiveInfo.Data) == null))
                                 matches = true;
+                            // judged on the raw table Data: QuestObjectiveInfo swaps in the creature named in the text, which made the Tempest
+                            // Refuge residents (raw Data 28755 is a spell, text names creature 20404) stop counting through their reward pane group
                             if (objective.ObjectiveInfo.Type == QuestObjectiveType.ActivateEntity && (objective.ObjectiveInfo.Data == 0u || objective.ObjectiveInfo.Data == entry.TargetGroupIdRewardPane
-                                    || (GameTableManager.Instance.Creature2.GetEntry(objective.ObjectiveInfo.Data) == null && GameTableManager.Instance.TargetGroup.GetEntry(objective.ObjectiveInfo.Data) == null))
+                                    || (GameTableManager.Instance.Creature2.GetEntry(entry.Data) == null && GameTableManager.Instance.TargetGroup.GetEntry(entry.Data) == null))
                                 && targetGroups.Contains(entry.TargetGroupIdRewardPane))
                                 matches = true;
                             break;

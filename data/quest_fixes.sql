@@ -123,3 +123,10 @@ INSERT INTO `loot_item` (`id`,`type`,`staticId`,`probability`,`minCount`,`maxCou
 (1000773,0,12299,100,1,1,'Book of Blood quest starter'),
 (1000774,0,12299,100,1,1,'Book of Blood quest starter'),
 (1000775,0,12299,100,1,1,'Book of Blood quest starter');
+
+-- Motherly Love (4975): the batch 2 starter drop sat on Ravenok (18821/18822) and Elder Ravenok, which have no world spawns, so the
+-- item hunt had no source. The Thrashwind Hunters (17900, level 15-18) roam about 55 m from the Hidden Hills Ravenok nests of the quest's
+-- first objective and are seen there in every run; they now carry the same 100% starter group (4000003, from batch 2). Approximation:
+-- the retail source of the item is not archived (2026-11-12).
+INSERT INTO `entity_loot` (`Id`,`lootGroupId`,`comment`) VALUES
+(17900,4000003,'Thrashwind Hunter near the Hidden Hills Ravenok nests');

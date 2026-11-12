@@ -606,6 +606,9 @@ internal sealed class BotRunner
                     log.Info($"progress report write failed: {exception.Message}");
                 }
             }
+            // a quest a CompleteQuest objective already played inside its parent (Last-Second Support) has its report
+            if (finishedQuests.Contains(definition.Id) && report.Quests.Any(item => item.QuestId == definition.Id))
+                continue;
             if (botDied)
             {
                 // a dead character cannot accept or fight: try the resurrection once more, else stop the run honestly
@@ -2362,6 +2365,20 @@ internal sealed class BotRunner
 
     private ushort? GetMissingPrerequisite(QuestDefinition definition)
     {
+        if (GetMissingQuestPrerequisite(definition) is ushort missing)
+            return missing;
+
+        // a quest offered by a communicator call (Sabotage 4756 and Double Trouble 4961 after Aggressive Reconnaissance 4755) has
+        // that call's quest-state conditions as prerequisites too: the server only sends the call and shows Kara's offer once the
+        // earlier quest is done, so one this run failed leaves no way to accept (reported as a false "accept not confirmed")
+        return RequireGameData().GetCommunicatorPrerequisiteQuests(definition, options.Faction, options.Path)
+            .Where(id => !completedQuests.Contains(id) && report.Quests.Any(item => item.QuestId == id && item.Result is "FAIL"))
+            .Select(id => (ushort?)id)
+            .FirstOrDefault();
+    }
+
+    private ushort? GetMissingQuestPrerequisite(QuestDefinition definition)
+    {
         ushort[] prerequisites = definition.Entry.PrerequisiteQuests
             .Where(value => value != 0u)
             .Select(value => checked((ushort)value))
@@ -2679,6 +2696,14 @@ internal sealed class BotRunner
             // a used unit comes back on the respawn timer; the activation flow waits for it twice (35 s each)
             if (objective.Type == QuestObjectiveType.ActivateEntity && timeout < TimeSpan.FromSeconds(150))
                 timeout = TimeSpan.FromSeconds(150);
+        }
+        if (objective.Type == QuestObjectiveType.CompleteQuest && objective.Data is > 0u and <= ushort.MaxValue)
+        {
+            // the objective plays the named quest end to end
+            QuestDefinition subQuest = questDefinitions.GetValueOrDefault((ushort)objective.Data) ?? RequireGameData().GetQuest((ushort)objective.Data);
+            timeout = TimeSpan.FromSeconds(Math.Max(timeout.TotalSeconds,
+                subQuest.Objectives.Where(sub => (sub.Flags & 0x20u) == 0u && sub.Type != QuestObjectiveType.CompleteQuest)
+                    .Sum(sub => ObjectiveTimeout(sub, worldId).TotalSeconds) + DefaultStepTimeout.TotalSeconds * 3d + 60d));
         }
         if (IsTargetlessHoldObjective(objective))
             timeout = TimeSpan.FromSeconds(Math.Max(timeout.TotalSeconds,
@@ -3119,8 +3144,11 @@ internal sealed class BotRunner
 
             // a zone run already fights at the zone cap (15): the retry after a death comes back three levels stronger, as a
             // player who died to a named or a camp would (Algoroc's eleventh pass: 12 quests lost to a second death at 15)
+            // the zone cap follows the fight: a camp of level 18-19 elites (Darkspur Payback) killed a level 18 bot twice and the
+            // fixed cap of 18 left the retry no stronger, so the cap is at least three levels over the objective\x27s toughest creature
+            uint retryCap = Math.Max(ZoneDeathRetryLevelCap, RequireGameData().MaxCreatureLevel(GetObjectiveCreatureIds(objective)) + 3u);
             uint targetLevel = options.ZoneId is not null
-                ? Math.Min(ZoneDeathRetryLevelCap, Math.Max(definition.Entry.ConLevel + 7u, currentLevel + 3u))
+                ? Math.Min(retryCap, Math.Max(definition.Entry.ConLevel + 7u, currentLevel + 3u))
                 : definition.Entry.ConLevel + 7u;
             if (targetLevel > currentLevel)
             {
@@ -3656,6 +3684,9 @@ internal sealed class BotRunner
                     break;
                 case QuestObjectiveType.CompleteEvent:
                     await RunCompleteEventObjectiveAsync(objective, cancellationToken);
+                    break;
+                case QuestObjectiveType.CompleteQuest:
+                    await RunCompleteQuestObjectiveAsync(objective, cancellationToken);
                     break;
                 default:
                     throw new BotFailureException($"unsupported objective type {objective.Type}({(uint)objective.Type})");
@@ -4722,22 +4753,26 @@ internal sealed class BotRunner
     /// <summary>
     /// Delete looted items the current quest does not need so a turn in with item rewards has bag room.
     /// </summary>
-    private async Task<int> FreeBagSpaceAsync(QuestDefinition definition, CancellationToken cancellationToken)
+    private async Task<int> FreeBagSpaceAsync(QuestDefinition definition, CancellationToken cancellationToken, bool includeRewards = false)
     {
         var keep = new HashSet<uint>(definition.Objectives.Select(objective => objective.Data));
         keep.UnionWith(definition.Entry.PushedItemIds.Where(id => id != 0u));
         if (definition.Entry.PrerequisiteItem != 0u)
             keep.Add(definition.Entry.PrerequisiteItem);
-        return await FreeLootedJunkAsync(keep, $"quest {definition.Id}", cancellationToken);
+        return await FreeLootedJunkAsync(keep, $"quest {definition.Id}", cancellationToken, includeRewards);
     }
 
     /// <summary>
     /// Deletes looted items that are not in <paramref name="keep"/>, as a player clears quest loot from full bags.
     /// </summary>
-    private async Task<int> FreeLootedJunkAsync(IReadOnlySet<uint> keep, string why, CancellationToken cancellationToken)
+    private async Task<int> FreeLootedJunkAsync(IReadOnlySet<uint> keep, string why, CancellationToken cancellationToken, bool includeRewards = false)
     {
+        // includeRewards: bags that are full of earlier quest rewards (Delectable Drumsticks, 70 quests in) hold no looted junk; clear
+        // a few of them the way a player vendors gear, never the items this quest needs
         InventoryItemInfo[] junk = inventory.Values
-            .Where(item => item.Location == InventoryLocation.Inventory && lootedItemIds.Contains(item.ItemId) && !keep.Contains(item.ItemId))
+            .Where(item => item.Location == InventoryLocation.Inventory && (includeRewards || lootedItemIds.Contains(item.ItemId)) && !keep.Contains(item.ItemId))
+            .OrderByDescending(item => item.BagIndex)
+            .Take(includeRewards ? 6 : int.MaxValue)
             .ToArray();
         foreach (InventoryItemInfo item in junk)
         {
@@ -5349,6 +5384,46 @@ internal sealed class BotRunner
     /// CompleteEvent: the server holds the objective's place for its EventFallbackTime (20 s) when the public event cannot run
     /// here, so stand at the objective's indicator; a running event would need the event itself to be won.
     /// </summary>
+    /// <summary>
+    /// Type 24 (Last-Second Support): the objective's Data is another quest that must be turned in while this one is accepted.
+    /// The bot plays that quest to completion right here, then restores this quest's state.
+    /// </summary>
+    private async Task RunCompleteQuestObjectiveAsync(QuestObjectiveDefinition objective, CancellationToken cancellationToken)
+    {
+        if (objective.Data == 0u || objective.Data > ushort.MaxValue)
+            throw new BotFailureException($"CompleteQuest objective {objective.Index} names no usable quest (data {objective.Data})");
+        ushort subQuestId = (ushort)objective.Data;
+        QuestDefinition parent = RequireQuest();
+        QuestRunReport? parentReport = currentQuestReport;
+        if (!completedQuests.Contains(subQuestId))
+        {
+            QuestDefinition sub = questDefinitions.GetValueOrDefault(subQuestId) ?? RequireGameData().GetQuest(subQuestId);
+            log.Info($"quest {parent.Id} objective {objective.Index}: playing quest {subQuestId} ({sub.Title}) to completion");
+            try
+            {
+                await RunQuestAsync(sub, cancellationToken);
+            }
+            finally
+            {
+                finishedQuests.Add(subQuestId);
+                if (currentQuestReport is not null)
+                    currentQuestReport.EndTimestamp = DateTimeOffset.UtcNow;
+                currentQuestReport = parentReport;
+            }
+            if (!completedQuests.Contains(subQuestId))
+                throw new BotFailureException($"quest {subQuestId} did not reach Completed for CompleteQuest objective {objective.Index}");
+            ConfigureQuest(parent);
+            activeObjective = objective;
+        }
+
+        DateTimeOffset deadline = DateTimeOffset.UtcNow + TimeSpan.FromSeconds(10);
+        while (!IsObjectiveComplete(objective) && DateTimeOffset.UtcNow < deadline)
+            if (await TryReadWorldPacketAsync(deadline - DateTimeOffset.UtcNow, cancellationToken) is null)
+                break;
+        if (!IsObjectiveComplete(objective))
+            throw new BotFailureException($"quest {subQuestId} is completed but the server gave no progress on objective {objective.Index} of quest {parent.Id}");
+    }
+
     private async Task RunCompleteEventObjectiveAsync(QuestObjectiveDefinition objective, CancellationToken cancellationToken)
     {
         uint before = GetRawProgress(objective.Index);
@@ -5502,6 +5577,8 @@ internal sealed class BotRunner
                     if (lastGenericError != GenericError.ItemInventoryFull || attempt > 0)
                         return false;
                     int freed = await FreeBagSpaceAsync(definition, token);
+                    if (freed == 0)
+                        freed = await FreeBagSpaceAsync(definition, token, includeRewards: true);
                     questNpcAttemptDetails.Add($"turn in refused with ItemInventoryFull; deleted {freed} looted item(s) and retried");
                     if (freed == 0)
                         return false;

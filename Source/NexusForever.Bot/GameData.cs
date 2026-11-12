@@ -1402,6 +1402,10 @@ internal sealed class BotGameData
         return null;
     }
 
+    /// <summary>The highest MaxLevel among the creatures (0 for none), the level their fight is scaled to.</summary>
+    public uint MaxCreatureLevel(IEnumerable<uint> creatureIds)
+        => creatureIds.Select(id => creatures.GetEntry(id)?.MaxLevel ?? 0u).DefaultIfEmpty(0u).Max();
+
     /// <summary>A creature the bot fights: hostile to the bot and not a usable object (faction 219 or an activation spell).</summary>
     public bool IsAttackableCreature(uint creatureId)
     {
@@ -1704,6 +1708,9 @@ internal sealed class BotGameData
             .ToArray();
     }
 
+    public IReadOnlyList<ushort> GetCommunicatorPrerequisiteQuests(QuestDefinition definition, BotFaction faction, BotPath path)
+        => CommunicatorPrerequisiteQuests(definition, faction, path);
+
     /// <summary>
     /// Quest-state conditions every usable communicator offer requires Achieved or Completed. Completing these quests first
     /// makes the server send the offer; conditions that differ between alternative messages are not mandatory.
@@ -1995,6 +2002,23 @@ internal sealed class BotGameData
                     continue;
 
                 dependencies[endingQuestId].Add(definition.Id);
+            }
+        }
+
+        // a CompleteQuest objective (type 24) is credited when the named quest is turned in while the owner is accepted:
+        // the named quest follows its owner (Last-Second Support 4759 owns Defend the Gate 4954, Power Restoration 4955 and
+        // Anti-Air Support 4761); the bot plays them inside the owner's objective
+        foreach (QuestDefinition definition in definitions.Values)
+        {
+            foreach (QuestObjectiveDefinition objective in definition.Objectives)
+            {
+                if (objective.Type != QuestObjectiveType.CompleteQuest
+                    || objective.Data == 0u || objective.Data > ushort.MaxValue
+                    || objective.Data == definition.Id
+                    || !definitions.ContainsKey((ushort)objective.Data)
+                    || DependsOn(definition.Id, (ushort)objective.Data, []))
+                    continue;
+                dependencies[(ushort)objective.Data].Add(definition.Id);
             }
         }
     }
