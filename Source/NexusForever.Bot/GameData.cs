@@ -190,6 +190,7 @@ internal sealed class BotGameData
     private readonly GameTable<CommunicatorMessagesEntry>? communicatorMessages;
     private readonly TextTable english;
     private readonly Dictionary<ushort, PrerequisiteBranchChoice> prerequisiteBranchChoices = [];
+    private readonly List<string> orderEdgeRefusals = [];
     private readonly Lazy<Dictionary<uint, uint[]>> infrastructureCreaturesByActivateSpell;
 
     private const uint GenericActivateSpell = 1817u;
@@ -1460,6 +1461,7 @@ internal sealed class BotGameData
     public IReadOnlyList<QuestDefinition> GetRunPlan(RunOptions options, IReadOnlySet<uint> spawnedGiverCreatureIds)
     {
         prerequisiteBranchChoices.Clear();
+        orderEdgeRefusals.Clear();
         if (options.ZoneId is null)
         {
             if (options.QuestIds.Count == 1 && options.Chain)
@@ -1468,14 +1470,13 @@ internal sealed class BotGameData
             Dictionary<ushort, QuestDefinition> requested = options.QuestIds
                 .Select(GetQuest)
                 .ToDictionary(definition => definition.Id);
-            Dictionary<ushort, HashSet<ushort>> requestedDependencies = requested.Values.ToDictionary(
-                definition => definition.Id,
-                definition => SelectPrerequisites(definition, options.Faction, options.Path, spawnedGiverCreatureIds)
-                    .Select(prerequisite => prerequisite.Id)
-                    .Where(requested.ContainsKey)
-                    .ToHashSet());
-            AddGiverVisibilityOrderConstraints(requested, requestedDependencies);
-            return TopologicalOrder(requested, requestedDependencies);
+            var requestedGraph = new QuestOrderGraph(requested, orderEdgeRefusals);
+            requestedGraph.AddOrderEdges(requested.Values
+                .SelectMany(definition => SelectPrerequisites(definition, options.Faction, options.Path, spawnedGiverCreatureIds)
+                    .Where(prerequisite => requested.ContainsKey(prerequisite.Quest.Id))
+                    .Select(prerequisite => (definition.Id, prerequisite.Quest.Id, prerequisite.Rule))));
+            AddGiverVisibilityOrderConstraints(requestedGraph);
+            return requestedGraph.TopologicalOrder();
         }
 
         // a zone's quests sit in its sub zones (Algoroc 13 has 5 child zones and 25 grandchildren; only 57 of its quests name 13)
@@ -1488,29 +1489,25 @@ internal sealed class BotGameData
             throw new BotFailureException($"No {options.Faction} quests were found in zone {options.ZoneId}.");
 
         var definitions = new Dictionary<ushort, QuestDefinition>();
-        var dependencies = new Dictionary<ushort, HashSet<ushort>>();
-        var gathering = new HashSet<ushort>();
+        var edges = new List<(ushort Quest, ushort Dependency, QuestOrderRule Rule)>();
 
         void Gather(QuestDefinition definition)
         {
-            if (definitions.ContainsKey(definition.Id))
+            if (!definitions.TryAdd(definition.Id, definition))
                 return;
-            if (!gathering.Add(definition.Id))
-                throw new BotFailureException($"Quest prerequisite cycle includes quest {definition.Id}.");
-
-            definitions.Add(definition.Id, definition);
             var selected = SelectPrerequisites(definition, options.Faction, options.Path, spawnedGiverCreatureIds).ToArray();
-            dependencies[definition.Id] = selected.Select(item => item.Id).ToHashSet();
-            foreach (QuestDefinition prerequisite in selected)
+            edges.AddRange(selected.Select(item => (definition.Id, item.Quest.Id, item.Rule)));
+            foreach ((QuestDefinition prerequisite, _) in selected)
                 Gather(prerequisite);
-            gathering.Remove(definition.Id);
         }
 
         foreach (QuestDefinition root in roots)
             Gather(root);
 
-        AddGiverVisibilityOrderConstraints(definitions, dependencies);
-        return TopologicalOrder(definitions, dependencies);
+        var graph = new QuestOrderGraph(definitions, orderEdgeRefusals);
+        graph.AddOrderEdges(edges);
+        AddGiverVisibilityOrderConstraints(graph);
+        return graph.TopologicalOrder();
     }
 
     public IReadOnlyList<QuestDefinition> GetQuestClosure(
@@ -1521,33 +1518,34 @@ internal sealed class BotGameData
         IReadOnlySet<uint> spawnedGiverCreatureIds)
     {
         var definitions = new Dictionary<ushort, QuestDefinition>();
-        var dependencies = new Dictionary<ushort, HashSet<ushort>>();
-        var gathering = new HashSet<ushort>();
+        var edges = new List<(ushort Quest, ushort Dependency, QuestOrderRule Rule)>();
         void Gather(ushort id)
         {
             if (definitions.ContainsKey(id))
                 return;
-            if (!gathering.Add(id))
-                throw new BotFailureException($"Quest prerequisite cycle includes quest {id}.");
 
             QuestDefinition definition = GetQuest(id);
             definitions.Add(id, definition);
-            QuestDefinition[] selected = includePrerequisites
-                ? SelectPrerequisites(definition, faction, path, spawnedGiverCreatureIds).ToArray()
-                : [];
-            dependencies[id] = selected.Select(prerequisite => prerequisite.Id).ToHashSet();
-            if (includePrerequisites)
-            {
-                foreach (QuestDefinition prerequisite in selected)
-                    Gather(prerequisite.Id);
-            }
-            gathering.Remove(id);
+            if (!includePrerequisites)
+                return;
+            var selected = SelectPrerequisites(definition, faction, path, spawnedGiverCreatureIds).ToArray();
+            edges.AddRange(selected.Select(item => (id, item.Quest.Id, item.Rule)));
+            foreach ((QuestDefinition prerequisite, _) in selected)
+                Gather(prerequisite.Id);
         }
 
         Gather(requestedId);
-        AddGiverVisibilityOrderConstraints(definitions, dependencies);
-        return TopologicalOrder(definitions, dependencies);
+        var graph = new QuestOrderGraph(definitions, orderEdgeRefusals);
+        graph.AddOrderEdges(edges);
+        AddGiverVisibilityOrderConstraints(graph);
+        return graph.TopologicalOrder();
     }
+
+    /// <summary>
+    /// Ordering edges the last plan refused because each would have closed a cycle, with the rule that proposed it and the
+    /// existing path it would have closed. The run logs them; a refused edge is a table-data conflict, not a bot failure.
+    /// </summary>
+    public IReadOnlyList<string> OrderEdgeRefusals => orderEdgeRefusals;
 
     public IReadOnlyList<uint> ResolveTargetGroup(uint id)
     {
@@ -1920,7 +1918,7 @@ internal sealed class BotGameData
     private static GameTable<T> Load<T>(string directory, string name) where T : class, new()
         => new(RequiredPath(directory, name));
 
-    private IEnumerable<QuestDefinition> SelectPrerequisites(
+    private IEnumerable<(QuestDefinition Quest, QuestOrderRule Rule)> SelectPrerequisites(
         QuestDefinition definition,
         BotFaction faction,
         BotPath path,
@@ -1933,17 +1931,20 @@ internal sealed class BotGameData
         // quests the Prerequisite table requires completed are prerequisites too (Algoroc chains use it instead of PrerequisiteQuests),
         // and so are quests a giver's visibility prerequisite needs done (Belle Walker of Power Struggle stays hidden until
         // Closing the Circuit is at least accepted; this bot completes a prerequisite, which satisfies "accepted or later")
-        QuestDefinition[] stateRequired = QuestStatePrerequisiteQuests(definition.Entry)
-            .Concat(definition.GiverCreatureIds.SelectMany(GiverVisibilityPrerequisiteQuests))
-            .Concat(CommunicatorPrerequisiteQuests(definition, faction, path))
-            .Where(id => id != definition.Id && quests.GetEntry(id) is not null && candidates.All(candidate => candidate.Id != id))
-            .Distinct()
-            .Select(GetQuest)
+        (QuestDefinition Quest, QuestOrderRule Rule)[] stateRequired = QuestStatePrerequisiteQuests(definition.Entry)
+                .Select(id => (Id: id, Rule: QuestOrderRule.QuestStatePrerequisite))
+            .Concat(definition.GiverCreatureIds.SelectMany(GiverVisibilityPrerequisiteQuests)
+                .Select(id => (Id: id, Rule: QuestOrderRule.GiverVisibilityPrerequisite)))
+            .Concat(CommunicatorPrerequisiteQuests(definition, faction, path)
+                .Select(id => (Id: id, Rule: QuestOrderRule.CommunicatorPrerequisite)))
+            .Where(item => item.Id != definition.Id && quests.GetEntry(item.Id) is not null && candidates.All(candidate => candidate.Id != item.Id))
+            .DistinctBy(item => item.Id)
+            .Select(item => (GetQuest(item.Id), item.Rule))
             .ToArray();
         if (candidates.Length == 0)
             return stateRequired;
         if ((definition.Entry.PrerequisiteFlags & 1u) == 0u)
-            return candidates.Concat(stateRequired).ToArray();
+            return candidates.Select(candidate => (candidate, QuestOrderRule.Quest2Prerequisite)).Concat(stateRequired).ToArray();
 
         QuestDefinition[] compatible = candidates.Where(candidate => MatchesFaction(candidate.Entry, faction)).ToArray();
         QuestDefinition selected = (compatible.Length > 0 ? compatible : candidates)
@@ -1959,7 +1960,7 @@ internal sealed class BotGameData
             selected.Title,
             hasSpawn,
             hasCommunicator);
-        return [selected];
+        return [(selected, QuestOrderRule.Quest2Prerequisite)];
     }
 
     private bool HasAvailableGiver(QuestDefinition definition, IReadOnlySet<uint> spawnedGiverCreatureIds)
@@ -1970,20 +1971,12 @@ internal sealed class BotGameData
     /// Order a quest before the quest that phases out its only table-listed giver. Spilling Lifeblood (6964), for
     /// example, is available from Alchemist Polovic's earlier creature row while Horizon (6959) is untouched; accepting
     /// Horizon swaps in the later row at the same location. This is an offer-window constraint, not a quest prerequisite.
+    /// Both soft rules here go through <see cref="QuestOrderGraph.AddOrderEdge"/>, which refuses (and records) any edge
+    /// that would close a cycle with the prerequisite edges already in the graph.
     /// </summary>
-    private void AddGiverVisibilityOrderConstraints(
-        IReadOnlyDictionary<ushort, QuestDefinition> definitions,
-        IReadOnlyDictionary<ushort, HashSet<ushort>> dependencies)
+    private void AddGiverVisibilityOrderConstraints(QuestOrderGraph graph)
     {
-        bool DependsOn(ushort questId, ushort possibleDependency, HashSet<ushort> visited)
-        {
-            if (!visited.Add(questId) || !dependencies.TryGetValue(questId, out HashSet<ushort>? direct))
-                return false;
-            return direct.Contains(possibleDependency)
-                || direct.Any(dependency => DependsOn(dependency, possibleDependency, visited));
-        }
-
-        foreach (QuestDefinition definition in definitions.Values)
+        foreach (QuestDefinition definition in graph.Definitions.Values)
         {
             if (definition.GiverCreatureIds.Count != 1
                 || definition.Entry.PrerequisiteItem != 0u
@@ -1994,55 +1987,28 @@ internal sealed class BotGameData
             uint giverId = definition.GiverCreatureIds[0];
             foreach (ushort endingQuestId in GiverVisibilityEndingQuests(giverId))
             {
-                if (endingQuestId == definition.Id
-                    || !definitions.ContainsKey(endingQuestId)
-                    // If the offered quest needs the phase-changing quest first, the table describes no usable early
-                    // offer window; do not turn that data problem into a dependency cycle.
-                    || DependsOn(definition.Id, endingQuestId, []))
-                    continue;
-
-                dependencies[endingQuestId].Add(definition.Id);
+                // If the offered quest needs the phase-changing quest first, the table describes no usable early offer
+                // window; AddOrderEdge refuses that edge instead of turning the data problem into a dependency cycle.
+                if (endingQuestId != definition.Id && graph.Definitions.ContainsKey(endingQuestId))
+                    graph.AddOrderEdge(endingQuestId, definition.Id, QuestOrderRule.GiverVisibilityEnding);
             }
         }
 
         // a CompleteQuest objective (type 24) is credited when the named quest is turned in while the owner is accepted:
         // the named quest follows its owner (Last-Second Support 4759 owns Defend the Gate 4954, Power Restoration 4955 and
         // Anti-Air Support 4761); the bot plays them inside the owner's objective
-        foreach (QuestDefinition definition in definitions.Values)
+        foreach (QuestDefinition definition in graph.Definitions.Values)
         {
             foreach (QuestObjectiveDefinition objective in definition.Objectives)
             {
                 if (objective.Type != QuestObjectiveType.CompleteQuest
                     || objective.Data == 0u || objective.Data > ushort.MaxValue
                     || objective.Data == definition.Id
-                    || !definitions.ContainsKey((ushort)objective.Data)
-                    || DependsOn(definition.Id, (ushort)objective.Data, []))
+                    || !graph.Definitions.ContainsKey((ushort)objective.Data))
                     continue;
-                dependencies[(ushort)objective.Data].Add(definition.Id);
+                graph.AddOrderEdge((ushort)objective.Data, definition.Id, QuestOrderRule.CompleteQuestOwner);
             }
         }
-    }
-
-    private static IReadOnlyList<QuestDefinition> TopologicalOrder(
-        IReadOnlyDictionary<ushort, QuestDefinition> definitions,
-        IReadOnlyDictionary<ushort, HashSet<ushort>> dependencies)
-    {
-        var remaining = definitions.Keys.ToHashSet();
-        var result = new List<QuestDefinition>(remaining.Count);
-        while (remaining.Count > 0)
-        {
-            QuestDefinition? next = remaining
-                .Where(id => dependencies[id].All(dependency => !remaining.Contains(dependency)))
-                .Select(id => definitions[id])
-                .OrderBy(definition => definition.Entry.ConLevel)
-                .ThenBy(definition => definition.Id)
-                .FirstOrDefault();
-            if (next is null)
-                throw new BotFailureException("Quest prerequisite graph contains a cycle.");
-            remaining.Remove(next.Id);
-            result.Add(next);
-        }
-        return result;
     }
 
     private static bool MatchesFaction(Quest2Entry entry, BotFaction faction)
@@ -2093,3 +2059,141 @@ internal sealed class BotGameData
 
 /// <summary>An equipment slot of the bot's class with the Item2Type worn there.</summary>
 internal sealed record GearSlot(uint ItemType, EquippedItem Slot, string Kind);
+
+/// <summary>Why a quest is ordered after another. Declaration order is priority: earlier rules are added first and win.</summary>
+internal enum QuestOrderRule
+{
+    /// <summary>Quest2.PrerequisiteQuests (the real table prerequisite).</summary>
+    Quest2Prerequisite,
+    /// <summary>A Prerequisite.tbl quest-state condition on accepting the quest.</summary>
+    QuestStatePrerequisite,
+    /// <summary>A quest the sole giver's visibility prerequisite needs done.</summary>
+    GiverVisibilityPrerequisite,
+    /// <summary>A quest-state condition of every usable communicator offer of the quest.</summary>
+    CommunicatorPrerequisite,
+    /// <summary>Soft: offer the quest before the quest that phases out its only giver.</summary>
+    GiverVisibilityEnding,
+    /// <summary>Soft: a quest named by a CompleteQuest (type 24) objective follows the objective's owner.</summary>
+    CompleteQuestOwner
+}
+
+/// <summary>
+/// The quest ordering graph of one plan. Every ordering edge goes through <see cref="AddOrderEdge"/>, which refuses an
+/// edge that would close a cycle, so the graph is always acyclic and <see cref="TopologicalOrder"/> cannot get stuck.
+/// </summary>
+internal sealed class QuestOrderGraph
+{
+    private readonly Dictionary<ushort, Dictionary<ushort, QuestOrderRule>> dependencies;
+    private readonly List<string> refusals;
+
+    public QuestOrderGraph(IReadOnlyDictionary<ushort, QuestDefinition> definitions, List<string> refusals)
+    {
+        Definitions = definitions;
+        this.refusals = refusals;
+        dependencies = definitions.Keys.ToDictionary(id => id, _ => new Dictionary<ushort, QuestOrderRule>());
+    }
+
+    public IReadOnlyDictionary<ushort, QuestDefinition> Definitions { get; }
+
+    /// <summary>Add edges in rule priority (real Quest2 prerequisites first), keeping each rule's own order.</summary>
+    public void AddOrderEdges(IEnumerable<(ushort Quest, ushort Dependency, QuestOrderRule Rule)> edges)
+    {
+        foreach ((ushort quest, ushort dependency, QuestOrderRule rule) in edges.OrderBy(edge => edge.Rule))
+            AddOrderEdge(quest, dependency, rule);
+    }
+
+    /// <summary>
+    /// Order <paramref name="quest"/> after <paramref name="dependency"/>. Returns false, and records why, when the edge
+    /// would close a cycle (the dependency already needs the quest, directly or through other edges).
+    /// </summary>
+    public bool AddOrderEdge(ushort quest, ushort dependency, QuestOrderRule rule)
+    {
+        if (quest == dependency || !dependencies.TryGetValue(quest, out Dictionary<ushort, QuestOrderRule>? direct)
+            || !dependencies.ContainsKey(dependency))
+            return false;
+        if (direct.ContainsKey(dependency))
+            return true;
+
+        IReadOnlyList<(ushort Quest, ushort Dependency, QuestOrderRule Rule)>? path = FindPath(dependency, quest);
+        if (path is not null)
+        {
+            refusals.Add($"refused {rule} edge {Describe(quest)} after {Describe(dependency)}: it would close the cycle "
+                + DescribeCycle([(quest, dependency, rule), .. path]));
+            return false;
+        }
+
+        direct.Add(dependency, rule);
+        return true;
+    }
+
+    public IReadOnlyList<QuestDefinition> TopologicalOrder()
+    {
+        var remaining = Definitions.Keys.ToHashSet();
+        var result = new List<QuestDefinition>(remaining.Count);
+        while (remaining.Count > 0)
+        {
+            QuestDefinition? next = remaining
+                .Where(id => dependencies[id].Keys.All(dependency => !remaining.Contains(dependency)))
+                .Select(id => Definitions[id])
+                .OrderBy(definition => definition.Entry.ConLevel)
+                .ThenBy(definition => definition.Id)
+                .FirstOrDefault();
+            if (next is null)
+                throw new BotFailureException($"Quest prerequisite graph contains a cycle: {DescribeCycle(FindCycle(remaining))}");
+            remaining.Remove(next.Id);
+            result.Add(next);
+        }
+        return result;
+    }
+
+    /// <summary>The dependency edges leading from <paramref name="from"/> to <paramref name="to"/> (breadth first), or null.</summary>
+    private IReadOnlyList<(ushort Quest, ushort Dependency, QuestOrderRule Rule)>? FindPath(ushort from, ushort to)
+    {
+        var parent = new Dictionary<ushort, (ushort Quest, QuestOrderRule Rule)> { [from] = (from, default) };
+        var queue = new Queue<ushort>([from]);
+        while (queue.Count > 0)
+        {
+            ushort current = queue.Dequeue();
+            foreach ((ushort dependency, QuestOrderRule rule) in dependencies[current].OrderBy(pair => pair.Key))
+            {
+                if (!parent.TryAdd(dependency, (current, rule)))
+                    continue;
+                if (dependency == to)
+                {
+                    var path = new List<(ushort, ushort, QuestOrderRule)>();
+                    for (ushort node = to; node != from; node = parent[node].Quest)
+                        path.Add((parent[node].Quest, node, parent[node].Rule));
+                    path.Reverse();
+                    return path;
+                }
+                queue.Enqueue(dependency);
+            }
+        }
+        return null;
+    }
+
+    /// <summary>One cycle among quests that all still wait on another remaining quest.</summary>
+    private IReadOnlyList<(ushort Quest, ushort Dependency, QuestOrderRule Rule)> FindCycle(IReadOnlySet<ushort> remaining)
+    {
+        var walk = new List<(ushort Quest, ushort Dependency, QuestOrderRule Rule)>();
+        var seenAt = new Dictionary<ushort, int>();
+        ushort node = remaining.Min();
+        while (!seenAt.ContainsKey(node))
+        {
+            seenAt[node] = walk.Count;
+            (ushort dependency, QuestOrderRule rule) = dependencies[node]
+                .Where(pair => remaining.Contains(pair.Key))
+                .OrderBy(pair => pair.Key)
+                .First();
+            walk.Add((node, dependency, rule));
+            node = dependency;
+        }
+        return walk.Skip(seenAt[node]).ToArray();
+    }
+
+    private string DescribeCycle(IReadOnlyList<(ushort Quest, ushort Dependency, QuestOrderRule Rule)> cycle)
+        => string.Join(", ", cycle.Select(edge => $"{Describe(edge.Quest)} after {Describe(edge.Dependency)} [{edge.Rule}]"));
+
+    private string Describe(ushort id)
+        => Definitions.TryGetValue(id, out QuestDefinition? definition) ? $"{id} \"{definition.Title}\"" : id.ToString();
+}

@@ -305,6 +305,8 @@ internal sealed class BotRunner
         IReadOnlySet<uint> spawnedBranchGivers = await BotDatabase.LoadSpawnedCreatureIdsAsync(
             options.Database, branchGiverIds, cancellationToken);
         questPlan = gameData.GetRunPlan(options, spawnedBranchGivers);
+        foreach (string refusal in gameData.OrderEdgeRefusals)
+            log.Info($"quest order: {refusal}");
         if (options.Paths)
         {
             pathMissionPlan = gameData.GetPathMissions(
