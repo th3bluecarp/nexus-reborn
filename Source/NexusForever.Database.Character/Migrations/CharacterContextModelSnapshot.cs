@@ -1453,7 +1453,6 @@ namespace NexusForever.Database.Character.Migrations
                         .HasColumnName("questId");
 
                     b.Property<byte>("Index")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("tinyint(3) unsigned")
                         .HasDefaultValue((byte)0)
                         .HasColumnName("index");

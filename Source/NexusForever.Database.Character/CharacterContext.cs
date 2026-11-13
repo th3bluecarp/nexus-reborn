@@ -1580,10 +1580,14 @@ namespace NexusForever.Database.Character
                     .HasColumnType("smallint(5) unsigned")
                     .HasDefaultValue(0);
 
+                // objective 0 is the first objective, same reason as character_path.path: at its default a generated key part gets a
+                // temporary value from one server-wide counter (255 down to 0, wrapping), when that value is another objective's index of
+                // the same new quest the Add throws and the whole character save is lost (Emergency Extraction 4785, character 176)
                 entity.Property(e => e.Index)
                     .HasColumnName("index")
                     .HasColumnType("tinyint(3) unsigned")
-                    .HasDefaultValue(0);
+                    .HasDefaultValue(0)
+                    .ValueGeneratedNever();
 
                 entity.Property(e => e.Progress)
                     .HasColumnName("progress")

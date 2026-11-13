@@ -105,14 +105,14 @@ namespace NexusForever.Game.Entity
         public void Save(CharacterContext context)
         {
             foreach (IQuest quest in completedQuests.Values)
-                quest.Save(context);
+                SaveQuest(context, quest);
 
             foreach (IQuest quest in inactiveQuests.Values.ToList())
             {
                 if (quest.PendingDelete)
                     inactiveQuests.Remove(quest.Id);
 
-                quest.Save(context);
+                SaveQuest(context, quest);
             }
 
             foreach (IQuest quest in activeQuests.Values.ToList())
@@ -120,7 +120,23 @@ namespace NexusForever.Game.Entity
                 if (quest.PendingDelete)
                     activeQuests.Remove(quest.Id);
 
+                SaveQuest(context, quest);
+            }
+        }
+
+        /// <summary>
+        /// A quest whose rows cannot be tracked (two rows with one key) is left out of this save instead of failing the whole character
+        /// save, the objectives it did not reach keep their changes for the next save.
+        /// </summary>
+        private void SaveQuest(CharacterContext context, IQuest quest)
+        {
+            try
+            {
                 quest.Save(context);
+            }
+            catch (InvalidOperationException exception)
+            {
+                log.LogError(exception, $"Save of quest {quest.Id} of character {player.CharacterId} skipped, the rest of the character is saved.");
             }
         }
 
