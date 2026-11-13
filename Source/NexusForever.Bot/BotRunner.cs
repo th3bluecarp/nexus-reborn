@@ -2751,22 +2751,73 @@ internal sealed class BotRunner
 
     /// <summary>
     /// Seconds to collect <paramref name="count"/> of an item from kills: the kills that reach the count with
-    /// <see cref="DropBudgetCertainty"/> at the mean per-kill rate of the item's source creatures placed in the world (the bot
-    /// fights every source), times <paramref name="killSeconds"/>, plus a minute. 0 when no rate is known; capped at
-    /// <see cref="MaxDropBudgetFactor"/> times <paramref name="flatSeconds"/> so a near-zero rate cannot eat a whole run.
+    /// <see cref="DropBudgetCertainty"/> at the per-kill rate the bot actually farms (<see cref="FarmedDropRate"/>), times
+    /// <paramref name="killSeconds"/>, plus a minute. 0 when no rate is known; capped at <see cref="MaxDropBudgetFactor"/>
+    /// times <paramref name="flatSeconds"/> so a near-zero rate cannot eat a whole run.
     /// </summary>
     private double DropHuntSeconds(uint itemId, uint count, double killSeconds, double flatSeconds, ushort worldId)
     {
         if (!itemDropSources.TryGetValue(itemId, out ItemDropSources? sources))
             return 0d;
-        double[] rates = sources.CreatureIds
-            .Where(id => sources.RateOf(id) > 0d && SpawnsFor([id], worldId).Count > 0)
-            .Select(id => sources.RateOf(id) / 100d)
-            .ToArray();
-        if (rates.Length == 0)
+        double rate = FarmedDropRate(sources, worldId);
+        if (rate <= 0d)
             return 0d;
-        int kills = KillsForDrops(count, Math.Min(1d, rates.Average()), DropBudgetCertainty, 400);
+        int kills = KillsForDrops(count, Math.Min(1d, rate), DropBudgetCertainty, 400);
         return Math.Min(flatSeconds * MaxDropBudgetFactor, kills * killSeconds + 60d);
+    }
+
+    /// <summary>
+    /// The per-kill drop rate (0-1) of the sources the bot farms: the hunts fight the best rate band first and the rest only
+    /// in between, so about half the kills at the mean of the best band and half at the mean of the other placed sources.
+    /// The plain mean of every placed source (7.6 %) overstated Carcass Discovery's farmed rate when 28 of 55 kills went to
+    /// the 1.5 % Grimstone creatures. 0 when no placed source has a rate.
+    /// </summary>
+    private double FarmedDropRate(ItemDropSources sources, ushort worldId)
+    {
+        uint[] placed = sources.CreatureIds
+            .Where(id => sources.RateOf(id) > 0d && SpawnsFor([id], worldId).Count > 0)
+            .ToArray();
+        if (placed.Length == 0)
+            return 0d;
+        double bestRate = placed.Max(sources.RateOf);
+        double[] best = placed.Where(id => DropRateBand(sources, id, bestRate) == 0).Select(id => sources.RateOf(id) / 100d).ToArray();
+        double[] rest = placed.Where(id => DropRateBand(sources, id, bestRate) != 0).Select(id => sources.RateOf(id) / 100d).ToArray();
+        return rest.Length == 0 ? best.Average() : (best.Average() + rest.Average()) / 2d;
+    }
+
+    /// <summary>
+    /// A drop source's rate band: 0 within half the best rate, 1 within a quarter, and so on; a source with no rate comes last.
+    /// </summary>
+    private static int DropRateBand(ItemDropSources sources, uint creatureId, double bestRate)
+    {
+        double rate = sources.RateOf(creatureId);
+        return rate <= 0d || bestRate <= 0d ? 64 : Math.Max(0, (int)Math.Floor(Math.Log2(bestRate / rate)));
+    }
+
+    /// <summary>
+    /// The rate band of each creature for a hunt of <paramref name="itemId"/>, or null when the item has no known rates.
+    /// </summary>
+    private Func<uint, int>? DropRateBands(uint itemId)
+    {
+        if (!itemDropSources.TryGetValue(itemId, out ItemDropSources? sources))
+            return null;
+        double bestRate = sources.CreatureIds.Select(sources.RateOf).DefaultIfEmpty(0d).Max();
+        return bestRate > 0d ? id => DropRateBand(sources, id, bestRate) : null;
+    }
+
+    /// <summary>
+    /// The nearest visible target in fight range of the best rate band that has one, or null (no bands, or none visible).
+    /// </summary>
+    private TrackedEntity? FindBestBandVisibleTarget(IReadOnlySet<uint> creatureIds, IReadOnlySet<uint> excludedGuids, Func<uint, int>? band)
+    {
+        if (band is null)
+            return null;
+        foreach (IGrouping<int, uint> group in creatureIds.GroupBy(band).OrderBy(group => group.Key))
+        {
+            if (FindVisibleCombatTarget(questWorldId, group.ToHashSet(), excludedGuids) is TrackedEntity target)
+                return target;
+        }
+        return null;
     }
 
     /// <summary>
@@ -3436,20 +3487,34 @@ internal sealed class BotRunner
             bool preferredPhase = preferredCandidates.Count > 0 && preferredIds.Count < creatureIds.Count;
             if (preferredPhase)
                 log.Info($"item {itemId} hunt: preferring creature(s) [{string.Join(',', preferredIds.OrderByDescending(sources.RateOf).Select(id => $"{id}@{sources.RateOf(id):0.#}%"))}] with {preferredCandidates.Count} spawn(s) over [{sources.DescribeCreatures()}]");
+            // the fallback over every source is short (one teleport or kill per preferred spawn, about a respawn), then back to
+            // the preferred spawns: the unbounded fallback over all 47 cave spawns spent 49 of 55 kills on 1.5-6.8 % creatures
+            Func<uint, int>? band = DropRateBands(itemId);
+            int fallbackLimit = Math.Max(3, preferredCandidates.Count);
+            int fallbackSteps = 0;
             var spawnVisits = new Dictionary<uint, int>();
             var finishedTargetGuids = new HashSet<uint>();
             while ((item = FindInventoryItem(itemId)) is null)
             {
+                if (!preferredPhase && preferredCandidates.Count > 0 && preferredIds.Count < creatureIds.Count && fallbackSteps >= fallbackLimit)
+                {
+                    spawnVisits.Clear();
+                    fallbackSteps = 0;
+                    preferredPhase = true;
+                    log.Info($"item {itemId} hunt: back to the preferred source spawn(s) after {kills} kill(s)");
+                }
                 IReadOnlySet<uint> huntIds = preferredPhase ? preferredIds : creatureIds;
                 IReadOnlyList<Spawn> huntCandidates = preferredPhase ? preferredCandidates : candidates;
-                TrackedEntity? target = await TryFindVisibleCombatTargetAsync(
-                    huntIds, finishedTargetGuids, CombatLocalTargetSearchTimeout, cancellationToken);
+                // the best rate band in sight first: the cave's 1.5 % creatures stand nearer than the 20 % one
+                TrackedEntity? target = FindBestBandVisibleTarget(huntIds, finishedTargetGuids, band)
+                    ?? await TryFindVisibleCombatTargetAsync(huntIds, finishedTargetGuids, CombatLocalTargetSearchTimeout, cancellationToken);
                 if (target is null)
                 {
-                    Spawn? spawn = ChooseNextCombatSpawn(huntCandidates, spawnVisits);
+                    Spawn? spawn = ChooseNextCombatSpawn(huntCandidates, spawnVisits, band);
                     if (spawn is null)
                     {
                         spawnVisits.Clear();
+                        fallbackSteps = 0;
                         if (preferredCandidates.Count > 0 && preferredIds.Count < creatureIds.Count)
                         {
                             preferredPhase = !preferredPhase;
@@ -3459,11 +3524,14 @@ internal sealed class BotRunner
                     }
                     spawnVisits[spawn.Id] = spawnVisits.GetValueOrDefault(spawn.Id) + 1;
                     spawnHops++;
+                    if (!preferredPhase)
+                        fallbackSteps++;
                     itemHuntProgress = FormatItemHunt(itemId, sources, kills, killsByCreature, spawnVisits.Count, huntCandidates.Count, spawnHops);
                     target = await TeleportAndTryFindCombatTargetAsync(
                         spawn, huntIds, finishedTargetGuids, CombatSpawnTargetSearchTimeout, cancellationToken);
                     if (target is null)
                         continue;
+                    target = FindBestBandVisibleTarget(huntIds, finishedTargetGuids, band) ?? target;
                 }
 
                 await RequireWorld().SendEncryptedAsync(GameMessageOpcode.ClientEntitySelect,
@@ -3472,6 +3540,8 @@ internal sealed class BotRunner
                 if (killed)
                 {
                     kills++;
+                    if (!preferredPhase)
+                        fallbackSteps++;
                     uint killedCreature = target.CreatureId ?? 0u;
                     killsByCreature[killedCreature] = killsByCreature.GetValueOrDefault(killedCreature) + 1;
                     finishedTargetGuids.Add(target.Guid);
@@ -4764,8 +4834,10 @@ internal sealed class BotRunner
         if (IsObjectiveComplete(objective))
             return null;
 
-        TrackedEntity? nearby = await TryFindVisibleCombatTargetAsync(
-            creatureIds, excludedGuids, CombatLocalTargetSearchTimeout, cancellationToken);
+        // a dropped objective item: the best drop-rate band in sight and among the spawns first, nearest within a band
+        Func<uint, int>? band = objective.Type == QuestObjectiveType.CollectItem ? DropRateBands(objective.Data) : null;
+        TrackedEntity? nearby = FindBestBandVisibleTarget(creatureIds, excludedGuids, band)
+            ?? await TryFindVisibleCombatTargetAsync(creatureIds, excludedGuids, CombatLocalTargetSearchTimeout, cancellationToken);
         if (IsObjectiveComplete(objective))
             return null;
         if (nearby is not null)
@@ -4776,7 +4848,7 @@ internal sealed class BotRunner
         if (approached is not null)
             return approached;
 
-        while (ChooseNextCombatSpawn(candidates, spawnVisits) is Spawn spawn)
+        while (ChooseNextCombatSpawn(candidates, spawnVisits, band) is Spawn spawn)
         {
             spawnVisits[spawn.Id] = spawnVisits.GetValueOrDefault(spawn.Id) + 1;
             TrackedEntity? teleportedTarget = await TeleportAndTryFindCombatTargetAsync(
@@ -4784,7 +4856,7 @@ internal sealed class BotRunner
             if (IsObjectiveComplete(objective))
                 return null;
             if (teleportedTarget is not null)
-                return teleportedTarget;
+                return FindBestBandVisibleTarget(creatureIds, excludedGuids, band) ?? teleportedTarget;
         }
 
         // Every spawn has received both permitted teleports. Keep watching the final area for a
@@ -4867,7 +4939,8 @@ internal sealed class BotRunner
 
     private Spawn? ChooseNextCombatSpawn(
         IReadOnlyList<Spawn> candidates,
-        IReadOnlyDictionary<uint, int> spawnVisits)
+        IReadOnlyDictionary<uint, int> spawnVisits,
+        Func<uint, int>? band = null)
     {
         int? cycle = candidates
             .Select(spawn => spawnVisits.GetValueOrDefault(spawn.Id))
@@ -4879,7 +4952,9 @@ internal sealed class BotRunner
 
         return candidates
             .Where(spawn => spawnVisits.GetValueOrDefault(spawn.Id) == cycle.Value)
-            .OrderBy(spawn => spawn.DistanceSquared(lastPosition.X, lastPosition.Y, lastPosition.Z))
+            // a drop hunt visits the best drop-rate band first, nearest within a band
+            .OrderBy(spawn => band?.Invoke(spawn.CreatureId) ?? 0)
+            .ThenBy(spawn => spawn.DistanceSquared(lastPosition.X, lastPosition.Y, lastPosition.Z))
             .ThenBy(spawn => spawn.Id)
             .First();
     }
