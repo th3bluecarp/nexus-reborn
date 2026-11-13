@@ -32,6 +32,7 @@ internal sealed class RunReport
             Passed = Quests.Count(quest => quest.Result == "PASS"),
             Failed = Quests.Count(quest => quest.Result == "FAIL"),
             Skipped = Quests.Count(quest => quest.Result == "SKIPPED"),
+            Unfinished = Quests.Count(quest => quest.Result == "UNFINISHED"),
             MissionTotal = Missions.Count,
             MissionPassed = Missions.Count(mission => mission.Result == "PASS"),
             MissionFailed = Missions.Count(mission => mission.Result == "FAIL"),
@@ -66,7 +67,7 @@ internal sealed class RunReport
         var builder = new StringBuilder();
         builder.AppendLine($"# {Escape(Title)} run report");
         builder.AppendLine();
-        builder.AppendLine($"{Summary.Total} quests: {Summary.Passed} passed, {Summary.Failed} failed, {Summary.Skipped} skipped. Character: {Escape(CharacterName)}. Elapsed: {(EndTimestamp - StartTimestamp).TotalSeconds:0.0}s.");
+        builder.AppendLine($"{Summary.Total} quests: {Summary.Passed} passed, {Summary.Failed} failed, {Summary.Skipped} skipped{(Summary.Unfinished > 0 ? $", {Summary.Unfinished} unfinished (run budget)" : "")}. Character: {Escape(CharacterName)}. Elapsed: {(EndTimestamp - StartTimestamp).TotalSeconds:0.0}s.");
         builder.AppendLine($"{Summary.MissionTotal} path missions: {Summary.MissionPassed} passed, {Summary.MissionFailed} failed, {Summary.MissionSkipped} skipped, {Summary.MissionUnsupported} unsupported.");
         builder.AppendLine();
         builder.AppendLine("Interactability evidence is an approximation from entity create flags/checklist data and Creature2 activation fields received or loaded by the bot.");
@@ -118,6 +119,8 @@ internal sealed class RunSummary
     public int Passed { get; init; }
     public int Failed { get; init; }
     public int Skipped { get; init; }
+    // the quest in progress when the whole-run budget ran out: neither passed nor failed
+    public int Unfinished { get; init; }
     public int MissionTotal { get; init; }
     public int MissionPassed { get; init; }
     public int MissionFailed { get; init; }

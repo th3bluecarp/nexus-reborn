@@ -703,6 +703,14 @@ internal sealed class BotRunner
             {
                 await RunQuestAsync(definition, questBudget.Token);
             }
+            catch (Exception) when (cancellationToken.IsCancellationRequested && currentQuestReport is not null)
+            {
+                // the whole-run budget ran out mid-quest (Algoroc 2026-11-12: The Best Offense, Closing the Circuit and Grafted
+                // Gronyx were cut off 2-180 s in on the 75-minute path legs and reported as new FAILs): that is no quest result
+                currentQuestReport.Result = "UNFINISHED";
+                currentQuestReport.Failure = $"unfinished: the whole-run budget of {options.MaxMinutes} minutes ran out during this quest";
+                throw;
+            }
             catch (Exception exception) when (!cancellationToken.IsCancellationRequested)
             {
                 QuestRunReport failedReport = currentQuestReport
@@ -2533,7 +2541,7 @@ internal sealed class BotRunner
             await LevelForAcceptanceIfNeededAsync(definition, cancellationToken);
             if (definition.Entry.PrerequisiteItem != 0u)
                 await LevelForQuestIfNeededAsync(definition, cancellationToken);
-            TimeSpan acceptTimeout = StartItem(definition) == 0u ? DefaultStepTimeout : ItemDropAcceptTimeout;
+            TimeSpan acceptTimeout = StartItem(definition) == 0u ? DefaultStepTimeout : StartItemHuntTimeout(definition, questWorldId);
             if (StartItem(definition) == 0u && questState != QuestState.Mentioned)
             {
                 int giverSpawnCount = SpawnsFor(definition.GiverCreatureIds, questWorldId).Count;
@@ -2681,9 +2689,12 @@ internal sealed class BotRunner
                 ? TimeSpan.FromSeconds(Math.Max(120u, Math.Max(1u, objective.Count) * 50u))
             // items collected by using units or looted from kills (By Leaps and Bounds: eight loftite fragments that drop
             // from 44 % of boulderback kills, so eighteen fights of about 25 s on average and the odd health recovery;
-            // 390 s failed three legs of four): 75 s per item plus a respawn wait
+            // 390 s failed three legs of four): 75 s per item plus a respawn wait, more when the drop rate needs more kills
+            // (630 s still failed two legs of four on 2026-11-12 at 7/8 and 5/8: 17-25 kills of about 25 s, 32 % drops seen)
             : objective.Type == QuestObjectiveType.CollectItem
-                ? TimeSpan.FromSeconds(Math.Max(75u, Math.Max(1u, objective.Count) * 75u + 30u))
+                ? TimeSpan.FromSeconds(Math.Max(
+                    Math.Max(75u, Math.Max(1u, objective.Count) * 75u + 30u),
+                    DropHuntSeconds(objective.Data, Math.Max(1u, objective.Count), CollectItemKillSeconds, Math.Max(75u, Math.Max(1u, objective.Count) * 75u + 30u), worldId ?? questWorldId)))
                 : DefaultStepTimeout;
         if (objective.Type is QuestObjectiveType.ActivateEntity
             or QuestObjectiveType.ActivateTargetGroup
@@ -2729,6 +2740,69 @@ internal sealed class BotRunner
         return Math.Max(75d, 10d + health / 60d);
     }
 
+    // seconds per kill while collecting a dropped objective item (By Leaps and Bounds: 17-25 kills in 441-630 s) and while
+    // hunting a quest's start item across few spawns with respawn waits (Unconventional Technology: 5 kills in 355 s,
+    // 10 kills in 840 s, 30 teleports over 9 spawns)
+    private const double CollectItemKillSeconds = 30d;
+    private const double StartItemKillSeconds = 80d;
+    // a drop budget covers this share of runs at the archived rates; it never grows past MaxDropBudgetFactor times the flat budget
+    private const double DropBudgetCertainty = 0.99d;
+    private const double MaxDropBudgetFactor = 2d;
+
+    /// <summary>
+    /// Seconds to collect <paramref name="count"/> of an item from kills: the kills that reach the count with
+    /// <see cref="DropBudgetCertainty"/> at the mean per-kill rate of the item's source creatures placed in the world (the bot
+    /// fights every source), times <paramref name="killSeconds"/>, plus a minute. 0 when no rate is known; capped at
+    /// <see cref="MaxDropBudgetFactor"/> times <paramref name="flatSeconds"/> so a near-zero rate cannot eat a whole run.
+    /// </summary>
+    private double DropHuntSeconds(uint itemId, uint count, double killSeconds, double flatSeconds, ushort worldId)
+    {
+        if (!itemDropSources.TryGetValue(itemId, out ItemDropSources? sources))
+            return 0d;
+        double[] rates = sources.CreatureIds
+            .Where(id => sources.RateOf(id) > 0d && SpawnsFor([id], worldId).Count > 0)
+            .Select(id => sources.RateOf(id) / 100d)
+            .ToArray();
+        if (rates.Length == 0)
+            return 0d;
+        int kills = KillsForDrops(count, Math.Min(1d, rates.Average()), DropBudgetCertainty, 400);
+        return Math.Min(flatSeconds * MaxDropBudgetFactor, kills * killSeconds + 60d);
+    }
+
+    /// <summary>
+    /// The fewest kills n with P(Binomial(n, rate) >= count) >= certainty, at most <paramref name="maxKills"/>.
+    /// By Leaps and Bounds (8 drops at 36.5 %) needs 37 kills, a 24.6 % start item 17.
+    /// </summary>
+    internal static int KillsForDrops(uint count, double rate, double certainty, int maxKills)
+    {
+        if (count == 0u)
+            return 0;
+        if (rate >= 1d)
+            return (int)count;
+        double miss = 1d - rate;
+        for (int n = (int)count; n < maxKills; n++)
+        {
+            // P(X < count) = sum over k < count of C(n,k) rate^k miss^(n-k)
+            double term = Math.Pow(miss, n);
+            double below = term;
+            for (int k = 0; k < (int)count - 1; k++)
+            {
+                term *= (double)(n - k) / (k + 1) * rate / miss;
+                below += term;
+            }
+            if (1d - below >= certainty)
+                return n;
+        }
+        return maxKills;
+    }
+
+    /// <summary>
+    /// The start-item hunt budget: the flat <see cref="ItemDropAcceptTimeout"/>, more when the item's drop rate needs more kills.
+    /// </summary>
+    private TimeSpan StartItemHuntTimeout(QuestDefinition definition, ushort worldId)
+        => TimeSpan.FromSeconds(Math.Max(ItemDropAcceptTimeout.TotalSeconds,
+            DropHuntSeconds(StartItem(definition), 1u, StartItemKillSeconds, ItemDropAcceptTimeout.TotalSeconds, worldId)));
+
     /// <summary>
     /// The per-quest budget is a safety net over the step timeouts: the accept wait plus every required objective's budget
     /// plus the achieved and turn-in steps, never under the flat 8 minutes. The flat budget alone cut Grafted Gronyx (seven
@@ -2737,7 +2811,7 @@ internal sealed class BotRunner
     private TimeSpan QuestBudget(QuestDefinition definition)
     {
         ushort worldId = DetermineQuestWorld(definition);
-        double seconds = (StartItem(definition) == 0u ? DefaultStepTimeout : ItemDropAcceptTimeout).TotalSeconds
+        double seconds = (StartItem(definition) == 0u ? DefaultStepTimeout : StartItemHuntTimeout(definition, worldId)).TotalSeconds
             + definition.Objectives.Where(objective => (objective.Flags & 0x20u) == 0u)
                 .Sum(objective => ObjectiveTimeout(objective, worldId).TotalSeconds)
             + DefaultStepTimeout.TotalSeconds * 2d + 60d;
