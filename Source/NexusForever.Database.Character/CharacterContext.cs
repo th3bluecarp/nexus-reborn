@@ -1235,10 +1235,12 @@ namespace NexusForever.Database.Character
                     .HasColumnType("bigint(20) unsigned")
                     .HasDefaultValue(0);
 
+                // Soldier is path 0: a generated key part at its default makes Attach track the row as Added, every update became a duplicate insert
                 entity.Property(e => e.Path)
                     .HasColumnName("path")
                     .HasColumnType("tinyint(3) unsigned")
-                    .HasDefaultValue(0);
+                    .HasDefaultValue(0)
+                    .ValueGeneratedNever();
 
                 entity.Property(e => e.LevelRewarded)
                     .HasColumnName("levelRewarded")
@@ -1976,10 +1978,12 @@ namespace NexusForever.Database.Character
                     .HasColumnType("bigint(20) unsigned")
                     .HasDefaultValue(0);
 
+                // rank 0 is the leader rank, same reason as character_path.path
                 entity.Property(e => e.Index)
                     .HasColumnName("index")
                     .HasColumnType("tinyint(3) unsigned")
-                    .HasDefaultValue(0);
+                    .HasDefaultValue(0)
+                    .ValueGeneratedNever();
 
                 entity.Property(e => e.Name)
                     .HasColumnName("name")
