@@ -45,6 +45,9 @@ namespace NexusForever.Database.Auth
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            // Primary key columns the server assigns itself (no AUTO_INCREMENT) are ValueGeneratedNever: with HasDefaultValue alone EF
+            // treats them as store generated, a key part at its default (0) then makes Attach track an existing row as Added (duplicate
+            // INSERT) or Add hand out a temporary key that collides with a real row, and the whole save rolls back (see 01fc448d)
             modelBuilder.Entity<AccountModel>(entity =>
             {
                 entity.ToTable("account");
@@ -109,12 +112,14 @@ namespace NexusForever.Database.Auth
                 entity.Property(e => e.Id)
                     .HasColumnName("id")
                     .HasColumnType("int(10) unsigned")
-                    .HasDefaultValue(0);
+                    .HasDefaultValue(0)
+                    .ValueGeneratedNever();
 
                 entity.Property(e => e.ItemId)
                     .HasColumnName("itemId")
                     .HasColumnType("int(10) unsigned")
-                    .HasDefaultValue(0);
+                    .HasDefaultValue(0)
+                    .ValueGeneratedNever();
 
                 entity.Property(e => e.Timestamp)
                     .HasColumnName("timestamp")
@@ -137,12 +142,14 @@ namespace NexusForever.Database.Auth
                 entity.Property(e => e.Id)
                     .HasColumnName("id")
                     .HasColumnType("int(10) unsigned")
-                    .HasDefaultValue(0);
+                    .HasDefaultValue(0)
+                    .ValueGeneratedNever();
 
                 entity.Property(e => e.CurrencyId)
                     .HasColumnName("currencyId")
                     .HasColumnType("tinyint(4) unsigned")
-                    .HasDefaultValue(0);
+                    .HasDefaultValue(0)
+                    .ValueGeneratedNever();
 
                 entity.Property(e => e.Amount)
                     .HasColumnName("amount")
@@ -165,7 +172,8 @@ namespace NexusForever.Database.Auth
                 entity.Property(e => e.Id)
                     .HasColumnName("id")
                     .HasColumnType("int(10) unsigned")
-                    .HasDefaultValue(0);
+                    .HasDefaultValue(0)
+                    .ValueGeneratedNever();
 
                 entity.Property(e => e.LoginDays)
                     .HasColumnName("loginDays")
@@ -192,12 +200,14 @@ namespace NexusForever.Database.Auth
                 entity.Property(e => e.Id)
                     .HasColumnName("id")
                     .HasColumnType("int(10) unsigned")
-                    .HasDefaultValue(0);
+                    .HasDefaultValue(0)
+                    .ValueGeneratedNever();
 
                 entity.Property(e => e.EntitlementId)
                     .HasColumnName("entitlementId")
                     .HasColumnType("tinyint(3) unsigned")
-                    .HasDefaultValue(0);
+                    .HasDefaultValue(0)
+                    .ValueGeneratedNever();
 
                 entity.Property(e => e.Amount)
                     .HasColumnName("amount")
@@ -245,12 +255,14 @@ namespace NexusForever.Database.Auth
                 entity.Property(e => e.Id)
                     .HasColumnName("id")
                     .HasColumnType("int(10) unsigned")
-                    .HasDefaultValue(0);
+                    .HasDefaultValue(0)
+                    .ValueGeneratedNever();
 
                 entity.Property(e => e.Entry)
                     .HasColumnName("entry")
                     .HasColumnType("int(10) unsigned")
-                    .HasDefaultValue(0);
+                    .HasDefaultValue(0)
+                    .ValueGeneratedNever();
 
                 entity.Property(e => e.Timestamp)
                     .HasColumnName("timestamp")
@@ -273,12 +285,14 @@ namespace NexusForever.Database.Auth
                 entity.Property(e => e.Id)
                     .HasColumnName("id")
                     .HasColumnType("int(10) unsigned")
-                    .HasDefaultValue(0);
+                    .HasDefaultValue(0)
+                    .ValueGeneratedNever();
 
                 entity.Property(e => e.InputActionId)
                     .HasColumnName("inputActionId")
                     .HasColumnType("smallint(5) unsigned")
-                    .HasDefaultValue(0);
+                    .HasDefaultValue(0)
+                    .ValueGeneratedNever();
 
                 entity.Property(e => e.Code00)
                     .HasColumnName("code00")
@@ -355,12 +369,14 @@ namespace NexusForever.Database.Auth
                 entity.Property(e => e.Id)
                     .HasColumnName("id")
                     .HasColumnType("int(10) unsigned")
-                    .HasDefaultValue(0);
+                    .HasDefaultValue(0)
+                    .ValueGeneratedNever();
 
                 entity.Property(e => e.PermissionId)
                     .HasColumnName("permissionId")
                     .HasColumnType("int(10) unsigned")
-                    .HasDefaultValue(0);
+                    .HasDefaultValue(0)
+                    .ValueGeneratedNever();
 
                 entity.HasOne(e => e.Account)
                     .WithMany(f => f.AccountPermission)
@@ -382,12 +398,14 @@ namespace NexusForever.Database.Auth
                 entity.Property(e => e.Id)
                     .HasColumnName("id")
                     .HasColumnType("int(10) unsigned")
-                    .HasDefaultValue(0);
+                    .HasDefaultValue(0)
+                    .ValueGeneratedNever();
 
                 entity.Property(e => e.RoleId)
                     .HasColumnName("roleId")
                     .HasColumnType("int(10) unsigned")
-                    .HasDefaultValue(0);
+                    .HasDefaultValue(0)
+                    .ValueGeneratedNever();
 
                 entity.HasOne(e => e.Account)
                     .WithMany(f => f.AccountRole)
@@ -410,7 +428,8 @@ namespace NexusForever.Database.Auth
                 entity.Property(e => e.Id)
                     .HasColumnName("id")
                     .HasColumnType("int(10) unsigned")
-                    .HasDefaultValue(0);
+                    .HasDefaultValue(0)
+                    .ValueGeneratedNever();
 
                 entity.Property(e => e.BanId)
                     .HasColumnName("banId")
@@ -440,7 +459,8 @@ namespace NexusForever.Database.Auth
                 entity.Property(e => e.Id)
                     .HasColumnName("id")
                     .HasColumnType("int(10) unsigned")
-                    .HasDefaultValue(0);
+                    .HasDefaultValue(0)
+                    .ValueGeneratedNever();
 
                 entity.Property(e => e.Name)
                     .HasColumnName("name")
@@ -1102,7 +1122,8 @@ namespace NexusForever.Database.Auth
                 entity.Property(e => e.Id)
                     .HasColumnName("id")
                     .HasColumnType("int(10) unsigned")
-                    .HasDefaultValue(0);
+                    .HasDefaultValue(0)
+                    .ValueGeneratedNever();
 
                 entity.Property(e => e.Name)
                     .HasColumnName("name")
@@ -1156,12 +1177,14 @@ namespace NexusForever.Database.Auth
                 entity.Property(e => e.Id)
                     .HasColumnName("id")
                     .HasColumnType("int(10) unsigned")
-                    .HasDefaultValue(0);
+                    .HasDefaultValue(0)
+                    .ValueGeneratedNever();
 
                 entity.Property(e => e.PermissionId)
                     .HasColumnName("permissionId")
                     .HasColumnType("int(10) unsigned")
-                    .HasDefaultValue(0);
+                    .HasDefaultValue(0)
+                    .ValueGeneratedNever();
 
                 entity.HasOne(e => e.Role)
                     .WithMany(f => f.RolePermission)

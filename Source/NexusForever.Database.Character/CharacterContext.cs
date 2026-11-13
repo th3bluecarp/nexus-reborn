@@ -73,6 +73,9 @@ namespace NexusForever.Database.Character
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            // Primary key columns the server assigns itself (no AUTO_INCREMENT) are ValueGeneratedNever: with HasDefaultValue alone EF
+            // treats them as store generated, a key part at its default (0) then makes Attach track an existing row as Added (duplicate
+            // INSERT) or Add hand out a temporary key that collides with a real row, and the whole save rolls back (see 01fc448d)
             modelBuilder.Entity<CharacterModel>(entity =>
             {
                 entity.ToTable("character");
@@ -83,7 +86,8 @@ namespace NexusForever.Database.Character
                 entity.Property(e => e.Id)
                     .HasColumnName("id")
                     .HasColumnType("bigint(20) unsigned")
-                    .HasDefaultValue(0);
+                    .HasDefaultValue(0)
+                    .ValueGeneratedNever();
 
                 entity.Property(e => e.AccountId)
                     .HasColumnName("accountId")
@@ -255,12 +259,14 @@ namespace NexusForever.Database.Character
                 entity.Property(e => e.Id)
                     .HasColumnName("id")
                     .HasColumnType("bigint(20) unsigned")
-                    .HasDefaultValue(0);
+                    .HasDefaultValue(0)
+                    .ValueGeneratedNever();
 
                 entity.Property(e => e.AchievementId)
                     .HasColumnName("achievementId")
                     .HasColumnType("smallint(5) unsigned")
-                    .HasDefaultValue(0);
+                    .HasDefaultValue(0)
+                    .ValueGeneratedNever();
 
                 entity.Property(e => e.Data0)
                     .HasColumnName("data0")
@@ -293,7 +299,8 @@ namespace NexusForever.Database.Character
                 entity.Property(e => e.Id)
                     .HasColumnName("id")
                     .HasColumnType("bigint(20) unsigned")
-                    .HasDefaultValue(0);
+                    .HasDefaultValue(0)
+                    .ValueGeneratedNever();
 
                 entity.Property(e => e.SpecIndex)
                     .HasColumnName("specIndex")
@@ -304,7 +311,8 @@ namespace NexusForever.Database.Character
                 entity.Property(e => e.AmpId)
                     .HasColumnName("ampId")
                     .HasColumnType("smallint(5) unsigned")
-                    .HasDefaultValue(0);
+                    .HasDefaultValue(0)
+                    .ValueGeneratedNever();
 
                 entity.HasOne(d => d.Character)
                     .WithMany(p => p.ActionSetAmp)
@@ -322,7 +330,8 @@ namespace NexusForever.Database.Character
                 entity.Property(e => e.Id)
                     .HasColumnName("id")
                     .HasColumnType("bigint(20) unsigned")
-                    .HasDefaultValue(0);
+                    .HasDefaultValue(0)
+                    .ValueGeneratedNever();
 
                 entity.Property(e => e.SpecIndex)
                     .HasColumnName("specIndex")
@@ -367,12 +376,14 @@ namespace NexusForever.Database.Character
                 entity.Property(e => e.Id)
                     .HasColumnName("id")
                     .HasColumnType("bigint(20) unsigned")
-                    .HasDefaultValue(0);
+                    .HasDefaultValue(0)
+                    .ValueGeneratedNever();
 
                 entity.Property(e => e.Slot)
                     .HasColumnName("slot")
                     .HasColumnType("tinyint(3) unsigned")
-                    .HasDefaultValue(0);
+                    .HasDefaultValue(0)
+                    .ValueGeneratedNever();
 
                 entity.Property(e => e.DisplayId)
                     .HasColumnName("displayId")
@@ -421,7 +432,8 @@ namespace NexusForever.Database.Character
                 entity.Property(e => e.Id)
                     .HasColumnName("id")
                     .HasColumnType("bigint(20) unsigned")
-                    .HasDefaultValue(0);
+                    .HasDefaultValue(0)
+                    .ValueGeneratedNever();
 
                 entity.Property(e => e.Index)
                     .HasColumnName("index")
@@ -456,7 +468,8 @@ namespace NexusForever.Database.Character
                 entity.Property(e => e.Id)
                     .HasColumnName("id")
                     .HasColumnType("bigint(20) unsigned")
-                    .HasDefaultValue(0);
+                    .HasDefaultValue(0)
+                    .ValueGeneratedNever();
 
                 entity.Property(e => e.Index)
                     .HasColumnName("index")
@@ -496,17 +509,20 @@ namespace NexusForever.Database.Character
                 entity.Property(e => e.Race)
                     .HasColumnName("race")
                     .HasColumnType("tinyint(4) unsigned")
-                    .HasDefaultValue(0);
+                    .HasDefaultValue(0)
+                    .ValueGeneratedNever();
 
                 entity.Property(e => e.Faction)
                     .HasColumnName("faction")
                     .HasColumnType("smallint(5) unsigned")
-                    .HasDefaultValue(0);
+                    .HasDefaultValue(0)
+                    .ValueGeneratedNever();
 
                 entity.Property(e => e.CreationStart)
                     .HasColumnName("creationStart")
                     .HasColumnType("tinyint(4) unsigned")
-                    .HasDefaultValue(0);
+                    .HasDefaultValue(0)
+                    .ValueGeneratedNever();
 
                 entity.Property(e => e.WorldId)
                     .HasColumnName("worldId")
@@ -897,12 +913,14 @@ namespace NexusForever.Database.Character
                 entity.Property(e => e.Id)
                     .HasColumnName("id")
                     .HasColumnType("bigint(20) unsigned")
-                    .HasDefaultValue(0);
+                    .HasDefaultValue(0)
+                    .ValueGeneratedNever();
 
                 entity.Property(e => e.CurrencyId)
                     .HasColumnName("currencyId")
                     .HasColumnType("tinyint(4) unsigned")
-                    .HasDefaultValue(0);
+                    .HasDefaultValue(0)
+                    .ValueGeneratedNever();
 
                 entity.Property(e => e.Amount)
                     .HasColumnName("amount")
@@ -925,12 +943,14 @@ namespace NexusForever.Database.Character
                 entity.Property(e => e.Id)
                     .HasColumnName("id")
                     .HasColumnType("bigint(20) unsigned")
-                    .HasDefaultValue(0);
+                    .HasDefaultValue(0)
+                    .ValueGeneratedNever();
 
                 entity.Property(e => e.Label)
                     .HasColumnName("label")
                     .HasColumnType("int(10) unsigned")
-                    .HasDefaultValue(0);
+                    .HasDefaultValue(0)
+                    .ValueGeneratedNever();
 
                 entity.Property(e => e.Value)
                     .HasColumnName("value")
@@ -953,7 +973,8 @@ namespace NexusForever.Database.Character
                 entity.Property(e => e.Id)
                     .HasColumnName("id")
                     .HasColumnType("bigint(20) unsigned")
-                    .HasDefaultValue(0);
+                    .HasDefaultValue(0)
+                    .ValueGeneratedNever();
 
                 entity.Property(e => e.Type)
                     .HasColumnName("type")
@@ -988,12 +1009,14 @@ namespace NexusForever.Database.Character
                 entity.Property(e => e.Id)
                     .HasColumnName("id")
                     .HasColumnType("bigint(20) unsigned")
-                    .HasDefaultValue(0);
+                    .HasDefaultValue(0)
+                    .ValueGeneratedNever();
 
                 entity.Property(e => e.EntitlementId)
                     .HasColumnName("entitlementId")
                     .HasColumnType("tinyint(3) unsigned")
-                    .HasDefaultValue(0);
+                    .HasDefaultValue(0)
+                    .ValueGeneratedNever();
 
                 entity.Property(e => e.Amount)
                     .HasColumnName("amount")
@@ -1016,7 +1039,8 @@ namespace NexusForever.Database.Character
                 entity.Property(e => e.Id)
                     .HasColumnName("id")
                     .HasColumnType("bigint(20) unsigned")
-                    .HasDefaultValue(0);
+                    .HasDefaultValue(0)
+                    .ValueGeneratedNever();
 
                 entity.Property(e => e.InputActionId)
                     .HasColumnName("inputActionId")
@@ -1100,7 +1124,8 @@ namespace NexusForever.Database.Character
                 entity.Property(e => e.Id)
                     .HasColumnName("id")
                     .HasColumnType("bigint(20) unsigned")
-                    .HasDefaultValue(0);
+                    .HasDefaultValue(0)
+                    .ValueGeneratedNever();
 
                 entity.Property(e => e.CreateTime)
                     .HasColumnName("createTime")
@@ -1199,7 +1224,8 @@ namespace NexusForever.Database.Character
                 entity.Property(e => e.Id)
                     .HasColumnName("id")
                     .HasColumnType("bigint(20) unsigned")
-                    .HasDefaultValue(0);
+                    .HasDefaultValue(0)
+                    .ValueGeneratedNever();
 
                 entity.Property(e => e.Index)
                     .HasColumnName("index")
@@ -1233,7 +1259,8 @@ namespace NexusForever.Database.Character
                 entity.Property(e => e.Id)
                     .HasColumnName("id")
                     .HasColumnType("bigint(20) unsigned")
-                    .HasDefaultValue(0);
+                    .HasDefaultValue(0)
+                    .ValueGeneratedNever();
 
                 // Soldier is path 0: a generated key part at its default makes Attach track the row as Added, every update became a duplicate insert
                 entity.Property(e => e.Path)
@@ -1273,7 +1300,8 @@ namespace NexusForever.Database.Character
                 entity.Property(e => e.Id)
                     .HasColumnName("id")
                     .HasColumnType("bigint(20) unsigned")
-                    .HasDefaultValue(0);
+                    .HasDefaultValue(0)
+                    .ValueGeneratedNever();
 
                 entity.Property(e => e.BindPointId)
                     .HasColumnName("bindPointId")
@@ -1313,12 +1341,14 @@ namespace NexusForever.Database.Character
                 entity.Property(e => e.Id)
                     .HasColumnName("id")
                     .HasColumnType("bigint(20) unsigned")
-                    .HasDefaultValue(0);
+                    .HasDefaultValue(0)
+                    .ValueGeneratedNever();
 
                 entity.Property(e => e.MissionId)
                     .HasColumnName("missionId")
                     .HasColumnType("smallint(5) unsigned")
-                    .HasDefaultValue(0);
+                    .HasDefaultValue(0)
+                    .ValueGeneratedNever();
 
                 entity.Property(e => e.State)
                     .HasColumnName("state")
@@ -1346,12 +1376,14 @@ namespace NexusForever.Database.Character
                 entity.Property(e => e.Id)
                     .HasColumnName("id")
                     .HasColumnType("bigint(20) unsigned")
-                    .HasDefaultValue(0);
+                    .HasDefaultValue(0)
+                    .ValueGeneratedNever();
 
                 entity.Property(e => e.RewardTrackId)
                     .HasColumnName("rewardTrackId")
                     .HasColumnType("smallint(5) unsigned")
-                    .HasDefaultValue(0);
+                    .HasDefaultValue(0)
+                    .ValueGeneratedNever();
 
                 entity.Property(e => e.Points)
                     .HasColumnName("points")
@@ -1379,12 +1411,14 @@ namespace NexusForever.Database.Character
                 entity.Property(e => e.Id)
                     .HasColumnName("id")
                     .HasColumnType("bigint(20) unsigned")
-                    .HasDefaultValue(0);
+                    .HasDefaultValue(0)
+                    .ValueGeneratedNever();
 
                 entity.Property(e => e.ArticleId)
                     .HasColumnName("articleId")
                     .HasColumnType("smallint(5) unsigned")
-                    .HasDefaultValue(0);
+                    .HasDefaultValue(0)
+                    .ValueGeneratedNever();
 
                 entity.Property(e => e.UnlockedFlags)
                     .HasColumnName("unlockedFlags")
@@ -1412,12 +1446,14 @@ namespace NexusForever.Database.Character
                 entity.Property(e => e.Id)
                     .HasColumnName("id")
                     .HasColumnType("bigint(20) unsigned")
-                    .HasDefaultValue(0);
+                    .HasDefaultValue(0)
+                    .ValueGeneratedNever();
 
                 entity.Property(e => e.TradeskillId)
                     .HasColumnName("tradeskillId")
                     .HasColumnType("int(10) unsigned")
-                    .HasDefaultValue(0);
+                    .HasDefaultValue(0)
+                    .ValueGeneratedNever();
 
                 entity.Property(e => e.Xp)
                     .HasColumnName("xp")
@@ -1445,12 +1481,14 @@ namespace NexusForever.Database.Character
                 entity.Property(e => e.Id)
                     .HasColumnName("id")
                     .HasColumnType("bigint(20) unsigned")
-                    .HasDefaultValue(0);
+                    .HasDefaultValue(0)
+                    .ValueGeneratedNever();
 
                 entity.Property(e => e.SchematicId)
                     .HasColumnName("schematicId")
                     .HasColumnType("int(10) unsigned")
-                    .HasDefaultValue(0);
+                    .HasDefaultValue(0)
+                    .ValueGeneratedNever();
 
                 entity.HasOne(d => d.Character)
                     .WithMany(p => p.TradeskillSchematic)
@@ -1468,17 +1506,20 @@ namespace NexusForever.Database.Character
                 entity.Property(e => e.Id)
                     .HasColumnName("id")
                     .HasColumnType("bigint(20) unsigned")
-                    .HasDefaultValue(0);
+                    .HasDefaultValue(0)
+                    .ValueGeneratedNever();
 
                 entity.Property(e => e.Type)
                     .HasColumnName("type")
                     .HasColumnType("tinyint(3) unsigned")
-                    .HasDefaultValue(0);
+                    .HasDefaultValue(0)
+                    .ValueGeneratedNever();
 
                 entity.Property(e => e.ObjectId)
                     .HasColumnName("objectId")
                     .HasColumnType("int(10) unsigned")
-                    .HasDefaultValue(0);
+                    .HasDefaultValue(0)
+                    .ValueGeneratedNever();
 
                 entity.Property(e => e.FlairIdMask)
                     .HasColumnName("flairIdMask")
@@ -1507,12 +1548,14 @@ namespace NexusForever.Database.Character
                 entity.Property(e => e.Id)
                     .HasColumnName("id")
                     .HasColumnType("bigint(20) unsigned")
-                    .HasDefaultValue(0);
+                    .HasDefaultValue(0)
+                    .ValueGeneratedNever();
 
                 entity.Property(e => e.PetFlairId)
                     .HasColumnName("petFlairId")
                     .HasColumnType("int(10) unsigned")
-                    .HasDefaultValue(0);
+                    .HasDefaultValue(0)
+                    .ValueGeneratedNever();
 
                 entity.HasOne(d => d.Character)
                     .WithMany(p => p.PetFlair)
@@ -1530,12 +1573,14 @@ namespace NexusForever.Database.Character
                 entity.Property(e => e.Id)
                     .HasColumnName("id")
                     .HasColumnType("bigint(20) unsigned")
-                    .HasDefaultValue(0);
+                    .HasDefaultValue(0)
+                    .ValueGeneratedNever();
 
                 entity.Property(e => e.QuestId)
                     .HasColumnName("questId")
                     .HasColumnType("smallint(5) unsigned")
-                    .HasDefaultValue(0);
+                    .HasDefaultValue(0)
+                    .ValueGeneratedNever();
 
                 entity.Property(e => e.Flags)
                     .HasColumnName("flags")
@@ -1573,12 +1618,14 @@ namespace NexusForever.Database.Character
                 entity.Property(e => e.Id)
                     .HasColumnName("id")
                     .HasColumnType("bigint(20) unsigned")
-                    .HasDefaultValue(0);
+                    .HasDefaultValue(0)
+                    .ValueGeneratedNever();
 
                 entity.Property(e => e.QuestId)
                     .HasColumnName("questId")
                     .HasColumnType("smallint(5) unsigned")
-                    .HasDefaultValue(0);
+                    .HasDefaultValue(0)
+                    .ValueGeneratedNever();
 
                 // objective 0 is the first objective, same reason as character_path.path: at its default a generated key part gets a
                 // temporary value from one server-wide counter (255 down to 0, wrapping), when that value is another objective's index of
@@ -1615,12 +1662,14 @@ namespace NexusForever.Database.Character
                 entity.Property(e => e.Id)
                     .HasColumnName("id")
                     .HasColumnType("bigint(20) unsigned")
-                    .HasDefaultValue(0);
+                    .HasDefaultValue(0)
+                    .ValueGeneratedNever();
 
                 entity.Property(e => e.FactionId)
                     .HasColumnName("factionId")
                     .HasColumnType("int(10) unsigned")
-                    .HasDefaultValue(0);
+                    .HasDefaultValue(0)
+                    .ValueGeneratedNever();
 
                 entity.Property(e => e.Amount)
                     .HasColumnName("amount")
@@ -1643,12 +1692,14 @@ namespace NexusForever.Database.Character
                 entity.Property(e => e.Id)
                     .HasColumnName("id")
                     .HasColumnType("bigint(20) unsigned")
-                    .HasDefaultValue(0);
+                    .HasDefaultValue(0)
+                    .ValueGeneratedNever();
 
                 entity.Property(e => e.Spell4BaseId)
                     .HasColumnName("spell4BaseId")
                     .HasColumnType("int(10) unsigned")
-                    .HasDefaultValue(0);
+                    .HasDefaultValue(0)
+                    .ValueGeneratedNever();
 
                 entity.Property(e => e.Tier)
                     .HasColumnName("tier")
@@ -1671,7 +1722,8 @@ namespace NexusForever.Database.Character
                 entity.Property(e => e.Id)
                     .HasColumnName("id")
                     .HasColumnType("bigint(20) unsigned")
-                    .HasDefaultValue(0);
+                    .HasDefaultValue(0)
+                    .ValueGeneratedNever();
 
                 entity.Property(e => e.Stat)
                     .HasColumnName("stat")
@@ -1705,12 +1757,14 @@ namespace NexusForever.Database.Character
                 entity.Property(e => e.Id)
                     .HasColumnName("id")
                     .HasColumnType("bigint(20) unsigned")
-                    .HasDefaultValue(0);
+                    .HasDefaultValue(0)
+                    .ValueGeneratedNever();
 
                 entity.Property(e => e.Title)
                     .HasColumnName("title")
                     .HasColumnType("smallint(5) unsigned")
-                    .HasDefaultValue(0);
+                    .HasDefaultValue(0)
+                    .ValueGeneratedNever();
 
                 entity.Property(e => e.Revoked)
                     .HasColumnName("revoked")
@@ -1738,12 +1792,14 @@ namespace NexusForever.Database.Character
                 entity.Property(e => e.Id)
                     .HasColumnName("id")
                     .HasColumnType("bigint(20) unsigned")
-                    .HasDefaultValue(0);
+                    .HasDefaultValue(0)
+                    .ValueGeneratedNever();
 
                 entity.Property(e => e.MaterialId)
                     .HasColumnName("materialId")
                     .HasColumnType("smallint(5) unsigned")
-                    .HasDefaultValue(0);
+                    .HasDefaultValue(0)
+                    .ValueGeneratedNever();
 
                 entity.Property(e => e.Amount)
                     .HasColumnName("amount")
@@ -1766,17 +1822,20 @@ namespace NexusForever.Database.Character
                 entity.Property(e => e.Id)
                     .HasColumnName("id")
                     .HasColumnType("bigint(20) unsigned")
-                    .HasDefaultValue(0);
+                    .HasDefaultValue(0)
+                    .ValueGeneratedNever();
 
                 entity.Property(e => e.ZoneMap)
                     .HasColumnName("zoneMap")
                     .HasColumnType("smallint(5) unsigned")
-                    .HasDefaultValue(0);
+                    .HasDefaultValue(0)
+                    .ValueGeneratedNever();
 
                 entity.Property(e => e.HexGroup)
                     .HasColumnName("hexGroup")
                     .HasColumnType("smallint(5) unsigned")
-                    .HasDefaultValue(0);
+                    .HasDefaultValue(0)
+                    .ValueGeneratedNever();
 
                 entity.HasOne(d => d.Character)
                     .WithMany(p => p.ZonemapHexgroup)
@@ -1794,7 +1853,8 @@ namespace NexusForever.Database.Character
                 entity.Property(e => e.Id)
                     .HasColumnName("id")
                     .HasColumnType("bigint(20) unsigned")
-                    .HasDefaultValue(0);
+                    .HasDefaultValue(0)
+                    .ValueGeneratedNever();
 
                 entity.Property(e => e.Type)
                     .HasColumnName("type")
@@ -1822,12 +1882,14 @@ namespace NexusForever.Database.Character
                 entity.Property(e => e.Id)
                     .HasColumnName("id")
                     .HasColumnType("bigint(20) unsigned")
-                    .HasDefaultValue(0);
+                    .HasDefaultValue(0)
+                    .ValueGeneratedNever();
 
                 entity.Property(e => e.CharacterId)
                     .HasColumnName("characterId")
                     .HasColumnType("bigint(20) unsigned")
-                    .HasDefaultValue(0);
+                    .HasDefaultValue(0)
+                    .ValueGeneratedNever();
 
                 entity.Property(e => e.Flags)
                     .HasColumnName("flags")
@@ -1850,7 +1912,8 @@ namespace NexusForever.Database.Character
                 entity.Property(e => e.Id)
                     .HasColumnName("id")
                     .HasColumnType("bigint(20) unsigned")
-                    .HasDefaultValue(0);
+                    .HasDefaultValue(0)
+                    .ValueGeneratedNever();
 
                 entity.Property(e => e.Flags)
                     .HasColumnName("flags")
@@ -1899,12 +1962,14 @@ namespace NexusForever.Database.Character
                 entity.Property(e => e.Id)
                     .HasColumnName("id")
                     .HasColumnType("bigint(20) unsigned")
-                    .HasDefaultValue(0);
+                    .HasDefaultValue(0)
+                    .ValueGeneratedNever();
 
                 entity.Property(e => e.AchievementId)
                     .HasColumnName("achievementId")
                     .HasColumnType("smallint(5) unsigned")
-                    .HasDefaultValue(0);
+                    .HasDefaultValue(0)
+                    .ValueGeneratedNever();
 
                 entity.Property(e => e.Data0)
                     .HasColumnName("data0")
@@ -1937,7 +2002,8 @@ namespace NexusForever.Database.Character
                 entity.Property(e => e.Id)
                     .HasColumnName("id")
                     .HasColumnType("bigint(20) unsigned")
-                    .HasDefaultValue(0);
+                    .HasDefaultValue(0)
+                    .ValueGeneratedNever();
 
                 entity.Property(e => e.MessageOfTheDay)
                     .HasColumnName("motd")
@@ -1980,7 +2046,8 @@ namespace NexusForever.Database.Character
                 entity.Property(e => e.Id)
                     .HasColumnName("id")
                     .HasColumnType("bigint(20) unsigned")
-                    .HasDefaultValue(0);
+                    .HasDefaultValue(0)
+                    .ValueGeneratedNever();
 
                 // rank 0 is the leader rank, same reason as character_path.path
                 entity.Property(e => e.Index)
@@ -2030,12 +2097,14 @@ namespace NexusForever.Database.Character
                 entity.Property(e => e.Id)
                     .HasColumnName("id")
                     .HasColumnType("bigint(20) unsigned")
-                    .HasDefaultValue(0);
+                    .HasDefaultValue(0)
+                    .ValueGeneratedNever();
 
                 entity.Property(e => e.CharacterId)
                     .HasColumnName("characterId")
                     .HasColumnType("bigint(20) unsigned")
-                    .HasDefaultValue(0);
+                    .HasDefaultValue(0)
+                    .ValueGeneratedNever();
 
                 entity.Property(e => e.Rank)
                     .HasColumnName("rank")
@@ -2068,7 +2137,8 @@ namespace NexusForever.Database.Character
                 entity.Property(e => e.Id)
                     .HasColumnName("id")
                     .HasColumnType("bigint(20) unsigned")
-                    .HasDefaultValue(0);
+                    .HasDefaultValue(0)
+                    .ValueGeneratedNever();
 
                 entity.Property(e => e.BagIndex)
                     .HasColumnName("bagIndex")
@@ -2492,7 +2562,8 @@ namespace NexusForever.Database.Character
                 entity.Property(e => e.Id)
                     .HasColumnName("id")
                     .HasColumnType("bigint(20) unsigned")
-                    .HasDefaultValue(0);
+                    .HasDefaultValue(0)
+                    .ValueGeneratedNever();
 
                 entity.Property(e => e.DoorDecorInfoId)
                     .HasColumnName("doorDecorInfoId")
@@ -2591,12 +2662,14 @@ namespace NexusForever.Database.Character
                 entity.Property(e => e.Id)
                     .HasColumnName("id")
                     .HasColumnType("bigint(20) unsigned")
-                    .HasDefaultValue(0);
+                    .HasDefaultValue(0)
+                    .ValueGeneratedNever();
 
                 entity.Property(e => e.DecorId)
                     .HasColumnName("decorId")
                     .HasColumnType("bigint(20) unsigned")
-                    .HasDefaultValue(0);
+                    .HasDefaultValue(0)
+                    .ValueGeneratedNever();
 
                 entity.Property(e => e.ColourShiftId)
                     .HasColumnName("colourShiftId")
@@ -2680,7 +2753,8 @@ namespace NexusForever.Database.Character
                 entity.Property(e => e.Id)
                     .HasColumnName("id")
                     .HasColumnType("bigint(20) unsigned")
-                    .HasDefaultValue(0);
+                    .HasDefaultValue(0)
+                    .ValueGeneratedNever();
 
                 entity.Property(e => e.Index)
                     .HasColumnName("index")

@@ -58,6 +58,9 @@ namespace NexusForever.Database.World
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            // Primary key columns the server assigns itself (no AUTO_INCREMENT) are ValueGeneratedNever: with HasDefaultValue alone EF
+            // treats them as store generated, a key part at its default (0) then makes Attach track an existing row as Added (duplicate
+            // INSERT) or Add hand out a temporary key that collides with a real row, and the whole save rolls back (see 01fc448d)
             modelBuilder.Entity<CreatureInfoPropertyModel>(entity =>
             {
                 entity.ToTable("creature_info_property");
@@ -110,12 +113,14 @@ namespace NexusForever.Database.World
                 entity.Property(e => e.Type)
                     .HasColumnName("type")
                     .HasColumnType("tinyint(3) unsigned")
-                    .HasDefaultValue(0);
+                    .HasDefaultValue(0)
+                    .ValueGeneratedNever();
 
                 entity.Property(e => e.ObjectId)
                     .HasColumnName("objectId")
                     .HasColumnType("int(10) unsigned")
-                    .HasDefaultValue(0);
+                    .HasDefaultValue(0)
+                    .ValueGeneratedNever();
 
                 entity.Property(e => e.Note)
                     .IsRequired()
@@ -134,12 +139,14 @@ namespace NexusForever.Database.World
                 entity.Property(e => e.Id)
                     .HasColumnName("id")
                     .HasColumnType("int(10) unsigned")
-                    .HasDefaultValue(0);
+                    .HasDefaultValue(0)
+                    .ValueGeneratedNever();
 
                 entity.Property(e => e.EmoteId)
                     .HasColumnName("emoteId")
                     .HasColumnType("smallint(5) unsigned")
-                    .HasDefaultValue(0);
+                    .HasDefaultValue(0)
+                    .ValueGeneratedNever();
 
                 entity.HasOne(d => d.Entity)
                     .WithOne(p => p.EntityEmote)
@@ -159,17 +166,20 @@ namespace NexusForever.Database.World
                 entity.Property(e => e.Id)
                     .HasColumnName("id")
                     .HasColumnType("int(10) unsigned")
-                    .HasDefaultValue(0);
+                    .HasDefaultValue(0)
+                    .ValueGeneratedNever();
 
                 entity.Property(e => e.Phase)
                     .HasColumnName("phase")
                     .HasColumnType("int(10) unsigned")
-                    .HasDefaultValue(0);
+                    .HasDefaultValue(0)
+                    .ValueGeneratedNever();
 
                 entity.Property(e => e.EventId)
                     .HasColumnName("eventId")
                     .HasColumnType("int(10) unsigned")
-                    .HasDefaultValue(0);
+                    .HasDefaultValue(0)
+                    .ValueGeneratedNever();
 
                 entity.HasOne(d => d.Entity)
                     .WithOne(p => p.EntityEvent)
@@ -187,7 +197,8 @@ namespace NexusForever.Database.World
                 entity.Property(e => e.LootGroupId)
                     .HasColumnName("lootGroupId")
                     .HasColumnType("bigint(20) unsigned")
-                    .HasDefaultValue(0);
+                    .HasDefaultValue(0)
+                    .ValueGeneratedNever();
 
                 entity.Property(e => e.Comment)
                     .HasColumnName("comment")
@@ -202,7 +213,8 @@ namespace NexusForever.Database.World
                 entity.Property(e => e.Id)
                     .HasColumnName("id")
                     .HasColumnType("int(10) unsigned")
-                    .HasDefaultValue(0);
+                    .HasDefaultValue(0)
+                    .ValueGeneratedNever();
 
                 entity.Property(e => e.ActivePropId)
                     .HasColumnName("activePropId")
@@ -306,7 +318,8 @@ namespace NexusForever.Database.World
                 entity.Property(e => e.Id)
                     .HasColumnName("id")
                     .HasColumnType("int(10) unsigned")
-                    .HasDefaultValue(0);
+                    .HasDefaultValue(0)
+                    .ValueGeneratedNever();
 
                 entity.Property(e => e.Property)
                     .HasColumnName("property")
@@ -334,12 +347,14 @@ namespace NexusForever.Database.World
                 entity.Property(e => e.Id)
                     .HasColumnName("id")
                     .HasColumnType("int(10) unsigned")
-                    .HasDefaultValue(0);
+                    .HasDefaultValue(0)
+                    .ValueGeneratedNever();
 
                 entity.Property(e => e.ScriptName)
                     .HasColumnName("scriptName")
                     .HasColumnType("varchar(150)")
-                    .HasDefaultValue("");
+                    .HasDefaultValue("")
+                    .ValueGeneratedNever();
 
                 entity.HasOne(d => d.Entity)
                     .WithMany(p => p.EntityScript)
@@ -354,7 +369,8 @@ namespace NexusForever.Database.World
                 entity.Property(e => e.Id)
                     .HasColumnName("id")
                     .HasColumnType("int(10) unsigned")
-                    .HasDefaultValue(0);
+                    .HasDefaultValue(0)
+                    .ValueGeneratedNever();
 
                 entity.Property(e => e.Fx)
                     .HasColumnName("fx")
@@ -403,12 +419,14 @@ namespace NexusForever.Database.World
                 entity.Property(e => e.Id)
                     .HasColumnName("id")
                     .HasColumnType("int(10) unsigned")
-                    .HasDefaultValue(0);
+                    .HasDefaultValue(0)
+                    .ValueGeneratedNever();
 
                 entity.Property(e => e.Stat)
                     .HasColumnName("stat")
                     .HasColumnType("tinyint(3) unsigned")
-                    .HasDefaultValue(0);
+                    .HasDefaultValue(0)
+                    .ValueGeneratedNever();
 
                 entity.Property(e => e.Value)
                     .HasColumnName("value")
@@ -428,7 +446,8 @@ namespace NexusForever.Database.World
                 entity.Property(e => e.Id)
                     .HasColumnName("id")
                     .HasColumnType("int(10) unsigned")
-                    .HasDefaultValue(0);
+                    .HasDefaultValue(0)
+                    .ValueGeneratedNever();
 
                 entity.Property(e => e.BuyPriceMultiplier)
                     .HasColumnName("buyPriceMultiplier")
@@ -456,12 +475,14 @@ namespace NexusForever.Database.World
                 entity.Property(e => e.Id)
                     .HasColumnName("id")
                     .HasColumnType("int(10) unsigned")
-                    .HasDefaultValue(0);
+                    .HasDefaultValue(0)
+                    .ValueGeneratedNever();
 
                 entity.Property(e => e.Index)
                     .HasColumnName("index")
                     .HasColumnType("int(10) unsigned")
-                    .HasDefaultValue(0);
+                    .HasDefaultValue(0)
+                    .ValueGeneratedNever();
 
                 entity.Property(e => e.LocalisedTextId)
                     .HasColumnName("localisedTextId")
@@ -484,12 +505,14 @@ namespace NexusForever.Database.World
                 entity.Property(e => e.Id)
                     .HasColumnName("id")
                     .HasColumnType("int(10) unsigned")
-                    .HasDefaultValue(0);
+                    .HasDefaultValue(0)
+                    .ValueGeneratedNever();
 
                 entity.Property(e => e.Index)
                     .HasColumnName("index")
                     .HasColumnType("int(10) unsigned")
-                    .HasDefaultValue(0);
+                    .HasDefaultValue(0)
+                    .ValueGeneratedNever();
 
                 entity.Property(e => e.CategoryIndex)
                     .HasColumnName("categoryIndex")
@@ -549,12 +572,14 @@ namespace NexusForever.Database.World
                 entity.Property(e => e.Id)
                     .HasColumnName("id")
                     .HasColumnType("int(10) unsigned")
-                    .HasDefaultValue(0);
+                    .HasDefaultValue(0)
+                    .ValueGeneratedNever();
 
                 entity.Property(e => e.LootGroupId)
                     .HasColumnName("lootGroupId")
                     .HasColumnType("bigint(20) unsigned")
-                    .HasDefaultValue(0);
+                    .HasDefaultValue(0)
+                    .ValueGeneratedNever();
 
                 entity.Property(e => e.Comment)
                     .HasColumnName("comment")
@@ -569,7 +594,8 @@ namespace NexusForever.Database.World
                 entity.Property(e => e.Id)
                     .HasColumnName("id")
                     .HasColumnType("bigint(20) unsigned")
-                    .HasDefaultValue(0);
+                    .HasDefaultValue(0)
+                    .ValueGeneratedNever();
 
                 entity.Property(e => e.ParentId)
                     .HasColumnName("parentId")
@@ -624,18 +650,21 @@ namespace NexusForever.Database.World
                 entity.Property(e => e.Id)
                     .HasColumnName("id")
                     .HasColumnType("bigint(20) unsigned")
-                    .HasDefaultValue(0);
+                    .HasDefaultValue(0)
+                    .ValueGeneratedNever();
 
                 entity.Property(e => e.Type)
                     .HasColumnName("type")
                     .HasColumnType("tinyint(3) unsigned")
                     .HasDefaultValue(LootItemType.StaticItem)
-                    .HasConversion<EnumToNumberConverter<LootItemType, byte>>();
+                    .HasConversion<EnumToNumberConverter<LootItemType, byte>>()
+                    .ValueGeneratedNever();
 
                 entity.Property(e => e.StaticId)
                     .HasColumnName("staticId")
                     .HasColumnType("int(10) unsigned")
-                    .HasDefaultValue(0);
+                    .HasDefaultValue(0)
+                    .ValueGeneratedNever();
 
                 entity.Property(e => e.Probability)
                     .HasColumnName("probability")
@@ -693,7 +722,8 @@ namespace NexusForever.Database.World
                 entity.Property(e => e.Id)
                     .HasColumnName("id")
                     .HasColumnType("int(10) unsigned")
-                    .HasDefaultValue(0);
+                    .HasDefaultValue(0)
+                    .ValueGeneratedNever();
 
                 entity.Property(e => e.Description)
                     .IsRequired()
@@ -730,7 +760,8 @@ namespace NexusForever.Database.World
                 entity.Property(e => e.Id)
                     .HasColumnName("id")
                     .HasColumnType("int(10) unsigned")
-                    .HasDefaultValue(0);
+                    .HasDefaultValue(0)
+                    .ValueGeneratedNever();
 
                 entity.Property(e => e.Description)
                     .IsRequired()
@@ -773,12 +804,14 @@ namespace NexusForever.Database.World
                 entity.Property(e => e.Id)
                     .HasColumnName("id")
                     .HasColumnType("int(10) unsigned")
-                    .HasDefaultValue(0);
+                    .HasDefaultValue(0)
+                    .ValueGeneratedNever();
 
                 entity.Property(e => e.CategoryId)
                     .HasColumnName("categoryId")
                     .HasColumnType("int(10) unsigned")
-                    .HasDefaultValue(0);
+                    .HasDefaultValue(0)
+                    .ValueGeneratedNever();
 
                 entity.Property(e => e.Index)
                     .HasColumnName("index")
@@ -818,12 +851,14 @@ namespace NexusForever.Database.World
                 entity.Property(e => e.Id)
                     .HasColumnName("id")
                     .HasColumnType("int(10) unsigned")
-                    .HasDefaultValue(0);
+                    .HasDefaultValue(0)
+                    .ValueGeneratedNever();
 
                 entity.Property(e => e.GroupId)
                     .HasColumnName("groupId")
                     .HasColumnType("int(10) unsigned")
-                    .HasDefaultValue(0);
+                    .HasDefaultValue(0)
+                    .ValueGeneratedNever();
 
                 entity.Property(e => e.Description)
                     .IsRequired()
@@ -873,12 +908,14 @@ namespace NexusForever.Database.World
                 entity.Property(e => e.Id)
                     .HasColumnName("id")
                     .HasColumnType("int(10) unsigned")
-                    .HasDefaultValue(0);
+                    .HasDefaultValue(0)
+                    .ValueGeneratedNever();
 
                 entity.Property(e => e.ItemId)
                     .HasColumnName("itemId")
                     .HasColumnType("smallint(5) unsigned")
-                    .HasDefaultValue(0);
+                    .HasDefaultValue(0)
+                    .ValueGeneratedNever();
 
                 entity.Property(e => e.Amount)
                     .HasColumnName("amount")
@@ -907,12 +944,14 @@ namespace NexusForever.Database.World
                 entity.Property(e => e.Id)
                     .HasColumnName("id")
                     .HasColumnType("int(10) unsigned")
-                    .HasDefaultValue(0);
+                    .HasDefaultValue(0)
+                    .ValueGeneratedNever();
 
                 entity.Property(e => e.CurrencyId)
                     .HasColumnName("currencyId")
                     .HasColumnType("tinyint(3) unsigned")
-                    .HasDefaultValue(0);
+                    .HasDefaultValue(0)
+                    .ValueGeneratedNever();
 
                 entity.Property(e => e.DiscountType)
                     .HasColumnName("discountType")
@@ -957,17 +996,20 @@ namespace NexusForever.Database.World
                     .HasColumnName("id")
                     .HasColumnType("int(10) unsigned")
                     .HasDefaultValue(0)
-                    .HasComment("Tutorial ID");
+                    .HasComment("Tutorial ID")
+                    .ValueGeneratedNever();
 
                 entity.Property(e => e.Type)
                     .HasColumnName("type")
                     .HasColumnType("int(10) unsigned")
-                    .HasDefaultValue(0);
+                    .HasDefaultValue(0)
+                    .ValueGeneratedNever();
 
                 entity.Property(e => e.TriggerId)
                     .HasColumnName("triggerId")
                     .HasColumnType("int(10) unsigned")
-                    .HasDefaultValue(0);
+                    .HasDefaultValue(0)
+                    .ValueGeneratedNever();
 
                 entity.Property(e => e.Note)
                     .IsRequired()

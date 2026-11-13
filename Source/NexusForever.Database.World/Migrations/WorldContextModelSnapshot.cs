@@ -65,13 +65,11 @@ namespace NexusForever.Database.World.Migrations
             modelBuilder.Entity("NexusForever.Database.World.Model.DisableModel", b =>
                 {
                     b.Property<byte>("Type")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("tinyint(3) unsigned")
                         .HasDefaultValue((byte)0)
                         .HasColumnName("type");
 
                     b.Property<uint>("ObjectId")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("int(10) unsigned")
                         .HasDefaultValue(0u)
                         .HasColumnName("objectId");
@@ -92,13 +90,11 @@ namespace NexusForever.Database.World.Migrations
             modelBuilder.Entity("NexusForever.Database.World.Model.EntityEmoteModel", b =>
                 {
                     b.Property<uint>("Id")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("int(10) unsigned")
                         .HasDefaultValue(0u)
                         .HasColumnName("id");
 
                     b.Property<ushort>("EmoteId")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("smallint(5) unsigned")
                         .HasDefaultValue((ushort)0)
                         .HasColumnName("emoteId");
@@ -115,19 +111,16 @@ namespace NexusForever.Database.World.Migrations
             modelBuilder.Entity("NexusForever.Database.World.Model.EntityEventModel", b =>
                 {
                     b.Property<uint>("Id")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("int(10) unsigned")
                         .HasDefaultValue(0u)
                         .HasColumnName("id");
 
                     b.Property<uint>("EventId")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("int(10) unsigned")
                         .HasDefaultValue(0u)
                         .HasColumnName("eventId");
 
                     b.Property<uint>("Phase")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("int(10) unsigned")
                         .HasDefaultValue(0u)
                         .HasColumnName("phase");
@@ -149,7 +142,6 @@ namespace NexusForever.Database.World.Migrations
                         .HasColumnType("int unsigned");
 
                     b.Property<ulong>("LootGroupId")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("bigint(20) unsigned")
                         .HasDefaultValue(0ul)
                         .HasColumnName("lootGroupId");
@@ -171,7 +163,6 @@ namespace NexusForever.Database.World.Migrations
             modelBuilder.Entity("NexusForever.Database.World.Model.EntityModel", b =>
                 {
                     b.Property<uint>("Id")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("int(10) unsigned")
                         .HasDefaultValue(0u)
                         .HasColumnName("id");
@@ -290,7 +281,6 @@ namespace NexusForever.Database.World.Migrations
             modelBuilder.Entity("NexusForever.Database.World.Model.EntityPropertyModel", b =>
                 {
                     b.Property<uint>("Id")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("int(10) unsigned")
                         .HasDefaultValue(0u)
                         .HasColumnName("id");
@@ -314,13 +304,11 @@ namespace NexusForever.Database.World.Migrations
             modelBuilder.Entity("NexusForever.Database.World.Model.EntityScriptModel", b =>
                 {
                     b.Property<uint>("Id")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("int(10) unsigned")
                         .HasDefaultValue(0u)
                         .HasColumnName("id");
 
                     b.Property<string>("ScriptName")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("varchar(150)")
                         .HasDefaultValue("")
                         .HasColumnName("scriptName");
@@ -334,7 +322,6 @@ namespace NexusForever.Database.World.Migrations
             modelBuilder.Entity("NexusForever.Database.World.Model.EntitySplineModel", b =>
                 {
                     b.Property<uint>("Id")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("int(10) unsigned")
                         .HasDefaultValue(0u)
                         .HasColumnName("id");
@@ -383,13 +370,11 @@ namespace NexusForever.Database.World.Migrations
             modelBuilder.Entity("NexusForever.Database.World.Model.EntityStatModel", b =>
                 {
                     b.Property<uint>("Id")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("int(10) unsigned")
                         .HasDefaultValue(0u)
                         .HasColumnName("id");
 
                     b.Property<byte>("Stat")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("tinyint(3) unsigned")
                         .HasDefaultValue((byte)0)
                         .HasColumnName("stat");
@@ -409,13 +394,11 @@ namespace NexusForever.Database.World.Migrations
             modelBuilder.Entity("NexusForever.Database.World.Model.EntityVendorCategoryModel", b =>
                 {
                     b.Property<uint>("Id")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("int(10) unsigned")
                         .HasDefaultValue(0u)
                         .HasColumnName("id");
 
                     b.Property<uint>("Index")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("int(10) unsigned")
                         .HasDefaultValue(0u)
                         .HasColumnName("index");
@@ -435,13 +418,11 @@ namespace NexusForever.Database.World.Migrations
             modelBuilder.Entity("NexusForever.Database.World.Model.EntityVendorItemModel", b =>
                 {
                     b.Property<uint>("Id")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("int(10) unsigned")
                         .HasDefaultValue(0u)
                         .HasColumnName("id");
 
                     b.Property<uint>("Index")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("int(10) unsigned")
                         .HasDefaultValue(0u)
                         .HasColumnName("index");
@@ -503,7 +484,6 @@ namespace NexusForever.Database.World.Migrations
             modelBuilder.Entity("NexusForever.Database.World.Model.EntityVendorModel", b =>
                 {
                     b.Property<uint>("Id")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("int(10) unsigned")
                         .HasDefaultValue(0u)
                         .HasColumnName("id");
@@ -528,13 +508,11 @@ namespace NexusForever.Database.World.Migrations
             modelBuilder.Entity("NexusForever.Database.World.Model.ItemLootModel", b =>
                 {
                     b.Property<uint>("Id")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("int(10) unsigned")
                         .HasDefaultValue(0u)
                         .HasColumnName("id");
 
                     b.Property<ulong>("LootGroupId")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("bigint(20) unsigned")
                         .HasDefaultValue(0ul)
                         .HasColumnName("lootGroupId");
@@ -556,7 +534,6 @@ namespace NexusForever.Database.World.Migrations
             modelBuilder.Entity("NexusForever.Database.World.Model.LootGroupModel", b =>
                 {
                     b.Property<ulong>("Id")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("bigint(20) unsigned")
                         .HasDefaultValue(0ul)
                         .HasColumnName("id");
@@ -611,19 +588,16 @@ namespace NexusForever.Database.World.Migrations
             modelBuilder.Entity("NexusForever.Database.World.Model.LootItemModel", b =>
                 {
                     b.Property<ulong>("Id")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("bigint(20) unsigned")
                         .HasDefaultValue(0ul)
                         .HasColumnName("id");
 
                     b.Property<byte>("Type")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("tinyint(3) unsigned")
                         .HasDefaultValue((byte)0)
                         .HasColumnName("type");
 
                     b.Property<uint>("StaticId")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("int(10) unsigned")
                         .HasDefaultValue(0u)
                         .HasColumnName("staticId");
@@ -681,7 +655,6 @@ namespace NexusForever.Database.World.Migrations
             modelBuilder.Entity("NexusForever.Database.World.Model.StoreCategoryModel", b =>
                 {
                     b.Property<uint>("Id")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("int(10) unsigned")
                         .HasDefaultValue(0u)
                         .HasColumnName("id");
@@ -729,13 +702,11 @@ namespace NexusForever.Database.World.Migrations
             modelBuilder.Entity("NexusForever.Database.World.Model.StoreOfferGroupCategoryModel", b =>
                 {
                     b.Property<uint>("Id")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("int(10) unsigned")
                         .HasDefaultValue(0u)
                         .HasColumnName("id");
 
                     b.Property<uint>("CategoryId")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("int(10) unsigned")
                         .HasDefaultValue(0u)
                         .HasColumnName("categoryId");
@@ -764,7 +735,6 @@ namespace NexusForever.Database.World.Migrations
             modelBuilder.Entity("NexusForever.Database.World.Model.StoreOfferGroupModel", b =>
                 {
                     b.Property<uint>("Id")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("int(10) unsigned")
                         .HasDefaultValue(0u)
                         .HasColumnName("id");
@@ -809,13 +779,11 @@ namespace NexusForever.Database.World.Migrations
             modelBuilder.Entity("NexusForever.Database.World.Model.StoreOfferItemDataModel", b =>
                 {
                     b.Property<uint>("Id")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("int(10) unsigned")
                         .HasDefaultValue(0u)
                         .HasColumnName("id");
 
                     b.Property<ushort>("ItemId")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("smallint(5) unsigned")
                         .HasDefaultValue((ushort)0)
                         .HasColumnName("itemId");
@@ -841,13 +809,11 @@ namespace NexusForever.Database.World.Migrations
             modelBuilder.Entity("NexusForever.Database.World.Model.StoreOfferItemModel", b =>
                 {
                     b.Property<uint>("Id")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("int(10) unsigned")
                         .HasDefaultValue(0u)
                         .HasColumnName("id");
 
                     b.Property<uint>("GroupId")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("int(10) unsigned")
                         .HasDefaultValue(0u)
                         .HasColumnName("groupId");
@@ -906,13 +872,11 @@ namespace NexusForever.Database.World.Migrations
             modelBuilder.Entity("NexusForever.Database.World.Model.StoreOfferItemPriceModel", b =>
                 {
                     b.Property<uint>("Id")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("int(10) unsigned")
                         .HasDefaultValue(0u)
                         .HasColumnName("id");
 
                     b.Property<byte>("CurrencyId")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("tinyint(3) unsigned")
                         .HasDefaultValue((byte)0)
                         .HasColumnName("currencyId");
@@ -956,20 +920,17 @@ namespace NexusForever.Database.World.Migrations
             modelBuilder.Entity("NexusForever.Database.World.Model.TutorialModel", b =>
                 {
                     b.Property<uint>("Id")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("int(10) unsigned")
                         .HasDefaultValue(0u)
                         .HasColumnName("id")
                         .HasComment("Tutorial ID");
 
                     b.Property<uint>("Type")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("int(10) unsigned")
                         .HasDefaultValue(0u)
                         .HasColumnName("type");
 
                     b.Property<uint>("TriggerId")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("int(10) unsigned")
                         .HasDefaultValue(0u)
                         .HasColumnName("triggerId");

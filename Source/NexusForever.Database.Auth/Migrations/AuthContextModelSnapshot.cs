@@ -25,13 +25,11 @@ namespace NexusForever.Database.Auth.Migrations
             modelBuilder.Entity("NexusForever.Database.Auth.Model.AccountCostumeUnlockModel", b =>
                 {
                     b.Property<uint>("Id")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("int(10) unsigned")
                         .HasDefaultValue(0u)
                         .HasColumnName("id");
 
                     b.Property<uint>("ItemId")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("int(10) unsigned")
                         .HasDefaultValue(0u)
                         .HasColumnName("itemId");
@@ -51,13 +49,11 @@ namespace NexusForever.Database.Auth.Migrations
             modelBuilder.Entity("NexusForever.Database.Auth.Model.AccountCurrencyModel", b =>
                 {
                     b.Property<uint>("Id")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("int(10) unsigned")
                         .HasDefaultValue(0u)
                         .HasColumnName("id");
 
                     b.Property<byte>("CurrencyId")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("tinyint(4) unsigned")
                         .HasDefaultValue((byte)0)
                         .HasColumnName("currencyId");
@@ -77,7 +73,6 @@ namespace NexusForever.Database.Auth.Migrations
             modelBuilder.Entity("NexusForever.Database.Auth.Model.AccountDailyLoginModel", b =>
                 {
                     b.Property<uint>("Id")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("int(10) unsigned")
                         .HasDefaultValue(0u)
                         .HasColumnName("id");
@@ -101,13 +96,11 @@ namespace NexusForever.Database.Auth.Migrations
             modelBuilder.Entity("NexusForever.Database.Auth.Model.AccountEntitlementModel", b =>
                 {
                     b.Property<uint>("Id")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("int(10) unsigned")
                         .HasDefaultValue(0u)
                         .HasColumnName("id");
 
                     b.Property<byte>("EntitlementId")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("tinyint(3) unsigned")
                         .HasDefaultValue((byte)0)
                         .HasColumnName("entitlementId");
@@ -147,13 +140,11 @@ namespace NexusForever.Database.Auth.Migrations
             modelBuilder.Entity("NexusForever.Database.Auth.Model.AccountGenericUnlockModel", b =>
                 {
                     b.Property<uint>("Id")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("int(10) unsigned")
                         .HasDefaultValue(0u)
                         .HasColumnName("id");
 
                     b.Property<uint>("Entry")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("int(10) unsigned")
                         .HasDefaultValue(0u)
                         .HasColumnName("entry");
@@ -173,13 +164,11 @@ namespace NexusForever.Database.Auth.Migrations
             modelBuilder.Entity("NexusForever.Database.Auth.Model.AccountKeybindingModel", b =>
                 {
                     b.Property<uint>("Id")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("int(10) unsigned")
                         .HasDefaultValue(0u)
                         .HasColumnName("id");
 
                     b.Property<ushort>("InputActionId")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("smallint(5) unsigned")
                         .HasDefaultValue((ushort)0)
                         .HasColumnName("inputActionId");
@@ -329,13 +318,11 @@ namespace NexusForever.Database.Auth.Migrations
             modelBuilder.Entity("NexusForever.Database.Auth.Model.AccountPermissionModel", b =>
                 {
                     b.Property<uint>("Id")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("int(10) unsigned")
                         .HasDefaultValue(0u)
                         .HasColumnName("id");
 
                     b.Property<uint>("PermissionId")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("int(10) unsigned")
                         .HasDefaultValue(0u)
                         .HasColumnName("permissionId");
@@ -350,13 +337,11 @@ namespace NexusForever.Database.Auth.Migrations
             modelBuilder.Entity("NexusForever.Database.Auth.Model.AccountRoleModel", b =>
                 {
                     b.Property<uint>("Id")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("int(10) unsigned")
                         .HasDefaultValue(0u)
                         .HasColumnName("id");
 
                     b.Property<uint>("RoleId")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("int(10) unsigned")
                         .HasDefaultValue(0u)
                         .HasColumnName("roleId");
@@ -371,7 +356,6 @@ namespace NexusForever.Database.Auth.Migrations
             modelBuilder.Entity("NexusForever.Database.Auth.Model.AccountSuspensionModel", b =>
                 {
                     b.Property<uint>("Id")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("int(10) unsigned")
                         .HasDefaultValue(0u)
                         .HasColumnName("id");
@@ -405,7 +389,6 @@ namespace NexusForever.Database.Auth.Migrations
             modelBuilder.Entity("NexusForever.Database.Auth.Model.PermissionModel", b =>
                 {
                     b.Property<uint>("Id")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("int(10) unsigned")
                         .HasDefaultValue(0u)
                         .HasColumnName("id");
@@ -1071,7 +1054,6 @@ namespace NexusForever.Database.Auth.Migrations
             modelBuilder.Entity("NexusForever.Database.Auth.Model.RoleModel", b =>
                 {
                     b.Property<uint>("Id")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("int(10) unsigned")
                         .HasDefaultValue(0u)
                         .HasColumnName("id");
@@ -1128,13 +1110,11 @@ namespace NexusForever.Database.Auth.Migrations
             modelBuilder.Entity("NexusForever.Database.Auth.Model.RolePermissionModel", b =>
                 {
                     b.Property<uint>("Id")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("int(10) unsigned")
                         .HasDefaultValue(0u)
                         .HasColumnName("id");
 
                     b.Property<uint>("PermissionId")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("int(10) unsigned")
                         .HasDefaultValue(0u)
                         .HasColumnName("permissionId");
