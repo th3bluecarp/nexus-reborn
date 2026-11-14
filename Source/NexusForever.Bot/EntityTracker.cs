@@ -40,6 +40,12 @@ internal sealed class EntityTracker
 
     private readonly Dictionary<uint, TrackedEntity> entities = [];
     private readonly Dictionary<uint, TrackedPositionPath> positionPaths = [];
+    // bumped on every entity create, kept across Remove/Clear: a respawn that reuses a guid gets a new serial (see FinishedTargets)
+    private readonly Dictionary<uint, long> createSerials = [];
+    private long lastCreateSerial;
+
+    /// <summary>The serial of the latest create packet seen for <paramref name="guid"/>, 0 when none was seen.</summary>
+    public long CreateSerial(uint guid) => createSerials.GetValueOrDefault(guid);
 
     public void Clear()
     {
@@ -295,6 +301,7 @@ internal sealed class EntityTracker
             health,
             maxHealth);
         entities[guid] = entity;
+        createSerials[guid] = ++lastCreateSerial;
         return entity;
     }
 

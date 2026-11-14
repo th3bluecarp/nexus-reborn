@@ -1814,7 +1814,7 @@ internal sealed class BotRunner
             throw new BotFailureException($"No spawn in world {questWorldId} for path targets {string.Join(',', definition.ObjectiveCreatureIds)}.");
 
         IReadOnlySet<uint> creatureIds = definition.ObjectiveCreatureIds.ToHashSet();
-        var finishedGuids = new HashSet<uint>();
+        var finishedGuids = new FinishedTargets(entities);
         var spawnVisits = new Dictionary<uint, int>();
         while (!IsPathMissionComplete(definition.Id))
         {
@@ -3493,7 +3493,7 @@ internal sealed class BotRunner
             int fallbackLimit = Math.Max(3, preferredCandidates.Count);
             int fallbackSteps = 0;
             var spawnVisits = new Dictionary<uint, int>();
-            var finishedTargetGuids = new HashSet<uint>();
+            var finishedTargetGuids = new FinishedTargets(entities);
             while ((item = FindInventoryItem(itemId)) is null)
             {
                 if (!preferredPhase && preferredCandidates.Count > 0 && preferredIds.Count < creatureIds.Count && fallbackSteps >= fallbackLimit)
@@ -4751,7 +4751,7 @@ internal sealed class BotRunner
 
         IReadOnlySet<uint> objectiveCreatureIds = creatureIds.ToHashSet();
         var spawnVisits = new Dictionary<uint, int>();
-        var finishedTargetGuids = new HashSet<uint>();
+        var finishedTargetGuids = new FinishedTargets(entities);
         combatAreaAnchors = areaAnchors;
         try
         {
