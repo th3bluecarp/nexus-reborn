@@ -26,9 +26,10 @@ namespace NexusForever.Game.Entity
     /// 2, then 3 enemies (the boss wave the boss and two more), picked from the hostile creatures living within 150 m of the
     /// control point, spawned where creatures stand and sent at the soldier. Wave creatures still alive from earlier waves count
     /// toward the new wave, which only tops the field up to its size (at least one new creature, the boss always comes). The last wave of a
-    /// wave event is a boss: one of the wave raised to the Prime rank (Creature2Difficulty 6, health x3.5) with Superior damage ratings at the highest level
-    /// of the wave and drawn larger, and a roster boss that does not outrank its wave is raised the same way. In an event won by
-    /// beating every wave a raised boss keeps Prime damage and rank but its health is held to what one soldier can beat: at most
+    /// wave event is a boss: one of the wave raised to the Prime rank (Creature2Difficulty 6, health x3.5) at the highest level of the wave and
+    /// drawn larger, and a roster boss that does not outrank its wave is raised the same way. A raised boss deals the damage of its own rank
+    /// (every multiplier but health is its own rank's, see WithOwnRankDamage). In an event won by
+    /// beating every wave a raised boss keeps Prime rank but its health is held to what one soldier can beat: at most
     /// three times its health at its own rank, and less when its wave could not fall in the event time left (FitHoldoutBossHealth).
     /// PathSoldierEvent.PathSoldierEventType (client enum, Holdout 0 Defend 1 Timed 2 TimedDefend 3 TowerDefense 4 WhackAMole 5
     /// WhackAMoleTimed 6 StopTheThieves 7 StopTheThievesTimed 8) decides the win: timed events are won by lasting until the
@@ -111,9 +112,6 @@ namespace NexusForever.Game.Entity
         // a fitted boss never drops below Superior health (the boss rank before Prime) nor below this many times its strongest regular
         private const uint HoldoutBossFloorDifficulty = 5u;
         private const float HoldoutBossFloorRegular = 1.5f;
-        // a boss raised to Prime hits like a Superior (the boss rank before Prime) or its own rank if that hits harder: Prime damage ratings
-        // (x2.65) on top of Prime health killed level-appropriate soldiers in the boss wave (M314 passed 5 runs as Superior, died in wave 4 every run as Prime)
-        private const uint HoldoutBossDamageDifficulty = 5u;
         // a boss raised to Prime in a kill-everything event has at most this many times the health it has at its own rank: a wave's worth.
         // Prime x3.5 health on a low-rank creature is 5.4 to 6.6 times the same creature in the wave (M314: 21559 12,203 against 2,260,
         // 20995 9,551 against 1,452), about two minutes of a lone level 15 soldier's damage, and the boss wave outlasted the soldier
@@ -500,7 +498,10 @@ namespace NexusForever.Game.Entity
                         unit.MovementManager.SetScale(HoldoutBossScale);
 
                     holdoutLog.Info($"M{current.Mission.Entry.Id} wave {current.WaveIndex + 1}: spawned creature {spawnId} guid {guid} level {unit.Level} "
-                        + $"difficulty {spawnedInfo.DifficultyEntry?.Id ?? 0u} health {unit.MaxHealth} at {vector} ({Vector3.Distance(vector, current.Center):0} m from the point)");
+                        + $"difficulty {spawnedInfo.DifficultyEntry?.Id ?? 0u} health {unit.MaxHealth} at {vector} ({Vector3.Distance(vector, current.Center):0} m from the point)"
+                        + (spawnedInfo is ICreatureInfoOverride { DamageDifficultyEntry: { } damageRank } raisedInfo
+                            ? $", damage at difficulty {damageRank.Id} with caster health terms x{raisedInfo.DamageHealthScale:0.###}"
+                            : ""));
 
                     IUnitEntity[] defenders = goesForDefenders
                         ? current.Defenders.Select(g => map.GetEntity<IUnitEntity>(g)).Where(d => d?.IsAlive == true).ToArray()
@@ -520,8 +521,7 @@ namespace NexusForever.Game.Entity
         private int PromoteHoldoutBosses(Holdout current, int rosterBosses, ICreatureInfo[] infos)
         {
             Creature2DifficultyEntry prime = GameTableManager.Instance.Creature2Difficulty.GetEntry(HoldoutBossDifficulty);
-            Creature2DifficultyEntry damageRank = GameTableManager.Instance.Creature2Difficulty.GetEntry(HoldoutBossDamageDifficulty);
-            if (prime == null || infos.All(i => i == null))
+            if (prime?.UnitPropertyMultiplier == null || infos.All(i => i == null))
                 return -1;
 
             uint waveLevel = infos.Where(i => i != null).Max(i => i.GetLevel());
@@ -535,10 +535,14 @@ namespace NexusForever.Game.Entity
             var ownRanks = new Creature2DifficultyEntry[infos.Length];
             void Raise(int i)
             {
-                ownRanks[i] = infos[i].DifficultyEntry;
+                // a creature without a rank has every multiplier at 1
+                ownRanks[i] = infos[i].DifficultyEntry ?? new Creature2DifficultyEntry
+                {
+                    UnitPropertyMultiplier = Enumerable.Repeat(1f, prime.UnitPropertyMultiplier.Length).ToArray()
+                };
                 infos[i] = new CreatureInfoOverride()
                     .SetCreatureInfoOverride(infos[i])
-                    .SetDifficultyEntryOverride(WithBossDamage(prime, damageRank, infos[i].DifficultyEntry))
+                    .SetDifficultyEntryOverride(WithOwnRankDamage(prime, ownRanks[i]))
                     .SetLevelOverride(waveLevel);
                 raised.Add(i);
             }
@@ -549,7 +553,8 @@ namespace NexusForever.Game.Entity
                 if (infos[i] == null || rank >= HoldoutBossDifficulty || rank > regularRank)
                     continue;
 
-                holdoutLog.Info($"M{current.Mission.Entry.Id} boss {infos[i].Entry.Id} (difficulty {rank}) does not outrank its wave (difficulty {regularRank}), raised to Prime at level {waveLevel}");
+                holdoutLog.Info($"M{current.Mission.Entry.Id} boss {infos[i].Entry.Id} (difficulty {rank}) does not outrank its wave (difficulty {regularRank}), raised to Prime at level {waveLevel}, "
+                    + HoldoutBossDamageText(infos[i].DifficultyEntry, prime));
                 Raise(i);
             }
 
@@ -557,7 +562,8 @@ namespace NexusForever.Game.Entity
             int generic = -1;
             if (rosterBosses == 0 && !(current.HasRoster && current.IsTimed) && infos[0] != null && (infos[0].DifficultyEntry?.Id ?? 0u) < HoldoutBossDifficulty)
             {
-                holdoutLog.Info($"M{current.Mission.Entry.Id} boss wave has no boss creature, creature {infos[0].Entry.Id} made Prime at level {waveLevel}");
+                holdoutLog.Info($"M{current.Mission.Entry.Id} boss wave has no boss creature, creature {infos[0].Entry.Id} made Prime at level {waveLevel}, "
+                    + HoldoutBossDamageText(infos[0].DifficultyEntry, prime));
                 Raise(0);
                 generic = 0;
             }
@@ -565,6 +571,18 @@ namespace NexusForever.Game.Entity
             // timed events are won by lasting the clock, their boss never has to die
             if (!current.IsTimed && raised.Count > 0)
                 FitHoldoutBossHealth(current, rosterBosses, raised, ownRanks, infos);
+
+            // its own rank's multipliers cover every stat and rating term of its damage, what is left are the spell terms that scale with
+            // the caster's health (CasterMaxHealth and the like), scaled from its final (Prime or fitted) health back to its own rank's
+            foreach (int i in raised)
+            {
+                if (infos[i] is not ICreatureInfoOverride boss)
+                    continue;
+
+                float health = HoldoutCreatureHealth(boss, boss.DifficultyEntry);
+                float ownHealth = HoldoutCreatureHealth(boss, ownRanks[i]);
+                boss.SetDamageRank(ownRanks[i], health > 0f && ownHealth > 0f ? ownHealth / health : 1f);
+            }
 
             return generic;
         }
@@ -579,7 +597,7 @@ namespace NexusForever.Game.Entity
         /// the boss wave's regulars, beaten within one wave timer (PathSoldierEvent.MaxTimeBetweenWaves). At that pace the whole boss wave
         /// should fall within <see cref="HoldoutBossTimeShare"/> of the event time left (MaxEventTime minus the time spent); a boss that would
         /// not gets the health that fits, never less than Superior health or <see cref="HoldoutBossFloorRegular"/> times the strongest regular,
-        /// and keeps Prime damage, rank and size. M1850 (event 330, 32 s waves, 240 s event) reached its boss wave with 111.5 s left and a Prime
+        /// and keeps Prime rank and size (its damage is its own rank's either way). M1850 (event 330, 32 s waves, 240 s event) reached its boss wave with 111.5 s left and a Prime
         /// boss of 17,950 health, about 126 s of work at that pace, and failed on time.
         /// </remarks>
         private void FitHoldoutBossHealth(Holdout current, int rosterBosses, List<int> raised, Creature2DifficultyEntry[] ownRanks, ICreatureInfo[] infos)
@@ -666,23 +684,42 @@ namespace NexusForever.Game.Entity
         }
 
         /// <summary>
-        /// A copy of <paramref name="prime"/> (same id, so the same rank everywhere) whose damage ratings (assault and support, what
-        /// <see cref="NexusForever.Game.Combat.DamageCalculator"/> scales spell damage by) are those of <paramref name="damageRank"/>,
-        /// or of the creature's own rank (<paramref name="own"/>) where that is higher. Health and every other multiplier stay Prime.
+        /// A copy of <paramref name="prime"/> (same id, so the same rank and title everywhere) with every unit property multiplier of the
+        /// creature's own rank (<paramref name="own"/>) except health, which stays Prime (FitHoldoutBossHealth may lower it).
         /// </summary>
-        private static Creature2DifficultyEntry WithBossDamage(Creature2DifficultyEntry prime, Creature2DifficultyEntry damageRank, Creature2DifficultyEntry own)
+        /// <remarks>
+        /// Spell damage reads many caster properties, all of them scaled by the rank: the primary stats and the assault and support ratings
+        /// (the effect's parameters), the damage dealt multipliers, crit, multi-hit, armor pierce and strikethrough. With only the assault and
+        /// support ratings held to Superior, a Prime 21559 still hit 2.13 times as hard as the same creature at its own rank and level, on every
+        /// one of its three damage effects (M314, run of 2026-11-13: 311, 530, 1174 raw against 146, 248, 550). Taking the whole own-rank
+        /// row makes every stat and rating term its own rank's whatever the spell reads, and its armor and shields too, so its toughness is the
+        /// health FitHoldoutBossHealth gives it. The caster health terms are scaled separately (DamageHealthScale).
+        /// </remarks>
+        private static Creature2DifficultyEntry WithOwnRankDamage(Creature2DifficultyEntry prime, Creature2DifficultyEntry own)
         {
-            if (damageRank?.UnitPropertyMultiplier == null)
-                return prime;
-
             Creature2DifficultyEntry entry = WithHealthMultiplier(prime, prime.UnitPropertyMultiplier[(uint)Property.BaseHealth]);
-            foreach (Property rating in new[] { Property.AssaultRating, Property.SupportRating })
-            {
-                uint index = (uint)rating;
-                float ownValue = own?.UnitPropertyMultiplier is { } o && index < o.Length ? o[index] : 0f;
-                entry.UnitPropertyMultiplier[index] = Math.Min(prime.UnitPropertyMultiplier[index], Math.Max(damageRank.UnitPropertyMultiplier[index], ownValue));
-            }
+            if (own?.UnitPropertyMultiplier == null)
+                return entry;
+
+            for (uint i = 0u; i < entry.UnitPropertyMultiplier.Length && i < own.UnitPropertyMultiplier.Length; i++)
+                if (i != (uint)Property.BaseHealth)
+                    entry.UnitPropertyMultiplier[i] = own.UnitPropertyMultiplier[i];
             return entry;
+        }
+
+        /// <summary>
+        /// What the log shows of a raised boss's damage: its own rank's damage multipliers against Prime's.
+        /// </summary>
+        private static string HoldoutBossDamageText(Creature2DifficultyEntry own, Creature2DifficultyEntry prime)
+        {
+            static float Multiplier(Creature2DifficultyEntry entry, Property property)
+                => entry?.UnitPropertyMultiplier is { } m && (uint)property < m.Length ? m[(uint)property] : 1f;
+
+            static string Row(Creature2DifficultyEntry entry)
+                => $"assault x{Multiplier(entry, Property.AssaultRating):0.###}, support x{Multiplier(entry, Property.SupportRating):0.###}, "
+                    + $"strength x{Multiplier(entry, Property.Strength):0.###}, physical damage dealt x{Multiplier(entry, Property.DamageDealtMultiplierPhysical):0.###}";
+
+            return $"damage at its own rank (difficulty {own?.Id ?? 0u}: {Row(own)}; Prime: {Row(prime)})";
         }
 
         /// <summary>

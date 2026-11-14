@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NexusForever.Game.Abstract.Entity;
+using NexusForever.Game.Abstract.Entity.Creature;
 using NexusForever.Game.Abstract.Prerequisite;
 using NexusForever.Game.Static.Prerequisite;
 using NexusForever.GameTable;
@@ -55,7 +56,9 @@ namespace NexusForever.Game.Prerequisite
             if (entry == null)
                 return true;
 
-            uint difficulty = caster?.CreatureInfo?.DifficultyEntry?.Id ?? 0u;
+            // a holdout boss raised to Prime picks its effects at its own rank, like its damage (PathMissionManager.Soldier.cs)
+            uint difficulty = (caster?.CreatureInfo as ICreatureInfoOverride)?.DamageDifficultyEntry?.Id
+                ?? caster?.CreatureInfo?.DifficultyEntry?.Id ?? 0u;
             bool any = false, all = true, evaluated = false;
             for (int i = 0; i < entry.PrerequisiteTypeId.Length; i++)
             {

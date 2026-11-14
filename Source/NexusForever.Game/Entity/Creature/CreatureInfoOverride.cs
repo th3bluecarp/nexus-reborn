@@ -13,6 +13,8 @@ namespace NexusForever.Game.Entity.Creature
         public Creature2ModelInfoEntry ModelEntry => baseCreatureInfo.ModelEntry;
         public UnitVehicleEntry UnitVehicleEntry => baseCreatureInfo.UnitVehicleEntry;
         public PrerequisiteEntry PrerequisiteVisibilityEntry => baseCreatureInfo.PrerequisiteVisibilityEntry;
+        public Creature2DifficultyEntry DamageDifficultyEntry { get; private set; }
+        public float DamageHealthScale { get; private set; } = 1f;
 
         private ICreatureInfo baseCreatureInfo;
         private uint? level;
@@ -44,6 +46,16 @@ namespace NexusForever.Game.Entity.Creature
         public ICreatureInfoOverride SetDifficultyEntryOverride(Creature2DifficultyEntry difficultyEntry)
         {
             this.difficultyEntry = difficultyEntry;
+            return this;
+        }
+
+        /// <summary>
+        /// Set the rank the creature deals damage at and the multiplier for the caster health terms of its damage.
+        /// </summary>
+        public ICreatureInfoOverride SetDamageRank(Creature2DifficultyEntry difficultyEntry, float healthScale)
+        {
+            DamageDifficultyEntry = difficultyEntry;
+            DamageHealthScale     = healthScale;
             return this;
         }
 

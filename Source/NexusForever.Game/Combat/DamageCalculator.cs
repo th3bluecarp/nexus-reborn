@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
 using NexusForever.Game.Abstract.Combat;
 using NexusForever.Game.Abstract.Entity;
+using NexusForever.Game.Abstract.Entity.Creature;
 using NexusForever.Game.Abstract.Spell;
 using NexusForever.Game.Abstract.Spell.Target;
 using NexusForever.Game.Static.Entity;
@@ -320,6 +321,9 @@ namespace NexusForever.Game.Combat
 
         private float CalculateBaseEntityDamage(IUnitEntity caster, IUnitEntity target, Spell4EffectsEntry entry)
         {
+            // a holdout boss raised to Prime deals the damage of its own rank, where it has less health (PathMissionManager.Soldier.cs)
+            float casterHealthScale = caster.CreatureInfo is ICreatureInfoOverride creatureInfo ? creatureInfo.DamageHealthScale : 1f;
+
             float value = 0f;
             for (int i = 0; i < 4; i++)
             {
@@ -330,7 +334,7 @@ namespace NexusForever.Game.Combat
                         intermediateValue = target.MaxHealth;
                         break;
                     case SpellEffectParameterType.CasterMaxHealth:
-                        intermediateValue = caster.MaxHealth;
+                        intermediateValue = caster.MaxHealth * casterHealthScale;
                         break;
                     case SpellEffectParameterType.CasterShieldCapacity:
                         intermediateValue = caster.Shield;
@@ -357,10 +361,10 @@ namespace NexusForever.Game.Combat
                         intermediateValue = (target.MaxShieldCapacity - target.Shield);
                         break;
                     case SpellEffectParameterType.CasterCurrentHealth:
-                        intermediateValue = caster.Health;
+                        intermediateValue = caster.Health * casterHealthScale;
                         break;
                     case SpellEffectParameterType.CasterMissingHealth:
-                        intermediateValue = (caster.MaxHealth - caster.Health);
+                        intermediateValue = (caster.MaxHealth - caster.Health) * casterHealthScale;
                         break;
                     case SpellEffectParameterType.CasterMissingShields:
                         intermediateValue = (caster.MaxShieldCapacity - caster.Shield);
