@@ -125,6 +125,9 @@ namespace NexusForever.Game.Option
 
         public void Save(CharacterContext context)
         {
+            if (saveMask == BindingSaveMask.None)
+                return;
+
             if ((saveMask & BindingSaveMask.Create) != 0)
             {
                 var model = new CharacterKeybindingModel
@@ -232,14 +235,18 @@ namespace NexusForever.Game.Option
                         model.EventTypeEnum02 = EventTypeEnum02;
                         entity.Property(p => p.EventTypeEnum02).IsModified = true;
                     }
-
-                    saveMask = BindingSaveMask.None;
                 }
             }
+
+            // Create and Delete are cleared as well, a binding left flagged Create was inserted again on every later save
+            saveMask = BindingSaveMask.None;
         }
 
         public void Save(AuthContext context)
         {
+            if (saveMask == BindingSaveMask.None)
+                return;
+
             if ((saveMask & BindingSaveMask.Create) != 0)
             {
                 var model = new AccountKeybindingModel
@@ -347,10 +354,11 @@ namespace NexusForever.Game.Option
                         model.EventTypeEnum02 = EventTypeEnum02;
                         entity.Property(p => p.EventTypeEnum02).IsModified = true;
                     }
-
-                    saveMask = BindingSaveMask.None;
                 }
             }
+
+            // Create and Delete are cleared as well, a binding left flagged Create was inserted again on every later save
+            saveMask = BindingSaveMask.None;
         }
 
         /// <summary>

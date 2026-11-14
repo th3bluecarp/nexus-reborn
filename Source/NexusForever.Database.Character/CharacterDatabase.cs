@@ -28,6 +28,19 @@ namespace NexusForever.Database.Character
             await context.SaveChangesAsync();
         }
 
+        /// <summary>
+        /// Save a change set of dirty game state, a change set the database rejects is committed row by row so only the rejected rows are lost.
+        /// </summary>
+        /// <remarks>
+        /// Not atomic after a rejection, see <see cref="PartialSave"/>. <paramref name="owner"/> names the saved object in the log.
+        /// </remarks>
+        public async Task SavePartial(Action<CharacterContext> action, string owner)
+        {
+            await using var context = new CharacterContext(config);
+            action.Invoke(context);
+            await context.SaveChangesPartialAsync(() => new CharacterContext(config), owner);
+        }
+
         public async Task Save(IDatabaseCharacter entity)
         {
             await using var context = new CharacterContext(config);

@@ -595,13 +595,14 @@ namespace NexusForever.Game.Entity
         /// </remarks>
         public void Save(Action callback = null)
         {
-            // the models are built (and the dirty flags cleared) when each save is started, a save that fails afterwards loses those changes,
-            // so a failure must never go unnoticed
-            Task authSave = ObserveSave(DatabaseManager.Instance.GetDatabase<AuthDatabase>().Save(Save), "account");
+            // the models are built (and the dirty flags cleared) when each save is started, so a change set the database rejects is committed
+            // row by row (SavePartial) and only the rejected rows are lost, a save that still fails (database unreachable after the retries) loses
+            // its changes, so a failure must never go unnoticed
+            Task authSave = ObserveSave(DatabaseManager.Instance.GetDatabase<AuthDatabase>().SavePartial(Save, SaveOwner("account")), "account");
             Session.Events.EnqueueEvent(new TaskEvent(authSave,
             () =>
             {
-                Task characterSave = ObserveSave(DatabaseManager.Instance.GetDatabase<CharacterDatabase>().Save(Save), "character");
+                Task characterSave = ObserveSave(DatabaseManager.Instance.GetDatabase<CharacterDatabase>().SavePartial(Save, SaveOwner("character")), "character");
                 Session.Events.EnqueueEvent(new TaskEvent(characterSave,
                 () =>
                 {
@@ -628,14 +629,19 @@ namespace NexusForever.Game.Entity
         {
             try
             {
-                await DatabaseManager.Instance.GetDatabase<AuthDatabase>().Save(Save);
-                await DatabaseManager.Instance.GetDatabase<CharacterDatabase>().Save(Save);
+                await DatabaseManager.Instance.GetDatabase<AuthDatabase>().SavePartial(Save, SaveOwner("account"));
+                await DatabaseManager.Instance.GetDatabase<CharacterDatabase>().SavePartial(Save, SaveOwner("character"));
                 log.Info($"Direct save of character {Name}({CharacterId}) completed.");
             }
             catch (Exception e)
             {
                 log.Error(e, $"Direct save of character {Name}({CharacterId}) FAILED, unsaved changes are lost.");
             }
+        }
+
+        private string SaveOwner(string stage)
+        {
+            return $"the {stage} data of character {Name}({CharacterId})";
         }
 
         /// <summary>

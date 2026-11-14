@@ -30,6 +30,19 @@ namespace NexusForever.Database.Auth
             await context.SaveChangesAsync();
         }
 
+        /// <summary>
+        /// Save a change set of dirty game state, a change set the database rejects is committed row by row so only the rejected rows are lost.
+        /// </summary>
+        /// <remarks>
+        /// Not atomic after a rejection, see <see cref="PartialSave"/>. <paramref name="owner"/> names the saved object in the log.
+        /// </remarks>
+        public async Task SavePartial(Action<AuthContext> action, string owner)
+        {
+            await using var context = new AuthContext(config);
+            action.Invoke(context);
+            await context.SaveChangesPartialAsync(() => new AuthContext(config), owner);
+        }
+
         public void Migrate()
         {
             using var context = new AuthContext(config);
