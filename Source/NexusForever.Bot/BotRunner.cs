@@ -301,6 +301,8 @@ internal sealed class BotRunner
     private async Task<string> LoadQuestDataAsync(CancellationToken cancellationToken)
     {
         gameData = await Task.Run(() => new BotGameData(options.Tables)).WaitAsync(cancellationToken);
+        BotGameData splineData = gameData;
+        entities.SplineNodes = splineData.GetSplineNodes;
         IReadOnlyList<uint> branchGiverIds = gameData.GetPrerequisiteBranchGiverCreatureIds(options);
         IReadOnlySet<uint> spawnedBranchGivers = await BotDatabase.LoadSpawnedCreatureIdsAsync(
             options.Database, branchGiverIds, cancellationToken);

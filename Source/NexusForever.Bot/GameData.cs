@@ -175,6 +175,7 @@ internal sealed class BotGameData
     private readonly GameTable<PathExplorerActivateEntry> pathExplorerActivations;
     private readonly GameTable<PathExplorerScavengerHuntEntry> pathExplorerScavengerHunts;
     private readonly GameTable<PathExplorerScavengerClueEntry> pathExplorerScavengerClues;
+    private readonly Lazy<ILookup<uint, Vector3>> splineNodes;
     private readonly GameTable<PathExplorerNodeEntry> pathExplorerNodes;
     private readonly GameTable<PathSettlerHubEntry> pathSettlerHubs;
     private readonly GameTable<PathSettlerImprovementGroupEntry> pathSettlerImprovementGroups;
@@ -237,6 +238,10 @@ internal sealed class BotGameData
         pathExplorerActivations = Load<PathExplorerActivateEntry>(tablePath, "PathExplorerActivate.tbl");
         pathExplorerScavengerHunts = Load<PathExplorerScavengerHuntEntry>(tablePath, "PathExplorerScavengerHunt.tbl");
         pathExplorerScavengerClues = Load<PathExplorerScavengerClueEntry>(tablePath, "PathExplorerScavengerClue.tbl");
+        splineNodes = new Lazy<ILookup<uint, Vector3>>(() => Load<Spline2NodeEntry>(tablePath, "Spline2Node.tbl").Entries
+            .Where(node => node != null)
+            .OrderBy(node => node.Ordinal)
+            .ToLookup(node => node.SplineId, node => new Vector3(node.Position0, node.Position1, node.Position2)));
         pathExplorerNodes = Load<PathExplorerNodeEntry>(tablePath, "PathExplorerNode.tbl");
         pathSettlerHubs = Load<PathSettlerHubEntry>(tablePath, "PathSettlerHub.tbl");
         pathSettlerImprovementGroups = Load<PathSettlerImprovementGroupEntry>(tablePath, "PathSettlerImprovementGroup.tbl");
@@ -323,6 +328,9 @@ internal sealed class BotGameData
     /// The item whose use starts the quest (Item2.Quest2IdActivation; A Heart of Stone starts from a dropped gronyx heart),
     /// or 0. Quest2.PrerequisiteItem covers the quests that ask for the item in hand instead.
     /// </summary>
+    /// <summary>The node positions of a Spline2 route in order (patrols sent as SetPositionSpline), empty when unknown.</summary>
+    public IReadOnlyList<Vector3> GetSplineNodes(uint splineId) => splineNodes.Value[splineId].ToArray();
+
     public uint GetQuestActivationItem(ushort questId)
         => questActivationItems.Value.GetValueOrDefault(questId);
 

@@ -277,6 +277,12 @@ internal sealed class EntityTracker
                 if (positionPaths.TryGetValue(guid, out TrackedPositionPath? path))
                     position = CalculatePathPosition(path);
             }
+            else if (model is SetPositionSplineCommand setPositionSpline)
+            {
+                TrackPositionSpline(guid, setPositionSpline);
+                if (positionPaths.TryGetValue(guid, out TrackedPositionPath? path))
+                    position = CalculatePathPosition(path);
+            }
         }
 
         uint? maxHealth = null;
@@ -358,12 +364,42 @@ internal sealed class EntityTracker
                 if (positionPaths.TryGetValue(guid, out TrackedPositionPath? path))
                     position = CalculatePathPosition(path);
             }
+            else if (model is SetPositionSplineCommand setPositionSpline)
+            {
+                TrackPositionSpline(guid, setPositionSpline);
+                if (positionPaths.TryGetValue(guid, out TrackedPositionPath? path))
+                    position = CalculatePathPosition(path);
+            }
         }
 
         if (position is Vector3 value && entities.TryGetValue(guid, out TrackedEntity? entity))
             entities[guid] = entity with { Position = value };
 
         return (guid, position);
+    }
+
+    /// <summary>
+    /// Spline2 node positions by spline id, set once game data is loaded. Patrolling creatures (the Celestion Zeta Warbot 32583,
+    /// spline 9771) arrive with a SetPositionSpline command and no position; without the route the bot never saw where they were
+    /// and teleported 48 times to an empty spawn point.
+    /// </summary>
+    public Func<uint, IReadOnlyList<Vector3>>? SplineNodes { get; set; }
+
+    private void TrackPositionSpline(uint guid, SetPositionSplineCommand command)
+    {
+        IReadOnlyList<Vector3> nodes = SplineNodes?.Invoke(command.SplineId) ?? [];
+        if (nodes.Count < 2 || command.Speed <= 0f)
+        {
+            positionPaths.Remove(guid);
+            return;
+        }
+
+        // the server sends its spline offset as a fraction of the route (0..1, 0..2 for back-and-forth where above 1 is the way
+        // back); the polyline through the nodes stands in for the curve and node delays are ignored, close enough to teleport to
+        float length = 0f;
+        for (int i = 1; i < nodes.Count; i++)
+            length += Vector3.Distance(nodes[i - 1], nodes[i]);
+        positionPaths[guid] = new TrackedPositionPath(nodes, command.Speed, command.Mode, command.Position * length, Stopwatch.GetTimestamp());
     }
 
     private void TrackPositionPath(uint guid, SetPositionPathCommand command)
