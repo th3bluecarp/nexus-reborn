@@ -22,13 +22,14 @@ namespace NexusForever.Game.Entity
     /// The control point is the creature whose Creature2.PathMissionIdSoldier is the mission. PathSoldierEvent gives the start
     /// delay, the time between waves and the event length, PathSoldierEventWave the number of waves. The wave creatures were
     /// in the lost server scripts. A few holdouts still have their own creatures in the client table (see holdoutRosters, the
-    /// Northern Wilds ones: Fierce Yeti Icefang and the Frost Giant for M156), and those are used. For the rest each wave brings
-    /// 2 more enemies than the one before (2 to 5), picked from the hostile
-    /// creatures living within 150 m of the control point, spawned 14 to 18 m away and sent at the soldier. The last wave of a
+    /// Northern Wilds ones: Fierce Yeti Icefang and the Frost Giant for M156), and those are used. For the rest the waves bring
+    /// 2, then 3 enemies (the boss wave the boss and two more), picked from the hostile creatures living within 150 m of the
+    /// control point, spawned where creatures stand and sent at the soldier. Wave creatures still alive from earlier waves count
+    /// toward the new wave, which only tops the field up to its size (at least one new creature, the boss always comes). The last wave of a
     /// wave event is a boss: one of the wave raised to the Prime rank (Creature2Difficulty 6, health x3.5) with Superior damage ratings at the highest level
     /// of the wave and drawn larger, and a roster boss that does not outrank its wave is raised the same way. In an event won by
-    /// beating every wave a raised boss whose wave could not fall in the event time left keeps Prime damage and rank but gets the
-    /// health that fits (FitHoldoutBossHealth).
+    /// beating every wave a raised boss keeps Prime damage and rank but its health is held to what one soldier can beat: at most
+    /// three times its health at its own rank, and less when its wave could not fall in the event time left (FitHoldoutBossHealth).
     /// PathSoldierEvent.PathSoldierEventType (client enum, Holdout 0 Defend 1 Timed 2 TimedDefend 3 TowerDefense 4 WhackAMole 5
     /// WhackAMoleTimed 6 StopTheThieves 7 StopTheThievesTimed 8) decides the win: timed events are won by lasting until the
     /// event time runs out, the others by beating every wave before it does (running out of time is FailTimeOut). Both lose on
@@ -113,6 +114,10 @@ namespace NexusForever.Game.Entity
         // a boss raised to Prime hits like a Superior (the boss rank before Prime) or its own rank if that hits harder: Prime damage ratings
         // (x2.65) on top of Prime health killed level-appropriate soldiers in the boss wave (M314 passed 5 runs as Superior, died in wave 4 every run as Prime)
         private const uint HoldoutBossDamageDifficulty = 5u;
+        // a boss raised to Prime in a kill-everything event has at most this many times the health it has at its own rank: a wave's worth.
+        // Prime x3.5 health on a low-rank creature is 5.4 to 6.6 times the same creature in the wave (M314: 21559 12,203 against 2,260,
+        // 20995 9,551 against 1,452), about two minutes of a lone level 15 soldier's damage, and the boss wave outlasted the soldier
+        private const float HoldoutBossSoloRegulars = 3f;
         // pool creatures of this Creature2Difficulty and above are elites and stay out of the waves
         private const uint HoldoutPoolMaxDifficulty = 4u;
 
@@ -414,15 +419,22 @@ namespace NexusForever.Game.Entity
                 return;
             }
 
+            // a solo fight: two then three enemies a wave, and the boss wave is the boss with two companions (waves of 2 to 5
+            // piled up on a lone soldier before the boss came; the bot died at 4758/9380 health entering the boss wave of M314)
+            int size = boss ? 3 : Math.Min(2 + holdout.WaveIndex, 3);
+            // and never more than a wave's worth at once: creatures left from earlier waves count toward this one, which tops the field
+            // up to its size, at least one new creature (the boss wave always brings its boss). A level 15 soldier kills about two of
+            // these a 35 s wave, and M314 piled up: four regulars of waves 2 and 3 were still up when the boss wave brought three more,
+            // the soldier had lost 5,000 of 8,400 health to wave 3 and its leftovers and died 27 s into the boss wave
+            int alive = holdout.Spawned.Count(guid => player.Map.GetEntity<IUnitEntity>(guid)?.IsAlive == true);
+            int count = Math.Max(size - alive, 1);
+
             holdout.WaveSpawnedAt = holdout.Elapsed;
             holdoutLog.Info($"M{holdout.Mission.Entry.Id} wave {holdout.WaveIndex + 1}/{holdout.Waves}{(boss ? " (boss)" : "")} at {holdout.Elapsed:0.0} s, "
-                + $"soldier health {player.Health}/{player.MaxHealth}");
+                + $"soldier health {player.Health}/{player.MaxHealth}, {alive} wave creature(s) still up, {count} new");
 
             var creatureInfoManager = LegacyServiceProvider.Provider.GetService<ICreatureInfoManager>();
             var entityFactory       = LegacyServiceProvider.Provider.GetService<IEntityFactory>();
-            // a solo fight: two then three enemies a wave, and the boss wave is the boss with two companions (waves of 2 to 5
-            // piled up on a lone soldier before the boss came; the bot died at 4758/9380 health entering the boss wave of M314)
-            int count = boss ? 3 : Math.Min(2 + holdout.WaveIndex, 3);
             Holdout current = holdout;
 
             // with the mission's own creatures the waves climb the ranks: wave n draws from the weakest n/Waves of the roster,
@@ -513,11 +525,17 @@ namespace NexusForever.Game.Entity
                 return -1;
 
             uint waveLevel = infos.Where(i => i != null).Max(i => i.GetLevel());
-            uint regularRank = infos.Skip(rosterBosses).Where(i => i != null).Select(i => i.DifficultyEntry?.Id ?? 0u).DefaultIfEmpty(0u).Max();
+            // a boss wave that only brought its boss (the field was full of leftovers) is set against the creatures the waves draw from
+            uint regularRank = infos.Skip(rosterBosses).Where(i => i != null).Select(i => i.DifficultyEntry?.Id ?? 0u)
+                .DefaultIfEmpty(current.Pool.Select(id => GameTableManager.Instance.Creature2.GetEntry(id)?.Creature2DifficultyId ?? 0u).DefaultIfEmpty(0u).Max())
+                .Max();
 
             var raised = new List<int>();
+            // each raised boss's rank before it was raised, its health at that rank bounds its boss health
+            var ownRanks = new Creature2DifficultyEntry[infos.Length];
             void Raise(int i)
             {
+                ownRanks[i] = infos[i].DifficultyEntry;
                 infos[i] = new CreatureInfoOverride()
                     .SetCreatureInfoOverride(infos[i])
                     .SetDifficultyEntryOverride(WithBossDamage(prime, damageRank, infos[i].DifficultyEntry))
@@ -546,15 +564,17 @@ namespace NexusForever.Game.Entity
 
             // timed events are won by lasting the clock, their boss never has to die
             if (!current.IsTimed && raised.Count > 0)
-                FitHoldoutBossHealth(current, rosterBosses, raised, infos);
+                FitHoldoutBossHealth(current, rosterBosses, raised, ownRanks, infos);
 
             return generic;
         }
 
         /// <summary>
-        /// Lower the health of the bosses raised to Prime so the boss wave of a kill-everything holdout can be beaten in the event time left.
+        /// Lower the health of the bosses raised to Prime so the boss wave of a kill-everything holdout can be beaten by one soldier in the event time left.
         /// </summary>
         /// <remarks>
+        /// A raised boss has at most <see cref="HoldoutBossSoloRegulars"/> times its health at its own rank (<paramref name="ownRanks"/>, the
+        /// rank it had before it was raised): a boss worth a wave. Below that ceiling the time left decides.
         /// The pace a soldier is expected to keep is the one the regular waves ask for: a wave of the last regular size, made of creatures like
         /// the boss wave's regulars, beaten within one wave timer (PathSoldierEvent.MaxTimeBetweenWaves). At that pace the whole boss wave
         /// should fall within <see cref="HoldoutBossTimeShare"/> of the event time left (MaxEventTime minus the time spent); a boss that would
@@ -562,28 +582,26 @@ namespace NexusForever.Game.Entity
         /// and keeps Prime damage, rank and size. M1850 (event 330, 32 s waves, 240 s event) reached its boss wave with 111.5 s left and a Prime
         /// boss of 17,950 health, about 126 s of work at that pace, and failed on time.
         /// </remarks>
-        private void FitHoldoutBossHealth(Holdout current, int rosterBosses, List<int> raised, ICreatureInfo[] infos)
+        private void FitHoldoutBossHealth(Holdout current, int rosterBosses, List<int> raised, Creature2DifficultyEntry[] ownRanks, ICreatureInfo[] infos)
         {
             int[] regulars = Enumerable.Range(0, infos.Length)
                 .Where(i => i >= rosterBosses && infos[i] != null && !raised.Contains(i))
                 .ToArray();
-            if (regulars.Length == 0)
-            {
-                holdoutLog.Info($"M{current.Mission.Entry.Id} boss wave has no regular creature to set the pace, boss health left at Prime");
-                return;
-            }
 
             float[] regularHealth = regulars.Select(i => HoldoutCreatureHealth(infos[i], infos[i].DifficultyEntry)).ToArray();
             int regularWaveSize = Math.Min(2 + Math.Max(current.Waves - 2, 0), 3);
             double waveTime = Math.Max(current.Event.MaxTimeBetweenWaves, 10000u) / 1000d;
-            double pace = regularWaveSize * regularHealth.Average() / waveTime;
             double timeLeft = Math.Max(current.Event.MaxEventTime / 1000d - current.Elapsed, 0d);
 
-            // the regulars and any roster boss that kept its own rank take their share of the time first
+            // the regulars and any roster boss that kept its own rank take their share of the time first. A boss wave without
+            // regulars (the field was full of leftovers) has no pace to fit to, the ceiling alone holds the boss
+            double pace = regulars.Length > 0 ? regularWaveSize * regularHealth.Average() / waveTime : 0d;
             double otherHealth = regularHealth.Sum() + Enumerable.Range(0, Math.Min(rosterBosses, infos.Length))
                 .Where(i => infos[i] != null && !raised.Contains(i))
                 .Sum(i => (double)HoldoutCreatureHealth(infos[i], infos[i].DifficultyEntry));
-            double share = (pace * timeLeft * HoldoutBossTimeShare - otherHealth) / raised.Count;
+            double share = regulars.Length > 0
+                ? (pace * timeLeft * HoldoutBossTimeShare - otherHealth) / raised.Count
+                : double.PositiveInfinity;
 
             Creature2DifficultyEntry superior = GameTableManager.Instance.Creature2Difficulty.GetEntry(HoldoutBossFloorDifficulty);
             foreach (int i in raised)
@@ -603,13 +621,16 @@ namespace NexusForever.Game.Entity
                     continue;
 
                 float primeHealth = unranked * boss.DifficultyEntry.UnitPropertyMultiplier[(uint)Property.BaseHealth];
+                float ownHealth = HoldoutCreatureHealth(boss, ownRanks[i]);
+                float ceiling = ownHealth > 0f ? Math.Min(primeHealth, HoldoutBossSoloRegulars * ownHealth) : primeHealth;
                 float floor = Math.Max(
                     superior != null ? unranked * superior.UnitPropertyMultiplier[(uint)Property.BaseHealth] : 0f,
-                    HoldoutBossFloorRegular * regularHealth.Max());
-                float health = (float)Math.Clamp(share, Math.Min(floor, primeHealth), primeHealth);
+                    HoldoutBossFloorRegular * regularHealth.DefaultIfEmpty(0f).Max());
+                float health = (float)Math.Clamp(share, Math.Min(floor, ceiling), ceiling);
 
                 string numbers = $"{timeLeft:0.0} s left, pace {pace:0} health/s from {regulars.Length} regular(s) and {waveTime:0} s waves, "
-                    + $"boss share {Math.Max(share, 0d):0}, floor {floor:0}, Prime {primeHealth:0}";
+                    + $"boss share {(double.IsInfinity(share) ? "none" : Math.Max(share, 0d).ToString("0"))}, floor {floor:0}, "
+                    + $"ceiling {ceiling:0} ({HoldoutBossSoloRegulars:0.#} x {ownHealth:0} at its own rank), Prime {primeHealth:0}";
                 if (health >= primeHealth)
                 {
                     holdoutLog.Info($"M{current.Mission.Entry.Id} boss {boss.Entry.Id} keeps Prime health {primeHealth:0} ({numbers})");
@@ -617,8 +638,8 @@ namespace NexusForever.Game.Entity
                 }
 
                 boss.SetDifficultyEntryOverride(WithHealthMultiplier(boss.DifficultyEntry, health / unranked));
-                holdoutLog.Info($"M{current.Mission.Entry.Id} boss {boss.Entry.Id} health fitted to the time left: {health:0} ({numbers}), "
-                    + $"boss wave about {(otherHealth + health * raised.Count) / pace:0} s at that pace");
+                holdoutLog.Info($"M{current.Mission.Entry.Id} boss {boss.Entry.Id} health fitted to one soldier and the time left: {health:0} ({numbers})"
+                    + (pace > 0d ? $", boss wave about {(otherHealth + health * raised.Count) / pace:0} s at that pace" : ""));
             }
         }
 
