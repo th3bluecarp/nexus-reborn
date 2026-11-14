@@ -25,7 +25,7 @@ namespace NexusForever.Game.Entity
     /// Northern Wilds ones: Fierce Yeti Icefang and the Frost Giant for M156), and those are used. For the rest each wave brings
     /// 2 more enemies than the one before (2 to 5), picked from the hostile
     /// creatures living within 150 m of the control point, spawned 14 to 18 m away and sent at the soldier. The last wave of a
-    /// wave event is a boss: one of the wave raised to the Prime rank (Creature2Difficulty 6, health x3.5) at the highest level
+    /// wave event is a boss: one of the wave raised to the Prime rank (Creature2Difficulty 6, health x3.5) with Superior damage ratings at the highest level
     /// of the wave and drawn larger, and a roster boss that does not outrank its wave is raised the same way. In an event won by
     /// beating every wave a raised boss whose wave could not fall in the event time left keeps Prime damage and rank but gets the
     /// health that fits (FitHoldoutBossHealth).
@@ -110,6 +110,9 @@ namespace NexusForever.Game.Entity
         // a fitted boss never drops below Superior health (the boss rank before Prime) nor below this many times its strongest regular
         private const uint HoldoutBossFloorDifficulty = 5u;
         private const float HoldoutBossFloorRegular = 1.5f;
+        // a boss raised to Prime hits like a Superior (the boss rank before Prime) or its own rank if that hits harder: Prime damage ratings
+        // (x2.65) on top of Prime health killed level-appropriate soldiers in the boss wave (M314 passed 5 runs as Superior, died in wave 4 every run as Prime)
+        private const uint HoldoutBossDamageDifficulty = 5u;
         // pool creatures of this Creature2Difficulty and above are elites and stay out of the waves
         private const uint HoldoutPoolMaxDifficulty = 4u;
 
@@ -505,6 +508,7 @@ namespace NexusForever.Game.Entity
         private int PromoteHoldoutBosses(Holdout current, int rosterBosses, ICreatureInfo[] infos)
         {
             Creature2DifficultyEntry prime = GameTableManager.Instance.Creature2Difficulty.GetEntry(HoldoutBossDifficulty);
+            Creature2DifficultyEntry damageRank = GameTableManager.Instance.Creature2Difficulty.GetEntry(HoldoutBossDamageDifficulty);
             if (prime == null || infos.All(i => i == null))
                 return -1;
 
@@ -516,7 +520,7 @@ namespace NexusForever.Game.Entity
             {
                 infos[i] = new CreatureInfoOverride()
                     .SetCreatureInfoOverride(infos[i])
-                    .SetDifficultyEntryOverride(prime)
+                    .SetDifficultyEntryOverride(WithBossDamage(prime, damageRank, infos[i].DifficultyEntry))
                     .SetLevelOverride(waveLevel);
                 raised.Add(i);
             }
@@ -638,6 +642,26 @@ namespace NexusForever.Game.Entity
             health *= difficulty?.UnitPropertyMultiplier[index] ?? 1f;
             health *= info.TierEntry?.UnitPropertyMultiplier[index] ?? 1f;
             return health;
+        }
+
+        /// <summary>
+        /// A copy of <paramref name="prime"/> (same id, so the same rank everywhere) whose damage ratings (assault and support, what
+        /// <see cref="NexusForever.Game.Combat.DamageCalculator"/> scales spell damage by) are those of <paramref name="damageRank"/>,
+        /// or of the creature's own rank (<paramref name="own"/>) where that is higher. Health and every other multiplier stay Prime.
+        /// </summary>
+        private static Creature2DifficultyEntry WithBossDamage(Creature2DifficultyEntry prime, Creature2DifficultyEntry damageRank, Creature2DifficultyEntry own)
+        {
+            if (damageRank?.UnitPropertyMultiplier == null)
+                return prime;
+
+            Creature2DifficultyEntry entry = WithHealthMultiplier(prime, prime.UnitPropertyMultiplier[(uint)Property.BaseHealth]);
+            foreach (Property rating in new[] { Property.AssaultRating, Property.SupportRating })
+            {
+                uint index = (uint)rating;
+                float ownValue = own?.UnitPropertyMultiplier is { } o && index < o.Length ? o[index] : 0f;
+                entry.UnitPropertyMultiplier[index] = Math.Min(prime.UnitPropertyMultiplier[index], Math.Max(damageRank.UnitPropertyMultiplier[index], ownValue));
+            }
+            return entry;
         }
 
         /// <summary>
