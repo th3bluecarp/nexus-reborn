@@ -558,16 +558,20 @@ namespace NexusForever.Game.Quest
         /// Returns if the objective text names the supplied creature while Data points elsewhere (an unnamed placeholder
         /// Creature2 row such as 5968 on The Face of the Enemy's third sim-mine).
         /// </summary>
-        private static bool NamesTextCreature(IQuestObjective objective, uint creatureId)
+        private bool NamesTextCreature(IQuestObjective objective, uint creatureId)
         {
             // checklist objectives need the entity's QuestChecklistIdx, not the ordinary creature update amount; text targets
             // are matched explicitly by TextChecklistObjectiveUpdate below
             if (objective.ObjectiveInfo.Type is QuestObjectiveType.ActivateTargetGroupChecklist or QuestObjectiveType.Unknown10)
                 return false;
 
+            // a sibling objective of the same type that names this creature in its own Data owns it: Power Restoration's three
+            // generator sets are three creatures (19022, 19027, 19028) whose objective texts all say "$(creature=19022)", using the
+            // first control must not also credit the second and third
             return objective.ObjectiveInfo.TextCreatureId != 0u
                 && objective.ObjectiveInfo.TextCreatureId == creatureId
-                && objective.ObjectiveInfo.Data != creatureId;
+                && objective.ObjectiveInfo.Data != creatureId
+                && !objectives.Any(o => o != objective && o.ObjectiveInfo.Type == objective.ObjectiveInfo.Type && o.ObjectiveInfo.Data == creatureId);
         }
 
         /// <summary>

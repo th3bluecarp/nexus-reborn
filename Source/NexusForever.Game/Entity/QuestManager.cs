@@ -200,7 +200,10 @@ namespace NexusForever.Game.Entity
                         && objective.ObjectiveInfo.EquipItemId == 0u;
                     // type 10 steps with no target (From the Ashes of Greenbough's fifth planting, Predators and Prey's fourth cage; 36 game
                     // wide) were scripted updates; they complete like the hidden activate steps below
-                    bool hiddenScriptStep = objective.ObjectiveInfo.Type == QuestObjectiveType.Unknown10
+                    // a hidden type 14 step with no Data, group, text or creature is the mirror of the visible checklist before it (Defense
+                    // Breach's third step repeats the Chua Bombs count; 4 rows game wide), also a lost script's work
+                    bool hiddenScriptStep = (objective.ObjectiveInfo.Type == QuestObjectiveType.Unknown10
+                            || objective.ObjectiveInfo.Type == QuestObjectiveType.ActivateTargetGroupChecklist && objective.ObjectiveInfo.IsHidden())
                         && objective.ObjectiveInfo.Data == 0u && entry.TargetGroupIdRewardPane == 0u
                         && objective.ObjectiveInfo.TextCreatureId == 0u;
 
@@ -252,7 +255,16 @@ namespace NexusForever.Game.Entity
                     // script once the other steps were done
                     else if ((targetless && !HasIndicator(entry) || hiddenScriptStep) && (HasNoText(entry) || objective.ObjectiveInfo.IsHidden())
                         && OtherVisibleObjectivesAreComplete(quest, objective))
-                        updates.Add((quest, objective.ObjectiveInfo.Id, objective.ObjectiveInfo.Entry.Count));
+                    {
+                        // a checklist keeps one bit per unit: filling its Count takes Count bit updates, not one update of Count
+                        if (objective.ObjectiveInfo.Type == QuestObjectiveType.ActivateTargetGroupChecklist)
+                        {
+                            for (uint bit = 0u; bit < Math.Min(objective.ObjectiveInfo.Entry.Count, 32u); bit++)
+                                updates.Add((quest, objective.ObjectiveInfo.Id, bit));
+                        }
+                        else
+                            updates.Add((quest, objective.ObjectiveInfo.Id, objective.ObjectiveInfo.Entry.Count));
+                    }
                 }
             }
 

@@ -117,6 +117,8 @@ internal sealed class BotRunner
     private DateTimeOffset combatStartedAt;
     private uint combatEnemyCasts;
     private uint combatDamageTaken;
+    // spells started by units other than the bot during the current fight, by caster guid (death evidence: who hit the bot)
+    private readonly Dictionary<uint, uint> combatCasterCasts = [];
     private long? combatFirstEnemyActionMs;
     private bool resurrectionRecoveryActive;
     private string? resurrectionConfirmation;
@@ -2172,11 +2174,14 @@ internal sealed class BotRunner
         QuestRunReport questReport,
         CancellationToken cancellationToken)
     {
-        if (questState is not (QuestState.Accepted or QuestState.Achieved))
+        // the state of THIS quest: a failed nested quest (Power Restoration inside Last-Second Support) leaves 'quest'/'questState'
+        // on the sub-quest while the parent is abandoned, and the parent's confirmation never matched (run 20261112-060346, 4759)
+        QuestState currentState = questStates.GetValueOrDefault(definition.Id, QuestState.Unknown);
+        if (currentState is not (QuestState.Accepted or QuestState.Achieved))
             return;
 
         bool cannotAbandon = (definition.Entry.Flags & 0x4000u) != 0u
-            || questState == QuestState.Achieved && (definition.Entry.Flags & 0x8000u) != 0u;
+            || currentState == QuestState.Achieved && (definition.Entry.Flags & 0x8000u) != 0u;
         if (cannotAbandon)
         {
             questReport.Steps.Add(new StepReport
@@ -2195,7 +2200,7 @@ internal sealed class BotRunner
             await RequireWorld().SendEncryptedAsync(GameMessageOpcode.ClientQuestAbandon,
                 PacketCodec.ClientQuestAbandon(definition.Id), cancellationToken);
             DateTimeOffset deadline = DateTimeOffset.UtcNow.AddSeconds(5);
-            while (questState is not (QuestState.Abandoned or QuestState.Mentioned))
+            while (questStates.GetValueOrDefault(definition.Id, QuestState.Unknown) is not (QuestState.Abandoned or QuestState.Mentioned))
             {
                 TimeSpan remaining = deadline - DateTimeOffset.UtcNow;
                 if (remaining <= TimeSpan.Zero || await TryReadWorldPacketAsync(remaining, cancellationToken) is null)
@@ -2206,7 +2211,7 @@ internal sealed class BotRunner
                 Name = "abandon failed quest",
                 Ok = true,
                 ElapsedMs = stopwatch.ElapsedMilliseconds,
-                Detail = $"server reported state {questState}"
+                Detail = $"server reported state {questStates.GetValueOrDefault(definition.Id, QuestState.Unknown)}"
             });
         }
         catch (Exception exception)
@@ -2588,17 +2593,20 @@ internal sealed class BotRunner
                 // server once the required ones are done; the bot does not attempt them
                 // hidden script steps (type 10 with no target: From the Ashes of Greenbough, Predators and Prey) are completed by the
                 // server once every other step is done (SEMANTICS: hidden script steps complete themselves)
-                if (objective.Type == QuestObjectiveType.Unknown10 && objective.Data == 0u && objective.RewardTargetGroupId == 0u
+                // a hidden type 14 step with no target (Defense Breach's third step mirrors the Chua Bombs count) is the same
+                if ((objective.Type == QuestObjectiveType.Unknown10
+                        || objective.Type == QuestObjectiveType.ActivateTargetGroupChecklist && (objective.Flags & 0x8u) != 0u)
+                    && objective.Data == 0u && objective.RewardTargetGroupId == 0u
                     && RequireGameData().GetCreatureIdsFromText(objective.Text).Count == 0
                     && !IsObjectiveComplete(objective))
                 {
-                    log.Info($"quest {definition.Id} objective {objective.Index}: hidden script step (type 10, no target), left to the server");
+                    log.Info($"quest {definition.Id} objective {objective.Index}: hidden script step (type {(uint)objective.Type}, no target), left to the server");
                     questReport.Steps.Add(new StepReport
                     {
                         Name = $"objective {objective.Index}",
                         Ok = true,
                         ElapsedMs = 0,
-                        Detail = "hidden script step (type 10, no target) left to the server"
+                        Detail = $"hidden script step (type {(uint)objective.Type}, no target) left to the server"
                     });
                     continue;
                 }
@@ -3290,9 +3298,22 @@ internal sealed class BotRunner
                     return $"level {before} -> {currentLevel} after death; retrying objective {objective.Index} once";
                 });
             }
-            return await RunObjectiveAsync(objective, cancellationToken);
+            // the retry after a death takes the weakest creatures of the objective's group first (Darkspur Payback's group mixes
+            // difficulty 2 Bruisers with difficulty 5 Strongarms on a ledge, and the nearest-first order walked into the elite
+            // twice); objectives that never died are not reordered
+            weakestFirstObjectiveIndex = objective.Index;
+            try
+            {
+                return await RunObjectiveAsync(objective, cancellationToken);
+            }
+            finally
+            {
+                weakestFirstObjectiveIndex = null;
+            }
         }
     }
+
+    private int? weakestFirstObjectiveIndex;
 
     private QuestRunReport CreateQuestReport(QuestDefinition definition)
     {
@@ -4837,7 +4858,9 @@ internal sealed class BotRunner
             return null;
 
         // a dropped objective item: the best drop-rate band in sight and among the spawns first, nearest within a band
-        Func<uint, int>? band = objective.Type == QuestObjectiveType.CollectItem ? DropRateBands(objective.Data) : null;
+        Func<uint, int>? band = objective.Type == QuestObjectiveType.CollectItem ? DropRateBands(objective.Data)
+            : weakestFirstObjectiveIndex == objective.Index ? (creatureId => (int)RequireGameData().CreatureDifficultyId(creatureId))
+            : null;
         TrackedEntity? nearby = FindBestBandVisibleTarget(creatureIds, excludedGuids, band)
             ?? await TryFindVisibleCombatTargetAsync(creatureIds, excludedGuids, CombatLocalTargetSearchTimeout, cancellationToken);
         if (IsObjectiveComplete(objective))
@@ -5327,6 +5350,7 @@ internal sealed class BotRunner
         combatStartedAt = DateTimeOffset.UtcNow;
         combatEnemyCasts = 0u;
         combatDamageTaken = 0u;
+        combatCasterCasts.Clear();
         combatFirstEnemyActionMs = null;
         combatTargetDestroyed = false;
         combatTargetConfirmedDead = false;
@@ -5555,6 +5579,12 @@ internal sealed class BotRunner
             try
             {
                 await RunQuestAsync(sub, cancellationToken);
+            }
+            catch (Exception) when (!cancellationToken.IsCancellationRequested && currentQuestReport is not null)
+            {
+                // the sub-quest failed: it stays Accepted on the server unless it is abandoned here (the parent's abandon only covers the parent)
+                await TryAbandonFailedQuestAsync(sub, currentQuestReport, cancellationToken);
+                throw;
             }
             finally
             {
@@ -6130,6 +6160,7 @@ internal sealed class BotRunner
                     if (!worldLoadPending && destroyedGuid == playerGuid)
                     {
                         botDied = true;
+                        LogDeathEvidence("entity destroy");
                         if (activeObjective is not null || combatTargetGuid is not null)
                             throw new BotFailureException("bot died");
                     }
@@ -6150,6 +6181,7 @@ internal sealed class BotRunner
                     if (unitId == playerGuid && dead)
                     {
                         botDied = true;
+                        LogDeathEvidence("death state");
                         // the offer for THIS death comes a moment later; accepting with the offer of an earlier death
                         // (same quest, second death) was ignored by the server and the recovery waited 60 s for nothing
                         resurrectionShow = null;
@@ -6176,6 +6208,8 @@ internal sealed class BotRunner
                         combatEnemyCasts++;
                         RecordEnemyAction();
                     }
+                    if (combatTargetGuid is not null && start.CasterId != playerGuid && start.CasterId != controlGuid)
+                        combatCasterCasts[start.CasterId] = combatCasterCasts.GetValueOrDefault(start.CasterId) + 1u;
                     if (combatTargetGuid is not null
                         && start.CasterId == playerGuid
                         && pendingCombatClientId is not null)
@@ -6501,11 +6535,38 @@ internal sealed class BotRunner
         log.Info($"path mission {status.MissionId}: complete={status.Completed}, progress={status.Progress}, state={status.State?.ToString() ?? "not-sent"}");
     }
 
+    /// <summary>
+    /// One INFO line per bot death with what the death evidence needs: the fight target and its level, the bot's level and health,
+    /// the damage taken and how long the fight ran, and every unit that started spells during it (a pack pull shows as several).
+    /// Added for Darkspur Payback (4514), where the log could not say which creatures killed the bot or how fast.
+    /// </summary>
+    private void LogDeathEvidence(string via)
+    {
+        try
+        {
+            TrackedEntity? target = combatTargetGuid is uint guid ? entities.Get(guid) : null;
+            double seconds = combatTargetGuid is null ? 0d : (DateTimeOffset.UtcNow - combatStartedAt).TotalSeconds;
+            string casters = string.Join(", ", combatCasterCasts
+                .OrderByDescending(pair => pair.Value)
+                .Take(8)
+                .Select(pair => FormattableString.Invariant($"guid {pair.Key} creature {entities.Get(pair.Key)?.CreatureId.ToString() ?? "?"} x{pair.Value}")));
+            log.Info(FormattableString.Invariant(
+                $"bot death ({via}): level {currentLevel}, health before {currentHealth?.ToString() ?? "?"}/{currentMaxHealth?.ToString() ?? "?"}, fight target guid {combatTargetGuid?.ToString() ?? "none"} creature {target?.CreatureId.ToString() ?? "?"}, fight {seconds:0.0} s, damage taken {combatDamageTaken}, enemy casts on target {combatEnemyCasts}, casters [{casters}], {FormatNearbyTrackedCreatures()}"));
+        }
+        catch (Exception exception)
+        {
+            log.Info($"bot death evidence unavailable: {exception.Message}");
+        }
+    }
+
     private void RecordPlayerHealth(uint health)
     {
         if (combatTargetGuid is not null && currentHealth is uint previousHealth && health < previousHealth)
         {
             combatDamageTaken += previousHealth - health;
+            // single hits of at least 8% of max health (evidence for hit sizes against the bot's health pool)
+            if (currentMaxHealth is uint maxHealth && maxHealth > 0u && (previousHealth - health) * 100u >= maxHealth * 8u)
+                log.Info($"big hit: -{previousHealth - health} ({health}/{maxHealth}) at {(DateTimeOffset.UtcNow - combatStartedAt).TotalSeconds:0.0} s of the fight");
             RecordEnemyAction();
         }
         if (activeHoldoutEventId is not null && currentHealth != health)

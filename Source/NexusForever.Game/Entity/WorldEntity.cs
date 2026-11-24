@@ -579,18 +579,7 @@ namespace NexusForever.Game.Entity
         public virtual void OnActivateCast(IPlayer activator, uint interactionId)
         {
             // Handle CSI
-            uint spell4Id = 0;
-            for (int i = 0; i < CreatureInfo.Entry.Spell4IdActivate.Length; i++)
-            {
-                if (spell4Id > 0u || i == CreatureInfo.Entry.Spell4IdActivate.Length)
-                    break;
-
-                if (CreatureInfo.Entry.PrerequisiteIdActivateSpells[i] > 0 && PrerequisiteManager.Instance.Meets(activator, CreatureInfo.Entry.PrerequisiteIdActivateSpells[i]))
-                    spell4Id = CreatureInfo.Entry.Spell4IdActivate[i];
-
-                if (spell4Id == 0u && CreatureInfo.Entry.Spell4IdActivate[i] == 0u && i > 0)
-                    spell4Id = CreatureInfo.Entry.Spell4IdActivate[i - 1];
-            }
+            uint spell4Id = SelectActivateSpell(activator);
 
             if (spell4Id == 0)
             {
@@ -628,6 +617,28 @@ namespace NexusForever.Game.Entity
         }
 
         /// <summary>
+        /// Returns the activation spell this entity casts for the activator: the first one whose prerequisite is met, else the last
+        /// one before an empty slot (0 when the creature has none).
+        /// </summary>
+        private uint SelectActivateSpell(IPlayer activator)
+        {
+            uint spell4Id = 0;
+            for (int i = 0; i < CreatureInfo.Entry.Spell4IdActivate.Length; i++)
+            {
+                if (spell4Id > 0u || i == CreatureInfo.Entry.Spell4IdActivate.Length)
+                    break;
+
+                if (CreatureInfo.Entry.PrerequisiteIdActivateSpells[i] > 0 && PrerequisiteManager.Instance.Meets(activator, CreatureInfo.Entry.PrerequisiteIdActivateSpells[i]))
+                    spell4Id = CreatureInfo.Entry.Spell4IdActivate[i];
+
+                if (spell4Id == 0u && CreatureInfo.Entry.Spell4IdActivate[i] == 0u && i > 0)
+                    spell4Id = CreatureInfo.Entry.Spell4IdActivate[i - 1];
+            }
+
+            return spell4Id;
+        }
+
+        /// <summary>
         /// Invoked when <see cref="IWorldEntity"/>'s activate succeeds.
         /// </summary>
         public virtual void OnActivateSuccess(IPlayer activator)
@@ -644,7 +655,7 @@ namespace NexusForever.Game.Entity
             if (CreatureInfo?.Entry != null)
             {
                 // activate spells with a QuestAdvanceObjective effect give that quest its credit, the updates below would count it again
-                using IDisposable suppressed = activator.QuestManager.SuppressObjectiveUpdates(ActivateSpellQuests());
+                using IDisposable suppressed = activator.QuestManager.SuppressObjectiveUpdates(ActivateSpellQuests(activator));
 
                 activator.PathMissionManager.OnActivate(CreatureInfo.Entry.Id, AssetManager.Instance.GetTargetGroupsForCreatureId(CreatureInfo.Entry.Id));
                 activator.ChallengeManager.OnActivate(CreatureInfo.Entry.Id, AssetManager.Instance.GetTargetGroupsForCreatureId(CreatureInfo.Entry.Id));
@@ -912,10 +923,13 @@ namespace NexusForever.Game.Entity
         /// <summary>
         /// Returns the quests the creature's activate spells advance with a QuestAdvanceObjective effect, those spells give the credit themselves.
         /// </summary>
-        private IEnumerable<ushort> ActivateSpellQuests()
+        private IEnumerable<ushort> ActivateSpellQuests(IPlayer activator)
         {
+            // only the spell this use actually runs gives credit: Power Restoration's generator controls (19022) carry a success CSI spell
+            // and a fail spell that advances the quest's shock counter, and the fail spell's quest used to suppress the success credit
+            uint usedSpell = SelectActivateSpell(activator);
             return CreatureInfo.Entry.Spell4IdActivate
-                .Where(s => s != 0u)
+                .Where(s => s != 0u && (usedSpell == 0u || s == usedSpell))
                 .SelectMany(s => activateSpellQuests.GetOrAdd(s, id => GameTableManager.Instance.Spell4Effects.Entries
                     .Where(e => e.SpellId == id && e.EffectType == SpellEffectType.QuestAdvanceObjective)
                     // Suppress the generic activation fallback only when the spell handler can really apply this effect.

@@ -1415,6 +1415,9 @@ internal sealed class BotGameData
     public uint MaxCreatureLevel(IEnumerable<uint> creatureIds)
         => creatureIds.Select(id => creatures.GetEntry(id)?.MaxLevel ?? 0u).DefaultIfEmpty(0u).Max();
 
+    /// <summary>The creature's Creature2Difficulty id (2 minion, 3 standard, 4 and 5 elite ranks); 0 when unknown.</summary>
+    public uint CreatureDifficultyId(uint creatureId) => creatures.GetEntry(creatureId)?.Creature2DifficultyId ?? 0u;
+
     /// <summary>A creature the bot fights: hostile to the bot and not a usable object (faction 219 or an activation spell).</summary>
     public bool IsAttackableCreature(uint creatureId)
     {
