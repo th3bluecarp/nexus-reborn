@@ -515,7 +515,7 @@ namespace NexusForever.Game.Entity
                 RemoveFromRange(target);
         }
 
-        private bool IsInRange(IGridEntity target)
+        protected virtual bool IsInRange(IGridEntity target)
         {
             if (target is IUnitEntity unitEntity)
                 if (!unitEntity.IsAlive)

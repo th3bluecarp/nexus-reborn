@@ -4052,6 +4052,16 @@ internal sealed class BotRunner
             {
                 if (attemptedSpawns.Count >= candidates.Count)
                 {
+                    // an escort whose escort NPC has no spawn (Thorn in Our Side: the Exile Field Agent 18888 hides once talked
+                    // to and nothing spawns his walking double 52088): the server completes the step at its map indicator
+                    // (QuestManager.IsUnplacedEscort), so go there instead of waiting 150 s for a respawn that cannot come
+                    if (IsUnplacedEscortObjective(objective))
+                    {
+                        uint[] escortIds = RequireGameData().ResolveTargetGroup(objective.RewardTargetGroupId).ToArray();
+                        log.Info($"objective {objective.Index}: escort creature(s) [{string.Join(',', escortIds)}] of reward pane group {objective.RewardTargetGroupId} have no spawn in world {questWorldId} and none of [{string.Join(',', creatureIds)}] is in sight; going to map indicator {objective.WorldLocationId}");
+                        await RunTargetlessActivateObjectiveAsync(objective, cancellationToken);
+                        return;
+                    }
                     // a unit used by an earlier objective comes back on the respawn timer (Breaching Security uses the Avatar Control
                     // Panel twice, 60 s apart); a player waits at the spot, so wait twice before giving up
                     if (respawnWaits++ >= 2)
@@ -4119,6 +4129,21 @@ internal sealed class BotRunner
         await TeleportToLocationAsync(location, step, cancellationToken);
         if (!await TryWaitForObjectiveProgressAsync(objective.Index, before, TimeSpan.FromSeconds(10), cancellationToken))
             throw new BotFailureException($"target-less ActivateEntity produced no progress at indicator {location.Id} (radius {location.Radius:R}) after 20 s plus a {step:R} m step and 10 s");
+    }
+
+    /// <summary>
+    /// The bot's side of QuestManager.IsUnplacedEscort: an activate step with no table Data, a reward pane group none of whose
+    /// creatures has a spawn in the quest world, and a map indicator.
+    /// </summary>
+    private bool IsUnplacedEscortObjective(QuestObjectiveDefinition objective)
+    {
+        if (objective.Type != QuestObjectiveType.ActivateEntity || objective.SourceData != 0u || objective.RewardTargetGroupId == 0u
+            || objective.EquipItemId != 0u || objective.WorldLocationId == 0u)
+            return false;
+        uint[] escortIds = RequireGameData().ResolveTargetGroup(objective.RewardTargetGroupId).ToArray();
+        return escortIds.Length > 0
+            && SpawnsFor(escortIds, questWorldId).Count == 0
+            && !escortIds.Any(creatureId => entities.FindCreature(creatureId) is not null);
     }
 
     private static bool IsTargetlessHoldObjective(QuestObjectiveDefinition objective)
@@ -4683,7 +4708,10 @@ internal sealed class BotRunner
                     bool visibleConfirmed = await tryUse(visible, cancellationToken);
                     questNpcAttemptDetails[visibleIndex] += visibleConfirmed ? ", confirmed" : ", no quest-state confirmation";
                     if (visibleConfirmed)
+                    {
+                        RememberSafeSpot();
                         return new QuestNpcUseResult(visible, FormatQuestNpcAttempts());
+                    }
                     continue;
                 }
                 questNpcAttemptDetails.Add($"{role} creature {creatureId}: no spawns in world {worldId}");
@@ -4710,11 +4738,26 @@ internal sealed class BotRunner
                     ? $"{role} creature {creatureId} spawn {spawn.Id}: visible guid {entity.Guid}, confirmed"
                     : $"{role} creature {creatureId} spawn {spawn.Id}: visible guid {entity.Guid}, no quest-state confirmation within {QuestNpcConfirmationTimeout.TotalSeconds:0} s";
                 if (confirmed)
+                {
+                    RememberSafeSpot();
                     return new QuestNpcUseResult(entity, FormatQuestNpcAttempts());
+                }
             }
         }
 
         return null;
+    }
+
+    /// <summary>
+    /// A quest NPC just accepted or completed a quest where the bot stands: the place to step back to when it is hurt in a
+    /// fight (RecoverHealthBeforeFightAsync). Not kept while the bot is in combat there.
+    /// </summary>
+    private void RememberSafeSpot()
+    {
+        if (playerInCombat || worldLoadPending)
+            return;
+        safeSpot = lastPosition;
+        safeSpotWorldId = currentWorldId;
     }
 
     private string FormatQuestNpcAttempts()
@@ -4867,6 +4910,35 @@ internal sealed class BotRunner
             return null;
         if (nearby is not null)
             return nearby;
+        if (weakestFirstObjectiveIndex == objective.Index && band is not null)
+        {
+            // the retry after a death: the weakest rank in sight or at its spawns before anything stronger. The approach step
+            // below takes the nearest target in sight whatever its rank: after one Lieutenant (rank 4) the Darkspur Payback
+            // retry walked 66 m to a Superior Strongarm with five Lieutenant spawns left, and died on it again
+            Func<uint, int> rank = band;
+            int weakest = creatureIds.Min(rank);
+            HashSet<uint> weakestIds = creatureIds.Where(creatureId => rank(creatureId) == weakest).ToHashSet();
+            if (weakestIds.Count < creatureIds.Count)
+            {
+                TrackedEntity? weakApproached = await TryApproachVisibleCombatTargetAsync(weakestIds, excludedGuids, cancellationToken);
+                if (IsObjectiveComplete(objective))
+                    return null;
+                if (weakApproached is not null)
+                    return weakApproached;
+                List<Spawn> weakCandidates = candidates.Where(spawn => weakestIds.Contains(spawn.CreatureId)).ToList();
+                while (ChooseNextCombatSpawn(weakCandidates, spawnVisits, band) is Spawn weakSpawn)
+                {
+                    spawnVisits[weakSpawn.Id] = spawnVisits.GetValueOrDefault(weakSpawn.Id) + 1;
+                    TrackedEntity? weakTarget = await TeleportAndTryFindCombatTargetAsync(
+                        weakSpawn, weakestIds, excludedGuids, CombatSpawnTargetSearchTimeout, cancellationToken);
+                    if (IsObjectiveComplete(objective))
+                        return null;
+                    if (weakTarget is not null)
+                        return weakTarget;
+                }
+                log.Info($"objective {objective.Index}: weakest-first retry found no creature of [{string.Join(',', weakestIds)}] (rank {weakest}) in sight or at its {weakCandidates.Count} spawn(s); taking stronger ones");
+            }
+        }
         TrackedEntity? approached = await TryApproachVisibleCombatTargetAsync(creatureIds, excludedGuids, cancellationToken);
         if (IsObjectiveComplete(objective))
             return null;
@@ -4917,6 +4989,10 @@ internal sealed class BotRunner
         if (far?.Position is not Vector3 position)
             return null;
         float distance = Vector3.Distance(lastPosition, position);
+        await RecoverHealthBeforeFightAsync(null, cancellationToken);
+        // the wait or a retreat may have moved the bot or the target
+        position = entities.Get(far.Guid)?.Position ?? position;
+        distance = Vector3.Distance(lastPosition, position);
         log.Info($"combat target guid={far.Guid} creature {far.CreatureId} is visible {distance:0.0} m away; teleporting to it");
         await SendTeleportAsync(PacketCodec.TeleportCommand(position), false, cancellationToken);
         lastPosition = new Vector3(position.X + 2f, position.Y, position.Z + 2f);
@@ -5002,22 +5078,161 @@ internal sealed class BotRunner
     // third; out of combat a player regenerates quickly, so wait for the health to come back before the next fight
     private const double FightHealthFloor = 0.6d;
     private const double FightHealthTarget = 0.9d;
+    // out of combat the server gives back 1 % of the maximum health every 0.5 s (HealthStatUpdater); nothing in combat
+    private const double HealthRegenPerSecond = 0.02d;
+    private static readonly TimeSpan RecoveryWaitMargin = TimeSpan.FromSeconds(8);
+    private static readonly TimeSpan RecoveryTotalCap = TimeSpan.FromSeconds(90);
+    private static readonly TimeSpan RecoveryLeaveCombatWait = TimeSpan.FromSeconds(15);
+    private const int RecoveryRetreatLimit = 2;
+    private bool recoveringHealth;
+    // where the bot last accepted or handed in a quest at an NPC: a spot among friendly units, used to step out of a fight
+    private Vector3? safeSpot;
+    private ushort safeSpotWorldId;
+    private DateTimeOffset playerCombatChangedAt = DateTimeOffset.UtcNow;
 
-    private async Task RecoverHealthBeforeFightAsync(CancellationToken cancellationToken)
+    /// <summary>
+    /// The one health rule for every fight the bot picks (objective kills, item hunts, challenge and path mission kills): under
+    /// <see cref="FightHealthFloor"/> it does not start. Out of combat it waits where it stands for <see cref="FightHealthTarget"/>.
+    /// In combat (something it did not pick is on it, or the target pulled the moment the bot arrived: both skipped the old
+    /// wait without a log line, Motherly Love and Darkspur Payback died that way) it leaves the fight: back to the last quest
+    /// NPC with the !tele it already uses, waits to drop combat and to heal, then returns. Bounded: at most
+    /// <see cref="RecoveryRetreatLimit"/> retreats and <see cref="RecoveryTotalCap"/> per fight, then it fights as it is.
+    /// </summary>
+    /// <param name="targetGuid">The target the bot stands at (it returns here after a retreat), null before it has moved to one.</param>
+    private async Task RecoverHealthBeforeFightAsync(uint? targetGuid, CancellationToken cancellationToken)
     {
-        if (activeHoldoutEventId is not null || playerInCombat || botDied)
+        if (activeHoldoutEventId is not null || botDied || recoveringHealth || worldLoadPending)
             return;
         if (currentHealth is not uint health || currentMaxHealth is not uint max || max == 0u || health >= max * FightHealthFloor)
             return;
-        log.Info($"health {health}/{max} before the next fight; waiting out of combat for it to recover");
-        DateTimeOffset deadline = DateTimeOffset.UtcNow.AddSeconds(25);
-        while (currentHealth is uint now && now < max * FightHealthTarget && !playerInCombat && !botDied)
+
+        recoveringHealth = true;
+        try
+        {
+            Vector3 fightPosition = lastPosition;
+            DateTimeOffset started = DateTimeOffset.UtcNow;
+            DateTimeOffset totalDeadline = started + RecoveryTotalCap;
+            int retreats = 0;
+            string outcome = "recovered";
+            log.Info($"health {health}/{max} before the next fight; {(playerInCombat ? "in combat, leaving it to recover" : "waiting out of combat for it to recover")}");
+            while (!botDied)
+            {
+                if (playerInCombat)
+                {
+                    if (retreats >= RecoveryRetreatLimit)
+                    {
+                        outcome = $"still in combat after {retreats} retreat(s)";
+                        break;
+                    }
+                    if (safeSpot is null || safeSpotWorldId != currentWorldId)
+                    {
+                        log.Info($"hurt and in combat, but no safe spot is known in world {currentWorldId} (no quest NPC used here yet); {FormatNearbyTrackedCreatures()}");
+                        outcome = "in combat with no safe spot known";
+                        break;
+                    }
+                    retreats++;
+                    if (!await RetreatToSafeSpotAsync(totalDeadline, cancellationToken))
+                    {
+                        outcome = "still in combat at the safe spot";
+                        break;
+                    }
+                }
+
+                uint now = currentHealth ?? 0u;
+                if (now >= max * FightHealthTarget)
+                    break;
+                // the time the missing health takes at the out of combat rate, plus a margin; never past the total cap
+                double missing = Math.Max(0d, max * FightHealthTarget - now) / max;
+                DateTimeOffset waitDeadline = DateTimeOffset.UtcNow + TimeSpan.FromSeconds(missing / HealthRegenPerSecond) + RecoveryWaitMargin;
+                if (waitDeadline > totalDeadline)
+                    waitDeadline = totalDeadline;
+                while (currentHealth is uint current && current < max * FightHealthTarget && !playerInCombat && !botDied)
+                {
+                    TimeSpan remaining = waitDeadline - DateTimeOffset.UtcNow;
+                    if (remaining <= TimeSpan.Zero || await TryReadWorldPacketAsync(remaining, cancellationToken) is null)
+                        break;
+                }
+                if (botDied)
+                    break;
+                if (playerInCombat)
+                {
+                    // pulled while waiting (Motherly Love: three ServerUnitEnteredCombat 5 s into the wait at 2657/8600)
+                    log.Info($"recovery wait cut by combat at health {currentHealth}/{max} after {(DateTimeOffset.UtcNow - started).TotalSeconds:0} s; {FormatNearbyTrackedCreatures()}");
+                    if (DateTimeOffset.UtcNow >= totalDeadline)
+                    {
+                        outcome = "in combat at the time cap";
+                        break;
+                    }
+                    continue;
+                }
+                if (currentHealth is uint reached && reached < max * FightHealthTarget)
+                    outcome = DateTimeOffset.UtcNow >= totalDeadline
+                        ? "time cap reached before the target"
+                        : "wait ended before the target (health did not come back at the out of combat rate)";
+                break;
+            }
+
+            if (retreats > 0 && targetGuid is uint guid && !botDied)
+                await ReturnToFightAsync(fightPosition, guid, cancellationToken);
+            log.Info($"health {currentHealth}/{max} after the recovery wait ({outcome}; {(DateTimeOffset.UtcNow - started).TotalSeconds:0} s, {retreats} retreat(s), in combat: {playerInCombat})");
+        }
+        finally
+        {
+            recoveringHealth = false;
+        }
+    }
+
+    /// <summary>
+    /// Leaves a fight the bot is hurt in: to the last quest NPC, then up to <see cref="RecoveryLeaveCombatWait"/> for the server to
+    /// report the player out of combat. False when combat did not end there (or no safe spot is known; the caller checks first).
+    /// </summary>
+    private async Task<bool> RetreatToSafeSpotAsync(DateTimeOffset totalDeadline, CancellationToken cancellationToken)
+    {
+        if (safeSpot is not Vector3 spot || safeSpotWorldId != currentWorldId)
+            return false;
+
+        DateTimeOffset left = DateTimeOffset.UtcNow;
+        log.Info(FormattableString.Invariant(
+            $"hurt and in combat at health {currentHealth}/{currentMaxHealth}: leaving for the last quest NPC spot ({spot.X:0.#},{spot.Y:0.#},{spot.Z:0.#}), {Vector3.Distance(lastPosition, spot):0} m away; {FormatNearbyTrackedCreatures()}"));
+        // TeleportCommand(Vector3) lands 2 m off the point it is given on X and Z
+        await SendTeleportAsync(PacketCodec.TeleportCommand(new Vector3(spot.X - 2f, spot.Y, spot.Z - 2f)), false, cancellationToken);
+        lastPosition = spot;
+
+        DateTimeOffset deadline = DateTimeOffset.UtcNow + RecoveryLeaveCombatWait;
+        if (deadline > totalDeadline)
+            deadline = totalDeadline;
+        while (playerInCombat && !botDied)
         {
             TimeSpan remaining = deadline - DateTimeOffset.UtcNow;
             if (remaining <= TimeSpan.Zero || await TryReadWorldPacketAsync(remaining, cancellationToken) is null)
                 break;
         }
-        log.Info($"health {currentHealth}/{max} after the recovery wait");
+        if (playerInCombat && !botDied)
+        {
+            // the line that tells a combat state stuck on the server (a creature that keeps the player on its threat list after
+            // the player left) from an enemy standing at the safe spot
+            log.Info($"still in combat {(DateTimeOffset.UtcNow - left).TotalSeconds:0} s after leaving the fight, health {currentHealth}/{currentMaxHealth}; {FormatNearbyTrackedCreatures()}");
+            return false;
+        }
+        log.Info($"out of combat {(DateTimeOffset.UtcNow - left).TotalSeconds:0.0} s after leaving the fight, health {currentHealth}/{currentMaxHealth}");
+        return !botDied;
+    }
+
+    /// <summary>
+    /// Back to where the fight was to start, then a short wait for the target to stream in again.
+    /// </summary>
+    private async Task ReturnToFightAsync(Vector3 fightPosition, uint targetGuid, CancellationToken cancellationToken)
+    {
+        await SendTeleportAsync(PacketCodec.TeleportCommand(new Vector3(fightPosition.X - 2f, fightPosition.Y, fightPosition.Z - 2f)), false, cancellationToken);
+        lastPosition = fightPosition;
+        DateTimeOffset deadline = DateTimeOffset.UtcNow + CombatLocalTargetSearchTimeout;
+        while (entities.Get(targetGuid)?.Position is null)
+        {
+            TimeSpan remaining = deadline - DateTimeOffset.UtcNow;
+            if (remaining <= TimeSpan.Zero || await TryReadWorldPacketAsync(remaining, cancellationToken) is null)
+                break;
+        }
+        log.Info($"back at the fight: target guid {targetGuid} {(entities.Get(targetGuid)?.Position is null ? "is not in sight any more" : "in sight")}, health {currentHealth}/{currentMaxHealth}");
     }
 
     private async Task<bool> FightUntilCombatGoalAsync(
@@ -5027,7 +5242,7 @@ internal sealed class BotRunner
         bool lootCorpse,
         CancellationToken cancellationToken)
     {
-        await RecoverHealthBeforeFightAsync(cancellationToken);
+        await RecoverHealthBeforeFightAsync(targetGuid, cancellationToken);
         BeginCombatEvidence(targetGuid);
         bool targetFinished = false;
         try
@@ -5826,6 +6041,9 @@ internal sealed class BotRunner
         TimeSpan entityTimeout,
         CancellationToken cancellationToken)
     {
+        // heal before landing 2 m from the enemy: it pulls within a tick of the arrival (Darkspur Payback: teleport at
+        // 16:55:29.569, ServerUnitEnteredCombat at .649) and the check at the start of the fight then found the bot in combat
+        await RecoverHealthBeforeFightAsync(null, cancellationToken);
         bool includeWorld = currentWorldId != spawn.WorldId;
         if (includeWorld)
             entities.Clear();
@@ -6278,8 +6496,18 @@ internal sealed class BotRunner
                 case GameMessageOpcode.ServerUnitEnteredCombat:
                 {
                     UnitCombatState state = PacketCodec.ParseUnitCombatState(packet.Body);
-                    if (state.UnitId == playerGuid)
+                    if (state.UnitId == playerGuid && playerInCombat != state.InCombat)
+                    {
+                        // the packet log keeps no bodies, so whose combat state changed could not be read from run 20261124-065751;
+                        // these two lines say when the player is in combat and for how long (a state stuck on the server shows as
+                        // an "entered" with no "left" while the bot stands far from every enemy)
+                        DateTimeOffset now = DateTimeOffset.UtcNow;
+                        log.Info(state.InCombat
+                            ? $"player combat: entered after {(now - playerCombatChangedAt).TotalSeconds:0.0} s out of it, health {currentHealth?.ToString() ?? "?"}/{currentMaxHealth?.ToString() ?? "?"}"
+                            : $"player combat: left after {(now - playerCombatChangedAt).TotalSeconds:0.0} s, health {currentHealth?.ToString() ?? "?"}/{currentMaxHealth?.ToString() ?? "?"}");
+                        playerCombatChangedAt = now;
                         playerInCombat = state.InCombat;
+                    }
                     break;
                 }
                 case GameMessageOpcode.ServerEntityStatUpdateInteger:

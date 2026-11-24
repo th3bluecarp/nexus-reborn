@@ -224,6 +224,12 @@ namespace NexusForever.Game.Entity
                         && IsInObjectiveArea(entry))
                         updates.Add((quest, objective.ObjectiveInfo.Id, HoldProgress(objective)));
 
+                    // an escort whose escort NPC is in no spawn data (Thorn in Our Side: "Follow the Exile Field Agent to the Rear
+                    // Entrance", reward pane group 7800 = creature 52088 "Personal Phase No Combat", which a lost script spawned
+                    // per player once the Field Agent 18888 hid himself): reaching the indicator stands in for the walk
+                    else if (IsUnplacedEscort(objective) && IsInObjectiveArea(entry) && !IsNearObjectiveCreature(objective))
+                        updates.Add((quest, objective.ObjectiveInfo.Id, HoldProgress(objective)));
+
                     // an EnterArea objective without an indicator was a map trigger volume we do not have; its Data is a world zone
                     // for some (Corrupted Reconnaissance: 4350), standing in that zone or one of its sub zones completes it. For the
                     // rest the text says where: "Search for Botsmith Redfield inside Halsen's Claim" (Beyond the Realm of Medicine)
@@ -334,6 +340,49 @@ namespace NexusForever.Game.Entity
             }
 
             return false;
+        }
+
+        /// <summary>
+        /// An activate step with no Data, a reward pane target group and a map indicator, where no creature of that group is
+        /// placed anywhere in the player's world: an escort or follow step whose NPC only a lost script spawned (SEMANTICS:
+        /// escorts without an escort).
+        /// </summary>
+        private bool IsUnplacedEscort(IQuestObjective objective)
+        {
+            QuestObjectiveEntry entry = objective.ObjectiveInfo.Entry;
+            if (objective.ObjectiveInfo.Type != QuestObjectiveType.ActivateEntity || entry.Data != 0u
+                || entry.TargetGroupIdRewardPane == 0u || objective.ObjectiveInfo.EquipItemId != 0u || !HasIndicator(entry))
+                return false;
+
+            if (player.Map is not NexusForever.Game.Map.BaseMap map)
+                return false;
+
+            var creatureIds = AssetManager.Instance.GetTargetGroupCreatureIds(entry.TargetGroupIdRewardPane);
+            return creatureIds.Count > 0 && !creatureIds.Any(map.IsCreaturePlaced);
+        }
+
+        private const float ObjectiveCreatureRange = 100f;
+
+        /// <summary>
+        /// Whether a creature of the objective's reward pane group, or the creature its text names, stands within
+        /// <see cref="ObjectiveCreatureRange"/> of the player: something to use is there after all (spawned by a script), so the
+        /// place alone does not count.
+        /// </summary>
+        private bool IsNearObjectiveCreature(IQuestObjective objective)
+        {
+            if (player.Map == null)
+                return false;
+
+            var creatureIds = new HashSet<uint>(AssetManager.Instance.GetTargetGroupCreatureIds(objective.ObjectiveInfo.Entry.TargetGroupIdRewardPane));
+            if (objective.ObjectiveInfo.TextCreatureId != 0u)
+                creatureIds.Add(objective.ObjectiveInfo.TextCreatureId);
+            if (creatureIds.Count == 0)
+                return false;
+
+            var check = new SearchCheckRange<IUnitEntity>();
+            check.Initialise(player.Position, ObjectiveCreatureRange);
+            return player.Map.Search(player.Position, ObjectiveCreatureRange, check)
+                .Any(unit => unit is not IPlayer && creatureIds.Contains(unit.CreatureId));
         }
 
         private const float TextCreatureRange = 25f;

@@ -58,6 +58,20 @@ namespace NexusForever.Game.Map
         private readonly QueuedCounter entityCounter = new();
         protected readonly Dictionary<uint /*guid*/, IGridEntity> entities = new();
         private IEntityCache entityCache;
+        private HashSet<uint> placedCreatureIds;
+
+        /// <summary>
+        /// Whether the world's spawn data places the creature anywhere on this map (loaded grid or not). Built on first use;
+        /// script-spawned units are not in it.
+        /// </summary>
+        public bool IsCreaturePlaced(uint creatureId)
+        {
+            if (entityCache == null)
+                return false;
+
+            placedCreatureIds ??= entityCache.GetEntities().Select(model => model.Creature).ToHashSet();
+            return placedCreatureIds.Contains(creatureId);
+        }
 
         protected IScriptCollection scriptCollection;
 

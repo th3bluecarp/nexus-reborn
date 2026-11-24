@@ -478,7 +478,8 @@ namespace NexusForever.Script.Main.AI
                 {
                     if (ally == entity || !ally.IsAlive || ally.InCombat || ally.SummonerGuid.HasValue || ally.Faction1 != entity.Faction1)
                         continue;
-                    if (ally.Position.GetDistance(entity.Position) > 10f)
+                    // GetDistance is horizontal: an ally far above or below (the Bruiser 35 m under the Darkspur Strongarm ledge) does not hear the call
+                    if (ally.Position.GetDistance(entity.Position) > 10f || MathF.Abs(ally.Position.Y - entity.Position.Y) > 10f)
                         continue;
                     if (ally.GetDispositionTo(target.Faction1) != Disposition.Hostile)
                         continue;

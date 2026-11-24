@@ -130,3 +130,18 @@ INSERT INTO `loot_item` (`id`,`type`,`staticId`,`probability`,`minCount`,`maxCou
 -- the retail source of the item is not archived (2026-11-12).
 INSERT INTO `entity_loot` (`Id`,`lootGroupId`,`comment`) VALUES
 (17900,4000003,'Thrashwind Hunter near the Hidden Hills Ravenok nests');
+
+-- Double Trouble (4961): "Kill Inventor Mogi and Inventor Migo at Kendra's Roan Ranch" is a kill-reward-group step (type 15) whose targets are
+-- its reward pane group 8534 = Inventor Migo (20230, Challenger) and Inventor Mogi (17532, Grunt), both level 14, faction 170. Neither had a
+-- spawn, and spawns.sql had put the step's unrelated Data creature there instead: entity 900093, a Thundercall Channeler (17173, a level 20
+-- Stormtalon's Lair group mob) at the step's map marker. The bot waited 300 s for the inventors (run 20261124-065751).
+-- 900093 is removed (also deleted from spawns.sql; the delete stays here in case that file is regenerated) and the two inventors stand at the
+-- kill step's own marker (WorldLocation2 15061, 5115,-893,-2639, area 1004), 15 m from the Drill Configuration Panel; ground height from
+-- the panel's spawn. Display and outfit from their Creature2 display and outfit groups. Their retail positions are not archived, and a lost
+-- script may have brought them in after the sabotage; here they simply stand by their drill (2026-11-24). Entity ids 1300022-1300023.
+DELETE FROM `entity_stats` WHERE `Id` = 900093;
+DELETE FROM `entity` WHERE `Id` = 900093;
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`,`QuestChecklistIdx`) VALUES
+(1300022,0,20230,51,1004,5115.131,-891.014,-2638.887,0,0,0,25925,9005,170,170,0),
+(1300023,0,17532,51,1004,5119.131,-891.014,-2634.887,0,0,0,25916,9058,170,170,0);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1300022,10,14),(1300022,15,0),(1300023,10,14),(1300023,15,0);

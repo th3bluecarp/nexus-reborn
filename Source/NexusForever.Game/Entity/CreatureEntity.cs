@@ -38,6 +38,21 @@ namespace NexusForever.Game.Entity
         }
 
         /// <summary>
+        /// A creature's range check (proximity aggro, script range events) also needs the unit near its own height. Distances
+        /// here are horizontal (MathsExtensions.GetDistance leaves Y out), so a Darkspur Bruiser standing 35 m under a ledge was
+        /// "8.6 m" from a player fighting on it, joined that fight and climbed through the air (Darkspur Payback, 2026-11-24).
+        /// The limit is the check's own range, at least 15 m (SEMANTICS: creatures notice their own level).
+        /// </summary>
+        protected override bool IsInRange(IGridEntity target)
+        {
+            if (!base.IsInRange(target))
+                return false;
+
+            float heightLimit = MathF.Max(RangeCheck ?? 0f, 15f);
+            return MathF.Abs(Position.Y - target.Position.Y) <= heightLimit;
+        }
+
+        /// <summary>
         /// Set target to supplied <see cref="IUnitEntity"/>.
         /// </summary>
         /// <remarks>

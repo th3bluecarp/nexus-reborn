@@ -258,9 +258,6 @@ INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900091,10,50),(900091,1
 -- Corporal Darby (giver/turn-in, quest-linked)
 INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`,`QuestChecklistIdx`) VALUES (900092,0,17168,51,973,6203,-888.543,-2809,0,0,0,26029,9730,171,171,0);
 INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900092,10,20),(900092,15,0);
--- Thundercall Channeler (target, objective marker)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`,`QuestChecklistIdx`) VALUES (900093,0,17173,51,1004,5115.131,-891.014,-2638.887,0,0,0,27135,0,586,586,0);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900093,10,20),(900093,15,0);
 -- Commander Durek (giver/turn-in, quest-linked)
 INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`,`QuestChecklistIdx`) VALUES (900094,0,17175,51,976,6241,-838.25,-3096,0,0,0,22825,9065,171,171,0);
 INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900094,10,50),(900094,15,0);
