@@ -19,7 +19,22 @@ internal sealed record RealmInfo(uint AccountId, byte[] SessionKey, ushort Port,
 internal sealed record CharacterCreateResult(ulong CharacterId, uint WorldId, byte Result);
 internal sealed record QuestStateUpdate(ushort QuestId, QuestState State, uint QuestObjectiveId);
 internal sealed record QuestObjectiveUpdate(ushort QuestId, uint Index, uint Completed);
-internal sealed record SpellCastStart(uint ServerUniqueId, uint CasterId, uint PrimaryTargetId, uint? ClientUniqueId);
+internal sealed record SpellCastStart(uint ServerUniqueId, uint CasterId, uint PrimaryTargetId, uint? ClientUniqueId, uint Spell4Id = 0u);
+/// <summary>One damage or heal result in a ServerSpellGo: what one spell effect did to one target.</summary>
+internal sealed record SpellGoResult(
+    uint TargetId,
+    uint Spell4EffectId,
+    uint EffectUniqueId,
+    uint RawDamage,
+    uint Absorbed,
+    uint ShieldAbsorbed,
+    uint Amount,
+    uint Overkill,
+    bool Killed,
+    CombatResult Result,
+    DamageType DamageType);
+internal sealed record SpellGoInfo(uint ServerUniqueId, IReadOnlyList<SpellGoResult> Results);
+internal sealed record EntityStatFloat(uint UnitId, Stat Stat, float Value);
 internal sealed record SpellCastResult(uint ClientUniqueId, uint Spell4Id, CastResult Result);
 internal sealed record ActionSetSlot(ushort BagIndex, ShortcutType ShortcutType, uint ObjectId);
 internal sealed record ActionSetInfo(byte SpecIndex, bool Unlocked, IReadOnlyList<ActionSetSlot> Slots);
@@ -367,13 +382,67 @@ internal static class PacketCodec
     public static SpellCastStart ParseSpellStart(byte[] body) => Read(body, reader =>
     {
         uint serverUniqueId = reader.ReadUInt();
-        _ = reader.ReadUInt(18);
+        uint spell4Id = reader.ReadUInt(18);
         _ = reader.ReadUInt(18);
         _ = reader.ReadUInt(18);
         uint casterId = reader.ReadUInt();
         _ = reader.ReadUShort();
         uint primaryTargetId = reader.ReadUInt();
-        return new SpellCastStart(serverUniqueId, casterId, primaryTargetId, null);
+        return new SpellCastStart(serverUniqueId, casterId, primaryTargetId, null, spell4Id);
+    });
+
+    /// <summary>
+    /// The damage and heal results of a ServerSpellGo (ServerSpellGo.Write, TargetInfo, EffectInfo, SpellEffectResult): per
+    /// target and effect the raw amount, what absorbs and the shield took and what reached health. A multi-phase spell sends
+    /// its earlier results again with every phase; the caller tells them apart by EffectUniqueId.
+    /// </summary>
+    public static SpellGoInfo ParseSpellGo(byte[] body) => Read(body, reader =>
+    {
+        uint serverUniqueId = reader.ReadUInt();
+        _ = reader.ReadBit();
+        _ = reader.ReadVector3();
+        var results = new List<SpellGoResult>();
+        byte targets = reader.ReadByte();
+        for (int target = 0; target < targets; target++)
+        {
+            uint unitId = reader.ReadUInt();
+            _ = reader.ReadByte();
+            _ = reader.ReadByte();
+            _ = reader.ReadUShort();
+            _ = reader.ReadByte(4);
+            byte effects = reader.ReadByte();
+            for (int effect = 0; effect < effects; effect++)
+            {
+                uint effectId = reader.ReadUInt(19);
+                uint effectUniqueId = reader.ReadUInt();
+                _ = reader.ReadUInt();
+                _ = reader.ReadInt();
+                if (reader.ReadByte(2) != 1)
+                {
+                    _ = reader.ReadBit();
+                    continue;
+                }
+                uint raw = reader.ReadUInt();
+                _ = reader.ReadUInt();
+                uint absorbed = reader.ReadUInt();
+                uint shield = reader.ReadUInt();
+                uint amount = reader.ReadUInt();
+                uint overkill = reader.ReadUInt();
+                _ = reader.ReadUInt();
+                bool killed = reader.ReadBit();
+                CombatResult result = reader.ReadEnum<CombatResult>(4);
+                DamageType damageType = reader.ReadEnum<DamageType>(3);
+                byte additional = reader.ReadByte();
+                for (int extra = 0; extra < additional; extra++)
+                {
+                    for (int field = 0; field < 7; field++)
+                        _ = reader.ReadUInt();
+                    _ = reader.ReadByte(3);
+                }
+                results.Add(new SpellGoResult(unitId, effectId, effectUniqueId, raw, absorbed, shield, amount, overkill, killed, result, damageType));
+            }
+        }
+        return new SpellGoInfo(serverUniqueId, results);
     });
 
     public static SpellCastStart ParseSpellConfirmCast(byte[] body) => Read(body, reader =>
@@ -421,6 +490,9 @@ internal static class PacketCodec
 
     public static EntityStatInteger ParseEntityStatInteger(byte[] body) => Read(body, reader =>
         new EntityStatInteger(reader.ReadUInt(), reader.ReadEnum<Stat>(5), reader.ReadUInt()));
+
+    public static EntityStatFloat ParseEntityStatFloat(byte[] body) => Read(body, reader =>
+        new EntityStatFloat(reader.ReadUInt(), reader.ReadEnum<Stat>(5), reader.ReadSingle()));
 
     public static LootNotification ParseLootNotify(byte[] body) => Read(body, reader =>
     {

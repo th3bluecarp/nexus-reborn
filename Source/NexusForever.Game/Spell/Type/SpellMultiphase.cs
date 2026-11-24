@@ -35,6 +35,8 @@ namespace NexusForever.Game.Spell.Type
             if (!base.Cast())
                 return false;
 
+            hasFirstPhase = Parameters.SpellInfo.Phases.Any(p => p.OrderIndex == 0u);
+
             uint spellDelay = 0;
             for (int i = 0; i < Parameters.SpellInfo.Phases.Count; i++)
             {
@@ -74,12 +76,23 @@ namespace NexusForever.Game.Spell.Type
             return telegraph.PhaseFlags != 1 && (phaseMask & telegraph.PhaseFlags) != 0;
         }
 
+        // whether SpellPhase has a phase with order index 0 for this spell, the phase the flag value 1 stands for
+        private bool hasFirstPhase;
+
+        /// <remarks>
+        /// PhaseFlags has one bit per phase and bit 0 is the first phase. An effect flagged 1 used to run in every phase:
+        /// Crushing Flurry (46692) has four hits flagged 1, 2, 4 and 8 and landed seven, the first hit again with each later one
+        /// (soldier run 20261124-102254: one health update for its first tick, two for each of the next three). It now runs in
+        /// the first phase only. A spell with no phase 0 keeps the old rule, there a flag of 1 would never match.
+        /// </remarks>
         protected override bool CanExecuteEffect(Spell4EffectsEntry spell4EffectsEntry)
         {
             if (currentPhase < 255)
             {
                 int phaseMask = 1 << currentPhase;
-                if (spell4EffectsEntry.PhaseFlags != 1 && spell4EffectsEntry.PhaseFlags != uint.MaxValue && (phaseMask & spell4EffectsEntry.PhaseFlags) == 0)
+                bool everyPhase = spell4EffectsEntry.PhaseFlags == uint.MaxValue
+                    || (spell4EffectsEntry.PhaseFlags == 1u && !hasFirstPhase);
+                if (!everyPhase && (phaseMask & spell4EffectsEntry.PhaseFlags) == 0)
                     return false;
             }
 

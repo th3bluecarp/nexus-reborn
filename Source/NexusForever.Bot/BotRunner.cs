@@ -119,6 +119,33 @@ internal sealed class BotRunner
     private uint combatDamageTaken;
     // spells started by units other than the bot during the current fight, by caster guid (death evidence: who hit the bot)
     private readonly Dictionary<uint, uint> combatCasterCasts = [];
+    // fight evidence the packet log cannot give (it keeps no bodies; Darkspur Payback, run 20261124-102254): which spell each
+    // enemy cast was and what each hit took from shield and health, what the bot dealt with which spell, whether the target
+    // gained health, and the class resource when an ability is refused
+    private sealed class EnemySpellEvidence
+    {
+        public uint Casts;
+        public uint Hits;
+        public uint Health;
+        public uint Shield;
+        public uint LargestHit;
+    }
+    private readonly Dictionary<uint, (uint CasterId, uint Spell4Id)> spellCastsByServerId = [];
+    private readonly HashSet<uint> seenSpellEffectIds = [];
+    private readonly Dictionary<(uint CreatureId, uint Spell4Id), EnemySpellEvidence> combatEnemySpells = [];
+    private readonly Dictionary<uint, (uint Hits, uint Damage)> combatOwnSpells = [];
+    private uint combatShieldTaken;
+    private uint? combatTargetStartHealth;
+    private uint combatTargetHealthGained;
+    private uint combatTargetHealthGains;
+    private float? currentResource1;
+    private uint? currentShield;
+    // units whose spell hit the bot (health or shield), with the time of the last hit: what is still fighting the bot when its
+    // target dies. Read from the damage results, so a friendly unit that casts on the bot is never taken for an attacker
+    private readonly Dictionary<uint, DateTimeOffset> attackersOnBot = [];
+    private static readonly TimeSpan AttackerMemory = TimeSpan.FromSeconds(8);
+    private static readonly TimeSpan AttackerFightCap = TimeSpan.FromSeconds(90);
+    private const float AttackerRange = 30f;
     private long? combatFirstEnemyActionMs;
     private bool resurrectionRecoveryActive;
     private string? resurrectionConfirmation;
@@ -3298,6 +3325,14 @@ internal sealed class BotRunner
                     return $"level {before} -> {currentLevel} after death; retrying objective {objective.Index} once";
                 });
             }
+            // the level cheat gives the level's health, not its gear: the Darkspur Payback retry fought at level 22 in its level
+            // 15 to 18 pieces (the next set came after the quest had failed) and the same Lieutenant's Crushing Rush took 1,089
+            // to 1,122 health where it took 773 to 830 before the raise. Same pieces and item cheat as a quest level raise.
+            await RunQuestStepAsync("gear for the level after death", TimeSpan.FromSeconds(60), cancellationToken, async token =>
+            {
+                await EquipGearForLevelAsync(token);
+                return $"gear checked for level {currentLevel}";
+            });
             // the retry after a death takes the weakest creatures of the objective's group first (Darkspur Payback's group mixes
             // difficulty 2 Bruisers with difficulty 5 Strongarms on a ledge, and the nearest-first order walked into the elite
             // twice); objectives that never died are not reordered
@@ -4821,8 +4856,38 @@ internal sealed class BotRunner
         combatAreaAnchors = areaAnchors;
         try
         {
+            // what is already hitting the bot comes before a new target, weakest rank first: Darkspur Payback's first death went
+            // from a dead Bruiser straight to a Lieutenant with two more Bruisers still on the bot (56 casts in that fight), the
+            // second to a Strongarm with a Bladegrinder that had respawned into the fight before. The set is taken once, when
+            // the step starts and after each target the step picked, so creatures that respawn into the fight (60 s) cannot
+            // keep the bot from its next target; each such fight is capped
+            HashSet<uint>? attackers = null;
             while (!IsObjectiveComplete(objective))
             {
+                attackers ??= SnapshotAttackersOnBot();
+                TrackedEntity? attacker = FindAttackerOnBot(attackers);
+                if (attacker is not null)
+                {
+                    attackers.Remove(attacker.Guid);
+                    log.Info(FormattableString.Invariant(
+                        $"objective {objective.Index}: guid {attacker.Guid} creature {attacker.CreatureId} is still hitting the bot, {Vector3.Distance(lastPosition, attacker.Position ?? lastPosition):0.0} m away; fighting it before the next target ({attackers.Count} more)"));
+                    await RequireWorld().SendEncryptedAsync(GameMessageOpcode.ClientEntitySelect,
+                        PacketCodec.ClientEntitySelect(attacker.Guid), cancellationToken);
+                    uint beforeAttacker = GetRawProgress(objective.Index);
+                    using var attackerFight = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
+                    attackerFight.CancelAfter(AttackerFightCap);
+                    try
+                    {
+                        if (await FightUntilProgressAsync(objective.Index, beforeAttacker, attacker.Guid, attackerFight.Token))
+                            finishedTargetGuids.Add(attacker.Guid);
+                    }
+                    catch (OperationCanceledException) when (attackerFight.IsCancellationRequested && !cancellationToken.IsCancellationRequested)
+                    {
+                        log.Info($"objective {objective.Index}: guid {attacker.Guid} creature {attacker.CreatureId} was not finished in {AttackerFightCap.TotalSeconds:0} s; going on to the next target");
+                    }
+                    continue;
+                }
+
                 TrackedEntity? entity = await AcquireCombatTargetAsync(
                     objective, candidates, objectiveCreatureIds, finishedTargetGuids, spawnVisits, cancellationToken);
                 if (entity is null || IsObjectiveComplete(objective))
@@ -4835,6 +4900,7 @@ internal sealed class BotRunner
                     objective.Index, before, entity.Guid, cancellationToken);
                 if (targetFinished)
                     finishedTargetGuids.Add(entity.Guid);
+                attackers = null;
             }
         }
         finally
@@ -5377,7 +5443,10 @@ internal sealed class BotRunner
                         break;
                     case CastResult.PrereqCasterCast:
                         combatSlotBusyUntil[bagIndex] = DateTimeOffset.UtcNow.AddSeconds(15);
-                        log.Info($"combat slot {bagIndex}: PrereqCasterCast; unusable for 15 s");
+                        // the class resource at the refusal (Rampage 58524 asks 250 kinetic energy: refused 477 times in run
+                        // 20261124-102254, cast 36 times) tells a builder that gives nothing from a prerequisite the server reads wrong
+                        log.Info(FormattableString.Invariant(
+                            $"combat slot {bagIndex}: PrereqCasterCast (spell {castResult.Spell4Id}, class resource {currentResource1?.ToString("0") ?? "not sent"}); unusable for 15 s"));
                         break;
                     default:
                         if (IsInvalidCombatTargetResult(castResult.Result))
@@ -5566,10 +5635,161 @@ internal sealed class BotRunner
         combatEnemyCasts = 0u;
         combatDamageTaken = 0u;
         combatCasterCasts.Clear();
+        combatEnemySpells.Clear();
+        combatOwnSpells.Clear();
+        combatShieldTaken = 0u;
+        combatTargetStartHealth = entities.Get(targetGuid)?.Health;
+        combatTargetHealthGained = 0u;
+        combatTargetHealthGains = 0u;
         combatFirstEnemyActionMs = null;
         combatTargetDestroyed = false;
         combatTargetConfirmedDead = false;
         combatLoot.Clear();
+    }
+
+    /// <summary>
+    /// The units whose spell hit the bot in the last <see cref="AttackerMemory"/>; empty out of combat.
+    /// </summary>
+    private HashSet<uint> SnapshotAttackersOnBot()
+    {
+        var snapshot = new HashSet<uint>();
+        if (!playerInCombat || botDied || worldLoadPending || activeHoldoutEventId is not null)
+            return snapshot;
+
+        DateTimeOffset now = DateTimeOffset.UtcNow;
+        foreach ((uint guid, DateTimeOffset seen) in attackersOnBot.ToArray())
+        {
+            if (now - seen > AttackerMemory)
+                attackersOnBot.Remove(guid);
+            else
+                snapshot.Add(guid);
+        }
+        return snapshot;
+    }
+
+    /// <summary>
+    /// Of <paramref name="attackers"/> (see <see cref="SnapshotAttackersOnBot"/>) a hostile creature that is alive and within
+    /// <see cref="AttackerRange"/>: the weakest rank first, then the nearest. Null out of combat.
+    /// </summary>
+    private TrackedEntity? FindAttackerOnBot(IReadOnlySet<uint> attackers)
+    {
+        if (attackers.Count == 0 || !playerInCombat || botDied || worldLoadPending || activeHoldoutEventId is not null)
+            return null;
+
+        BotGameData data = RequireGameData();
+        TrackedEntity? best = null;
+        uint bestRank = uint.MaxValue;
+        float bestDistance = float.MaxValue;
+        foreach (uint guid in attackers)
+        {
+            TrackedEntity? entity = entities.Get(guid);
+            if (entity is null || entity.Type != EntityType.NonPlayer || entity.Health is 0u
+                || entity.CreatureId is not uint creatureId || entity.Position is not Vector3 position
+                || !data.IsAttackableCreature(creatureId))
+                continue;
+            float distance = Vector3.Distance(lastPosition, position);
+            if (distance > AttackerRange)
+                continue;
+            uint rank = data.CreatureDifficultyId(creatureId);
+            if (rank < bestRank || rank == bestRank && distance < bestDistance)
+            {
+                best = entity;
+                bestRank = rank;
+                bestDistance = distance;
+            }
+        }
+        return best;
+    }
+
+    /// <summary>
+    /// One INFO line per fight: how long it ran, the target's health before and after and whether it rose, what the bot dealt
+    /// with which spell, what the bot lost to shield and health and to which enemy spell. Never throws (it runs in a finally).
+    /// </summary>
+    private void LogFightSummary(uint targetGuid, bool targetFinished)
+    {
+        try
+        {
+            double seconds = Math.Max(0.1d, (DateTimeOffset.UtcNow - combatStartedAt).TotalSeconds);
+            TrackedEntity? target = entities.Get(targetGuid);
+            uint dealt = 0u;
+            uint hits = 0u;
+            foreach ((uint Hits, uint Damage) own in combatOwnSpells.Values)
+            {
+                dealt += own.Damage;
+                hits += own.Hits;
+            }
+            string ownSpells = combatOwnSpells.Count == 0
+                ? "none"
+                : string.Join(", ", combatOwnSpells.OrderByDescending(pair => pair.Value.Damage)
+                    .Select(pair => FormattableString.Invariant($"spell {pair.Key} x{pair.Value.Hits} = {pair.Value.Damage}")));
+            string enemySpells = combatEnemySpells.Count == 0
+                ? "none"
+                : string.Join(" | ", combatEnemySpells.OrderByDescending(pair => pair.Value.Health + pair.Value.Shield).Take(12)
+                    .Select(pair => FormattableString.Invariant(
+                        $"creature {pair.Key.CreatureId} spell {pair.Key.Spell4Id}: {pair.Value.Casts} cast(s), {pair.Value.Hits} hit(s), {pair.Value.Health} health + {pair.Value.Shield} shield, largest {pair.Value.LargestHit}")));
+            log.Info(FormattableString.Invariant(
+                $"fight summary: target guid {targetGuid} creature {target?.CreatureId.ToString() ?? "?"} level {target?.Level?.ToString() ?? "?"}, {seconds:0.0} s, finished {targetFinished}; target health {combatTargetStartHealth?.ToString() ?? "?"} -> {target?.Health?.ToString() ?? "?"} of {target?.MaxHealth?.ToString() ?? "?"}, rose {combatTargetHealthGains} time(s) by {combatTargetHealthGained}; bot level {currentLevel} dealt {dealt} in {hits} hit(s) ({dealt / seconds:0.0}/s) [{ownSpells}]; bot took {combatDamageTaken} health + {combatShieldTaken} shield, health {currentHealth?.ToString() ?? "?"}/{currentMaxHealth?.ToString() ?? "?"}, shield {currentShield?.ToString() ?? "?"}; enemy spells [{enemySpells}]"));
+        }
+        catch (Exception exception)
+        {
+            log.Info($"fight summary unavailable: {exception.Message}");
+        }
+    }
+
+    /// <summary>
+    /// Damage results of a ServerSpellGo: hits on the bot are logged one by one (DEBUG) and summed per enemy spell, the bot's
+    /// own hits on its fight target are summed per spell. Malformed bodies are skipped.
+    /// </summary>
+    private void RecordSpellGo(byte[] body)
+    {
+        SpellGoInfo go;
+        try
+        {
+            go = PacketCodec.ParseSpellGo(body);
+        }
+        catch (Exception)
+        {
+            return;
+        }
+
+        bool known = spellCastsByServerId.TryGetValue(go.ServerUniqueId, out (uint CasterId, uint Spell4Id) cast);
+        foreach (SpellGoResult result in go.Results)
+        {
+            if (result.DamageType is not (DamageType.Physical or DamageType.Tech or DamageType.Magic))
+                continue;
+            if (seenSpellEffectIds.Count > 50000)
+                seenSpellEffectIds.Clear();
+            if (!seenSpellEffectIds.Add(result.EffectUniqueId))
+                continue;
+
+            if (result.TargetId == playerGuid && (!known || cast.CasterId != playerGuid))
+            {
+                uint creatureId = known ? entities.Get(cast.CasterId)?.CreatureId ?? 0u : 0u;
+                if (known && cast.CasterId != controlGuid)
+                    attackersOnBot[cast.CasterId] = DateTimeOffset.UtcNow;
+                log.Debug(FormattableString.Invariant(
+                    $"HIT on bot: -{result.Amount} health, -{result.ShieldAbsorbed} shield, {result.Absorbed} absorbed (raw {result.RawDamage}, {result.Result}) by guid {(known ? cast.CasterId.ToString() : "?")} creature {creatureId} spell {(known ? cast.Spell4Id.ToString() : "?")} effect {result.Spell4EffectId}; health {currentHealth?.ToString() ?? "?"}/{currentMaxHealth?.ToString() ?? "?"}, shield {currentShield?.ToString() ?? "?"}"));
+                if (combatTargetGuid is null)
+                    continue;
+                combatShieldTaken += result.ShieldAbsorbed;
+                (uint, uint) key = (creatureId, known ? cast.Spell4Id : 0u);
+                if (!combatEnemySpells.TryGetValue(key, out EnemySpellEvidence? evidence))
+                {
+                    evidence = new EnemySpellEvidence();
+                    combatEnemySpells[key] = evidence;
+                }
+                evidence.Hits++;
+                evidence.Health += result.Amount;
+                evidence.Shield += result.ShieldAbsorbed;
+                if (result.Amount + result.ShieldAbsorbed > evidence.LargestHit)
+                    evidence.LargestHit = result.Amount + result.ShieldAbsorbed;
+            }
+            else if (known && cast.CasterId == playerGuid && combatTargetGuid == result.TargetId)
+            {
+                (uint Hits, uint Damage) own = combatOwnSpells.GetValueOrDefault(cast.Spell4Id);
+                combatOwnSpells[cast.Spell4Id] = (own.Hits + 1u, own.Damage + result.Amount + result.ShieldAbsorbed);
+            }
+        }
     }
 
     private bool CombatGoalProgressed(int? objectiveIndex, uint before)
@@ -5663,6 +5883,7 @@ internal sealed class BotRunner
 
     private void FinishCombatEvidence(int? objectiveIndex, uint targetGuid, bool targetFinished)
     {
+        LogFightSummary(targetGuid, targetFinished);
         KillEvidence? evidence = null;
         if (targetFinished)
         {
@@ -6426,8 +6647,20 @@ internal sealed class BotRunner
                         combatEnemyCasts++;
                         RecordEnemyAction();
                     }
+                    if (spellCastsByServerId.Count > 20000)
+                        spellCastsByServerId.Clear();
+                    spellCastsByServerId[start.ServerUniqueId] = (start.CasterId, start.Spell4Id);
                     if (combatTargetGuid is not null && start.CasterId != playerGuid && start.CasterId != controlGuid)
+                    {
                         combatCasterCasts[start.CasterId] = combatCasterCasts.GetValueOrDefault(start.CasterId) + 1u;
+                        (uint, uint) spellKey = (entities.Get(start.CasterId)?.CreatureId ?? 0u, start.Spell4Id);
+                        if (!combatEnemySpells.TryGetValue(spellKey, out EnemySpellEvidence? spellEvidence))
+                        {
+                            spellEvidence = new EnemySpellEvidence();
+                            combatEnemySpells[spellKey] = spellEvidence;
+                        }
+                        spellEvidence.Casts++;
+                    }
                     if (combatTargetGuid is not null
                         && start.CasterId == playerGuid
                         && pendingCombatClientId is not null)
@@ -6488,9 +6721,33 @@ internal sealed class BotRunner
                 case GameMessageOpcode.ServerPlayerHealthUpdate:
                 {
                     (uint unitId, uint health) = PacketCodec.ParseEntityHealthUpdate(packet.Body);
+                    if (unitId == combatTargetGuid && unitId != playerGuid
+                        && entities.Get(unitId)?.Health is uint targetHealthBefore && health > targetHealthBefore)
+                    {
+                        // a target that heals or resets to full (CombatAI.Reset when its threat list empties) shows here
+                        combatTargetHealthGains++;
+                        combatTargetHealthGained += health - targetHealthBefore;
+                    }
                     entities.UpdateHealth(unitId, health);
                     if (unitId == playerGuid)
                         RecordPlayerHealth(health);
+                    break;
+                }
+                case GameMessageOpcode.ServerSpellGo:
+                    RecordSpellGo(packet.Body);
+                    break;
+                case GameMessageOpcode.ServerEntityStatUpdateFloat:
+                {
+                    try
+                    {
+                        EntityStatFloat update = PacketCodec.ParseEntityStatFloat(packet.Body);
+                        if (update.UnitId == playerGuid && update.Stat == Stat.Resource1)
+                            currentResource1 = update.Value;
+                    }
+                    catch (Exception)
+                    {
+                        // evidence only
+                    }
                     break;
                 }
                 case GameMessageOpcode.ServerUnitEnteredCombat:
@@ -6519,6 +6776,8 @@ internal sealed class BotRunner
                             currentLevel = update.Value;
                         else if (update.Stat == Stat.Health)
                             RecordPlayerHealth(update.Value);
+                        else if (update.Stat == Stat.Shield)
+                            currentShield = update.Value;
                     }
                     break;
                 }
