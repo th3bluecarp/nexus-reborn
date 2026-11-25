@@ -458,6 +458,9 @@ internal static class PacketCodec
 
     public static uint ParseSpellFinish(byte[] body) => Read(body, reader => reader.ReadUInt());
 
+    // ServerSpellGo.Write starts with the ServerUniqueId of the cast that ran.
+    public static uint ParseSpellGoId(byte[] body) => Read(body, reader => reader.ReadUInt());
+
     public static (uint UnitId, bool Dead) ParseEntityDeathState(byte[] body) => Read(body, reader =>
         (reader.ReadUInt(), reader.ReadBit()));
 

@@ -135,7 +135,8 @@ internal sealed record SettlerInfrastructureDefinition(
     uint DepotCreatureId,
     IReadOnlyList<uint> ResourceCreatureIds,
     uint MaxStackCount,
-    uint MissionCount);
+    uint MissionCount,
+    uint ResourceSpellId);
 internal sealed record SettlerResourceDefinition(uint ItemId, string Name, IReadOnlyList<uint> CreatureIds);
 internal sealed record SettlerBuildDefinition(
     uint GroupId,
@@ -750,7 +751,9 @@ internal sealed class BotGameData
             infrastructure.Creature2IdDepot,
             resourceCreatures,
             maxStackCount,
-            Math.Max(infrastructure.MissionCount, 1u));
+            Math.Max(infrastructure.MissionCount, 1u),
+            // PathMissionManager.GatherInfrastructureResource casts this spell on the player for each resource picked up
+            infrastructure.Spell4IdResource00);
     }
 
     // The world server and the bot read one table (NexusForever.Game.Static ScientistMissionRules): a private copy here

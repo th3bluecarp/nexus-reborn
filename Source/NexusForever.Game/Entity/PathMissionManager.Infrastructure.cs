@@ -15,7 +15,8 @@ namespace NexusForever.Game.Entity
     /// <remarks>
     /// The mission's object is a PathSettlerInfrastructure: activating one of its resource creatures picks up a resource (up to
     /// MaxStackCountResource carried, the Spell4IdResource buff shows it), coming within <see cref="BuilderRange"/> of the
-    /// builder (Creature2IdDepot) hands them in, MissionCount deliveries complete the mission. Projects without a resource
+    /// builder (Creature2IdDepot) hands them in, MissionCount deliveries complete the mission. A dead character does neither.
+    /// Projects without a resource
     /// creature take the one listed for them (SettlerProjectRules), else the creatures named in their objective ("Collect
     /// Eldan Relics for ..."). Retail added every settler's
     /// deliveries to a shared project total (Count) with a timer, that part is not kept.
@@ -167,7 +168,8 @@ namespace NexusForever.Game.Entity
 
         private void GatherInfrastructureResource(uint creatureId)
         {
-            if (player.Path != Path.Settler)
+            // a dead character picks nothing up: the activation cast is refused for it, but a plain use still came through here
+            if (player.Path != Path.Settler || !player.IsAlive)
                 return;
 
             foreach (PathMission mission in missions.Values.Where(m => m.Kind == MissionKind.Infrastructure && !m.IsComplete).ToList())
@@ -193,7 +195,8 @@ namespace NexusForever.Game.Entity
 
         private void DeliverInfrastructureResources()
         {
-            if (player.Path != Path.Settler || carriedResources.Count == 0 || player.Map == null)
+            // nor does a dead character hand in what it carried, it keeps it until it is raised
+            if (player.Path != Path.Settler || carriedResources.Count == 0 || player.Map == null || !player.IsAlive)
                 return;
 
             foreach (PathMission mission in missions.Values.Where(m => m.Kind == MissionKind.Infrastructure && !m.IsComplete).ToList())

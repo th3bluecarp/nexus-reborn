@@ -59,6 +59,12 @@ internal sealed class BotRunner
     private readonly HashSet<uint> pendingActivationCastIds = [];
     private readonly Dictionary<uint, SpellCastResult> activationCastResults = [];
     private readonly HashSet<uint> finishedSpellIds = [];
+    // interaction casts the bot answered that the server has run (ServerSpellGo), see TryWaitForSpellFinishAsync
+    private readonly HashSet<uint> executedCsiSpellIds = [];
+    // the carried resource spell of the settler project being played (PathSettlerInfrastructure.Spell4IdResource00) and how
+    // often the server has cast it on the bot: each cast is one resource picked up, the stack a player sees on the buff bar
+    private uint infrastructureResourceSpellId;
+    private uint infrastructureResourcePickups;
     private readonly List<string> objectiveCastResultDetails = [];
     private readonly Dictionary<byte, ushort[]> actionSetCombatSlots = [];
     private readonly HashSet<uint> finishedCombatSpellIds = [];
@@ -1075,6 +1081,7 @@ internal sealed class BotRunner
             {
                 currentMissionReport.EndTimestamp = DateTimeOffset.UtcNow;
                 currentMissionReport = null;
+                infrastructureResourceSpellId = 0u;
                 holdoutResult = null;
                 activeHoldoutEventId = null;
                 currentHoldoutWave = null;
@@ -1742,7 +1749,33 @@ internal sealed class BotRunner
         uint gatherActivations = 0u;
         uint gathers = 0u;
         uint deliveries = GetPathMissionStatus(definition.Id)?.Progress ?? 0u;
+        uint deathRecoveries = 0u;
         var attemptedResourceSpawns = new HashSet<uint>();
+        // what a player sees of a pickup is the project's carried resource spell cast on them; the packet handler counts those casts
+        infrastructureResourceSpellId = infrastructure.ResourceSpellId;
+        infrastructureResourcePickups = 0u;
+
+        // a dead character gets no answer to an activation cast, and the plain use the bot falls back to was taken as a
+        // gather: run 20261124-232933 passed 1873, 1874 and 1884 that way after the bot died at 07:47:50
+        async Task RaiseIfDeadAsync()
+        {
+            if (!botDied)
+                return;
+            deathRecoveries++;
+            if (deathRecoveries > 2u)
+                throw new BotFailureException($"infrastructure {infrastructure.Id}: the character died {deathRecoveries} times in this mission; gather activations={gatherActivations}, pickups seen={infrastructureResourcePickups}, deliveries={deliveries}");
+            var recoveryReport = new QuestRunReport
+            {
+                QuestId = 0,
+                Title = $"path mission {definition.Id}",
+                CharacterName = report.CharacterName
+            };
+            await TryRecoverFromDeathAsync(recoveryReport, cancellationToken);
+            if (botDied)
+                throw new BotFailureException($"infrastructure {infrastructure.Id}: the character died and was not raised; gather activations={gatherActivations}, pickups seen={infrastructureResourcePickups}, deliveries={deliveries}");
+            log.Info($"infrastructure {infrastructure.Id}: the character died and was raised ({deathRecoveries} of 2); going on");
+        }
+
         while (!IsPathMissionComplete(definition.Id))
         {
             uint progressBefore = GetPathMissionStatus(definition.Id)?.Progress ?? 0u;
@@ -1750,9 +1783,14 @@ internal sealed class BotRunner
                 ? infrastructure.MissionCount - progressBefore
                 : 1u;
             uint batchTarget = Math.Min(infrastructure.MaxStackCount, remaining);
+            // a batch is the pickups seen since it began plus the uses the server ran without showing one (a project with no
+            // carried spell, or a stack that is already full): the delivery then tells how many the server really held
+            uint pickupsAtBatchStart = infrastructureResourcePickups;
+            uint unseenGathers = 0u;
             uint batchGathered = 0u;
             while (batchGathered < batchTarget)
             {
+                await RaiseIfDeadAsync();
                 Spawn[] all = SpawnsFor(infrastructure.ResourceCreatureIds, checked((ushort)definition.Episode.WorldId))
                     .OrderBy(spawn => spawn.DistanceSquared(lastPosition.X, lastPosition.Y, lastPosition.Z))
                     .ThenBy(spawn => spawn.Id)
@@ -1773,29 +1811,43 @@ internal sealed class BotRunner
                     TrackedEntity? resource = await TeleportAndTryFindWithRetryAsync(spawn, cancellationToken);
                     if (resource is null)
                         continue;
+                    uint pickupsBefore = infrastructureResourcePickups;
                     ActivationOutcome outcome = await RunPathActivationFlowAsync(
                         resource,
-                        () => false, // gathering changes only server-side carried state; delivery emits the mission update
+                        // gathering changes the carried state on the server and the mission update comes with the delivery;
+                        // the carried resource spell cast on the bot is the pickup a client can see
+                        () => infrastructureResourcePickups > pickupsBefore,
                         TimeSpan.FromMilliseconds(500),
                         cancellationToken,
                         acceptConfirmedActivationWithoutProgress: true);
-                    if (outcome != ActivationOutcome.Activated)
+                    if (botDied)
+                        break; // nothing a dead character did counts, the top of the loop raises it
+                    if (outcome is not (ActivationOutcome.Activated or ActivationOutcome.Progressed))
                         continue;
-                    batchGathered++;
                     gatherActivations++;
+                    if (infrastructureResourcePickups == pickupsBefore)
+                    {
+                        unseenGathers++;
+                        if (infrastructure.ResourceSpellId != 0u)
+                            log.Info($"infrastructure {infrastructure.Id}: spawn {spawn.Id} (creature {spawn.CreatureId}) was used and no pickup was seen (carried spell {infrastructure.ResourceSpellId}); counted as one, the delivery tells");
+                    }
                     gathered = true;
                     break;
                 }
+                batchGathered = unseenGathers + (infrastructureResourcePickups - pickupsAtBatchStart);
+                if (botDied)
+                    continue; // raised at the top of the next round, or before the delivery
                 if (!gathered)
                 {
                     attemptedResourceSpawns.Clear();
-                    log.Info($"infrastructure {infrastructure.Id}: no remaining resource spawn was visible; waiting up to {SettlerNodeRespawnWait.TotalSeconds:0} s at spawn {all[0].Id}");
+                    log.Info($"infrastructure {infrastructure.Id}: no resource spawn gave a resource this round (not visible, busy or no answer); waiting up to {SettlerNodeRespawnWait.TotalSeconds:0} s at spawn {all[0].Id}");
                     TrackedEntity? respawned = await TeleportAndTryFindAsync(all[0], SettlerNodeRespawnWait, cancellationToken);
                     if (respawned is null)
                         throw new BotFailureException($"infrastructure {infrastructure.Id} could not activate another resource and none respawned within {SettlerNodeRespawnWait.TotalSeconds:0} s; batch={batchGathered}/{batchTarget}, gather activations={gatherActivations}, confirmed gathers={gathers}, deliveries={deliveries}");
                 }
             }
 
+            await RaiseIfDeadAsync();
             Spawn depotSpawn = ChooseNearestSpawn([infrastructure.DepotCreatureId], checked((ushort)definition.Episode.WorldId));
             _ = await TeleportAndTryFindWithRetryAsync(depotSpawn, cancellationToken)
                 ?? throw new BotFailureException($"infrastructure depot creature {infrastructure.DepotCreatureId} at spawn {depotSpawn.Id} was not visible; gather activations={gatherActivations}, confirmed gathers={gathers}, deliveries={deliveries}");
@@ -1805,7 +1857,7 @@ internal sealed class BotRunner
                 TimeSpan.FromSeconds(5),
                 cancellationToken);
             if (!delivered)
-                throw new BotFailureException($"infrastructure delivery produced no progress within 5 s after {batchGathered} gather activation(s); gather activations={gatherActivations}, confirmed gathers={gathers}, deliveries={deliveries}");
+                throw new BotFailureException($"infrastructure delivery produced no progress within 5 s after a batch of {batchGathered} ({infrastructureResourcePickups - pickupsAtBatchStart} pickup(s) seen, {unseenGathers} use(s) without one); dead={botDied}, gather activations={gatherActivations}, confirmed gathers={gathers}, deliveries={deliveries}");
             uint progressAfter = GetPathMissionStatus(definition.Id)?.Progress ?? progressBefore;
             uint deliveredNow = progressAfter - progressBefore;
             gathers += deliveredNow;
@@ -1813,7 +1865,7 @@ internal sealed class BotRunner
         }
 
         PathMissionStatus? status = GetPathMissionStatus(definition.Id);
-        return $"gathers this run={gathers} confirmed ({gatherActivations} activation(s)); deliveries total={deliveries}/{infrastructure.MissionCount}; max carried={infrastructure.MaxStackCount}; resource creatures=[{string.Join(',', infrastructure.ResourceCreatureIds)}]; depot={infrastructure.DepotCreatureId}; progress={status?.Progress.ToString() ?? "not-received"}; episode={definition.Episode.Id}";
+        return $"gathers this run={gathers} confirmed ({gatherActivations} activation(s), {infrastructureResourcePickups} pickup(s) seen as carried spell {infrastructure.ResourceSpellId}); deliveries total={deliveries}/{infrastructure.MissionCount}; max carried={infrastructure.MaxStackCount}; resource creatures=[{string.Join(',', infrastructure.ResourceCreatureIds)}]; depot={infrastructure.DepotCreatureId}; progress={status?.Progress.ToString() ?? "not-received"}; episode={definition.Episode.Id}";
     }
 
     private async Task<string> RunScientistExperimentationMissionAsync(
@@ -2200,10 +2252,14 @@ internal sealed class BotRunner
                     await RequireWorld().SendEncryptedAsync(GameMessageOpcode.ClientSpellClientSideInteraction,
                         PacketCodec.ClientSpellClientSideInteraction(spellStart.ServerUniqueId), cancellationToken);
                     respondedCsiSpellIds.Add(spellStart.ServerUniqueId);
+                    // a caller that tracks the effect itself takes the cast the server ran (ServerSpellGo): an activate spell
+                    // with a timed effect sends its ServerSpellFinish only when that effect ends (34512 Instant Activate + Busy
+                    // keeps the object busy for 33 s, so no Tempest Tech Scrap was ever confirmed within the 5 s below)
                     activationConfirmed = await TryWaitForSpellFinishAsync(
                         spellStart.ServerUniqueId,
                         TimeSpan.FromSeconds(5),
-                        cancellationToken);
+                        cancellationToken,
+                        executedIsEnough: acceptConfirmedActivationWithoutProgress);
                     if (activationCastResults.Remove(clientUniqueId, out SpellCastResult? finishResult)
                         && finishResult is not null)
                     {
@@ -4955,11 +5011,14 @@ internal sealed class BotRunner
     private async Task<bool> TryWaitForSpellFinishAsync(
         uint serverUniqueId,
         TimeSpan timeout,
-        CancellationToken cancellationToken)
+        CancellationToken cancellationToken,
+        bool executedIsEnough = false)
     {
         DateTimeOffset deadline = DateTimeOffset.UtcNow + timeout;
         while (!finishedSpellIds.Remove(serverUniqueId))
         {
+            if (executedIsEnough && executedCsiSpellIds.Remove(serverUniqueId))
+                return true;
             TimeSpan remaining = deadline - DateTimeOffset.UtcNow;
             if (remaining <= TimeSpan.Zero || await TryReadWorldPacketAsync(remaining, cancellationToken) is null)
                 return false;
@@ -6957,6 +7016,13 @@ internal sealed class BotRunner
                     if (spellCastsByServerId.Count > 20000)
                         spellCastsByServerId.Clear();
                     spellCastsByServerId[start.ServerUniqueId] = (start.CasterId, start.Spell4Id);
+                    if (infrastructureResourceSpellId != 0u && start.Spell4Id == infrastructureResourceSpellId && start.CasterId == playerGuid)
+                    {
+                        // the packet log keeps no bodies: this line is the pickup (run 20261124-232933 only showed five
+                        // ServerSpellStart of 41 bytes per project, which fits a stack of five and proves nothing by itself)
+                        infrastructureResourcePickups++;
+                        log.Info($"infrastructure resource picked up: carried spell {start.Spell4Id} cast on the bot (cast {start.ServerUniqueId}), {infrastructureResourcePickups} seen in this mission");
+                    }
                     if (combatTargetGuid is not null && start.CasterId != playerGuid && start.CasterId != controlGuid)
                     {
                         combatCasterCasts[start.CasterId] = combatCasterCasts.GetValueOrDefault(start.CasterId) + 1u;
@@ -7041,8 +7107,18 @@ internal sealed class BotRunner
                     break;
                 }
                 case GameMessageOpcode.ServerSpellGo:
+                {
+                    // the id leads the packet; RecordSpellGo gives up on a body it cannot read to the end
+                    uint executedSpellId = PacketCodec.ParseSpellGoId(packet.Body);
+                    if (respondedCsiSpellIds.Contains(executedSpellId))
+                    {
+                        if (executedCsiSpellIds.Count > 20000)
+                            executedCsiSpellIds.Clear();
+                        executedCsiSpellIds.Add(executedSpellId);
+                    }
                     RecordSpellGo(packet.Body);
                     break;
+                }
                 case GameMessageOpcode.ServerEntityStatUpdateFloat:
                 {
                     try
