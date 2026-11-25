@@ -9,6 +9,7 @@ namespace NexusForever.Script.Main.Ships
     /// </summary>
     /// <remarks>
     /// Meeting the contact at the ship in Algoroc moves the player inside. Thokov's crew is not placed.
+    /// Captain Thokov belongs to the kill step (index 2), the escape pod to step 3.
     /// </remarks>
     [ScriptFilterOwnerId(3770)]
     public class FinishHimQuestScript : ShipQuestScript
@@ -19,7 +20,7 @@ namespace NexusForever.Script.Main.Ships
         protected override uint EntryLocationId => 9371;
         protected override byte? BoardAfterObjective => 0;
         protected override byte LeaveAfterObjective => 3;
-        protected override (uint CreatureId, uint LocationId)[] Spawns => [(13147u, 9714u), (13306u, 9424u)]; // Captain Thokov, escape pod
+        protected override (uint CreatureId, uint LocationId, byte ObjectiveIndex)[] Spawns => [(13147u, 9714u, 2), (13306u, 9424u, 3)]; // Captain Thokov, escape pod
 
         public FinishHimQuestScript(IEntityFactory entityFactory, ICreatureInfoManager creatureInfoManager)
             : base(entityFactory, creatureInfoManager)

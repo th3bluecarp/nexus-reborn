@@ -106,6 +106,14 @@ internal sealed class BotRunner
     private ushort currentWorldId;
     private Vector3 lastPosition;
     private ushort questWorldId;
+    // the last world change the server made on its own (a ship boarding): where the bot stood and the world it was sent to
+    private (ushort FromWorldId, Vector3 FromPosition, ushort ToWorldId)? lastServerWorldMove;
+    // the bot is in a world the server sent it to and has not left by a teleport of its own since
+    private bool inServerMovedWorld;
+    // the bot's own teleport command asked for a world change: the change that follows is not the server's doing
+    private bool worldChangeRequested;
+    // the objective in progress runs in the world the server moved the bot into instead of the quest's own world
+    private bool objectiveWorldOverridden;
     private bool worldLoadPending;
     private bool enteredWorldSent;
     private bool botDied;
@@ -282,7 +290,14 @@ internal sealed class BotRunner
             StartKeepAlive(wholeRun.Token);
             StartWatchdog();
 
-            if (options.Paths && options.MissionsFirst)
+            if (options.Paths && options.MissionsOnly)
+            {
+                // only the path missions, no quest phase: Galeras soldier runs spend their whole 150 minutes on the quests and
+                // never reached a mission (missionTotal 0 in three runs)
+                log.Info("missions only: the quest phase is left out");
+                await RunPathMissionsAsync(wholeRun.Token);
+            }
+            else if (options.Paths && options.MissionsFirst)
             {
                 // the Explorer, Scientist and Settler legs of a zone get an hour and Algoroc's quest phase alone runs
                 // 95 minutes: their missions come first and the quests fill whatever budget is left
@@ -913,6 +928,8 @@ internal sealed class BotRunner
                         or PathMissionType.DatacubeDiscovery))
                     throw new BotFailureException("mission has no WorldLocation2 location");
                 questWorldId = checked((ushort)definition.Episode.WorldId);
+                if (options.MissionsOnly)
+                    await LevelForMissionAsync(definition, missionBudget.Token);
                 if (definition.Locations.Count > 0)
                 {
                     await TeleportToLocationAsync(definition.Locations[0], 0f, missionBudget.Token);
@@ -1076,6 +1093,69 @@ internal sealed class BotRunner
                 PacketCodec.ClientPathScientistDismissScanbot(), cancellationToken);
             scientistScanbotSummoned = false;
         }
+    }
+
+    private const float MissionLevelRange = 150f; // PathMissionManager.Soldier.cs HoldoutPoolRange
+    private const uint MissionLevelMargin = 3u;
+
+    // creatures the zone's quests and kill missions have the bot fight: the enemies of the zone (quest NPCs are spawns too)
+    private HashSet<uint>? zoneFightCreatureIds;
+
+    private static bool IsKillMission(PathMissionDefinition definition)
+        => definition.Type is PathMissionType.Assassination || definition.Type is PathMissionType.SWAT && !definition.GadgetTargets;
+
+    /// <summary>
+    /// Missions only: no quest phase has levelled the character, and a level 1 bot dies to the first SWAT target (SWAT: Seeing
+    /// Deadstars, 2026-11-13). Before a mission the bot takes the level of the toughest solo enemy the mission has it kill or
+    /// that is spawned within <see cref="MissionLevelRange"/> m of its location, plus the three levels the retry after a death
+    /// gives, and dresses for it. Enemies are the kill targets of the zone's quests and missions. Group creatures are left out
+    /// so one of them nearby does not lift the bot over the zone. The level cheat and the gear are the ones the quest phase uses.
+    /// </summary>
+    private async Task LevelForMissionAsync(PathMissionDefinition definition, CancellationToken cancellationToken)
+    {
+        BotGameData data = RequireGameData();
+        zoneFightCreatureIds ??= questPlan
+            .SelectMany(quest => quest.Objectives)
+            .Where(objective => objective.Type is QuestObjectiveType.KillCreature
+                or QuestObjectiveType.KillCreature2
+                or QuestObjectiveType.KillRewardTargetGroup
+                or QuestObjectiveType.KillTargetGroup
+                or QuestObjectiveType.KillTargetGroups
+                or QuestObjectiveType.CollectItem)
+            .SelectMany(GetObjectiveCreatureIds)
+            .Concat(pathMissionPlan.Where(IsKillMission).SelectMany(mission => mission.ObjectiveCreatureIds))
+            .ToHashSet();
+        IEnumerable<uint> nearby = [];
+        if (definition.Locations.Count > 0)
+        {
+            WorldLocation2Entry location = definition.Locations[0];
+            double range = MissionLevelRange * (double)MissionLevelRange;
+            nearby = spawns
+                .Where(spawn => spawn.WorldId == location.WorldId
+                    && zoneFightCreatureIds.Contains(spawn.CreatureId)
+                    && spawn.DistanceSquared(location.Position0, location.Position1, location.Position2) <= range)
+                .Select(spawn => spawn.CreatureId)
+                .Distinct();
+        }
+        uint[] creatureIds = (IsKillMission(definition) ? definition.ObjectiveCreatureIds : [])
+            .Concat(nearby)
+            .Distinct()
+            .Where(creatureId => data.IsAttackableCreature(creatureId) && data.GroupSizeOfCreature(creatureId) < 2u)
+            .ToArray();
+        uint toughest = data.MaxCreatureLevel(creatureIds);
+        uint targetLevel = toughest == 0u ? currentLevel : Math.Min(50u, toughest + MissionLevelMargin);
+        if (targetLevel <= currentLevel)
+        {
+            log.Info($"path mission {definition.Id}: missions only: level {currentLevel} kept (toughest solo enemy to kill or spawned within {MissionLevelRange:0} m: level {toughest}, {creatureIds.Length} kind(s))");
+            return;
+        }
+
+        uint before = currentLevel;
+        await SendCheatAsync($"!character level {targetLevel}", cancellationToken);
+        currentLevel = targetLevel;
+        await DrainWorldPacketsAsync(TimeSpan.FromSeconds(1), cancellationToken);
+        await EquipGearForLevelAsync(cancellationToken);
+        log.Info($"path mission {definition.Id}: missions only: level {before} -> {currentLevel} (toughest solo enemy to kill or spawned within {MissionLevelRange:0} m: level {toughest}, plus {MissionLevelMargin}) and gear for it");
     }
 
     private string FormatAlreadyCompletedPathMission(PathMissionDefinition definition)
@@ -3824,6 +3904,9 @@ internal sealed class BotRunner
         consecutiveAbilityRestrictionResults = 0;
         objectiveCastResultDetails.Clear();
         ObjectiveReport objectiveReport = RequireObjectiveReport(objective.Index);
+        ushort questWorldBefore = questWorldId;
+        bool overriddenBefore = objectiveWorldOverridden;
+        bool worldOverridden = false;
         try
         {
             if (IsObjectiveComplete(objective))
@@ -3833,6 +3916,7 @@ internal sealed class BotRunner
                 return $"{objective.Type}; progress {objectiveReport.Progress}/{objectiveReport.Count}; already complete";
             }
 
+            worldOverridden = await UseServerMovedWorldAsync(objective, cancellationToken);
             switch (objective.Type)
             {
                 case QuestObjectiveType.TalkTo:
@@ -3907,6 +3991,8 @@ internal sealed class BotRunner
                     throw new BotFailureException($"unsupported objective type {objective.Type}({(uint)objective.Type})");
             }
 
+            if (worldOverridden)
+                await WaitForServerReturnAsync(objective, cancellationToken);
             objectiveReport.Ok = true;
             objectiveReport.Failure = null;
             string interactable = objectiveReport.Interactables.Count == 0
@@ -3929,8 +4015,157 @@ internal sealed class BotRunner
         }
         finally
         {
+            if (worldOverridden)
+                questWorldId = questWorldBefore;
+            objectiveWorldOverridden = overriddenBefore;
             activeObjective = null;
             consecutiveAbilityRestrictionResults = 0;
+        }
+    }
+
+    /// <summary>
+    /// An objective that plays in a world the server moved the bot into. Boss Xagg's Due (4516): reaching the Dust Stalker in
+    /// Galeras moves the player into the ship (world 1138), where Boss Xagg, the bridge controls and the access panel are placed
+    /// by the quest's server script and have no database spawn. Every search of the objective is tied to the quest's world, so
+    /// with the quest world still 51 the bot saw Boss Xagg 233 m away and waited two 300 s budgets. The objective runs in the
+    /// bot's current world when its map marker is there and the server sent the bot there (or its creatures have no spawn in
+    /// the quest's world), or, without a marker, when its creatures have no spawn in the quest's world and are spawned or in
+    /// sight here. Returns if the quest world was replaced for this objective.
+    /// </summary>
+    private async Task<bool> UseServerMovedWorldAsync(QuestObjectiveDefinition objective, CancellationToken cancellationToken)
+    {
+        BotGameData data = RequireGameData();
+        ushort? markerWorld = objective.WorldLocationId != 0u && data.TryGetWorldLocation(objective.WorldLocationId) is { } marker
+            ? (ushort)marker.WorldId
+            : null;
+
+        // back in the quest's world (a retreat to the turn in NPC before a retry) while the marker is in the world the server
+        // moved the bot into from here: stand where the server picked the bot up, as a player walks back to the ship
+        if (markerWorld is ushort wanted && wanted != questWorldId && currentWorldId == questWorldId && !worldLoadPending
+            && lastServerWorldMove is { } move && move.FromWorldId == questWorldId && move.ToWorldId == wanted)
+        {
+            log.Info(FormattableString.Invariant(
+                $"objective {objective.Index}: its map marker {objective.WorldLocationId} is in world {wanted} and the bot is in world {currentWorldId}; going back to ({move.FromPosition.X:0.0},{move.FromPosition.Y:0.0},{move.FromPosition.Z:0.0}) where the server moved it from"));
+            await SendTeleportAsync(PacketCodec.TeleportCommand(move.FromPosition), false, cancellationToken);
+            lastPosition = new Vector3(move.FromPosition.X + 2f, move.FromPosition.Y, move.FromPosition.Z + 2f);
+            DateTimeOffset moveDeadline = DateTimeOffset.UtcNow.AddSeconds(20);
+            while ((currentWorldId != wanted || worldLoadPending) && DateTimeOffset.UtcNow < moveDeadline)
+                if (await TryReadWorldPacketAsync(moveDeadline - DateTimeOffset.UtcNow, cancellationToken) is null)
+                    break;
+            log.Info(currentWorldId == wanted
+                ? $"objective {objective.Index}: the server moved the bot into world {wanted} again"
+                : $"objective {objective.Index}: the server did not move the bot into world {wanted} within 20 s; staying in world {currentWorldId}");
+        }
+
+        if (currentWorldId == questWorldId)
+            return false;
+
+        uint[] creatureIds = GetObjectiveCreatureIds(objective).Where(creatureId => creatureId != 0u).Distinct().ToArray();
+        bool noSpawnInQuestWorld = creatureIds.Length > 0 && SpawnsFor(creatureIds, questWorldId).Count == 0;
+        bool playsHere = markerWorld is ushort markerWorldId
+            ? markerWorldId == currentWorldId && (inServerMovedWorld || noSpawnInQuestWorld)
+            : noSpawnInQuestWorld
+                && (SpawnsFor(creatureIds, currentWorldId).Count > 0 || creatureIds.Any(creatureId => entities.FindCreature(creatureId) is not null));
+        if (!playsHere)
+            return false;
+
+        log.Info($"objective {objective.Index}: the bot is in world {currentWorldId} (moved by the server: {inServerMovedWorld}), the quest's world is {questWorldId}; map marker world {markerWorld?.ToString() ?? "none"}, creature(s) [{string.Join(',', creatureIds)}] without a spawn in world {questWorldId}: {noSpawnInQuestWorld}; running the objective in world {currentWorldId}");
+        questWorldId = currentWorldId;
+        objectiveWorldOverridden = true;
+        return true;
+    }
+
+    /// <summary>
+    /// After an objective done in a world the server moved the bot into: when no open step of the quest has its map marker
+    /// there, the server sends the player back out (the ship quests return to the ship's spot after their last step). The bot
+    /// waits for that move; its own cross-world teleport to the turn in would race the server's.
+    /// </summary>
+    private async Task WaitForServerReturnAsync(QuestObjectiveDefinition objective, CancellationToken cancellationToken)
+    {
+        // the world the objective ran in; the server's move out can already have arrived with the objective's last packets
+        ushort world = questWorldId;
+        if (currentWorldId == world)
+        {
+            BotGameData data = RequireGameData();
+            bool moreHere = RequireQuest().Objectives.Any(other => other.Index != objective.Index
+                && (other.Flags & 0x20u) == 0u
+                && !IsObjectiveComplete(other)
+                && other.WorldLocationId != 0u
+                && data.TryGetWorldLocation(other.WorldLocationId)?.WorldId == world);
+            if (moreHere)
+                return;
+
+            DateTimeOffset deadline = DateTimeOffset.UtcNow.AddSeconds(15);
+            while (currentWorldId == world && DateTimeOffset.UtcNow < deadline)
+                if (await TryReadWorldPacketAsync(deadline - DateTimeOffset.UtcNow, cancellationToken) is null)
+                    break;
+            if (currentWorldId == world)
+            {
+                log.Info($"objective {objective.Index}: no open step of quest {RequireQuest().Id} is left in world {world}, but the server did not move the bot out within 15 s; carrying on from world {world}");
+                return;
+            }
+        }
+
+        DateTimeOffset loadDeadline = DateTimeOffset.UtcNow.AddSeconds(30);
+        while (worldLoadPending && DateTimeOffset.UtcNow < loadDeadline)
+            if (await TryReadWorldPacketAsync(loadDeadline - DateTimeOffset.UtcNow, cancellationToken) is null)
+                break;
+        log.Info(FormattableString.Invariant(
+            $"objective {objective.Index}: the server sent the bot back to world {currentWorldId} at ({lastPosition.X:0.0},{lastPosition.Y:0.0},{lastPosition.Z:0.0}) after the last step in world {world}; world loaded: {!worldLoadPending}"));
+    }
+
+    /// <summary>
+    /// An activation step whose creature has no database spawn in the objective's world but is in the entity list (the Dust
+    /// Stalker's Bridge Controls and Access Panel, placed by the quest's server script): go to it and use it.
+    /// </summary>
+    private async Task RunUnspawnedActivationObjectiveAsync(
+        QuestObjectiveDefinition objective,
+        IReadOnlyCollection<uint> creatureIds,
+        CancellationToken cancellationToken)
+    {
+        IReadOnlySet<uint> ids = creatureIds.ToHashSet();
+        for (int attempt = 1; !IsObjectiveComplete(objective); attempt++)
+        {
+            if (attempt > 3)
+                throw new BotFailureException($"using creature(s) {string.Join(',', creatureIds)} (no database spawn in world {questWorldId}) produced no objective progress in 3 attempts");
+            TrackedEntity? entity = await TryApproachUnspawnedEntityAsync(objective, ids, cancellationToken);
+            if (IsObjectiveComplete(objective))
+                return;
+            if (entity is null)
+                throw new BotFailureException($"no spawn in world {questWorldId} for creature(s) {string.Join(',', creatureIds)} and none came into view within {EntityStreamTimeout.TotalSeconds:0} s; {FormatNearbyTrackedCreatures()}");
+            uint before = GetRawProgress(objective.Index);
+            ActivationOutcome outcome = await RunActivationFlowAsync(objective.Index, before, entity, TimeSpan.FromSeconds(8), cancellationToken);
+            log.Info($"objective {objective.Index}: used creature {entity.CreatureId} guid {entity.Guid} (no database spawn in world {questWorldId}), attempt {attempt}: {outcome}");
+        }
+    }
+
+    private async Task<TrackedEntity?> TryApproachUnspawnedEntityAsync(
+        QuestObjectiveDefinition objective,
+        IReadOnlySet<uint> creatureIds,
+        CancellationToken cancellationToken)
+    {
+        DateTimeOffset deadline = DateTimeOffset.UtcNow + EntityStreamTimeout;
+        while (true)
+        {
+            TrackedEntity? entity = currentWorldId == questWorldId && !worldLoadPending
+                ? entities.FindNearestVisible(creatureIds, lastPosition, 400f)
+                : null;
+            if (entity?.Position is Vector3 position)
+            {
+                float distance = Vector3.Distance(lastPosition, position);
+                if (distance > 3f)
+                {
+                    log.Info(FormattableString.Invariant(
+                        $"objective {objective.Index}: creature {entity.CreatureId} guid {entity.Guid} has no database spawn in world {questWorldId} and is in sight {distance:0.0} m away; going to it"));
+                    await SendTeleportAsync(PacketCodec.TeleportCommand(position), false, cancellationToken);
+                    lastPosition = new Vector3(position.X + 2f, position.Y, position.Z + 2f);
+                }
+                return entities.Get(entity.Guid) ?? entity;
+            }
+
+            TimeSpan remaining = deadline - DateTimeOffset.UtcNow;
+            if (remaining <= TimeSpan.Zero || await TryReadWorldPacketAsync(remaining, cancellationToken) is null)
+                return null;
         }
     }
 
@@ -4087,6 +4322,12 @@ internal sealed class BotRunner
             throw new BotFailureException("ActivateEntity objective has no creature, target-group, reward-pane, or text target");
         var attemptedSpawns = new HashSet<uint>();
         IReadOnlyList<Spawn> candidates = SpawnsFor(creatureIds, questWorldId);
+        if (candidates.Count == 0 && objectiveWorldOverridden)
+        {
+            // in a world the server moved the bot into the step's creatures are placed by a script (Finish Him's escape pod)
+            await RunUnspawnedActivationObjectiveAsync(objective, creatureIds, cancellationToken);
+            return;
+        }
         int respawnWaits = 0;
         while (!IsObjectiveComplete(objective))
         {
@@ -4628,7 +4869,12 @@ internal sealed class BotRunner
         var attemptedSpawns = new HashSet<uint>();
         IReadOnlyList<Spawn> candidates = SpawnsFor([objective.Data], questWorldId);
         if (candidates.Count == 0)
-            throw new BotFailureException($"No spawn in world {questWorldId} for CSI creature {objective.Data}.");
+        {
+            // no database spawn: a creature placed by a server script (the Dust Stalker's Bridge Controls 16733) is used where
+            // it stands; with none in sight this fails as before
+            await RunUnspawnedActivationObjectiveAsync(objective, [objective.Data], cancellationToken);
+            return;
+        }
 
         while (!IsObjectiveComplete(objective))
         {
@@ -6091,17 +6337,29 @@ internal sealed class BotRunner
         // only zone transitions go through a portal object; an EnterArea text may name a creature for other reasons
         // ("Jump up to the $p(creature=73499) platform" names the boss standing on it)
         uint portalCreatureId = objective.Type == QuestObjectiveType.EnterZone ? BotGameData.CreatureFromText(objective.Text) : 0u;
+        // a creature the text names only as the owner of the place ("Enter $p(creature=16707) ship, the Dust Stalker": Boss
+        // Xagg, the kill target of the next step) is no portal: the bot waited ten seconds for him and sent him an activation
+        if (portalCreatureId != 0u && IsKillTargetOfQuest(portalCreatureId))
+        {
+            log.Info($"location objective {objective.Index}: creature {portalCreatureId} named in the text is a kill target of this quest, not a portal; waiting for the zone entry");
+            portalCreatureId = 0u;
+        }
         if (portalCreatureId != 0u && !IsObjectiveComplete(objective))
         {
             DateTimeOffset deadline = DateTimeOffset.UtcNow + EntityStreamTimeout;
             TrackedEntity? portal = entities.FindCreature(portalCreatureId);
-            while (portal is null && DateTimeOffset.UtcNow < deadline)
+            // the zone can be entered without the portal (the server moves the player in): stop looking once the step is done
+            while (portal is null && !IsObjectiveComplete(objective) && DateTimeOffset.UtcNow < deadline)
             {
                 if (await TryReadWorldPacketAsync(deadline - DateTimeOffset.UtcNow, cancellationToken) is null)
                     break;
                 portal = entities.FindCreature(portalCreatureId);
             }
-            if (portal is not null)
+            if (IsObjectiveComplete(objective))
+            {
+                log.Info($"location objective {objective.Index}: complete before portal creature {portalCreatureId} was used");
+            }
+            else if (portal is not null)
             {
                 log.Info($"location objective {objective.Index}: activating portal creature {portalCreatureId} guid {portal.Guid}");
                 // portals have no activation spell: the plain ClientActivateUnit reaches the server's OnActivate directly
@@ -6114,6 +6372,21 @@ internal sealed class BotRunner
                 log.Info($"location objective {objective.Index}: portal creature {portalCreatureId} not visible within {EntityStreamTimeout.TotalSeconds:0} s");
         }
         await WaitForObjectiveProgressAsync(objective.Index, before, cancellationToken);
+    }
+
+    /// <summary>
+    /// A creature a kill step of the current quest names is never the portal of an EnterZone step. The quest's own steps
+    /// decide, not <see cref="BotGameData.IsAttackableCreature"/>: that test has no faction table and also passes the taxi
+    /// kiosks and NPCs other EnterZone texts name (Use the Gallow Taxi Kiosk in Gallow to travel to Thayd).
+    /// </summary>
+    private bool IsKillTargetOfQuest(uint creatureId)
+    {
+        return RequireQuest().Objectives.Any(objective => objective.Type is QuestObjectiveType.KillCreature
+                or QuestObjectiveType.KillCreature2
+                or QuestObjectiveType.KillRewardTargetGroup
+                or QuestObjectiveType.KillTargetGroup
+                or QuestObjectiveType.KillTargetGroups
+            && GetObjectiveCreatureIds(objective).Contains(creatureId));
     }
 
     private async Task TeleportToLocationAsync(
@@ -6347,6 +6620,8 @@ internal sealed class BotRunner
         for (int attempt = 0; ; attempt++)
         {
             teleportRefused = false;
+            if (includeWorld)
+                worldChangeRequested = true;
             await SendCheatAsync(command, cancellationToken);
             if (includeWorld)
                 return;
@@ -6490,7 +6765,21 @@ internal sealed class BotRunner
             {
                 case GameMessageOpcode.ServerChangeWorld:
                 {
+                    ushort previousWorldId = currentWorldId;
+                    Vector3 previousPosition = lastPosition;
                     (currentWorldId, lastPosition) = PacketCodec.ParseChangeWorld(packet.Body);
+                    // a world change the bot did not ask for (Boss Xagg's Due: reaching the Dust Stalker moves the player into
+                    // the ship, world 1138): remember where it was picked up, the objectives that follow play in the new world
+                    bool serverMove = !worldChangeRequested && !resurrectionRecoveryActive
+                        && previousWorldId != 0 && previousWorldId != currentWorldId;
+                    worldChangeRequested = false;
+                    inServerMovedWorld = serverMove;
+                    if (serverMove)
+                    {
+                        lastServerWorldMove = (previousWorldId, previousPosition, currentWorldId);
+                        log.Info(FormattableString.Invariant(
+                            $"server moved the bot from world {previousWorldId} at ({previousPosition.X:0.0},{previousPosition.Y:0.0},{previousPosition.Z:0.0}) into world {currentWorldId} at ({lastPosition.X:0.0},{lastPosition.Y:0.0},{lastPosition.Z:0.0})"));
+                    }
                     worldLoadPending = true;
                     enteredWorldSent = false;
                     entities.Clear();

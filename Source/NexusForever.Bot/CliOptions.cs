@@ -24,7 +24,8 @@ internal sealed record RunOptions(
     string Log,
     int MaxMinutes,
     string? KeepCharacter = null,
-    bool MissionsFirst = false);
+    bool MissionsFirst = false,
+    bool MissionsOnly = false);
 
 internal enum BotFaction
 {
@@ -84,7 +85,14 @@ internal static class CliOptions
         Usage:
           NexusForever.Bot prep --db <connection-string> --email <email> --password <password>
           NexusForever.Bot info --tables <path> (--quest <id[,id...]> [--chain 1] [--db <connection-string>] | --path <zone-id>)
-          NexusForever.Bot run (--zone <id> --faction exile|dominion [--path soldier|settler|scientist|explorer] [--paths 0|1] [--missions-first 0|1] | --quest <id[,id...]|none>) [--keep-character <name>] [--chain 0|1] [--start arkship|nexus] [--max-minutes <n>] (--sts <host:port> --password <password> | --token <guid>) --auth <host:port> --world <host[:port]> --db <connection-string> --tables <path> --email <email> --report <file.json> --log <file.log>
+          NexusForever.Bot run (--zone <id> --faction exile|dominion [--path soldier|settler|scientist|explorer] [--paths 0|1] [--missions-first 0|1] [--missions-only 0|1] | --quest <id[,id...]|none>) [--keep-character <name>] [--chain 0|1] [--start arkship|nexus] [--max-minutes <n>] (--sts <host:port> --password <password> | --token <guid>) --auth <host:port> --world <host[:port]> --db <connection-string> --tables <path> --email <email> --report <file.json> --log <file.log>
+
+        Path missions of a zone run (--paths 1). The run has one budget, --max-minutes: the quests come first and the
+        missions get what is left, each mission 6 minutes at most (settler hub missions 15).
+          --missions-first 1   the missions come first, the quests get what is left
+          --missions-only 1    only the missions, no quest phase. Before each mission the bot takes the level of the
+                               toughest solo enemy the mission has it kill or that is spawned within 150 m of it,
+                               plus 3, and gear for that level (no quest phase has levelled it)
         """;
 
     public static object Parse(string[] args)
@@ -134,7 +142,7 @@ internal static class CliOptions
 
     private static RunOptions ParseRun(Dictionary<string, string> values)
     {
-        RequireOnly(values, "quest", "zone", "faction", "path", "paths", "missions-first", "chain", "start", "max-minutes", "keep-character", "sts", "auth", "world", "db", "tables", "email", "password", "token", "report", "log");
+        RequireOnly(values, "quest", "zone", "faction", "path", "paths", "missions-first", "missions-only", "chain", "start", "max-minutes", "keep-character", "sts", "auth", "world", "db", "tables", "email", "password", "token", "report", "log");
 
         bool hasQuest = values.TryGetValue("quest", out string? questValue);
         bool hasZone = values.TryGetValue("zone", out string? zoneValue);
@@ -236,6 +244,17 @@ internal static class CliOptions
         };
         if (missionsFirst && !paths)
             throw new ArgumentException("--missions-first needs --paths 1.");
+        bool missionsOnly = values.TryGetValue("missions-only", out string? missionsOnlyValue) switch
+        {
+            false => false,
+            true when missionsOnlyValue is "1" or "true" => true,
+            true when missionsOnlyValue is "0" or "false" => false,
+            _ => throw new ArgumentException("--missions-only must be 0 or 1.")
+        };
+        if (missionsOnly && !paths)
+            throw new ArgumentException("--missions-only needs --paths 1.");
+        if (missionsOnly && missionsFirst)
+            throw new ArgumentException("--missions-only and --missions-first are alternatives.");
 
         return new RunOptions(
             questIds,
@@ -257,7 +276,8 @@ internal static class CliOptions
             Required(values, "log"),
             maxMinutes,
             values.TryGetValue("keep-character", out string? keepCharacter) && !string.IsNullOrWhiteSpace(keepCharacter) ? keepCharacter.Trim() : null,
-            missionsFirst);
+            missionsFirst,
+            missionsOnly);
     }
 
     private static Dictionary<string, string> ParsePairs(string[] args)

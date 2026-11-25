@@ -216,9 +216,6 @@ INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900077,10,7),(900077,15
 -- Darkspur Lieutenant (target, objective marker)
 INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`,`QuestChecklistIdx`) VALUES (900078,0,16702,22,1709,-4389.805,-938.716,-1421.065,0,0,0,24356,0,771,771,0);
 INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900078,10,19),(900078,15,0);
--- Boss Xagg (target, objective marker)
-INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`,`QuestChecklistIdx`) VALUES (900079,0,16707,22,1709,-4389.805,-938.716,-1421.065,0,0,0,24369,8782,771,771,0);
-INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900079,10,19),(900079,15,0);
 -- Lead Scientist Armin (giver/turn-in, quest-linked)
 INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`,`QuestChecklistIdx`) VALUES (900080,0,16814,51,943,5612,-1012.44,-2435,0,0,0,26021,9103,171,171,0);
 INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (900080,10,18),(900080,15,0);

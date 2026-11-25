@@ -152,3 +152,9 @@ INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1300022,10,14),(1300022
 -- went there after one kill without the drop and hit it for 765 s. The row is removed (also deleted from loot.sql; the delete stays here in case
 -- that file is regenerated) (2026-11-24).
 DELETE FROM `entity_loot` WHERE `Id` = 45323 AND `lootGroupId` = 1000443;
+
+-- Boss Xagg (16707) stood in Deradune: entity 900079 at the Mammodin Graveyard (world 22), put there by the spawn builder, which read a
+-- creature id of a marker group of Simple Samples (9426) as a target group. He belongs only in the Dust Stalker, where the quest script
+-- places him. The row is removed from spawns.sql; the delete stays here for databases that already hold it (2026-11-24).
+DELETE FROM `entity_stats` WHERE `Id` = 900079;
+DELETE FROM `entity` WHERE `Id` = 900079;
