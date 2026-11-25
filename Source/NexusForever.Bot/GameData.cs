@@ -153,6 +153,7 @@ internal sealed record SettlerHubDefinition(
 internal sealed class BotGameData
 {
     private readonly GameTable<Quest2Entry> quests;
+    private readonly Lazy<Dictionary<uint, int>> questRewardItemRows;
     private readonly GameTable<PrerequisiteEntry> prerequisites;
     private readonly GameTable<WorldZoneEntry> worldZones;
     private readonly Dictionary<uint, HashSet<uint>> zoneFamilies = [];
@@ -202,6 +203,17 @@ internal sealed class BotGameData
             throw new DirectoryNotFoundException($"Game table directory not found: {tablePath}");
 
         quests = Load<Quest2Entry>(tablePath, "Quest2.tbl");
+        // read on the first full-bag turn in only; a table folder without the file costs the count, not the run
+        questRewardItemRows = new Lazy<Dictionary<uint, int>>(() =>
+        {
+            string rewardPath = Path.Combine(tablePath, "Quest2Reward.tbl");
+            if (!File.Exists(rewardPath))
+                return [];
+            return new GameTable<Quest2RewardEntry>(rewardPath).Entries
+                .Where(reward => reward is not null && reward.Quest2RewardTypeId == 1u && reward.Flags == 0u)
+                .GroupBy(reward => reward.Quest2Id)
+                .ToDictionary(group => group.Key, group => group.Count());
+        });
         questActivationItems = new Lazy<Dictionary<uint, uint>>(() =>
         {
             var map = new Dictionary<uint, uint>();
@@ -330,6 +342,13 @@ internal sealed class BotGameData
     /// </summary>
     /// <summary>The node positions of a Spline2 route in order (patrols sent as SetPositionSpline), empty when unknown.</summary>
     public IReadOnlyList<Vector3> GetSplineNodes(uint splineId) => splineNodes.Value[splineId].ToArray();
+
+    /// <summary>
+    /// The free bag slots the server wants before it completes the quest: one per item reward row that is not a choice
+    /// (QuestManager.QuestComplete counts Quest2Reward rows of type Item with Flags 0; the bot picks no choice reward).
+    /// </summary>
+    public int QuestRewardItemRows(ushort questId)
+        => questRewardItemRows.Value.GetValueOrDefault(questId);
 
     public uint GetQuestActivationItem(ushort questId)
         => questActivationItems.Value.GetValueOrDefault(questId);
@@ -666,7 +685,10 @@ internal sealed class BotGameData
             infrastructure.Creature2IdResource02
         ];
         resourceCreatures = resourceCreatures.Where(id => id != 0u).Distinct().ToArray();
-        // same order as PathMissionManager.ResolveResourceCreatures: fields, exact text name, resource spell, singular text name
+        // same order as PathMissionManager.ResolveResourceCreatures: fields, the shared project list, exact text name, resource spell, singular text name
+        if (resourceCreatures.Length == 0
+            && NexusForever.Game.Static.PlayerPath.SettlerProjectRules.ResourceCreatures.TryGetValue(infrastructure.Id, out uint[]? listed))
+            resourceCreatures = listed;
         string? resourceName = null;
         if (resourceCreatures.Length == 0)
         {
@@ -731,66 +753,17 @@ internal sealed class BotGameData
             Math.Max(infrastructure.MissionCount, 1u));
     }
 
+    // The world server and the bot read one table (NexusForever.Game.Static ScientistMissionRules): a private copy here
+    // covered three zones and failed every scan mission of the others in a second (Galeras, runs 2026-11-11 and 2026-11-24).
     private static IReadOnlyList<uint> ResolveDatacubeRule(uint missionId)
-        => missionId switch
-        {
-            2136u =>
-            [
-                21894u, 21896u, 21897u, 21898u, 21899u, 21900u, 21901u,
-                21902u, 21903u, 21904u, 21905u, 21906u, 21907u
-            ],
-            // Celestion, the server's DatacubeRules (PathMissionManager.Discovery)
-            3104u =>
-            [
-                30418u, 30419u, 30420u, 30421u, 30422u, 30423u, 30424u, 30425u,
-                30426u, 30427u, 30428u, 30429u, 30430u, 30431u, 30432u, 34503u
-            ],
-            _ => []
-        };
+        => NexusForever.Game.Static.PlayerPath.ScientistMissionRules.Datacubes.TryGetValue(missionId, out uint[]? datacubes) ? datacubes : [];
 
     private (IReadOnlyList<IReadOnlyList<uint>> Groups, uint ScansPerGroup) ResolveScientistScanRule(uint missionId)
     {
-        (string[][] Groups, uint ScansPerGroup)? rule = missionId switch
-        {
-            42u => ([
-                ["Dominion Turret", "Inactive Dominion Turret"],
-                ["Dominion Secure Database", "Dominion Secure Database Hologram"]
-            ], 1u),
-            160u => ([["Vitalium Crystal"]], 3u),
-            648u => ([["Skeech Diviner", "Skeech Scratcher", "Skeech Shaman", "Cleaved Skeech Shaman"]], 3u),
-            // Algoroc scans (mission type 2), the server's ScanRules names
-            264u => ([["Grimstone Digger", "Grimstone Ruffian", "Grimstone Mangler", "Grimstone Savage", "Grimstone Ravager"]], 3u),
-            826u => ([["Augmented Slateform Slammer", "Augmented Slateform Charger", "Augmented Slateform Demolisher", "Hulking Gronyx", "Gronyx"]], 3u),
-            827u => ([["Pinewrath Barktooth", "Pinewrath Trunksplitter", "Pinewrath Stumpmaker", "Pinewrath Logchomper", "Pinewrath Branchsnapper", "Barktooth Stumpkin", "Trunksplitter Stumpkin"]], 3u),
-            201u => ([["Irradiated Icetail Leaper", "Irradiated Icetail Pouncer", "Irradiated Icetail Slayer", "Irradiated Icetail Stalker", "Irradiated Snoglug"]], 3u),
-            218u => ([["Large Loftite Formation"]], 3u),
-            266u => ([["Fiera Flower"]], 3u),
-            1978u => ([["Augmented XAS Scientist"]], 3u),
-            2139u => ([["Eldan Repair Construct"]], 3u),
-            // Algoroc checklists (mission type 14), the server's ScanRules names
-            262u => ([["Darkspur Cartel Terminal"]], 5u),
-            701u => ([["Eldan Relic", "Eldan Relics"]], 8u),
-            2132u => ([["DREDplex Data Terminal"]], 10u),
-            2133u => ([["Deadstar Data Terminal", "Deadstar Footlocker", "Deadstar Clothesline"]], 3u),
-            // Celestion scans and checklists, the server's ScanRules names
-            1714u => ([["Hoogle Guardian Totem", "Transmorphing Flight Hoogle Totem"]], 3u),
-            1719u => ([["Draken Garden Gnome"], ["Draken Backscratcher"], ["Draken Chamberpot"]], 1u),
-            1724u => ([["Weave Portal"]], 3u),
-            1725u => ([["Moodie Mojo"]], 3u),
-            1828u => ([["Augmented Celestial Razortusk", "Augmented Nightfang Creeper", "Augmented Nightfang Weaver", "Augmented Nightfang Widow", "Augmented Buzzbing", "Augmented Nightfang Flayer"]], 3u),
-            1830u => ([["Amorous Rowsdower"]], 10u),
-            1840u => ([["Rowsdower's Corpse", "Sunhorn Roamer's Corpse", "Ravenous Corpse"]], 3u),
-            1841u => ([["Mordesh Vitality Extractor"]], 3u),
-            1845u => ([["Water of Life"]], 5u),
-            1847u => ([["Ravenous Ripper", "Ravenous Ghoul", "Ravenous Horror", "Ravenous Fiend", "Ravenous Reaver", "Ravenous Malignant", "Ravenous Mordesh"]], 3u),
-            1854u => ([["Communication Controls", "Communication Dish"]], 4u),
-            1859u => ([["Shield Generator", "Bio-Containment Shield"]], 3u),
-            _ => null
-        };
-        if (rule is null)
+        if (!NexusForever.Game.Static.PlayerPath.ScientistMissionRules.Scan.TryGetValue(missionId, out NexusForever.Game.Static.PlayerPath.ScientistScanRule? rule))
             return ([], 0u);
 
-        IReadOnlyList<IReadOnlyList<uint>> groups = rule.Value.Groups
+        IReadOnlyList<IReadOnlyList<uint>> groups = rule.Groups
             .Select(names => (IReadOnlyList<uint>)creatures.Entries
                 .Where(creature => names.Contains(CreatureName(creature), StringComparer.OrdinalIgnoreCase))
                 .Select(creature => creature.Id)
@@ -798,7 +771,7 @@ internal sealed class BotGameData
                 .Order()
                 .ToArray())
             .ToArray();
-        return (groups, rule.Value.ScansPerGroup);
+        return (groups, rule.ScansPerGroup);
     }
 
     private SettlerHubDefinition? ResolveSettlerHub(uint hubId)

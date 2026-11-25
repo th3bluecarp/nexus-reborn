@@ -145,3 +145,10 @@ INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY
 (1300022,0,20230,51,1004,5115.131,-891.014,-2638.887,0,0,0,25925,9005,170,170,0),
 (1300023,0,17532,51,1004,5119.131,-891.014,-2634.887,0,0,0,25916,9058,170,170,0);
 INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1300022,10,14),(1300022,15,0),(1300023,10,14),(1300023,15,0);
+-- Arm of the Elements (quest 7639) starts from the Augmentor Arm (item 20846), which the Augmentor Construct of Galeras drops (creature 37577,
+-- "Augmentor Construct - Galeras Tract 2 - Q7639", hostile faction 233, one spawn). loot.sql attaches loot by creature name, so the same group
+-- (1000443, from the Galeras page, 272 kills) also sat on creature 45323, a friendly Celestion flavor NPC of the same name ("Augmentor -
+-- Augment/Clone Vignette - Flavor NPC - Celestion", faction 219, four spawns) that nobody can attack. Scientist and explorer run 20261124-130352
+-- went there after one kill without the drop and hit it for 765 s. The row is removed (also deleted from loot.sql; the delete stays here in case
+-- that file is regenerated) (2026-11-24).
+DELETE FROM `entity_loot` WHERE `Id` = 45323 AND `lootGroupId` = 1000443;

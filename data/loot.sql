@@ -1378,7 +1378,6 @@ INSERT INTO `entity_loot` (`Id`,`lootGroupId`,`comment`) VALUES (37642,1000442,'
 INSERT INTO `loot_group` (`id`,`parentId`,`probability`,`minCount`,`maxCount`,`conditionType`,`condition`,`comment`) VALUES (1000443,NULL,100,0,0,0,0,'Augmentor Construct (galeras, 272 kills observed)');
 INSERT INTO `loot_item` (`id`,`type`,`staticId`,`probability`,`minCount`,`maxCount`,`comment`) VALUES (1000443,0,20846,73.65,1,1,'Augmentor Arm'),(1000443,0,7661,16.25,1,1,'Damaged Drill Bit');
 INSERT INTO `entity_loot` (`Id`,`lootGroupId`,`comment`) VALUES (37577,1000443,'Augmentor Construct');
-INSERT INTO `entity_loot` (`Id`,`lootGroupId`,`comment`) VALUES (45323,1000443,'Augmentor Construct');
 INSERT INTO `loot_group` (`id`,`parentId`,`probability`,`minCount`,`maxCount`,`conditionType`,`condition`,`comment`) VALUES (1000444,NULL,100,0,0,0,0,'Axis Venin (whitevale, 47 kills observed)');
 INSERT INTO `loot_item` (`id`,`type`,`staticId`,`probability`,`minCount`,`maxCount`,`comment`) VALUES (1000444,0,58617,26.92,1,1,'Exceptional Deputy''s Retromagnetic Striders'),(1000444,0,7686,21.15,1,1,'Religious Relic'),(1000444,0,29604,13.46,1,1,'Sign of Air'),(1000444,0,14517,11.54,1,1,'Silk Cloth'),(1000444,0,14409,9.62,1,1,'Survival Supply Stash'),(1000444,0,58543,1.92,1,1,'Legate''s Celestiform Slayer'),(1000444,0,14410,1.92,1,1,'Biomimetic Mud'),(1000444,0,14518,1.92,1,1,'Whimfiber Cloth'),(1000444,0,29612,1.92,1,1,'Armor Rune Fragment');
 INSERT INTO `entity_loot` (`Id`,`lootGroupId`,`comment`) VALUES (19903,1000444,'Axis Venin');

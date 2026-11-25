@@ -3529,11 +3529,22 @@ internal sealed class BotRunner
         InventoryItemInfo? item = FindInventoryItem(itemId);
         if (item is null)
         {
-            IReadOnlyList<Spawn> candidates = SpawnsFor(sources.CreatureIds, questWorldId);
+            // a start item is hunted by kills, so a source the bot cannot fight is no source. Arm of the Elements (7639): the
+            // world data listed the Augmentor Arm on the Galeras construct 37577 (one spawn) and on a friendly Celestion
+            // flavor NPC of the same name (45323, faction 219, four spawns); after one kill without the drop the bot went to
+            // the NPC and cast at it for 765 s to no effect. Sources that cannot be fought are left out while one that can
+            // be has a spawn, and the single spawn is then revisited until it is back
+            uint[] huntable = sources.CreatureIds.Where(RequireGameData().IsAttackableCreature).ToArray();
+            IReadOnlyList<uint> huntSources = huntable.Length > 0 && SpawnsFor(huntable, questWorldId).Count > 0
+                ? huntable
+                : sources.CreatureIds;
+            if (huntSources.Count < sources.CreatureIds.Count)
+                log.Info($"item {itemId} hunt: source creature(s) [{string.Join(',', sources.CreatureIds.Except(huntSources))}] cannot be fought (friendly faction or a usable object) and are left out; hunting [{string.Join(',', huntSources)}] at {SpawnsFor(huntSources, questWorldId).Count} spawn(s)");
+            IReadOnlyList<Spawn> candidates = SpawnsFor(huntSources, questWorldId);
             if (candidates.Count == 0)
                 throw new BotFailureException($"No spawn in world {questWorldId} for item {itemId} drop source(s) {string.Join(',', sources.CreatureIds)}.");
 
-            IReadOnlySet<uint> creatureIds = sources.CreatureIds.ToHashSet();
+            IReadOnlySet<uint> creatureIds = huntSources.ToHashSet();
             // the best sources first: Carcass Discovery's datapad drops from the Enraged Grimstone Mangler at 20 % and from the
             // cave's other Grimstone creatures at 1.5-7 %, and three runs of 21-33 mixed kills never saw it. The hunt visits the
             // spawns of creatures within half the best rate until each has been visited twice, then everything once, and so on
@@ -6185,21 +6196,28 @@ internal sealed class BotRunner
             {
                 await RequireWorld().SendEncryptedAsync(GameMessageOpcode.ClientEntityInteract,
                     PacketCodec.ClientEntityInteract(entity.Guid, InteractionType.TalkTo), token);
-                for (int attempt = 0; attempt < 2; attempt++)
+                // the server wants one free slot per reward item row (QuestManager.QuestComplete) and Delectable Drumsticks
+                // (5307) has two: with full bags the settler and scientist happened to delete enough looted items, the explorer
+                // had one, deleted it, was one slot short and got no second try (run 20261124-130352)
+                int rewardSlots = Math.Max(1, RequireGameData().QuestRewardItemRows(definition.Id));
+                const int turnInAttempts = 3;
+                for (int attempt = 0; attempt < turnInAttempts; attempt++)
                 {
                     lastGenericError = null;
                     await RequireWorld().SendEncryptedAsync(GameMessageOpcode.ClientQuestComplete,
                         PacketCodec.ClientQuestComplete(definition.Id), token);
                     if (await TryWaitForQuestStateAsync(QuestState.Completed, QuestNpcConfirmationTimeout, token))
                         return true;
-                    // QuestComplete returns without a packet when the reward items have no bag room: drop looted junk and retry
-                    if (lastGenericError != GenericError.ItemInventoryFull || attempt > 0)
+                    // QuestComplete returns without a packet when the reward items have no bag room: drop looted junk, then
+                    // earlier quest rewards when that frees fewer slots than the reward needs, and retry
+                    if (lastGenericError != GenericError.ItemInventoryFull || attempt == turnInAttempts - 1)
                         return false;
-                    int freed = await FreeBagSpaceAsync(definition, token);
-                    if (freed == 0)
-                        freed = await FreeBagSpaceAsync(definition, token, includeRewards: true);
-                    questNpcAttemptDetails.Add($"turn in refused with ItemInventoryFull; deleted {freed} looted item(s) and retried");
-                    if (freed == 0)
+                    int looted = await FreeBagSpaceAsync(definition, token);
+                    int rewards = looted < rewardSlots
+                        ? await FreeBagSpaceAsync(definition, token, includeRewards: true)
+                        : 0;
+                    questNpcAttemptDetails.Add($"turn in refused with ItemInventoryFull (the reward needs {rewardSlots} free slot(s)); deleted {looted} looted and {rewards} other bag item(s), {inventory.Values.Count(item => item.Location == InventoryLocation.Inventory)} left in the bags, and retried");
+                    if (looted + rewards == 0)
                         return false;
                 }
                 return false;

@@ -376,3 +376,96 @@ INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY
 INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`,`QuestChecklistIdx`) VALUES (1080128,0,16726,426,604,4698.83,-734.897,-5678.99,0,0,0,25428,0,219,219,6);
 INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`,`QuestChecklistIdx`) VALUES (1080129,0,16726,426,604,4659.72,-726.845,-5695.21,0,0,0,25428,0,219,219,7);
 INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`,`QuestChecklistIdx`) VALUES (1080130,0,16726,426,604,4683.36,-727.86,-5737.89,0,0,0,25428,0,219,219,8);
+-- Settler project resources of Galeras that the world database does not spawn (Farmhouse Debris of the fourth project is spawned).
+-- Positions are archived Jabbithole pins of each object; the server map files were not at hand, so each one is set 2 m from a spawned
+-- creature or object next to its pin and takes that height. Area 0: the server works the area out at start (EntityManager).
+-- Tempest Tech Scraps (M1871 PROJECT: Tempest Tech Station, archived pin 4908,-2343, set 2 m from spawned creature 18888 for its height)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1080131,10,34421,51,0,4908.000,-897.528,-2343.000,0,0,0,21515,0,219,219);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1080131,10,1),(1080131,15,0);
+-- Tempest Tech Scraps (M1871 PROJECT: Tempest Tech Station, archived pin 5028,-2306, set 2 m from spawned creature 20408 for its height)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1080132,10,34421,51,0,5028.494,-904.639,-2306.117,0,0,0,22230,0,219,219);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1080132,10,1),(1080132,15,0);
+-- Tempest Tech Scraps (M1871 PROJECT: Tempest Tech Station, archived pin 5029,-2233, set 2 m from spawned creature 36726 for its height)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1080133,10,34421,51,0,5032.023,-879.458,-2235.085,0,0,0,24251,0,219,219);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1080133,10,1),(1080133,15,0);
+-- Tempest Tech Scraps (M1871 PROJECT: Tempest Tech Station, archived pin 4935,-2439, set 2 m from spawned creature 22299 for its height)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1080134,10,34421,51,0,4931.446,-896.470,-2440.641,0,0,0,21377,0,219,219);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1080134,10,1),(1080134,15,0);
+-- Tempest Tech Scraps (M1871 PROJECT: Tempest Tech Station, archived pin 4895,-2279, set 2 m from spawned creature 36751 for its height)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1080135,10,34421,51,0,4890.995,-892.753,-2277.719,0,0,0,21515,0,219,219);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1080135,10,1),(1080135,15,0);
+-- Tempest Tech Scraps (M1871 PROJECT: Tempest Tech Station, archived pin 4812,-2300, set 2 m from spawned creature 20509 for its height)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1080136,10,34421,51,0,4809.267,-875.005,-2303.658,0,0,0,22230,0,219,219);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1080136,10,1),(1080136,15,0);
+-- Tempest Tech Scraps (M1871 PROJECT: Tempest Tech Station, archived pin 4791,-2224, set 2 m from spawned creature 18901 for its height)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1080137,10,34421,51,0,4790.867,-877.381,-2228.721,0,0,0,24251,0,219,219);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1080137,10,1),(1080137,15,0);
+-- Tempest Tech Scraps (M1871 PROJECT: Tempest Tech Station, archived pin 4955,-2425, set 2 m from spawned creature 19288 for its height)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1080138,10,34421,51,0,4952.350,-895.761,-2429.073,0,0,0,21377,0,219,219);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1080138,10,1),(1080138,15,0);
+-- Tempest Tech Scraps (M1871 PROJECT: Tempest Tech Station, archived pin 5004,-2279, set 2 m from spawned creature 22299 for its height)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1080139,10,34421,51,0,5006.861,-902.587,-2283.349,0,0,0,21515,0,219,219);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1080139,10,1),(1080139,15,0);
+-- Tempest Tech Scraps (M1871 PROJECT: Tempest Tech Station, archived pin 4865,-2322, set 2 m from spawned creature 20509 for its height)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1080140,10,34421,51,0,4871.203,-894.571,-2319.617,0,0,0,22230,0,219,219);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1080140,10,1),(1080140,15,0);
+-- Exile Transportation Part (M1873 PROJECT: Supply Teleporter, archived pin 5005,-3016, set 2 m from spawned creature 21975 for its height)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1080141,10,34560,51,0,5006.183,-918.130,-3017.229,0,0,0,24252,0,219,219);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1080141,10,1),(1080141,15,0);
+-- Exile Transportation Part (M1873 PROJECT: Supply Teleporter, archived pin 5079,-3101, set 2 m from spawned creature 61742 for its height)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1080142,10,34560,51,0,5077.154,-894.811,-3101.231,0,0,0,26158,0,219,219);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1080142,10,1),(1080142,15,0);
+-- Exile Transportation Part (M1873 PROJECT: Supply Teleporter, archived pin 5118,-3089, set 2 m from spawned creature 22273 for its height)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1080143,10,34560,51,0,5119.149,-897.113,-3086.408,0,0,0,23146,0,219,219);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1080143,10,1),(1080143,15,0);
+-- Exile Transportation Part (M1873 PROJECT: Supply Teleporter, archived pin 5163,-3241, set 2 m from spawned creature 20408 for its height)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1080144,10,34560,51,0,5160.889,-874.803,-3238.106,0,0,0,24252,0,219,219);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1080144,10,1),(1080144,15,0);
+-- Exile Transportation Part (M1873 PROJECT: Supply Teleporter, archived pin 4965,-3132, set 2 m from spawned creature 21706 for its height)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1080145,10,34560,51,0,4969.549,-906.687,-3131.219,0,0,0,26158,0,219,219);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1080145,10,1),(1080145,15,0);
+-- Exile Transportation Part (M1873 PROJECT: Supply Teleporter, archived pin 5096,-3274, set 2 m from spawned creature 26328 for its height)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1080146,10,34560,51,0,5092.501,-877.468,-3278.723,0,0,0,23146,0,219,219);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1080146,10,1),(1080146,15,0);
+-- Exile Transportation Part (M1873 PROJECT: Supply Teleporter, archived pin 4998,-3110, set 2 m from spawned creature 21879 for its height)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1080147,10,34560,51,0,5004.999,-912.874,-3110.974,0,0,0,24252,0,219,219);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1080147,10,1),(1080147,15,0);
+-- Exile Transportation Part (M1873 PROJECT: Supply Teleporter, archived pin 4989,-3164, set 2 m from spawned creature 21877 for its height)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1080148,10,34560,51,0,4988.631,-912.896,-3156.717,0,0,0,26158,0,219,219);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1080148,10,1),(1080148,15,0);
+-- Exile Transportation Part (M1873 PROJECT: Supply Teleporter, archived pin 5037,-3235, set 2 m from spawned creature 20408 for its height)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1080149,10,34560,51,0,5032.923,-903.834,-3227.050,0,0,0,23146,0,219,219);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1080149,10,1),(1080149,15,0);
+-- Medical Supplies (M1874 PROJECT: Medical Station, archived pin 5607,-2439, set 2 m from spawned creature 57139 for its height)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1080150,10,34569,51,0,5607.000,-1012.450,-2439.000,0,0,0,23423,0,219,219);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1080150,10,1),(1080150,15,0);
+-- Medical Supplies (M1874 PROJECT: Medical Station, archived pin 5555,-2336, set 2 m from spawned creature 14581 for its height)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1080151,10,34569,51,0,5555.265,-1010.180,-2335.463,0,0,0,23423,0,219,219);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1080151,10,1),(1080151,15,0);
+-- Medical Supplies (M1874 PROJECT: Medical Station, archived pin 5611,-2359, set 2 m from spawned creature 21457 for its height)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1080152,10,34569,51,0,5609.806,-1007.800,-2359.840,0,0,0,23423,0,219,219);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1080152,10,1),(1080152,15,0);
+-- Medical Supplies (M1874 PROJECT: Medical Station, archived pin 5629,-2560, set 2 m from spawned creature 37567 for its height)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1080153,10,34569,51,0,5630.089,-1006.540,-2558.303,0,0,0,23423,0,219,219);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1080153,10,1),(1080153,15,0);
+-- Medical Supplies (M1874 PROJECT: Medical Station, archived pin 5633,-2415, set 2 m from spawned creature 16599 for its height)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1080154,10,34569,51,0,5631.709,-1011.660,-2416.912,0,0,0,23423,0,219,219);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1080154,10,1),(1080154,15,0);
+-- Medical Supplies (M1874 PROJECT: Medical Station, archived pin 5615,-2516, set 2 m from spawned creature 37480 for its height)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1080155,10,34569,51,0,5612.371,-1010.560,-2516.245,0,0,0,23423,0,219,219);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1080155,10,1),(1080155,15,0);
+-- Medical Supplies (M1874 PROJECT: Medical Station, archived pin 5541,-2338, set 2 m from spawned creature 47945 for its height)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1080156,10,34569,51,0,5542.631,-1008.960,-2340.179,0,0,0,23423,0,219,219);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1080156,10,1),(1080156,15,0);
+-- Medical Supplies (M1874 PROJECT: Medical Station, archived pin 5570,-2248, set 2 m from spawned creature 16657 for its height)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1080157,10,34569,51,0,5574.692,-1008.650,-2247.804,0,0,0,23423,0,219,219);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1080157,10,1),(1080157,15,0);
+-- Medical Supplies (M1874 PROJECT: Medical Station, archived pin 5587,-2498, set 2 m from spawned creature 22349 for its height)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1080158,10,34569,51,0,5582.733,-1010.130,-2495.654,0,0,0,23423,0,219,219);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1080158,10,1),(1080158,15,0);
+-- Medical Supplies (M1874 PROJECT: Medical Station, archived pin 5492,-2309, set 2 m from spawned creature 14582 for its height)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1080159,10,34569,51,0,5493.853,-1003.020,-2314.331,0,0,0,23423,0,219,219);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1080159,10,1),(1080159,15,0);
+-- Medical Supplies (M1874 PROJECT: Medical Station, archived pin 5612,-2379, set 2 m from spawned creature 16656 for its height)
+INSERT INTO `entity` (`Id`,`Type`,`Creature`,`World`,`Area`,`X`,`Y`,`Z`,`RX`,`RY`,`RZ`,`DisplayInfo`,`OutfitInfo`,`Faction1`,`Faction2`) VALUES (1080160,10,34569,51,0,5606.891,-1011.460,-2381.823,0,0,0,23423,0,219,219);
+INSERT INTO `entity_stats` (`Id`,`Stat`,`Value`) VALUES (1080160,10,1),(1080160,15,0);

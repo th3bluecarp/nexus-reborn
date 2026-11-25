@@ -2,6 +2,7 @@ using System.Numerics;
 using System.Text.RegularExpressions;
 using NexusForever.Game.Abstract.Entity;
 using NexusForever.Game.Spell;
+using NexusForever.Game.Static.PlayerPath;
 using NexusForever.GameTable;
 using NexusForever.GameTable.Model;
 using Path = NexusForever.Game.Static.PlayerPath.Path;
@@ -15,7 +16,8 @@ namespace NexusForever.Game.Entity
     /// The mission's object is a PathSettlerInfrastructure: activating one of its resource creatures picks up a resource (up to
     /// MaxStackCountResource carried, the Spell4IdResource buff shows it), coming within <see cref="BuilderRange"/> of the
     /// builder (Creature2IdDepot) hands them in, MissionCount deliveries complete the mission. Projects without a resource
-    /// creature take the creatures named in their objective ("Collect Eldan Relics for ..."). Retail added every settler's
+    /// creature take the one listed for them (SettlerProjectRules), else the creatures named in their objective ("Collect
+    /// Eldan Relics for ..."). Retail added every settler's
     /// deliveries to a shared project total (Count) with a timer, that part is not kept.
     /// </remarks>
     public partial class PathMissionManager
@@ -75,6 +77,11 @@ namespace NexusForever.Game.Entity
                 .ToArray();
             if (resources.Length > 0)
                 return resources;
+
+            // the resource object the Creature2 table describes for the project (Galeras: "Collect tech scraps near ..." and
+            // "Gather farmhouse debris ..." match no creature name, and a name alone would also take the builder's display props)
+            if (SettlerProjectRules.ResourceCreatures.TryGetValue(infrastructure.Id, out uint[] listed))
+                return listed;
 
             // exact name first, so projects that resolved through their text before (Algoroc 53: Eldan Relics) keep it
             string resourceName = ObjectiveResource(infrastructure);
