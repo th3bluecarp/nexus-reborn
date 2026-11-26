@@ -118,6 +118,7 @@ internal sealed record PathMissionDefinition(
     IReadOnlyList<ScavengerClueDefinition> ScavengerClues,
     SettlerInfrastructureDefinition? Infrastructure,
     IReadOnlyList<uint> ExperimentationConsoleCreatureIds,
+    PathSoldierEventEntry? HoldoutEvent,
     bool GadgetTargets = false)
 {
     public string TypeName => Enum.IsDefined(Type) ? Type.ToString() : $"Unknown{RawType}";
@@ -406,13 +407,14 @@ internal sealed class BotGameData
         IReadOnlyList<ScavengerClueDefinition> scavengerClues = [];
         SettlerInfrastructureDefinition? infrastructure = null;
         IReadOnlyList<uint> experimentationConsoles = [];
+        PathSoldierEventEntry? holdoutEvent = null;
         IReadOnlyList<uint> additionalObjectiveCreatures = [];
         if (entry.PathTypeEnum == (uint)BotPath.Soldier)
         {
             switch (type)
             {
                 case PathMissionType.Holdout:
-                    _ = pathSoldierEvents.GetEntry(entry.ObjectId);
+                    holdoutEvent = pathSoldierEvents.GetEntry(entry.ObjectId);
                     break;
                 case PathMissionType.Assassination:
                 {
@@ -641,6 +643,7 @@ internal sealed class BotGameData
             scavengerClues,
             infrastructure,
             experimentationConsoles,
+            holdoutEvent,
             gadgetTargets);
     }
 

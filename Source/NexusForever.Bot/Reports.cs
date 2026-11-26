@@ -220,6 +220,7 @@ internal sealed class LootEvidence
 }
 
 internal sealed class BotFailureException(string message) : Exception(message);
+internal sealed class BotSkipException(string message) : Exception(message);
 
 /// <summary>
 /// The run log. Lines go through bounded queues to two writer threads (file, console) so a stalled disk or a stalled

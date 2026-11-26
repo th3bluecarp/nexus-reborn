@@ -19,7 +19,9 @@ namespace NexusForever.Game.Spell.Type
         #region Dependency Injection
 
         private readonly ILogger<SpellClientSideInteraction> log;
-        private bool interactionSucceeded;
+        private bool completesByTimer;
+        private bool interactionReady;
+        private bool interactionCompleted;
 
         public SpellClientSideInteraction(
             ILogger<SpellClientSideInteraction> log,
@@ -39,10 +41,18 @@ namespace NexusForever.Game.Spell.Type
             if (!base.Cast())
                 return false;
 
+            // Who completes the cast (the split is upstream's, in place since 2021):
+            //  - a cast that is not a true client-side interaction (no interaction data, or a table cast method other than
+            //    client-side) completes by itself at the end of its cast time. The client's answer to such a cast only marks
+            //    it ready (SucceedClientInteraction): running it on the answer as well executed one activation twice (two
+            //    settler resources per use, double quest credit in Helping Hand).
+            //  - a true client-side interaction has no timer: the client's answer completes it, or its fail answer cancels it.
+            // The cast time rule is unchanged: a creature's activate cast time when it has one, else the spell's own.
             double castTime = Parameters.CastTimeOverride > 0 ? Parameters.CastTimeOverride / 1000d : Parameters.SpellInfo.Entry.CastTime / 1000d;
-            if (Parameters.ClientSideInteraction == null
-                || (CastMethod)Parameters.SpellInfo.BaseInfo.Entry.CastMethod != CastMethod.ClientSideInteraction)
-                events.EnqueueEvent(new SpellEvent(castTime, SucceedClientInteraction));
+            completesByTimer = Parameters.ClientSideInteraction == null
+                || (CastMethod)Parameters.SpellInfo.BaseInfo.Entry.CastMethod != CastMethod.ClientSideInteraction;
+            if (completesByTimer)
+                events.EnqueueEvent(new SpellEvent(castTime, CompleteInteraction));
 
             status = SpellStatus.Casting;
             log.LogTrace($"Spell {Parameters.SpellInfo.Entry.Id} has started casting.");
@@ -73,12 +83,28 @@ namespace NexusForever.Game.Spell.Type
         /// </summary>
         public void SucceedClientInteraction()
         {
-            // One activation runs once. A cast whose table cast method is not client-side is completed by its cast-time timer
-            // (Cast), and a client that answers the same cast with an interaction result would run it a second time:
-            // the settler bot got two project resources from one use. Whichever comes first counts, the other is ignored.
-            if (interactionSucceeded)
+            if (!completesByTimer)
+            {
+                // true client-side interaction: the answer is the completion
+                CompleteInteraction();
                 return;
-            interactionSucceeded = true;
+            }
+
+            // timer-completed cast: the answer only marks the client ready, the cast-time timer runs it once
+            if (interactionReady || interactionCompleted)
+                return;
+            interactionReady = true;
+            Parameters.ClientSideInteraction?.TriggerReady();
+        }
+
+        /// <summary>
+        /// Execute an interaction once: at the end of its cast time, or on the client's answer for a true client-side interaction.
+        /// </summary>
+        private void CompleteInteraction()
+        {
+            if (interactionCompleted)
+                return;
+            interactionCompleted = true;
 
             bool hasActivateEffect = Parameters.SpellInfo.Effects.Any(x => x.EffectType == SpellEffectType.Activate);
             IGridEntity primaryTarget = Parameters.PrimaryTargetId == 0u

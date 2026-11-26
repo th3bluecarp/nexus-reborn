@@ -245,6 +245,18 @@ internal sealed class BotRunner
     private DateTimeOffset holdoutWaveTargetCaptureUntil = DateTimeOffset.MinValue;
     private DateTimeOffset? holdoutNoTargetSince;
     private DateTimeOffset holdoutLastNoTargetLog = DateTimeOffset.MinValue;
+    private bool holdoutBossWaveActive;
+    private int? holdoutBossStartOffsetMs;
+    private ulong holdoutBossWaveHealthRequired;
+    private uint? holdoutBossCreatureId;
+    private uint? holdoutBossLevel;
+    private uint holdoutBossMaxHealth;
+    private ulong holdoutBossDamage;
+    private uint holdoutBossHits;
+    private DateTimeOffset? holdoutBossFirstHitAt;
+    private DateTimeOffset? holdoutBossLastHitAt;
+    private uint holdoutHealthGains;
+    private ulong holdoutHealthGained;
     private const float HoldoutTargetRadius = 60f;
     private static readonly TimeSpan HoldoutWaveTargetCaptureTime = TimeSpan.FromSeconds(2);
     private static readonly TimeSpan HoldoutTargetRetryDelay = TimeSpan.FromSeconds(5);
@@ -1041,7 +1053,8 @@ internal sealed class BotRunner
             }
             catch (Exception exception) when (!cancellationToken.IsCancellationRequested)
             {
-                currentMissionReport.Result = "FAIL";
+                bool skipped = exception is BotSkipException;
+                currentMissionReport.Result = skipped ? "SKIPPED" : "FAIL";
                 currentMissionReport.FailedAt = phase;
                 bool holdoutDeath = definition.Type == PathMissionType.Holdout
                     && (botDied || holdoutResult == PlayerPathSoldierResult.FailDeath);
@@ -1091,7 +1104,7 @@ internal sealed class BotRunner
                 }
                 if (definition.Type == PathMissionType.Holdout)
                     currentMissionReport.Detail += FormatHoldoutMissionDetail();
-                log.Info($"path mission {definition.Id} FAIL at {phase}: {currentMissionReport.Detail}");
+                log.Info($"path mission {definition.Id} {currentMissionReport.Result} at {phase}: {currentMissionReport.Detail}");
             }
             finally
             {
@@ -1107,6 +1120,7 @@ internal sealed class BotRunner
                 holdoutWaveTargetCaptureUntil = DateTimeOffset.MinValue;
                 holdoutProgressPackets.Clear();
                 holdoutPreparationDetail = null;
+                ResetHoldoutBossEvidence();
             }
         }
 
@@ -2078,6 +2092,7 @@ internal sealed class BotRunner
         holdoutTargetRetryAfter.Clear();
         holdoutCenter = lastPosition;
         holdoutWaveTargetCaptureUntil = DateTimeOffset.MinValue;
+        ResetHoldoutBossEvidence();
         currentHoldoutWave = null;
         activeHoldoutEventId = checked((ushort)definition.Entry.ObjectId);
         holdoutPreparationDetail = await PrepareForHoldoutAsync(cancellationToken);
@@ -2103,7 +2118,12 @@ internal sealed class BotRunner
         }
 
         if (holdoutResult != PlayerPathSoldierResult.Success)
+        {
+            string? unwinnable = DescribeBotSoloUnwinnableHoldout(definition);
+            if (unwinnable is not null)
+                throw new BotSkipException(unwinnable);
             throw new BotFailureException($"holdout ended with {holdoutResult}");
+        }
 
         DateTimeOffset completionDeadline = DateTimeOffset.UtcNow.AddSeconds(5);
         while (!IsPathMissionComplete(definition.Id))
@@ -2210,6 +2230,71 @@ internal sealed class BotRunner
 
     private string FormatCurrentHoldoutWave()
         => currentHoldoutWave?.ToString() ?? "unknown";
+
+    private void ResetHoldoutBossEvidence()
+    {
+        holdoutBossWaveActive = false;
+        holdoutBossStartOffsetMs = null;
+        holdoutBossWaveHealthRequired = 0u;
+        holdoutBossCreatureId = null;
+        holdoutBossLevel = null;
+        holdoutBossMaxHealth = 0u;
+        holdoutBossDamage = 0u;
+        holdoutBossHits = 0u;
+        holdoutBossFirstHitAt = null;
+        holdoutBossLastHitAt = null;
+        holdoutHealthGains = 0u;
+        holdoutHealthGained = 0u;
+    }
+
+    /// <summary>
+    /// A timeout is not a bot failure when this solo bot could not remove the boss-wave health within the table clock at its
+    /// measured whole-wave rate. This proves only the observed bot outcome, not that a different player rotation is impossible:
+    /// time before the first and after the last damaging hit is omitted, gaps between those hits remain, and any observed
+    /// heal/reset leaves the result as FAIL for diagnosis.
+    /// </summary>
+    private string? DescribeBotSoloUnwinnableHoldout(PathMissionDefinition definition)
+    {
+        if (holdoutResult != PlayerPathSoldierResult.FailTimeOut
+            || definition.HoldoutEvent is not { } soldierEvent
+            || holdoutBossStartOffsetMs is not int startOffsetMs
+            || startOffsetMs < 0 || (uint)startOffsetMs >= soldierEvent.MaxEventTime
+            || holdoutBossWaveHealthRequired == 0u
+            || holdoutBossDamage == 0u || holdoutBossHits < 5u
+            || holdoutBossFirstHitAt is not DateTimeOffset firstHit
+            || holdoutBossLastHitAt is not DateTimeOffset lastHit
+            || holdoutHealthGains != 0u)
+            return null;
+
+        double attackSeconds = (lastHit - firstHit).TotalSeconds;
+        if (attackSeconds < 5d)
+            return null;
+
+        double sustainedDamage = holdoutBossDamage / attackSeconds;
+        double availableSeconds = (soldierEvent.MaxEventTime - (uint)startOffsetMs) / 1000d;
+        double projectedSeconds = holdoutBossWaveHealthRequired / sustainedDamage;
+        if (projectedSeconds <= availableSeconds)
+            return null;
+
+        string boss = holdoutBossCreatureId is uint creatureId
+            ? $"boss creature {creatureId} level {holdoutBossLevel?.ToString() ?? "?"} health {holdoutBossMaxHealth}"
+            : "boss identity unavailable";
+        return $"SKIPPED: the test bot's damage is too low for the table's time (a limit of this level {currentLevel} bot at its measured whole-wave rate, not a server finding): {boss}; boss wave required at least {holdoutBossWaveHealthRequired} health with {availableSeconds:0.0} s of table time left; "
+            + $"{holdoutBossDamage} damage over {attackSeconds:0.0} s between first/last damaging hits ({sustainedDamage:0.0}/s) projects at least {projectedSeconds:0.0} s; "
+            + $"health rose {holdoutHealthGains} time(s) by {holdoutHealthGained} (no heal/reset observed)";
+    }
+
+    private void SnapshotHoldoutBossWaveHealth()
+    {
+        if (!holdoutBossWaveActive)
+            return;
+
+        ulong health = 0u;
+        foreach (uint guid in holdoutWaveTargetGuids)
+            if (entities.Get(guid)?.Health is uint currentHealth)
+                health += currentHealth;
+        holdoutBossWaveHealthRequired = Math.Max(holdoutBossWaveHealthRequired, health);
+    }
 
     private string FormatHoldoutMissionDetail()
     {
@@ -6287,10 +6372,22 @@ internal sealed class BotRunner
                 if (result.Amount + result.ShieldAbsorbed > evidence.LargestHit)
                     evidence.LargestHit = result.Amount + result.ShieldAbsorbed;
             }
-            else if (known && cast.CasterId == playerGuid && combatTargetGuid == result.TargetId)
+            else if (known && cast.CasterId == playerGuid)
             {
-                (uint Hits, uint Damage) own = combatOwnSpells.GetValueOrDefault(cast.Spell4Id);
-                combatOwnSpells[cast.Spell4Id] = (own.Hits + 1u, own.Damage + result.Amount + result.ShieldAbsorbed);
+                uint damage = result.Amount + result.ShieldAbsorbed;
+                if (damage > 0u && activeHoldoutEventId is not null && holdoutBossWaveActive && holdoutWaveTargetGuids.Contains(result.TargetId))
+                {
+                    DateTimeOffset now = DateTimeOffset.UtcNow;
+                    holdoutBossDamage += damage;
+                    holdoutBossHits++;
+                    holdoutBossFirstHitAt ??= now;
+                    holdoutBossLastHitAt = now;
+                }
+                if (combatTargetGuid == result.TargetId)
+                {
+                    (uint Hits, uint Damage) own = combatOwnSpells.GetValueOrDefault(cast.Spell4Id);
+                    combatOwnSpells[cast.Spell4Id] = (own.Hits + 1u, own.Damage + damage);
+                }
             }
         }
     }
@@ -7132,6 +7229,16 @@ internal sealed class BotRunner
                         holdoutWaveTargetGuids.Add(entity.Guid);
                         log.Info($"holdout wave target guid={entity.Guid} creature={holdoutCreatureId} level={entity.Level?.ToString() ?? "?"} "
                             + $"health={entity.Health?.ToString() ?? "?"}/{entity.MaxHealth?.ToString() ?? "?"}");
+                        if (holdoutBossWaveActive)
+                        {
+                            SnapshotHoldoutBossWaveHealth();
+                            if (entity.MaxHealth is uint maxHealth && maxHealth > holdoutBossMaxHealth)
+                            {
+                                holdoutBossCreatureId = holdoutCreatureId;
+                                holdoutBossLevel = entity.Level;
+                                holdoutBossMaxHealth = maxHealth;
+                            }
+                        }
                     }
                     if (entity.Guid == playerGuid && entity.Type == EntityType.Player)
                     {
@@ -7295,6 +7402,12 @@ internal sealed class BotRunner
                 case GameMessageOpcode.ServerPlayerHealthUpdate:
                 {
                     (uint unitId, uint health) = PacketCodec.ParseEntityHealthUpdate(packet.Body);
+                    if (activeHoldoutEventId is not null && holdoutBossWaveActive && holdoutWaveTargetGuids.Contains(unitId)
+                        && entities.Get(unitId)?.Health is uint holdoutHealthBefore && health > holdoutHealthBefore)
+                    {
+                        holdoutHealthGains++;
+                        holdoutHealthGained += health - holdoutHealthBefore;
+                    }
                     if (unitId == combatTargetGuid && unitId != playerGuid
                         && entities.Get(unitId)?.Health is uint targetHealthBefore && health > targetHealthBefore)
                     {
@@ -7474,6 +7587,11 @@ internal sealed class BotRunner
                     {
                         currentHoldoutWave = checked((int)wave.WaveIndex + 1);
                         holdoutWaveTargetCaptureUntil = DateTimeOffset.UtcNow + HoldoutWaveTargetCaptureTime;
+                        if (wave.IsBoss)
+                        {
+                            holdoutBossWaveActive = true;
+                            SnapshotHoldoutBossWaveHealth();
+                        }
                         holdoutProgressPackets.Add(
                             $"next-wave(event={wave.EventId},rawIndex={wave.WaveIndex},wave={currentHoldoutWave},boss={wave.IsBoss.ToString().ToLowerInvariant()})");
                     }
@@ -7487,6 +7605,12 @@ internal sealed class BotRunner
                     {
                         if (status.Mode == PlayerPathSoldierEventMode.Active)
                             currentHoldoutWave = Math.Max(currentHoldoutWave ?? 0, status.WaveIndex + 1);
+                        if (status.Mode == PlayerPathSoldierEventMode.Active && status.IsBoss)
+                        {
+                            holdoutBossWaveActive = true;
+                            holdoutBossStartOffsetMs ??= status.StartTimeOffset;
+                            SnapshotHoldoutBossWaveHealth();
+                        }
                         holdoutProgressPackets.Add(
                             $"status(event={status.EventId},mode={status.Mode},rawIndex={status.WaveIndex},wave={FormatCurrentHoldoutWave()},boss={status.IsBoss.ToString().ToLowerInvariant()},delayMs={status.DelayTime},startOffsetMs={status.StartTimeOffset},units={status.UnitCount})");
                     }
