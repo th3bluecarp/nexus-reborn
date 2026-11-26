@@ -148,7 +148,7 @@ namespace NexusForever.Game.Abstract.Entity
         /// <summary>
         /// Update any active quest <see cref="IQuestObjective"/>'s with supplied <see cref="QuestObjectiveType"/> whose reward pane target group matches with progress.
         /// </summary>
-        void RewardPaneObjectiveUpdate(QuestObjectiveType type, uint targetGroupId, uint progress);
+        void RewardPaneObjectiveUpdate(QuestObjectiveType type, uint targetGroupId, uint progress, uint sourceCreatureId = 0u, uint sourceSpell4Id = 0u);
 
         /// <summary>
         /// Skip the supplied quests in type based objective updates until disposed, used while an activate spell gives the credit itself.

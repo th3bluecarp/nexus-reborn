@@ -91,7 +91,7 @@ namespace NexusForever.Game.Abstract.Quest
         /// Used for objectives such as <see cref="QuestObjectiveType.VirtualCollect"/> where data is not the source of progress,
         /// the reward pane target group lists the creatures that grant progress.
         /// </remarks>
-        void RewardPaneObjectiveUpdate(QuestObjectiveType type, uint targetGroupId, uint progress);
+        void RewardPaneObjectiveUpdate(QuestObjectiveType type, uint targetGroupId, uint progress, uint sourceCreatureId = 0u, uint sourceSpell4Id = 0u);
 
         /// <summary>
         /// Update objectives that ask the player to equip the supplied item.

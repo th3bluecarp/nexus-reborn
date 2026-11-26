@@ -641,10 +641,10 @@ namespace NexusForever.Game.Entity
         /// <summary>
         /// Invoked when <see cref="IWorldEntity"/>'s activate succeeds.
         /// </summary>
-        public virtual void OnActivateSuccess(IPlayer activator)
+        public virtual void OnActivateSuccess(IPlayer activator, uint spell4Id = 0u)
         {
             // checked before the updates below complete the objective
-            (bool questTarget, bool receivesTargetQuest) = ActiveQuestActivateTarget(activator);
+            (bool questTarget, bool receivesTargetQuest) = ActiveQuestActivateTarget(activator, spell4Id);
             // settler resource nodes are used up when gathered and come back on the respawn timer, as in retail
             bool settlerResource = CreatureInfo?.Entry != null && activator.PathMissionManager.IsSettlerResource(CreatureInfo.Entry.Id);
 
@@ -655,7 +655,7 @@ namespace NexusForever.Game.Entity
             if (CreatureInfo?.Entry != null)
             {
                 // activate spells with a QuestAdvanceObjective effect give that quest its credit, the updates below would count it again
-                using IDisposable suppressed = activator.QuestManager.SuppressObjectiveUpdates(ActivateSpellQuests(activator));
+                using IDisposable suppressed = activator.QuestManager.SuppressObjectiveUpdates(ActivateSpellQuests(activator, spell4Id));
 
                 activator.PathMissionManager.OnActivate(CreatureInfo.Entry.Id, AssetManager.Instance.GetTargetGroupsForCreatureId(CreatureInfo.Entry.Id));
                 activator.ChallengeManager.OnActivate(CreatureInfo.Entry.Id, AssetManager.Instance.GetTargetGroupsForCreatureId(CreatureInfo.Entry.Id));
@@ -688,7 +688,7 @@ namespace NexusForever.Game.Entity
                     // rescue objectives (Unknown28) name the cage to open in their reward pane target group
                     activator.QuestManager.RewardPaneObjectiveUpdate(QuestObjectiveType.Unknown28, targetGroupId, 1u);
                     // ActivateEntity objectives with no target (Rescue Exile Prisoners) name the creatures to use in the reward pane group
-                    activator.QuestManager.RewardPaneObjectiveUpdate(QuestObjectiveType.ActivateEntity, targetGroupId, 1u);
+                    activator.QuestManager.RewardPaneObjectiveUpdate(QuestObjectiveType.ActivateEntity, targetGroupId, 1u, CreatureInfo.Entry.Id, spell4Id);
 
                     // the used entity can already be off the map when a client-side interaction finishes (a looted corpse,
                     // a despawned item): the player's map runs the public event
@@ -923,11 +923,12 @@ namespace NexusForever.Game.Entity
         /// <summary>
         /// Returns the quests the creature's activate spells advance with a QuestAdvanceObjective effect, those spells give the credit themselves.
         /// </summary>
-        private IEnumerable<ushort> ActivateSpellQuests(IPlayer activator)
+        private IEnumerable<ushort> ActivateSpellQuests(IPlayer activator, uint usedSpell)
         {
             // only the spell this use actually runs gives credit: Power Restoration's generator controls (19022) carry a success CSI spell
             // and a fail spell that advances the quest's shock counter, and the fail spell's quest used to suppress the success credit
-            uint usedSpell = SelectActivateSpell(activator);
+            if (usedSpell == 0u)
+                usedSpell = SelectActivateSpell(activator);
             return CreatureInfo.Entry.Spell4IdActivate
                 .Where(s => s != 0u && (usedSpell == 0u || s == usedSpell))
                 .SelectMany(s => activateSpellQuests.GetOrAdd(s, id => GameTableManager.Instance.Spell4Effects.Entries
@@ -984,7 +985,7 @@ namespace NexusForever.Game.Entity
         /// Returns whether activating this entity progresses an unfinished objective of one of the activator's accepted quests,
         /// and whether the entity receives the same quest.
         /// </summary>
-        private (bool IsTarget, bool IsReceiver) ActiveQuestActivateTarget(IPlayer activator)
+        private (bool IsTarget, bool IsReceiver) ActiveQuestActivateTarget(IPlayer activator, uint usedSpell = 0u)
         {
             if (CreatureInfo?.Entry == null)
                 return (false, false);
@@ -1021,6 +1022,12 @@ namespace NexusForever.Game.Entity
                             if (objective.ObjectiveInfo.Type == QuestObjectiveType.ActivateEntity && (objective.ObjectiveInfo.Data == 0u || objective.ObjectiveInfo.Data == entry.TargetGroupIdRewardPane
                                     || (GameTableManager.Instance.Creature2.GetEntry(entry.Data) == null && GameTableManager.Instance.TargetGroup.GetEntry(entry.Data) == null))
                                 && targetGroups.Contains(entry.TargetGroupIdRewardPane))
+                                matches = true;
+                            // Helping Hand's raw Data 54204 is both a Creature2 id and the activation spell shared by its
+                            // patient variants. The reward-pane group identifies which users of that spell are quest targets.
+                            if (objective.ObjectiveInfo.Type == QuestObjectiveType.ActivateEntity
+                                && targetGroups.Contains(entry.TargetGroupIdRewardPane)
+                                && usedSpell != 0u && usedSpell == entry.Data)
                                 matches = true;
                             break;
                         // checklist objectives (types 10 and 14: Skeech huts, Dominion cannons) are not listed, their units stay and the

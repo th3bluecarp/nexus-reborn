@@ -16,6 +16,6 @@ namespace NexusForever.Game.Abstract.CSI
         void SetClientSideInteractionEntry(ClientSideInteractionEntry clientSideInteractionEntry);
         void TriggerFail();
         void TriggerReady();
-        void TriggerSuccess();
+        void TriggerSuccess(uint spell4Id = 0u);
     }
 }

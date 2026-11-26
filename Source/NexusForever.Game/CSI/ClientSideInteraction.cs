@@ -35,9 +35,9 @@ namespace NexusForever.Game.CSI
             ActivateUnit?.OnActivateFail(Owner);
         }
 
-        public void TriggerSuccess()
+        public void TriggerSuccess(uint spell4Id = 0u)
         {
-            ActivateUnit?.OnActivateSuccess(Owner);
+            ActivateUnit?.OnActivateSuccess(Owner, spell4Id);
         }
 
         public void SetClientSideInteractionEntry(ClientSideInteractionEntry clientSideInteractionEntry)
@@ -56,7 +56,7 @@ namespace NexusForever.Game.CSI
         {
             // Placeholder Method in case we need to do things prior to triggering
 
-            TriggerSuccess();
+            TriggerSuccess(spellCast.Spell4Id);
         }
     }
 }

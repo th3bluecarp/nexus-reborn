@@ -124,7 +124,7 @@ namespace NexusForever.Game.Abstract.Entity
         /// <summary>
         /// Invoked when <see cref="IWorldEntity"/>'s activate succeeds.
         /// </summary>
-        void OnActivateSuccess(IPlayer activator);
+        void OnActivateSuccess(IPlayer activator, uint spell4Id = 0u);
 
         /// <summary>
         /// Invoked when <see cref="IWorldEntity"/>'s activation fails.

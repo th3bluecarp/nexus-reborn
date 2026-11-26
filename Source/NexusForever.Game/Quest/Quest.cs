@@ -599,7 +599,7 @@ namespace NexusForever.Game.Quest
         /// <summary>
         /// Update any <see cref="IQuestObjective"/>'s with supplied <see cref="QuestObjectiveType"/> whose reward pane target group matches with progress.
         /// </summary>
-        public void RewardPaneObjectiveUpdate(QuestObjectiveType type, uint targetGroupId, uint progress)
+        public void RewardPaneObjectiveUpdate(QuestObjectiveType type, uint targetGroupId, uint progress, uint sourceCreatureId = 0u, uint sourceSpell4Id = 0u)
         {
             if (targetGroupId == 0u)
                 return;
@@ -615,9 +615,25 @@ namespace NexusForever.Game.Quest
             }
 
             // ActivateEntity objectives with a creature target progress through it, those without one (or naming the reward pane group
-            // itself, Captives of the Dominion) use the reward pane group
+            // itself, Captives of the Dominion) use the reward pane group. Data can also be an activation spell whose numeric id
+            // collides with a Creature2 row (Helping Hand): variants in the reward group use that spell without directly matching
+            // the objective's creature/text target.
             ObjectiveUpdate(o => o.ObjectiveInfo.Entry.Type == (uint)type && o.ObjectiveInfo.Entry.TargetGroupIdRewardPane == targetGroupId
-                && (type != QuestObjectiveType.ActivateEntity || o.ObjectiveInfo.Data == 0u || o.ObjectiveInfo.Data == targetGroupId || IsUnknownData(o.ObjectiveInfo.Entry.Data)), progress);
+                && (type != QuestObjectiveType.ActivateEntity || o.ObjectiveInfo.Data == 0u || o.ObjectiveInfo.Data == targetGroupId
+                    || IsUnknownData(o.ObjectiveInfo.Entry.Data) || ActivationSpellNamesRewardPaneVariants(o, sourceCreatureId, sourceSpell4Id)), progress);
+        }
+
+        private bool ActivationSpellNamesRewardPaneVariants(IQuestObjective objective, uint sourceCreatureId, uint sourceSpell4Id)
+        {
+            // The ordinary creature/text/group update already ran before this reward-pane update. Do not count that same
+            // activation twice when the spell id also happens to match.
+            if (sourceCreatureId == 0u || sourceSpell4Id == 0u
+                || objective.ObjectiveInfo.Data == sourceCreatureId
+                || NamesTextCreature(objective, sourceCreatureId)
+                || NamesTargetGroupOf(QuestObjectiveType.ActivateEntity, objective, sourceCreatureId))
+                return false;
+
+            return sourceSpell4Id == objective.ObjectiveInfo.Entry.Data;
         }
 
         /// <summary>

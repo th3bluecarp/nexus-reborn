@@ -46,9 +46,9 @@ namespace NexusForever.Game.Entity
             base.OnActivate(activator);
         }
 
-        public override void OnActivateSuccess(IPlayer activator)
+        public override void OnActivateSuccess(IPlayer activator, uint spell4Id = 0u)
         {
-            base.OnActivateSuccess(activator);
+            base.OnActivateSuccess(activator, spell4Id);
 
             uint progress = (uint)(1 << QuestChecklistIdx);
 

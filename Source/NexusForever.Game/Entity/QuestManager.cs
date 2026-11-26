@@ -1186,11 +1186,11 @@ namespace NexusForever.Game.Entity
                 quest.EquipObjectiveUpdate(itemId);
         }
 
-        public void RewardPaneObjectiveUpdate(QuestObjectiveType type, uint targetGroupId, uint progress)
+        public void RewardPaneObjectiveUpdate(QuestObjectiveType type, uint targetGroupId, uint progress, uint sourceCreatureId = 0u, uint sourceSpell4Id = 0u)
         {
             foreach (IQuest quest in activeQuests.Values.ToList())
                 if (!suppressedQuests.Contains(quest.Id))
-                    quest.RewardPaneObjectiveUpdate(type, targetGroupId, progress);
+                    quest.RewardPaneObjectiveUpdate(type, targetGroupId, progress, sourceCreatureId, sourceSpell4Id);
         }
 
         /// <summary>
