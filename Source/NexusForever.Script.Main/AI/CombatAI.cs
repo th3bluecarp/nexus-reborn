@@ -563,7 +563,10 @@ namespace NexusForever.Script.Main.AI
             if (GetPetOwner() != null)
                 return;
 
-            entity.ModifyHealth(entity.MaxHealth, DamageType.Heal, null);
+            // Holdout attackers are pulled from open-world spawn positions and sent to a soldier who may remain inside a
+            // larger event radius than this AI's leash. They still evade and return, but must not erase the soldier's damage.
+            if (entity.CreatureInfo is not ICreatureInfoOverride { PreserveHealthOnCombatReset: true })
+                entity.ModifyHealth(entity.MaxHealth, DamageType.Heal, null);
 
             // TODO: cancel all pending spells
 

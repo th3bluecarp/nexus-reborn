@@ -15,12 +15,16 @@ namespace NexusForever.Game.Entity.Creature
         public PrerequisiteEntry PrerequisiteVisibilityEntry => baseCreatureInfo.PrerequisiteVisibilityEntry;
         public Creature2DifficultyEntry DamageDifficultyEntry { get; private set; }
         public float DamageHealthScale { get; private set; } = 1f;
+        public bool PreserveHealthOnCombatReset => preserveHealthOnCombatReset
+            ?? (baseCreatureInfo as ICreatureInfoOverride)?.PreserveHealthOnCombatReset
+            ?? false;
 
         private ICreatureInfo baseCreatureInfo;
         private uint? level;
         private Creature2DifficultyEntry difficultyEntry;
         private Creature2DisplayInfoEntry displayInfoEntry;
         private Creature2OutfitInfoEntry outfitInfoEntry;
+        private bool? preserveHealthOnCombatReset;
 
         /// <summary>
         /// Set the <see cref="ICreatureInfo"/> to override.
@@ -56,6 +60,15 @@ namespace NexusForever.Game.Entity.Creature
         {
             DamageDifficultyEntry = difficultyEntry;
             DamageHealthScale     = healthScale;
+            return this;
+        }
+
+        /// <summary>
+        /// Keep damage already dealt when combat AI resets this creature.
+        /// </summary>
+        public ICreatureInfoOverride SetPreserveHealthOnCombatReset(bool preserveHealth)
+        {
+            preserveHealthOnCombatReset = preserveHealth;
             return this;
         }
 

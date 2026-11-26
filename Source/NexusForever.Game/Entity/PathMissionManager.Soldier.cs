@@ -8,6 +8,7 @@ using NexusForever.Game.Static.Entity;
 using NexusForever.Game.Static.PlayerPath;
 using NexusForever.GameTable;
 using NexusForever.GameTable.Model;
+using NexusForever.GameTable.Static;
 using NexusForever.Network.World.Message.Model.PlayerPath;
 using NexusForever.Shared;
 using NLog;
@@ -156,8 +157,14 @@ namespace NexusForever.Game.Entity
             var check = new SearchCheckRange<IUnitEntity>();
             check.Initialise(center, HoldoutPoolRange);
             IUnitEntity[] nearby = player.Map.Search(center, HoldoutPoolRange, check)
-                .Where(u => u is not IPlayer && u.CreatureId != 0u && u.IsAlive && u.CanAttack(player) && u.SummonerGuid == null
-                    && GameTableManager.Instance.Creature2.GetEntry(u.CreatureId)?.PathMissionIdSoldier == 0u
+                // The pool is a roster of creatures a lone soldier can actually fight and that can walk into the holdout.
+                // NonPlayer excludes stationary AiTurret units; NoAI excludes ordinary stationary helpers/props; reciprocal
+                // CanAttack excludes faction/target flag mismatches; level 1 excludes invisible encounter helpers (kept for a soldier
+                // of level 5 or lower: the starting zones have real level 1 enemies).
+                .Where(u => u is INonPlayerEntity && u.CreatureId != 0u && (u.Level > 1u || player.Level <= 5u) && u.IsAlive && !u.IsInvulnerable
+                    && u.CanAttack(player) && player.CanAttack(u) && u.SummonerGuid == null
+                    && GameTableManager.Instance.Creature2.GetEntry(u.CreatureId) is { PathMissionIdSoldier: 0u } entry
+                    && (entry.Flags & CreatureFlags.NoAI) == 0
                     && u.Level <= player.Level + 3u)
                 .ToArray();
             // elites (Superior rank and up, 1.66x damage and more) are for groups: left out of a lone soldier's waves while
@@ -450,8 +457,14 @@ namespace NexusForever.Game.Entity
             {
                 spawnIds[i] = i < bosses.Length ? bosses[i] : current.Pool[Random.Shared.Next(reach)];
                 ICreatureInfo info = creatureInfoManager.GetCreatureInfo(spawnIds[i]);
-                if (info != null && boss)
-                    info = new CreatureInfoOverride().SetCreatureInfoOverride(info).SetLevelOverride(info.GetLevel());
+                if (info != null)
+                {
+                    var holdoutInfo = new CreatureInfoOverride().SetCreatureInfoOverride(info)
+                        .SetPreserveHealthOnCombatReset(true);
+                    if (boss)
+                        holdoutInfo.SetLevelOverride(info.GetLevel());
+                    info = holdoutInfo;
+                }
                 infos[i] = info;
             }
 

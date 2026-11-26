@@ -15,6 +15,11 @@ namespace NexusForever.Game.Abstract.Entity.Creature
         float DamageHealthScale { get; }
 
         /// <summary>
+        /// Whether combat AI may heal this creature when it gives up a chase and returns to its leash point.
+        /// </summary>
+        bool PreserveHealthOnCombatReset { get; }
+
+        /// <summary>
         /// Set the <see cref="ICreatureInfo"/> to override.
         /// </summary>
         ICreatureInfoOverride SetCreatureInfoOverride(ICreatureInfo creatureInfo);
@@ -33,6 +38,11 @@ namespace NexusForever.Game.Abstract.Entity.Creature
         /// Set the rank the creature deals damage at and the multiplier for the caster health terms of its damage, see <see cref="DamageDifficultyEntry"/>.
         /// </summary>
         ICreatureInfoOverride SetDamageRank(Creature2DifficultyEntry difficultyEntry, float healthScale);
+
+        /// <summary>
+        /// Keep damage already dealt when combat AI resets this creature.
+        /// </summary>
+        ICreatureInfoOverride SetPreserveHealthOnCombatReset(bool preserveHealth);
 
         /// <summary>
         /// Set the <see cref="Creature2DisplayInfoEntry"/> override for <see cref="ICreatureInfo"/>.

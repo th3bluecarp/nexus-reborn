@@ -39,6 +39,10 @@ internal sealed class BotRunner
     // tries leave a 1 % chance of failing on bad luck (the 75 s default allowed one kill, the 300 s combat budget three)
     private static readonly TimeSpan ItemDropAcceptTimeout = TimeSpan.FromSeconds(840);
     private static readonly TimeSpan SingleTargetKillRetryTimeout = TimeSpan.FromSeconds(660);
+    // A countable kill near the end of the estimated objective budget buys another two minutes, but no objective can add
+    // more than five minutes in total. The outer step and quest safety budgets include that same hard cap.
+    private static readonly TimeSpan KillProgressGrace = TimeSpan.FromSeconds(120);
+    private static readonly TimeSpan KillProgressExtensionCap = TimeSpan.FromSeconds(300);
     private const float CombatTargetMovementThreshold = 2f;
     private const float CombatStandOffDistance = 2f;
     private const int MaximumCombatSpawnVisits = 2;
@@ -98,6 +102,18 @@ internal sealed class BotRunner
     private QuestRunReport? currentQuestReport;
     private PathMissionRunReport? currentMissionReport;
     private QuestObjectiveDefinition? activeObjective;
+    private sealed class KillProgressBudgetState
+    {
+        public required QuestObjectiveDefinition Objective { get; init; }
+        public required CancellationTokenSource Timeout { get; init; }
+        public required DateTimeOffset Started { get; init; }
+        public required DateTimeOffset Deadline { get; set; }
+        public required DateTimeOffset HardDeadline { get; init; }
+        public required uint Completed { get; set; }
+        public required uint RewardTargetCount { get; init; }
+        public HashSet<uint> FinishedRewardTargets { get; } = [];
+    }
+    private KillProgressBudgetState? killProgressBudget;
     private int consecutiveAbilityRestrictionResults;
     private ResurrectionShow? resurrectionShow;
     private DateTimeOffset resurrectionShowReceivedAt;
@@ -2786,8 +2802,16 @@ internal sealed class BotRunner
                     continue;
                 }
                 TimeSpan timeout = ObjectiveTimeout(objective);
-                await RunQuestStepAsync($"objective {objective.Index}", timeout, cancellationToken,
-                    token => RunObjectiveWithRetriesAsync(objective, definition, token));
+                if (IsCountableKillObjective(objective))
+                {
+                    await RunQuestStepAsync($"objective {objective.Index}", timeout + KillProgressExtensionCap, cancellationToken,
+                        token => RunProgressiveKillObjectiveAsync(objective, definition, timeout, token));
+                }
+                else
+                {
+                    await RunQuestStepAsync($"objective {objective.Index}", timeout, cancellationToken,
+                        token => RunObjectiveWithRetriesAsync(objective, definition, token));
+                }
             }
 
             await RunQuestStepAsync("quest achieved", DefaultStepTimeout, cancellationToken, WaitForAchievedAsync);
@@ -2889,7 +2913,9 @@ internal sealed class BotRunner
             QuestDefinition subQuest = questDefinitions.GetValueOrDefault((ushort)objective.Data) ?? RequireGameData().GetQuest((ushort)objective.Data);
             timeout = TimeSpan.FromSeconds(Math.Max(timeout.TotalSeconds,
                 subQuest.Objectives.Where(sub => (sub.Flags & 0x20u) == 0u && sub.Type != QuestObjectiveType.CompleteQuest)
-                    .Sum(sub => ObjectiveTimeout(sub, worldId).TotalSeconds) + DefaultStepTimeout.TotalSeconds * 3d + 60d));
+                    .Sum(sub => ObjectiveTimeout(sub, worldId).TotalSeconds
+                        + (IsCountableKillObjective(sub) ? KillProgressExtensionCap.TotalSeconds : 0d))
+                    + DefaultStepTimeout.TotalSeconds * 3d + 60d));
         }
         if (IsTargetlessHoldObjective(objective))
             timeout = TimeSpan.FromSeconds(Math.Max(timeout.TotalSeconds,
@@ -3037,9 +3063,96 @@ internal sealed class BotRunner
         ushort worldId = DetermineQuestWorld(definition);
         double seconds = (StartItem(definition) == 0u ? DefaultStepTimeout : StartItemHuntTimeout(definition, worldId)).TotalSeconds
             + definition.Objectives.Where(objective => (objective.Flags & 0x20u) == 0u)
-                .Sum(objective => ObjectiveTimeout(objective, worldId).TotalSeconds)
+                .Sum(objective => ObjectiveTimeout(objective, worldId).TotalSeconds
+                    + (IsCountableKillObjective(objective) ? KillProgressExtensionCap.TotalSeconds : 0d))
             + DefaultStepTimeout.TotalSeconds * 2d + 60d;
         return TimeSpan.FromSeconds(Math.Max(PerQuestTimeout.TotalSeconds, seconds));
+    }
+
+    /// <summary>
+    /// Run a kill objective on its estimated budget, sliding the deadline to <see cref="KillProgressGrace"/> after a counted
+    /// kill and never beyond <see cref="KillProgressExtensionCap"/> past the estimate. The enclosing step owns the hard cap.
+    /// </summary>
+    private async Task<string> RunProgressiveKillObjectiveAsync(
+        QuestObjectiveDefinition objective,
+        QuestDefinition definition,
+        TimeSpan baseline,
+        CancellationToken cancellationToken)
+    {
+        using var timeout = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
+        DateTimeOffset started = DateTimeOffset.UtcNow;
+        timeout.CancelAfter(baseline);
+        killProgressBudget = new KillProgressBudgetState
+        {
+            Objective = objective,
+            Timeout = timeout,
+            Started = started,
+            Deadline = started + baseline,
+            HardDeadline = started + baseline + KillProgressExtensionCap,
+            Completed = ObjectiveCompletedCount(objective, GetRawProgress(objective.Index)),
+            RewardTargetCount = (uint)GetObjectiveCreatureIds(objective).Distinct().Count()
+        };
+        try
+        {
+            return await RunObjectiveWithRetriesAsync(objective, definition, timeout.Token);
+        }
+        catch (OperationCanceledException) when (timeout.IsCancellationRequested && !cancellationToken.IsCancellationRequested)
+        {
+            double elapsed = (DateTimeOffset.UtcNow - started).TotalSeconds;
+            throw new BotFailureException($"objective {objective.Index}: timeout after {elapsed:0} s (base {baseline.TotalSeconds:0} s; countable kills grant {KillProgressGrace.TotalSeconds:0} s of remaining time, capped at +{KillProgressExtensionCap.TotalSeconds:0} s)");
+        }
+        finally
+        {
+            if (killProgressBudget?.Timeout == timeout)
+                killProgressBudget = null;
+        }
+    }
+
+    private void ExtendKillProgressDeadline(QuestObjectiveDefinition objective, uint rawProgress)
+    {
+        KillProgressBudgetState? budget = killProgressBudget;
+        if (budget is null || budget.Objective.Index != objective.Index
+            || objective.Type == QuestObjectiveType.KillRewardTargetGroup)
+            return;
+
+        uint completed = ObjectiveCompletedCount(objective, rawProgress);
+        if (completed <= budget.Completed)
+            return;
+        budget.Completed = completed;
+
+        SlideKillProgressDeadline(budget, $"countable kill progress {completed}/{Math.Max(1u, objective.Count)}");
+    }
+
+    /// <summary>
+    /// Type 15 sends no intermediate client progress: it is a server-side bit checklist of distinct group creatures and only
+    /// reports complete. A confirmed death of a different objective creature is therefore its counted-progress signal.
+    /// </summary>
+    private void RecordRewardGroupKillProgress(QuestObjectiveDefinition objective, uint? creatureId)
+    {
+        KillProgressBudgetState? budget = killProgressBudget;
+        if (objective.Type != QuestObjectiveType.KillRewardTargetGroup || creatureId is not uint id
+            || budget is null || budget.Objective.Index != objective.Index
+            || !budget.FinishedRewardTargets.Add(id))
+            return;
+
+        SlideKillProgressDeadline(budget,
+            $"distinct reward-group kill {budget.FinishedRewardTargets.Count}/{Math.Max(1u, budget.RewardTargetCount)}");
+    }
+
+    private void SlideKillProgressDeadline(KillProgressBudgetState budget, string progress)
+    {
+
+        DateTimeOffset now = DateTimeOffset.UtcNow;
+        DateTimeOffset deadline = now + KillProgressGrace;
+        if (deadline > budget.HardDeadline)
+            deadline = budget.HardDeadline;
+        if (deadline <= budget.Deadline)
+            return;
+
+        TimeSpan remaining = deadline - now;
+        budget.Deadline = deadline;
+        budget.Timeout.CancelAfter(remaining);
+        log.Info($"quest {RequireQuest().Id} objective {budget.Objective.Index}: {progress} extended the deadline to {remaining.TotalSeconds:0} s from now (cap +{KillProgressExtensionCap.TotalSeconds:0} s)");
     }
 
     private static TimeSpan AllowEveryQuestNpcSpawnAttempt(int spawnCount, TimeSpan baseline)
@@ -5170,6 +5283,8 @@ internal sealed class BotRunner
         var spawnVisits = new Dictionary<uint, int>();
         var finishedTargetGuids = new FinishedTargets(entities);
         combatAreaAnchors = areaAnchors;
+        activeKillCandidates = IsCountableKillObjective(objective) ? candidates : null;
+        activeKillSpawnVisits = IsCountableKillObjective(objective) ? spawnVisits : null;
         try
         {
             // what is already hitting the bot comes before a new target, weakest rank first: Darkspur Payback's first death went
@@ -5195,7 +5310,12 @@ internal sealed class BotRunner
                     try
                     {
                         if (await FightUntilProgressAsync(objective.Index, beforeAttacker, attacker.Guid, attackerFight.Token))
+                        {
                             finishedTargetGuids.Add(attacker.Guid);
+                            if (combatTargetConfirmedDead && attacker.CreatureId is uint attackerCreatureId
+                                && objectiveCreatureIds.Contains(attackerCreatureId))
+                                RecordRewardGroupKillProgress(objective, attackerCreatureId);
+                        }
                     }
                     catch (OperationCanceledException) when (attackerFight.IsCancellationRequested && !cancellationToken.IsCancellationRequested)
                     {
@@ -5215,13 +5335,20 @@ internal sealed class BotRunner
                 bool targetFinished = await FightUntilProgressAsync(
                     objective.Index, before, entity.Guid, cancellationToken);
                 if (targetFinished)
+                {
                     finishedTargetGuids.Add(entity.Guid);
+                    if (combatTargetConfirmedDead)
+                        RecordRewardGroupKillProgress(objective, entity.CreatureId);
+                }
                 attackers = null;
             }
         }
         finally
         {
             combatAreaAnchors = null;
+            activeKillCandidates = null;
+            activeKillSpawnVisits = null;
+            recoveryAvoidedCamp = null;
         }
     }
 
@@ -5230,8 +5357,17 @@ internal sealed class BotRunner
     // the area a kill objective counts in (area marker groups): the visible-target search and the spawn candidates stay inside it
     private IReadOnlyList<(Vector3 Center, float Range)>? combatAreaAnchors;
 
+    private sealed record RecoveryAvoidedCamp(ushort WorldId, Vector3 Center);
+    private const float RecoveryHurtCampRadius = 30f;
+    private const float CombatVisibleTargetApproachRange = 400f;
+    private IReadOnlyList<Spawn>? activeKillCandidates;
+    private IReadOnlyDictionary<uint, int>? activeKillSpawnVisits;
+    private RecoveryAvoidedCamp? recoveryAvoidedCamp;
+
     private bool InCombatArea(Vector3 position)
-        => combatAreaAnchors is null || InArea(combatAreaAnchors, position);
+        => (combatAreaAnchors is null || InArea(combatAreaAnchors, position))
+            && (recoveryAvoidedCamp is not { } avoided || avoided.WorldId != currentWorldId
+                || Vector3.DistanceSquared(avoided.Center, position) > RecoveryHurtCampRadius * RecoveryHurtCampRadius);
 
     private static bool InArea(IReadOnlyList<(Vector3 Center, float Range)> anchors, Vector3 position)
         => anchors.Any(anchor => Vector3.DistanceSquared(anchor.Center, position) <= anchor.Range * anchor.Range);
@@ -5367,7 +5503,7 @@ internal sealed class BotRunner
     {
         if (currentWorldId != questWorldId || worldLoadPending)
             return null;
-        TrackedEntity? far = entities.FindNearestVisibleNonPlayer(creatureIds, lastPosition, 400f, excludedGuids, InCombatArea);
+        TrackedEntity? far = entities.FindNearestVisibleNonPlayer(creatureIds, lastPosition, CombatVisibleTargetApproachRange, excludedGuids, InCombatArea);
         if (far?.Position is not Vector3 position)
             return null;
         float distance = Vector3.Distance(lastPosition, position);
@@ -5378,7 +5514,7 @@ internal sealed class BotRunner
         log.Info($"combat target guid={far.Guid} creature {far.CreatureId} is visible {distance:0.0} m away; teleporting to it");
         await SendTeleportAsync(PacketCodec.TeleportCommand(position), false, cancellationToken);
         lastPosition = new Vector3(position.X + 2f, position.Y, position.Z + 2f);
-        return FindVisibleCombatTarget(questWorldId, creatureIds, excludedGuids) ?? entities.Get(far.Guid) ?? far;
+        return SelectRecoveryAlternative(FindVisibleCombatTarget(questWorldId, creatureIds, excludedGuids) ?? entities.Get(far.Guid) ?? far);
     }
 
     /// <summary>
@@ -5425,7 +5561,24 @@ internal sealed class BotRunner
         IReadOnlyDictionary<uint, int> spawnVisits,
         Func<uint, int>? band = null)
     {
-        int? cycle = candidates
+        IReadOnlyList<Spawn> eligible = candidates;
+        if (recoveryAvoidedCamp is { } avoided && avoided.WorldId == questWorldId)
+        {
+            Spawn[] alternatives = candidates
+                .Where(spawn => spawn.WorldId != avoided.WorldId
+                    || Vector3.DistanceSquared(avoided.Center, new Vector3(spawn.X, spawn.Y, spawn.Z)) > RecoveryHurtCampRadius * RecoveryHurtCampRadius)
+                .Where(spawn => spawnVisits.GetValueOrDefault(spawn.Id) < MaximumCombatSpawnVisits)
+                .ToArray();
+            if (alternatives.Length > 0)
+                eligible = alternatives;
+            else
+            {
+                recoveryAvoidedCamp = null;
+                log.Info($"objective {activeObjective?.Index.ToString() ?? "?"}: recovery alternatives exhausted their normal spawn visits; allowing the hurt camp again");
+            }
+        }
+
+        int? cycle = eligible
             .Select(spawn => spawnVisits.GetValueOrDefault(spawn.Id))
             .Where(visits => visits < MaximumCombatSpawnVisits)
             .Cast<int?>()
@@ -5433,7 +5586,7 @@ internal sealed class BotRunner
         if (cycle is null)
             return null;
 
-        return candidates
+        return eligible
             .Where(spawn => spawnVisits.GetValueOrDefault(spawn.Id) == cycle.Value)
             // a drop hunt visits the best drop-rate band first, nearest within a band
             .OrderBy(spawn => band?.Invoke(spawn.CreatureId) ?? 0)
@@ -5481,14 +5634,15 @@ internal sealed class BotRunner
     /// <see cref="RecoveryRetreatLimit"/> retreats and <see cref="RecoveryTotalCap"/> per fight, then it fights as it is.
     /// </summary>
     /// <param name="targetGuid">The target the bot stands at (it returns here after a retreat), null before it has moved to one.</param>
-    private async Task RecoverHealthBeforeFightAsync(uint? targetGuid, CancellationToken cancellationToken)
+    private async Task<bool> RecoverHealthBeforeFightAsync(uint? targetGuid, CancellationToken cancellationToken)
     {
         if (activeHoldoutEventId is not null || botDied || recoveringHealth || worldLoadPending)
-            return;
+            return true;
         if (currentHealth is not uint health || currentMaxHealth is not uint max || max == 0u || health >= max * FightHealthFloor)
-            return;
+            return true;
 
         recoveringHealth = true;
+        bool resumeOriginalFight = true;
         try
         {
             Vector3 fightPosition = lastPosition;
@@ -5555,13 +5709,45 @@ internal sealed class BotRunner
             }
 
             if (retreats > 0 && targetGuid is uint guid && !botDied)
-                await ReturnToFightAsync(fightPosition, guid, cancellationToken);
+            {
+                if (TryAvoidHurtCamp(fightPosition))
+                    resumeOriginalFight = false;
+                else
+                    await ReturnToFightAsync(fightPosition, guid, cancellationToken);
+            }
             log.Info($"health {currentHealth}/{max} after the recovery wait ({outcome}; {(DateTimeOffset.UtcNow - started).TotalSeconds:0} s, {retreats} retreat(s), in combat: {playerInCombat})");
         }
         finally
         {
             recoveringHealth = false;
         }
+        return resumeOriginalFight;
+    }
+
+    /// <summary>
+    /// After a camp forced a recovery retreat, stay away from its 30 m group when another countable spawn is already known
+    /// within the normal 400 m visible-target approach range. The next acquisition clears this preference once it finds one.
+    /// </summary>
+    private bool TryAvoidHurtCamp(Vector3 fightPosition)
+    {
+        if (activeObjective is not { } objective || !IsCountableKillObjective(objective)
+            || activeKillCandidates is not { Count: > 0 } candidates
+            || activeKillSpawnVisits is not { } spawnVisits)
+            return false;
+
+        int alternatives = candidates.Count(spawn => spawn.WorldId == currentWorldId
+            && spawn.DistanceSquared(fightPosition.X, fightPosition.Y, fightPosition.Z)
+                <= CombatVisibleTargetApproachRange * CombatVisibleTargetApproachRange
+            && spawn.DistanceSquared(fightPosition.X, fightPosition.Y, fightPosition.Z)
+                > RecoveryHurtCampRadius * RecoveryHurtCampRadius
+            && spawnVisits.GetValueOrDefault(spawn.Id) < MaximumCombatSpawnVisits
+            && (combatAreaAnchors is null || InArea(combatAreaAnchors, new Vector3(spawn.X, spawn.Y, spawn.Z))));
+        if (alternatives == 0)
+            return false;
+
+        recoveryAvoidedCamp = new RecoveryAvoidedCamp(currentWorldId, fightPosition);
+        log.Info($"objective {objective.Index}: recovery retreat left a hurt camp; preferring {alternatives} countable spawn(s) outside its {RecoveryHurtCampRadius:0} m group within the normal {CombatVisibleTargetApproachRange:0} m search range");
+        return true;
     }
 
     /// <summary>
@@ -5624,7 +5810,8 @@ internal sealed class BotRunner
         bool lootCorpse,
         CancellationToken cancellationToken)
     {
-        await RecoverHealthBeforeFightAsync(targetGuid, cancellationToken);
+        if (!await RecoverHealthBeforeFightAsync(targetGuid, cancellationToken))
+            return false;
         BeginCombatEvidence(targetGuid);
         bool targetFinished = false;
         try
@@ -6658,9 +6845,23 @@ internal sealed class BotRunner
         ushort worldId,
         IReadOnlySet<uint> creatureIds,
         IReadOnlySet<uint> excludedGuids)
-        => currentWorldId == worldId && !worldLoadPending
+    {
+        TrackedEntity? target = currentWorldId == worldId && !worldLoadPending
             ? entities.FindNearestVisibleNonPlayer(creatureIds, lastPosition, 40f, excludedGuids, InCombatArea)
             : null;
+        return SelectRecoveryAlternative(target);
+    }
+
+    private TrackedEntity? SelectRecoveryAlternative(TrackedEntity? target)
+    {
+        if (target?.Position is Vector3 position && recoveryAvoidedCamp is { } avoided
+            && (avoided.WorldId != currentWorldId
+                || Vector3.DistanceSquared(avoided.Center, position) > RecoveryHurtCampRadius * RecoveryHurtCampRadius))
+        {
+            recoveryAvoidedCamp = null;
+        }
+        return target;
+    }
 
     private async Task WaitForLocalTeleportAsync(CancellationToken cancellationToken)
     {
@@ -7342,6 +7543,9 @@ internal sealed class BotRunner
                     {
                         objectiveProgress[update.Index] = update.Completed;
                         UpdateObjectiveReport(update.Index, update.Completed);
+                        QuestObjectiveDefinition? definition = quest.Objectives.SingleOrDefault(objective => objective.Index == update.Index);
+                        if (definition is not null && IsCountableKillObjective(definition))
+                            ExtendKillProgressDeadline(definition, update.Completed);
                     }
                     break;
                 }
@@ -7475,13 +7679,15 @@ internal sealed class BotRunner
         if (item is null || definition is null)
             return;
 
-        item.Progress = IsChecklistObjective(definition)
-            ? Math.Min(definition.Count, (uint)BitOperations.PopCount(rawProgress))
-            : IsDynamicKillObjective(definition)
-            && definition.Count > 1
-            ? Math.Min(definition.Count, (rawProgress * definition.Count + 999u) / 1000u)
-            : Math.Min(definition.Count, rawProgress);
+        item.Progress = ObjectiveCompletedCount(definition, rawProgress);
     }
+
+    private static uint ObjectiveCompletedCount(QuestObjectiveDefinition objective, uint rawProgress)
+        => IsChecklistObjective(objective)
+            ? Math.Min(objective.Count, (uint)BitOperations.PopCount(rawProgress))
+            : IsDynamicKillObjective(objective) && objective.Count > 1u
+                ? Math.Min(objective.Count, (rawProgress * objective.Count + 999u) / 1000u)
+                : Math.Min(objective.Count, rawProgress);
 
     private bool IsObjectiveComplete(QuestObjectiveDefinition objective)
     {
@@ -7505,6 +7711,13 @@ internal sealed class BotRunner
             or QuestObjectiveType.KillTargetGroups
             && objective.Count > 1u
             && (objective.Flags & 0x0200u) == 0u;
+
+    private static bool IsCountableKillObjective(QuestObjectiveDefinition objective)
+        => objective.Type is QuestObjectiveType.KillCreature
+            or QuestObjectiveType.KillCreature2
+            or QuestObjectiveType.KillRewardTargetGroup
+            or QuestObjectiveType.KillTargetGroup
+            or QuestObjectiveType.KillTargetGroups;
 
     private static bool IsChecklistObjective(QuestObjectiveDefinition objective)
         => objective.Type is QuestObjectiveType.ActivateTargetGroupChecklist or QuestObjectiveType.Unknown10;

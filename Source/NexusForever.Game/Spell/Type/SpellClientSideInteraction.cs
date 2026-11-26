@@ -19,6 +19,7 @@ namespace NexusForever.Game.Spell.Type
         #region Dependency Injection
 
         private readonly ILogger<SpellClientSideInteraction> log;
+        private bool interactionSucceeded;
 
         public SpellClientSideInteraction(
             ILogger<SpellClientSideInteraction> log,
@@ -72,6 +73,13 @@ namespace NexusForever.Game.Spell.Type
         /// </summary>
         public void SucceedClientInteraction()
         {
+            // One activation runs once. A cast whose table cast method is not client-side is completed by its cast-time timer
+            // (Cast), and a client that answers the same cast with an interaction result would run it a second time:
+            // the settler bot got two project resources from one use. Whichever comes first counts, the other is ignored.
+            if (interactionSucceeded)
+                return;
+            interactionSucceeded = true;
+
             bool hasActivateEffect = Parameters.SpellInfo.Effects.Any(x => x.EffectType == SpellEffectType.Activate);
             IGridEntity primaryTarget = Parameters.PrimaryTargetId == 0u
                 ? Caster
